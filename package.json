@@ -1,0 +1,25 @@
+{
+  "name": "chayns-helper",
+  "version": "1.0.0",
+  "description": "my personal helpers for chayns development",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chincoe/chayns-helper.git"
+  },
+  "keywords": [
+    "chayns",
+    "react",
+    "hooks",
+    "redux"
+  ],
+  "author": "Christian Nagel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chincoe/chayns-helper/issues"
+  },
+  "homepage": "https://github.com/chincoe/chayns-helper#readme"
+}

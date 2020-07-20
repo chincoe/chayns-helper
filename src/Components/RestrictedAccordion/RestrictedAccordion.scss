@@ -1,0 +1,32 @@
+.accordion--restricted {
+    transition: background-color 0.4s, box-shadow 0.4s, border-radius 0.4s;
+
+    .accordion__head {
+        padding-right: 5px;
+    }
+
+    &-search {
+        .accordion__head__right {
+            .right--background-enter-active, .right--background-exit-active {
+                display: none;
+            }
+
+            .right--background-enter-done,
+            div:not(
+            .right--background-enter-active,
+            .right--background-exit-active,
+            .right--background-exit-done
+            ) {
+                svg.svg-inline--fa.fa-lock.react-chayns-icon {
+                    animation: 0.2s fadeIn;
+                    @keyframes fadeIn {
+                        from {
+                            opacity: 0;
+                            transform: translateX(10px);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

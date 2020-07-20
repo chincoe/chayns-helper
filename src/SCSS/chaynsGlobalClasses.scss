@@ -1,0 +1,25 @@
+$chaynsMobile: ".chayns--mobile";
+$chaynsDesktop: ".chayns--desktop";
+$chaynsRuntime: ".chayns--net_runtime";
+$chaynsApp: ".chayns--app";
+$chaynsLocationApp: ".chayns--app:not(.chayns--frame)";
+$chaynsWeb: ".chayns--web";
+$chaynsAndroid: ".chayns-os--android";
+$chaynsIOS: ".chayns-os--ios";
+$chaynsFrame: ".chayns--frame";
+
+$chaynsPortrait: ".chayns--portrait";
+
+$chaynsExclusive: ".chayns--exclusive";
+
+$chaynsColorModes: (
+        normal: ".chayns-color-mode--0",
+        dark: ".chayns-color-mode--1",
+        light: ".chayns-color-mode--2"
+);
+
+$chaynsBrowsers: (
+        safari: ".chayns-browser--safari",
+        netscape: ".chayns-browser--netscape",
+        chrome: ".chayns-browser--chrome"
+)
