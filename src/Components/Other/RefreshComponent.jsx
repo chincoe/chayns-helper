@@ -56,16 +56,4 @@ RefreshComponent.defaultProps = {
 
 RefreshComponent.displayName = 'RefreshComponent';
 
-/**
- * Higher-Order-Component that will refresh its child component in an interval.
- * Usage in WrappedComponent.jsx: export default refresh(WrappedComponent);
- * @param {*} WrappedComponent
- * @param {number} [interval=10000]
- * @return {*}
- */
-export const refresh = (WrappedComponent, interval = 10000) => memo((props) => {
-    const [refreshId, refreshFn] = useRefresh(interval);
-    return (<WrappedComponent {...props} __refreshId={refreshId} refreshFunction={refreshFn}/>);
-});
-
 export default memo(RefreshComponent);

@@ -3,3 +3,4 @@ webpack.config.js
 .babelrc
 babel.config.js
 .eslintrc
+.idea

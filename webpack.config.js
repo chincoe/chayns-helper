@@ -4,6 +4,7 @@ const autoprefixer = require('autoprefixer');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = () => {
     return {
@@ -16,7 +17,9 @@ module.exports = () => {
                 })
             ],
         },
-        entry: { index: './src/index.js' },
+        entry: {
+            index: './src/index.js'
+        },
         resolve: {
             extensions: ['.js', '.jsx']
         },
