@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import isTobitEmployee from 'chayns-components/lib/utils/tobitEmployee';
 import generateUUID from 'chayns-logger/lib/core/generate-uid';
 import { isNullOrWhiteSpace } from 'chayns-components/lib/utils/is';
-import useElementProps from 'chayns-helper/Hooks/useElementProps';
+import useElementProps from '../Hooks/useElementProps';
 import { chaynsHelperConfig } from '../chaynsHelperConfig';
 import types from '../Functions/types';
 

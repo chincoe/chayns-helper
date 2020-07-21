@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { SelectButton } from 'chayns-components';
-import httpRequest from 'chayns-helper/Functions/httpRequest';
-import useElementProps from 'chayns-helper/Hooks/useElementProps';
+import httpRequest from '../../Functions/httpRequest';
+import useElementProps from '../../Hooks/useElementProps';
 import ResizableWaitCursor from '../Other/ResizableWaitCursor';
 
 /**

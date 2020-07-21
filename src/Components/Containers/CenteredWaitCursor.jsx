@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { SmallWaitCursor } from 'chayns-components';
 import './Containers.scss';
-import useElementProps from 'chayns-helper/Hooks/useElementProps';
+import useElementProps from '../../Hooks/useElementProps';
 
 /**
  * CenteredWaitCursor

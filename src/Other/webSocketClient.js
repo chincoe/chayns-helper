@@ -1,4 +1,4 @@
-import logger from 'logger';
+import logger from 'chayns-logger';
 
 const isStringAndNotWhitespace = (str) => typeof str === 'string' && str.trim() !== '';
 

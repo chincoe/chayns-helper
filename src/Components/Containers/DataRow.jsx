@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './Containers.scss';
-import useElementProps from 'chayns-helper/Hooks/useElementProps';
+import useElementProps from '../../Hooks/useElementProps';
 import T from '../../Functions/types';
 
 /**

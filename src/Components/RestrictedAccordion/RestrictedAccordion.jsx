@@ -3,7 +3,7 @@ import { Accordion, Icon } from 'chayns-components';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './RestrictedAccordion.scss';
-import useElementProps from 'chayns-helper/Hooks/useElementProps';
+import useElementProps from '../../Hooks/useElementProps';
 
 /**
  * RestrictedAccordion

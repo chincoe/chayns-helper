@@ -2,7 +2,7 @@ import React, { useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { ChooseButton } from 'chayns-components';
-import useElementProps from 'chayns-helper/Hooks/useElementProps';
+import useElementProps from '../../Hooks/useElementProps';
 import { formatDate, time } from '../../Functions/timeHelper';
 import T from '../../Functions/types';
 

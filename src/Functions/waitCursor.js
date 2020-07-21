@@ -3,7 +3,7 @@
  * @param {string} [text=undefined] - Text that will be displayed after {@link textTimeout}
  * @param {number} [textTimeout=5000] - Time in ms after which {@link text} will be shown
  * @param {number} [timeout=300] = Time in ms after which the waitCursor will be shown
- * @return {function(number)}
+ * @return {function(number)} - hideWaitCursor function, will also clear the timeout
  */
 // eslint-disable-next-line import/prefer-default-export
 export const showWaitCursor = (text = undefined, textTimeout = 5000, timeout = 300) => {
