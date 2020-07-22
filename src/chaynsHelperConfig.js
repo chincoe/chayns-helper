@@ -1,27 +1,37 @@
 import handleRequestErrors from './Functions/defaultErrorHandler';
 import { initLog } from './Functions/log';
+import { useSelector } from 'react-redux';
 
+/**
+ * Constant with a view options that should be setup in the index.js
+ * @type {{getRequestErrorHandler: (function(): handleRequestErrors), getSelector: (function(): useSelector),
+ *     textStringPrefix: string, live: boolean}}
+ */
 export const chaynsHelperConfig = {
     textStringPrefix: '',
     live: false,
-    getRequestErrorHandler: () => handleRequestErrors
+    getRequestErrorHandler: () => handleRequestErrors,
+    getSelector: () => useSelector
 };
 
 /**
- * Initialize the chaynsHelpers
+ * Initialize the chaynsHelpers, call in index.js
  * @param {string} [textStringPrefix='']
  * @param {boolean} [live=false]
  * @param {function} [requestErrorHandler]
+ * @param {function} [selector] - useSelector hook that should be used
  */
 export const initChaynsHelper = (
     {
         textStringPrefix = '',
         live = false,
         requestErrorHandler = handleRequestErrors,
+        selector = useSelector
     }
 ) => {
     chaynsHelperConfig.textStringPrefix = textStringPrefix;
     chaynsHelperConfig.live = live;
     chaynsHelperConfig.getRequestErrorHandler = () => requestErrorHandler;
+    chaynsHelperConfig.getSelector = () => selector;
     initLog(live);
 };
