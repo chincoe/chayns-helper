@@ -44,9 +44,9 @@ const safeFirst = (arr) => {
  * @return {string}
  */
 const getType = (val) => ({}.toString.call(val))
-    .replace('[object ', '')
-    .replace(']', '')
-    .toLowerCase();
+.replace('[object ', '')
+.replace(']', '')
+.toLowerCase();
 
 /**
  * length of array or string, count of number digits or count of object keys
@@ -74,7 +74,7 @@ const length = (val) => {
  * @param {*} value
  * @return {boolean}
  */
-const isNullOrEmpty = (value) => {
+export const isNullOrEmpty = (value) => {
     const type = getType(value);
     switch (type) {
         case 'undefined':
@@ -100,7 +100,7 @@ const isNullOrEmpty = (value) => {
  * @param {*} replacement
  * @return {*}
  */
-const replaceEmpty = (value, replacement) => (isNullOrEmpty(value) ? replacement : value);
+export const replaceEmpty = (value, replacement) => (isNullOrEmpty(value) ? replacement : value);
 
 /**
  * Get key from object if it exists, return null otherwise
@@ -108,7 +108,7 @@ const replaceEmpty = (value, replacement) => (isNullOrEmpty(value) ? replacement
  * @param {string} key
  * @return {null|*}
  */
-const safeValue = (object, key) => {
+export const safeValue = (object, key) => {
     if (!isObject || !Object.hasOwnProperty.call(object, key)) return null;
     return object[key];
 };
@@ -118,7 +118,7 @@ const safeValue = (object, key) => {
  * @param {string }key
  * @return {boolean}
  */
-const hasKey = (obj, key) => Object.hasOwnProperty.call(obj, key);
+export const hasKey = (obj, key) => Object.hasOwnProperty.call(obj, key);
 
 /**
  * @callback forEachKeyCallback
@@ -132,7 +132,7 @@ const hasKey = (obj, key) => Object.hasOwnProperty.call(obj, key);
  * @param {Object} obj
  * @param {ForEachCallback} callback
  */
-const forEachKey = (obj, callback) => {
+export const forEachKey = (obj, callback) => {
     if (!isObject(obj) || !isFunction(callback)) return;
     const keys = Object.keys(obj);
     for (let i = 0; i < length(keys); i += 1) {
@@ -146,7 +146,7 @@ const forEachKey = (obj, callback) => {
  * @param {forEachKeyCallback} callback
  * @return {Object}
  */
-const mapObject = (obj, callback) => {
+export const mapObject = (obj, callback) => {
     if (!isObject(obj) || !isFunction(callback)) return {};
     const keys = Object.keys(obj);
     const newObj = { ...obj };
@@ -162,7 +162,7 @@ const mapObject = (obj, callback) => {
  * @param {forEachKeyCallback} callback
  * @return {[]|*[]}
  */
-const mapObjectToArray = (obj, callback) => {
+export const mapObjectToArray = (obj, callback) => {
     if (!isObject(obj) || !isFunction(callback)) return [];
     const keys = Object.keys(obj);
     const arr = [];
@@ -187,7 +187,7 @@ const mapObjectToArray = (obj, callback) => {
  * @param {Object} [initialValue={}]
  * @return {{}}
  */
-const reduceObject = (obj, callback, initialValue = {}) => {
+export const reduceObject = (obj, callback, initialValue = {}) => {
     if (!isObject(obj) || !isFunction(callback)) return {};
     const keys = Object.keys(obj);
     let newObj = initialValue;
@@ -205,7 +205,7 @@ const reduceObject = (obj, callback, initialValue = {}) => {
  * @param {number} maxReplacements
  * @return {string}
  */
-const replaceAll = (string, search, replacement, maxReplacements = 50) => {
+export const replaceAll = (string, search, replacement, maxReplacements = 50) => {
     let i = 0;
     let newString = string;
     while (i < maxReplacements) {
@@ -218,6 +218,45 @@ const replaceAll = (string, search, replacement, maxReplacements = 50) => {
     }
     return newString;
 };
+
+const objectPrototype = {
+    reduce: function (callback, initialValue) {
+        return reduceObject(this, callback, initialValue);
+    },
+    map: function (callback) {
+        return mapObject(this, callback);
+    },
+    mapToArray: function (callback) {
+        return mapObjectToArray(this, callback);
+    },
+    forEach: function (callback) {
+        return forEachKey(this, callback);
+    },
+    safeValue: function (key) {
+        return safeValue(this, key)
+    },
+    ...Object.prototype,
+    __proto__: undefined
+};
+
+/**
+ * Extend this object's prototype with this helper's functions
+ * @param {Object} [object={}]
+ * @param {boolean} [mutate=true] - whether this function should mutate the passed object or just return a copy
+ * @return {Object|{}}
+ */
+export function extend(object = {}, mutate = true) {
+    if (!isObject(object)) return object;
+    if (mutate) {
+        object.__proto__ = objectPrototype;
+        return object;
+    } else {
+        return {
+            ...object,
+            __proto__: objectPrototype
+        }
+    }
+}
 
 const regex = {
     number: /^[\d]*$/,
@@ -250,7 +289,8 @@ const types = {
     mapObjectToArray,
     reduceObject,
     replaceAll,
-    regex
+    regex,
+    extend
 };
 
 export default types;

@@ -28,7 +28,18 @@ import showSuccessAnimation from './Functions/showSuccessAnimation';
 import {
     time, removeTimeZoneOffset, simpleTimeFormat, formatDate, formatDateText, fnsFormat
 } from './Functions/timeHelper';
-import types from './Functions/types';
+import types, {
+    safeValue,
+    hasKey,
+    forEachKey,
+    mapObjectToArray,
+    mapObject,
+    reduceObject,
+    isNullOrEmpty,
+    extend,
+    replaceAll,
+    replaceEmpty
+} from './Functions/types';
 import { showWaitCursor } from './Functions/waitCursor';
 import useTimeoutState from './Hooks/Uniques/useTimeoutState';
 import useUniqueTimeout from './Hooks/Uniques/useUniqueTimeout';
@@ -108,4 +119,13 @@ exports.getTextStrings = getTextStrings;
 exports.getAllTextStrings = getAllTextStrings;
 exports.TextStringComplex = TextStringComplex;
 exports.initChaynsHelper = initChaynsHelper;
-
+exports.safeValue = safeValue;
+exports.hasKey = hasKey;
+exports.forEachKey = forEachKey;
+exports.mapObjectToArray = mapObjectToArray;
+exports.mapObject = mapObject;
+exports.reduceObject = reduceObject;
+exports.isNullOrEmpty = isNullOrEmpty;
+exports.extend = extend;
+exports.replaceAll = replaceAll;
+exports.replaceEmpty = replaceEmpty;
