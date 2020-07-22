@@ -1,5 +1,5 @@
 import { shallowEqual } from 'react-redux';
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 import { chaynsHelperConfig } from '../chaynsHelperConfig';
 
 /**
