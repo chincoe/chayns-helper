@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 
 /**
  * Constant with a view options that should be setup in the index.js
- * @type {{getRequestErrorHandler: (function(): handleRequestErrors), getSelector: (function(): useSelector),
+ * @type {{getRequestErrorHandler: (function()), getSelector: (function()),
  *     textStringPrefix: string, live: boolean}}
  */
 export const chaynsHelperConfig = {

@@ -6,17 +6,18 @@ const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-module.exports = () => {
+module.exports = (env) => {
+    const dev = env === 'development';
     return {
-        mode: 'production',
-        optimization: {
-            minimizer: [
-                new TerserPlugin({
-                    sourceMap: false,
-                    parallel: true,
-                })
-            ],
-        },
+        mode: dev? 'development' : 'production',
+        // optimization: {
+        //     minimizer: [
+        //         new TerserPlugin({
+        //             sourceMap: dev,
+        //             parallel: true,
+        //         })
+        //     ],
+        // },
         entry: {
             index: './src/index.js'
         },
@@ -42,13 +43,13 @@ module.exports = () => {
                         {
                             loader: 'css-loader',
                             options: {
-                                sourceMap: false
+                                sourceMap: dev
                             }
                         },
                         {
                             loader: 'postcss-loader',
                             options: {
-                                sourceMap: false,
+                                sourceMap: dev,
                                 plugins: () => [
                                     autoprefixer({ flexbox: 'no-2009' }),
                                 ],
@@ -57,18 +58,18 @@ module.exports = () => {
                         {
                             loader: 'sass-loader',
                             options: {
-                                sourceMap: false
+                                sourceMap: dev
                             }
                         }
                     ]
                 }
             ]
         },
-        devtool: undefined,
+        devtool: dev? 'inline-source-map' : undefined,
         plugins: [
             new CleanWebpackPlugin(),
-            new webpack.optimize.AggressiveMergingPlugin(),
-            new LodashModuleReplacementPlugin(),
+            // new webpack.optimize.AggressiveMergingPlugin(),
+            // new LodashModuleReplacementPlugin(),
         ]
     };
 };

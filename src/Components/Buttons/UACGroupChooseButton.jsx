@@ -6,7 +6,7 @@ import useElementProps from '../../Hooks/useElementProps';
 import ResizableWaitCursor from '../Other/ResizableWaitCursor';
 
 /**
- * UACGroupChooser
+ * UACGroupChooseButton
  * @param {Object} props
  * @param {number} [props.value=null] - id of the chosen UAC-group
  * @param {function(number)} props.onChange - receives new GroupId as parameter
@@ -15,7 +15,7 @@ import ResizableWaitCursor from '../Other/ResizableWaitCursor';
  * @return {*}
  * @constructor
  */
-const UACGroupChooser = (props) => {
+const UACGroupChooseButton = (props) => {
     const [uacGroups, setUacGroups] = useState();
     const {
         value, onChange, multiSelect = false, disabled = false
@@ -60,19 +60,19 @@ const UACGroupChooser = (props) => {
     ) : (<ResizableWaitCursor size={24}/>);
 };
 
-UACGroupChooser.propTypes = {
+UACGroupChooseButton.propTypes = {
     value: PropTypes.number,
     onChange: PropTypes.func.isRequired,
     multiSelect: PropTypes.bool,
     disabled: PropTypes.bool
 };
 
-UACGroupChooser.defaultProps = {
+UACGroupChooseButton.defaultProps = {
     value: null,
     multiSelect: false,
     disabled: false
 };
 
-UACGroupChooser.displayName = 'UACGroupChooser';
+UACGroupChooseButton.displayName = 'UACGroupChooseButton';
 
-export default UACGroupChooser;
+export default UACGroupChooseButton;

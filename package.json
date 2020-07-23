@@ -6,7 +6,8 @@
   "scripts": {
     "test": "test",
     "prepublishOnly": "npm run build",
-    "build": "webpack -p",
+    "build": "webpack -p --env=production",
+    "build:dev": "webpack -p --env=development",
     "install:all": "npm i",
     "pub": "npm publish"
   },

@@ -31,7 +31,7 @@ initChaynsHelper({
 | [SuspenseWaitCursor](/src/Components/Other/SuspenseWaitCursor.jsx)| Suspense-Component that provides a fallback for React lazy loading |
 | [TextStringComplex](/src/TextString/TextStringMemo.jsx)| Memoized Textstring Component, adds prefix. Allows complex replacements with JSX and CTRL+Click to edit |
 | [TextStringMemo](/src/TextString/TextStringMemo.jsx)| Memoized Textstring Component, adds prefix |
-| [UACGroupChooseButton](/src/Components/Buttons/UACGroupChooser.jsx)| ChooseButton for UAC groups |
+| [UACGroupChooseButton](/src/Components/Buttons/UACGroupChooseButton.jsx)| ChooseButton for UAC groups |
 
 ###Hooks
 | Hook                                                                 | Description                   |
