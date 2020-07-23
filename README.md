@@ -40,6 +40,7 @@ initChaynsHelper({
 | [useFullscreenTapp](/src/Hooks/useFullscreenTapp.js)| Hook to create a fullscreen tapp without scrolling |
 | [useFunctionState](/src/Hooks/useFunctionState.js)| useState that can contain a function directly |
 | [useRefresh](/src/Hooks/useRefresh.js)| generates a random ID in an interval to force re-render |
+| [useTest](/src/Hooks/useTest.js)| test a short script inside your component |
 | [useTextStrings](/src/TextString/TextStringMemo.jsx)| get memoized TextStrings from a list of string names |
 | [useTimeoutState](/src/Hooks/Uniques/useTimeoutState.js)| useState that calls an onChange method if the value hasn't change for a certain time |
 | [useUniqueEventListener](/src/Hooks/Uniques/useUniqueEventListener.js)| removes an old eventListener when a new one is set |
@@ -60,6 +61,7 @@ initChaynsHelper({
 |----------------------------------------------------------------------|-------------------------------|
 | [backgroundColorClass](/src/Functions/chaynsColors.js)| get a chayns background color class name |
 | [borderColorClass](/src/Functions/chaynsColors.js)| get a chayns border color class name |
+| [chaynsDialogs](/src/Functions/chaynsDialogs.js)| makes using chayns dialogs so much more comfortable |
 | [colorClass](/src/Functions/chaynsColors.js)| get a chayns color class name |
 | [copyOnClick](/src/Functions/copy.js)| copy a value to the user's clipboard |
 | [defaultErrorHandler](/src/Functions/defaultErrorHandler.js)| default request error handling with dialogs for error status codes |
