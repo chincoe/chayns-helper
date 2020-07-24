@@ -48,14 +48,16 @@ const createDialogResult = (type, value = undefined) => ({ buttonType: type, val
  * @param {string} [message='']
  * @param {Object} [options={}]
  * @param {string} [options.title='']
+ * @param {boolean} [useCustomHandlers=true] - false disables .positive, .negative and .cancel but enables await
  * @return {dialogResult|Dialog|Promise<dialogResult>}
  */
-const alert = (message = '', options = {}) => new Dialog(async () => new Promise((resolve) => {
-    chayns.dialog.alert(options?.title || '', message)
-    .then((type) => {
-        resolve(createDialogResult(type));
-    });
-}));
+const alert = (message = '', options = {}, useCustomHandlers = true) => new Dialog(
+    async () => new Promise((resolve) => {
+        chayns.dialog.alert(options?.title || '', message)
+        .then((type) => {
+            resolve(createDialogResult(type));
+        });
+    }), useCustomHandlers);
 
 /**
  * Confirm dialog
@@ -63,14 +65,16 @@ const alert = (message = '', options = {}) => new Dialog(async () => new Promise
  * @param {button[]} [buttons=undefined]
  * @param {Object} [options={}]
  * @param {string} [options.title='']
+ * @param {boolean} [useCustomHandlers=true] - false disables .positive, .negative and .cancel but enables await
  * @return {dialogResult|Dialog|Promise<dialogResult>}
  */
-const confirm = (message = '', options = {}, buttons = undefined) => new Dialog(async () => new Promise((resolve) => {
-    chayns.dialog.confirm(options?.title || '', message, buttons)
-    .then((type) => {
-        resolve(createDialogResult(type));
-    });
-}));
+const confirm = (message = '', options = {}, buttons = undefined, useCustomHandlers = true) => new Dialog(
+    async () => new Promise((resolve) => {
+        chayns.dialog.confirm(options?.title || '', message, buttons)
+        .then((type) => {
+            resolve(createDialogResult(type));
+        });
+    }), useCustomHandlers);
 
 /**
  * Type for input dialog
@@ -99,9 +103,10 @@ const inputType = {
  * @param {buttonType[]} options.disableButtonTypes - array of the buttonTypes that will be disabled if
  *     {@link options.regex} doesn't match the input
  * @param {button[]} [buttons=undefined]
+ * @param {boolean} [useCustomHandlers=true] - false disables .positive, .negative and .cancel but enables await
  * @return {dialogResult|Dialog|Promise<dialogResult>}
  */
-function input(message = '', options = {}, buttons = undefined) {
+function input(message = '', options = {}, buttons = undefined, useCustomHandlers = true) {
     this.type = { ...inputType };
     return new Dialog(async () => new Promise((resolve) => {
         chayns.dialog.input({
@@ -120,7 +125,7 @@ function input(message = '', options = {}, buttons = undefined) {
         .then(({ buttonType: type, text }) => {
             resolve(createDialogResult(type, text));
         });
-    }));
+    }), useCustomHandlers);
 }
 
 /**
@@ -164,10 +169,11 @@ const selectType = {
  * @param {boolean} options.preventCloseOnClick
  * @param {string} options.selectAllButton - add a checkbox with this prop as label that (de)selects all elements at
  *     once
- * @param {button[]} buttons
+ * @param {button[]} [buttons=undefined]
+ * @param {boolean} [useCustomHandlers=true] - false disables .positive, .negative and .cancel but enables await
  * @return {selectDialogResult|Dialog|Promise<selectDialogResult>}
  */
-function select(message = '', options = {}, buttons = []) {
+function select(message = '', options = {}, buttons = undefined, useCustomHandlers = true) {
     this.type = { ...selectType };
     return new Dialog(async () => new Promise((resolve) => {
         chayns.dialog.select({
@@ -195,7 +201,7 @@ function select(message = '', options = {}, buttons = []) {
                 resolve(createDialogResult(type, []));
             }
         });
-    }));
+    }), useCustomHandlers);
 }
 
 const validateDate = (param, allowMissingValue = true) => {
@@ -336,10 +342,11 @@ const resolveDateSelectType = (type) => [
  * @param {intervalObject[]} options.disabledIntervals
  * @param {weekDayIntervalItem[][7]} options.disabledWeekDayIntervals - array of {@link weekDayIntervalItem} with a[0]
  *     = monday, a[1] = tuesday...
- * @param {button[]} buttons
+ * @param {button[]} [buttons=undefined]
+ * @param {boolean} [useCustomHandlers=true] - false disables .positive, .negative and .cancel but enables await
  * @return {dialogResult|Dialog|Promise<dialogResult>}
  */
-function advancedDate(message = '', options = {}, buttons = []) {
+function advancedDate(message = '', options = {}, buttons = undefined, useCustomHandlers = true) {
     this.type = { ...dateType };
     this.selectType = { ...dateSelectType };
     this.textBlockPosition = { ...textBlockPosition };
@@ -401,7 +408,7 @@ function advancedDate(message = '', options = {}, buttons = []) {
                 ));
             }
         });
-    }));
+    }), useCustomHandlers);
 }
 
 /**
