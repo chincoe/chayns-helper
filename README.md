@@ -46,6 +46,7 @@ initChaynsHelper({
 | [useUniqueEventListener](/src/hooks/uniques/useUniqueEventListener.js)| removes an old eventListener when a new one is set |
 | [useUniqueInterval](/src/hooks/uniques/useUniqueInterval.js)| clears a previous interval when a new one is set |
 | [useUniqueTimeout](/src/hooks/uniques/useUniqueTimeout.js)| clears a previous timeout when a new one is set |
+| [useUser](/src/hooks/useUser.js)| chayns.getUser() hook |
 | [useWebsocketService](/src/hooks/useWebsocketService.js)| configure a tobit-websocket-service-client |
 
 ###Redux

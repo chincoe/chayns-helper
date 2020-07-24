@@ -62,6 +62,7 @@ import TextStringMemo, {
 import { initChaynsHelper } from './chaynsHelperConfig';
 import chaynsDialog from './functions/chaynsDialogs';
 import generateUUID from './functions/generateUid';
+import userUser from './hooks/useUser';
 
 export {
     DateTimeChooseButton,
@@ -133,74 +134,6 @@ export {
     replaceAll,
     replaceEmpty,
     chaynsDialog,
-    generateUUID
+    generateUUID,
+    userUser
 }
-
-// exports.DateTimeChooseButton = DateTimeChooseButton;
-// exports.UACGroupChooseButton = UACGroupChooseButton;
-// exports.chayns-editor = chayns-editor;
-// exports.CenteredButtonContainer = CenteredButtonContainer;
-// exports.CenteredContainer = CenteredContainer;
-// exports.CenteredWaitCursor = CenteredWaitCursor;
-// exports.DataRow = DataRow;
-// exports.error-boundary = error-boundary;
-// exports.RefreshComponent = RefreshComponent;
-// exports.refresh = refresh;
-// exports.ResizableWaitCursor = ResizableWaitCursor;
-// exports.SuspenseWaitCursor = SuspenseWaitCursor;
-// exports.restricted-accordion = restricted-accordion;
-// exports.setViewMode = setViewMode;
-// exports.hideCWFooter = hideCWFooter;
-// exports.hexToRgb = hexToRgb;
-// exports.getChaynsColor = getChaynsColor;
-// exports.getChaynsColorRgb = getChaynsColorRgb;
-// exports.mixChaynsColorRgb = mixChaynsColorRgb;
-// exports.borderColorClass = borderColorClass;
-// exports.backgroundColorClass = backgroundColorClass;
-// exports.colorClass = colorClass;
-// exports.copyOnClick = copyOnClick;
-// exports.defaultErrorHandler = defaultErrorHandler;
-// exports.httpRequest = httpRequest;
-// exports.handleRequest = handleRequest;
-// exports.RequestError = RequestError;
-// exports.showSuccessAnimation = showSuccessAnimation;
-// exports.time = time;
-// exports.removeTimeZoneOffset = removeTimeZoneOffset;
-// exports.simpleTimeFormat = simpleTimeFormat;
-// exports.formatDateText = formatDateText;
-// exports.formatDate = formatDate;
-// exports.fnsFormat = fnsFormat;
-// exports.types = types;
-// exports.showWaitCursor = showWaitCursor;
-// exports.useTimeoutState = useTimeoutState;
-// exports.useUniqueTimeout = useUniqueTimeout;
-// exports.useUniqueEventListener = useUniqueEventListener;
-// exports.useUniqueInterval = useUniqueInterval;
-// exports.useElementProps = useElementProps;
-// exports.removeCustomProps = removeCustomProps;
-// exports.useFullscreenTapp = useFullscreenTapp;
-// exports.useFunctionState = useFunctionState;
-// exports.useRefresh = useRefresh;
-// exports.useWebsocketService = useWebsocketService;
-// exports.localStorage = localStorage;
-// exports.WebsocketClient = WebsocketClient;
-// exports.rtkThunkCase = rtkThunkCase;
-// exports.useActions = useActions;
-// exports.useComplexSelector = useComplexSelector;
-// exports.useShallowSelector = useShallowSelector;
-// exports.TextStringMemo = TextStringMemo;
-// exports.useTextStrings = useTextStrings;
-// exports.getTextStrings = getTextStrings;
-// exports.getAllTextStrings = getAllTextStrings;
-// exports.TextStringComplex = TextStringComplex;
-// exports.initChaynsHelper = initChaynsHelper;
-// exports.safeValue = safeValue;
-// exports.hasKey = hasKey;
-// exports.forEachKey = forEachKey;
-// exports.mapObjectToArray = mapObjectToArray;
-// exports.mapObject = mapObject;
-// exports.reduceObject = reduceObject;
-// exports.isNullOrEmpty = isNullOrEmpty;
-// exports.extend = extend;
-// exports.replaceAll = replaceAll;
-// exports.replaceEmpty = replaceEmpty;
