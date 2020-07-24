@@ -1,5 +1,5 @@
-import handleRequestErrors from './Functions/defaultErrorHandler';
-import { initLog } from './Functions/log';
+import handleRequestErrors from './functions/defaultErrorHandler';
+import { initLog } from './functions/log';
 import { useSelector } from 'react-redux';
 
 /**

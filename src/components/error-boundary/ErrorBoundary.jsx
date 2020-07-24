@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './ErrorBoundary.scss';
+import './error-boundary.scss';
 import logger from 'chayns-logger';
 import { Button } from 'chayns-components';
-import CenteredButtonContainer from '../Containers/CenteredButtonContainer';
+import CenteredButtonContainer from '../containers/CenteredButtonContainer';
 
 /**
- * An ErrorBoundary.
+ * An error-boundary.
  * Wrap your application in this. If an error occurs during render that causes react to fail rendering, this component
  * will catch the error, log it and display a fallback instead. The default fallback is a warning content card with a
  * generic error message, error details and reload button.
@@ -33,7 +33,7 @@ class ErrorBoundary extends React.Component {
     componentDidCatch(error, errorInfo) {
         // You can also log the error to an error reporting service
         logger.error({
-            message: '[ErrorBoundary] Unexpected react error',
+            message: '[error-boundary] Unexpected react error',
             data: { errorInfo }
         }, error);
     }

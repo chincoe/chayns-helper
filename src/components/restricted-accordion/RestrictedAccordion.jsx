@@ -2,11 +2,11 @@ import React from 'react';
 import { Accordion, Icon } from 'chayns-components';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import './RestrictedAccordion.scss';
-import useElementProps from '../../Hooks/useElementProps';
+import './restricted-accordion.scss';
+import useElementProps from '../../hooks/useElementProps';
 
 /**
- * RestrictedAccordion
+ * restricted-accordion
  * A restricted accordion for certain UAC-Groups with a lock icon
  * @param {Object} props
  * @param {string} [props.className='']

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 
 /**
- * Functions usually can't be directly put into a state. This state can contain functions
+ * functions usually can't be directly put into a state. This state can contain functions
  * @param initialState
  * @return {[function(), function(function)]}
  */

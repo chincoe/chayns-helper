@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import './Containers.scss';
-import useElementProps from '../../Hooks/useElementProps';
+import './containers.scss';
+import useElementProps from '../../hooks/useElementProps';
 
 /**
- * CenteredButtonContainer
- * Contains and centers one or more children - usually buttons - with a margin between them
+ * CenteredContainer
+ * Contains and centers one or more children
  * @param {Object} props
  * @param {*|*[]} props.children
  * @param {Object} [props.style={}]
@@ -15,7 +15,7 @@ import useElementProps from '../../Hooks/useElementProps';
  * @return {*}
  * @constructor
  */
-const CenteredButtonContainer = (props) => {
+const CenteredContainer = (props) => {
     const {
         className, style, children, elementType = 'div'
     } = props;
@@ -29,7 +29,7 @@ const CenteredButtonContainer = (props) => {
             className={classNames(
                 'chayns__utils__container',
                 'chayns__utils__container--centered',
-                'chayns__utils__container--centered-buttoncontainer',
+                'chayns__utils__container--centered-container',
                 className
             )}
             style={style}
@@ -38,18 +38,19 @@ const CenteredButtonContainer = (props) => {
         </Component>
     );
 };
-CenteredButtonContainer.propTypes = {
-    style: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
-    children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]).isRequired,
+CenteredContainer.propTypes = {
+    style: PropTypes.objectOf(PropTypes.any),
+    children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]),
     className: PropTypes.string,
     elementType: PropTypes.elementType
 };
-CenteredButtonContainer.defaultProps = {
+CenteredContainer.defaultProps = {
     style: {},
+    children: null,
     className: '',
     elementType: 'div'
 };
 
-CenteredButtonContainer.displayName = 'CenteredButtonContainer';
+CenteredContainer.displayName = 'CenteredContainer';
 
-export default CenteredButtonContainer;
+export default CenteredContainer;

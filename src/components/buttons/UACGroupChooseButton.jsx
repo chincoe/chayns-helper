@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { SelectButton } from 'chayns-components';
-import httpRequest from '../../Functions/httpRequest';
-import useElementProps from '../../Hooks/useElementProps';
-import ResizableWaitCursor from '../Other/ResizableWaitCursor';
+import httpRequest from '../../functions/httpRequest';
+import useElementProps from '../../hooks/useElementProps';
+import ResizableWaitCursor from '../other/ResizableWaitCursor';
 
 /**
  * UACGroupChooseButton

@@ -1,17 +1,17 @@
-import DateTimeChooseButton from './Components/Buttons/DateTimeChooseButton';
-import UACGroupChooseButton from './Components/Buttons/UACGroupChooseButton';
-import ChaynsEditor from './Components/ChaynsEditor/ChaynsEditor';
-import CenteredButtonContainer from './Components/Containers/CenteredButtonContainer';
-import CenteredContainer from './Components/Containers/CenteredContainer';
-import CenteredWaitCursor from './Components/Containers/CenteredWaitCursor';
-import DataRow from './Components/Containers/DataRow';
-import ErrorBoundary from './Components/ErrorBoundary/ErrorBoundary';
-import RefreshComponent from './Components/Other/RefreshComponent';
-import refresh from './Components/Other/Refresh';
-import ResizableWaitCursor from './Components/Other/ResizableWaitCursor';
-import SuspenseWaitCursor from './Components/Other/SuspenseWaitCursor';
-import RestrictedAccordion from './Components/RestrictedAccordion/RestrictedAccordion';
-import { setViewMode, hideCWFooter } from './Functions/chaynsCalls';
+import DateTimeChooseButton from './components/buttons/DateTimeChooseButton';
+import UACGroupChooseButton from './components/buttons/UACGroupChooseButton';
+import ChaynsEditor from './components/chayns-editor/ChaynsEditor';
+import CenteredButtonContainer from './components/containers/CenteredButtonContainer';
+import CenteredContainer from './components/containers/CenteredContainer';
+import CenteredWaitCursor from './components/containers/CenteredWaitCursor';
+import DataRow from './components/containers/DataRow';
+import ErrorBoundary from './components/error-boundary/ErrorBoundary';
+import RefreshComponent from './components/other/RefreshComponent';
+import refresh from './components/other/Refresh';
+import ResizableWaitCursor from './components/other/ResizableWaitCursor';
+import SuspenseWaitCursor from './components/other/SuspenseWaitCursor';
+import RestrictedAccordion from './components/restricted-accordion/RestrictedAccordion';
+import { setViewMode, hideCWFooter } from './functions/chaynsCalls';
 import {
     hexToRgb,
     getChaynsColor,
@@ -20,14 +20,14 @@ import {
     borderColorClass,
     backgroundColorClass,
     colorClass
-} from './Functions/chaynsColors';
-import copyOnClick from './Functions/copy';
-import defaultErrorHandler from './Functions/defaultErrorHandler';
-import httpRequest, { RequestError, handleRequest } from './Functions/httpRequest';
-import showSuccessAnimation from './Functions/showSuccessAnimation';
+} from './functions/chaynsColors';
+import copyOnClick from './functions/copy';
+import defaultErrorHandler from './functions/defaultErrorHandler';
+import httpRequest, { RequestError, handleRequest } from './functions/httpRequest';
+import showSuccessAnimation from './functions/showSuccessAnimation';
 import {
     time, removeTimeZoneOffset, simpleTimeFormat, formatDate, formatDateText, fnsFormat
-} from './Functions/timeHelper';
+} from './functions/timeHelper';
 import types, {
     safeValue,
     hasKey,
@@ -39,26 +39,26 @@ import types, {
     extend,
     replaceAll,
     replaceEmpty
-} from './Functions/types';
-import { showWaitCursor } from './Functions/waitCursor';
-import useTimeoutState from './Hooks/Uniques/useTimeoutState';
-import useUniqueTimeout from './Hooks/Uniques/useUniqueTimeout';
-import useUniqueEventListener from './Hooks/Uniques/useUniqueEventListener';
-import useUniqueInterval from './Hooks/Uniques/useUniqueInterval';
-import useElementProps, { removeCustomProps } from './Hooks/useElementProps';
-import useFullscreenTapp from './Hooks/useFullscreenTapp';
-import useFunctionState from './Hooks/useFunctionState';
-import useRefresh from './Hooks/useRefresh';
-import useWebsocketService from './Hooks/useWebsocketService';
-import localStorage from './Other/localStorageHelper';
-import WebsocketClient from './Other/webSocketClient';
-import { rtkThunkCase } from './Redux/rtkThunkCase';
-import useActions from './Redux/useActions';
-import useComplexSelector from './Redux/useComplexSelector';
-import useShallowSelector from './Redux/useShallowSelector';
+} from './functions/types';
+import { showWaitCursor } from './functions/waitCursor';
+import useTimeoutState from './hooks/uniques/useTimeoutState';
+import useUniqueTimeout from './hooks/uniques/useUniqueTimeout';
+import useUniqueEventListener from './hooks/uniques/useUniqueEventListener';
+import useUniqueInterval from './hooks/uniques/useUniqueInterval';
+import useElementProps, { removeCustomProps } from './hooks/useElementProps';
+import useFullscreenTapp from './hooks/useFullscreenTapp';
+import useFunctionState from './hooks/useFunctionState';
+import useRefresh from './hooks/useRefresh';
+import useWebsocketService from './hooks/useWebsocketService';
+import localStorage from './other/localStorageHelper';
+import WebsocketClient from './other/webSocketClient';
+import { rtkThunkCase } from './redux/rtkThunkCase';
+import useActions from './redux/useActions';
+import useComplexSelector from './redux/useComplexSelector';
+import useShallowSelector from './redux/useShallowSelector';
 import TextStringMemo, {
     useTextStrings, getTextStrings, getAllTextStrings, TextStringComplex
-} from './TextString/TextStringMemo';
+} from './textstring/TextStringMemo';
 import { initChaynsHelper } from './chaynsHelperConfig';
 
 export {
@@ -134,17 +134,17 @@ export {
 
 // exports.DateTimeChooseButton = DateTimeChooseButton;
 // exports.UACGroupChooseButton = UACGroupChooseButton;
-// exports.ChaynsEditor = ChaynsEditor;
+// exports.chayns-editor = chayns-editor;
 // exports.CenteredButtonContainer = CenteredButtonContainer;
 // exports.CenteredContainer = CenteredContainer;
 // exports.CenteredWaitCursor = CenteredWaitCursor;
 // exports.DataRow = DataRow;
-// exports.ErrorBoundary = ErrorBoundary;
+// exports.error-boundary = error-boundary;
 // exports.RefreshComponent = RefreshComponent;
 // exports.refresh = refresh;
 // exports.ResizableWaitCursor = ResizableWaitCursor;
 // exports.SuspenseWaitCursor = SuspenseWaitCursor;
-// exports.RestrictedAccordion = RestrictedAccordion;
+// exports.restricted-accordion = restricted-accordion;
 // exports.setViewMode = setViewMode;
 // exports.hideCWFooter = hideCWFooter;
 // exports.hexToRgb = hexToRgb;

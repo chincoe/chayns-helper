@@ -1,6 +1,6 @@
 import React, { useMemo, memo } from 'react';
 import PropTypes from 'prop-types';
-import types from '../../Functions/types';
+import types from '../../functions/types';
 
 /**
  * CustomComponent

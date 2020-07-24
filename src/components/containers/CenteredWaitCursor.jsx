@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { SmallWaitCursor } from 'chayns-components';
-import './Containers.scss';
-import useElementProps from '../../Hooks/useElementProps';
+import './containers.scss';
+import useElementProps from '../../hooks/useElementProps';
 
 /**
  * CenteredWaitCursor

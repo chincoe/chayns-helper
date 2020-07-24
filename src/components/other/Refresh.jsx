@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import useRefresh from '../../Hooks/useRefresh';
+import useRefresh from '../../hooks/useRefresh';
 
 /**
  * Higher-Order-Component that will refresh its child component in an interval.

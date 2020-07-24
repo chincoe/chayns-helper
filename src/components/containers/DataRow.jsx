@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import './Containers.scss';
-import useElementProps from '../../Hooks/useElementProps';
+import './containers.scss';
+import useElementProps from '../../hooks/useElementProps';
+import T from '../../functions/types';
 
 /**
- * CenteredContainer
- * Contains and centers one or more children
+ * DataRow
+ * Contains several elements and positions the first as label on the left and everything else on the right
  * @param {Object} props
  * @param {*|*[]} props.children
  * @param {Object} [props.style={}]
@@ -15,42 +16,42 @@ import useElementProps from '../../Hooks/useElementProps';
  * @return {*}
  * @constructor
  */
-const CenteredContainer = (props) => {
+const DataRow = (props) => {
     const {
         className, style, children, elementType = 'div'
     } = props;
     const elementProps = useElementProps(props, {
         className, style, children, elementType
     });
-    const Component = elementType;
     return (
-        <Component
-            {...elementProps}
+        <div
             className={classNames(
                 'chayns__utils__container',
-                'chayns__utils__container--centered',
-                'chayns__utils__container--centered-container',
+                'chayns__utils__container--datarow',
                 className
             )}
             style={style}
+            {...elementProps}
         >
-            {children}
-        </Component>
+            {T.isArray(children) ? T.safeFirst(children) : children}
+            {T.isArray(children)
+             && <div className="chayns__utils__container--datarow--right">{children.slice(1)}</div>}
+        </div>
     );
 };
-CenteredContainer.propTypes = {
+DataRow.propTypes = {
     style: PropTypes.objectOf(PropTypes.any),
     children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]),
     className: PropTypes.string,
     elementType: PropTypes.elementType
 };
-CenteredContainer.defaultProps = {
+DataRow.defaultProps = {
     style: {},
     children: null,
     className: '',
     elementType: 'div'
 };
 
-CenteredContainer.displayName = 'CenteredContainer';
+DataRow.displayName = 'DataRow'
 
-export default CenteredContainer;
+export default DataRow;

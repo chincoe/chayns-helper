@@ -6,12 +6,12 @@ import PropTypes from 'prop-types';
 import isTobitEmployee from 'chayns-components/lib/utils/tobitEmployee';
 import generateUUID from 'chayns-logger/lib/core/generate-uid';
 import { isNullOrWhiteSpace } from 'chayns-components/lib/utils/is';
-import useElementProps from '../Hooks/useElementProps';
+import useElementProps from '../hooks/useElementProps';
 import { chaynsHelperConfig } from '../chaynsHelperConfig';
-import types from '../Functions/types';
+import types from '../functions/types';
 
 /**
- * Memoized TextString Component that adds prefix automatically
+ * Memoized textstring Component that adds prefix automatically
  * @param {Object} props
  * @param {string} props.stringName
  * @param {string} props.fallback
@@ -64,7 +64,7 @@ export default memo(TextStringMemo);
 // or replacements: { [regexString]: string }
 // retains all features including ctrl-click-to-change-textstring, html and language support
 /**
- * Memoized TextString Component
+ * Memoized textstring Component
  * Allows replacements based on regex and inline function components.
  * replacements: { [regexString]: (props) => <p>JSX</p>} or { [regexString]: string }
  * retains all features including ctrl-click-to-change-textstring, html and language support
@@ -145,7 +145,7 @@ export const TextStringComplex = memo((props) => {
         onClick
     });
 
-    // copied from chayns-components TextString
+    // copied from chayns-components textstring
     const changeStringResult = (data, lang) => {
         if (data.buttonType === 1 && (data.text || data.value)) {
             TextString.changeTextString(
@@ -168,7 +168,7 @@ export const TextStringComplex = memo((props) => {
         }
     };
 
-    // copied from chayns-components TextString
+    // copied from chayns-components textstring
     const changeStringDialog = (sName, lang) => {
         const string = TextString.getTextString(sName, TextString.languages.find((l) => l.value === lang.value).code);
         if (string) {
@@ -213,11 +213,11 @@ export const TextStringComplex = memo((props) => {
                     });
             }
         } else {
-            chayns.dialog.alert(sName, 'Der TextString existiert nicht.');
+            chayns.dialog.alert(sName, 'Der textstring existiert nicht.');
         }
     };
 
-    // copied from chayns-components TextString
+    // copied from chayns-components textstring
     const selectTextStringLanguage = (sName) => {
         chayns.dialog.select({
             title: `TextString bearbeiten: ${sName}`,
@@ -269,7 +269,7 @@ export const TextStringComplex = memo((props) => {
         <Component
             {...elementProps}
             onClick={(e) => {
-                // copied from chayns-components TextString
+                // copied from chayns-components textstring
                 if (e.ctrlKey && useClickToEdit) {
                     isTobitEmployee()
                         .then(() => {

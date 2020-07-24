@@ -3,15 +3,15 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import './ChaynsEditor.scss';
-import useElementProps from '../../Hooks/useElementProps';
+import './chayns-editor.scss';
+import useElementProps from '../../hooks/useElementProps';
 
 /**
  * @callback eventListenerCallback
  * @param {Event} event
  */
 /**
- * ChaynsEditor Component
+ * chayns-editor Component
  * Can be disabled and handles the editorRef as well as the event listeners.
  * Can never be fully controlled as setting the current html inside the editor will move the cursor to the beginning of
  * the text box.

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import types from '../Functions/types';
+import types from '../functions/types';
 
 /**
  * Delete customProps keys from props so you can spread the props to an HTML element

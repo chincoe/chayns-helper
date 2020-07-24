@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import PropTypes from 'prop-types';
-import useRefresh from '../../Hooks/useRefresh';
+import useRefresh from '../../hooks/useRefresh';
 import CustomComponent from './CustomComponent';
 
 /**

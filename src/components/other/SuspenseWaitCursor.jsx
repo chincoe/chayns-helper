@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { showWaitCursor } from '../../Functions/waitCursor';
-import CenteredWaitCursor from '../Containers/CenteredWaitCursor';
+import { showWaitCursor } from '../../functions/waitCursor';
+import CenteredWaitCursor from '../containers/CenteredWaitCursor';
 
 /**
  * SuspenseWaitCursor

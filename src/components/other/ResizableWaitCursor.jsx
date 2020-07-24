@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import './ResizableWaitCursor.scss';
+import './resizable-wait-cursor.scss';
 import { SmallWaitCursor } from 'chayns-components';
 import classNames from 'classnames';
-import useElementProps from '../../Hooks/useElementProps';
+import useElementProps from '../../hooks/useElementProps';
 
 /**
  * ResizableWaitCursor

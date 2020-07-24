@@ -3,7 +3,7 @@ import generateUUID from 'chayns-logger/lib/core/generate-uid';
 import { chaynsHelperConfig } from '../chaynsHelperConfig';
 import { showWaitCursor } from './waitCursor';
 import types from './types';
-import localStorage from '../Other/localStorageHelper';
+import localStorage from '../other/localStorageHelper';
 
 /**
  * Custom error for error statusCodes or other errors during a httpRequest
@@ -52,7 +52,7 @@ export class RequestError extends Error {
  * @param {Promise<*>} request - Promise of the un-awaited request
  * @param {requestErrorHandler} [errorHandler=undefined] - Function to handle error statusCodes. Defaults to
  *     defaultErrorHandler.js
- * @param {Object} [options={}] - Other options for this wrapper
+ * @param {Object} [options={}] - other options for this wrapper
  * @param {function} options.finallyHandler - Function that should always be executed after the request
  * @param {boolean|waitCursorOptions} options.waitCursor - Show chayns waitCursor. Set true to show. Set to an object
  *     for more options
@@ -76,7 +76,7 @@ export const handleRequest = (
     request,
     // function: An error handler. Defaults to defaultErrorHandler.js in this folder
     errorHandler = undefined,
-    // object: Other options for this handler
+    // object: other options for this handler
     options = {}
 ) => new Promise(
     (resolve, reject) => {
