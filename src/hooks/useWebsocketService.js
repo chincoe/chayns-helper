@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import TobitWebSocketClient from 'tobit-websocket-service-client';
 import { chaynsHelperConfig } from '../chaynsHelperConfig';
 
 /**
@@ -39,7 +38,7 @@ export const wssLoggerIgnoreMiddleware = (payload) => {
 const useWebsocketService = (serviceName, conditions, events) => {
     // events pattern: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
     useEffect(() => {
-        const webSocketClient = new TobitWebSocketClient(
+        const webSocketClient = new chaynsHelperConfig.getWebsocketClient()(
             serviceName,
             { ...conditions }
         );

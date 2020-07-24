@@ -1,6 +1,5 @@
 import handleRequestErrors from './functions/defaultErrorHandler';
 import { initLog } from './functions/log';
-import { useSelector } from 'react-redux';
 
 /**
  * default logger
@@ -13,17 +12,29 @@ const defaultLogger = {
     critical(...value) {console.notLive.error(...value)}
 }
 
+function DefaultWebsocketClient(serviceName, conditions) {
+    console.warn('[WebsocketClient] Please specify a websocket client in your initChaynsHelper to use this feature')
+    this.handlers = {};
+    this.serviceName = serviceName;
+    this.conditions = conditions;
+    this.on = function (wsEvent, listener) {
+        this.handlers[wsEvent] = listener;
+    }
+    this.closeConnection = function () {};
+}
+
 /**
- * Constant with a view options that should be setup in the index.js
- * @type {{getRequestErrorHandler: (function()), getSelector: (function()),
- *     textStringPrefix: string, live: boolean}}
+ * config
+ * @type {{getRequestErrorHandler: (function(): handleRequestErrors), getLogger: (function(): {critical, (...[*]):
+ *     void, warning, (...[*]): void, error, (...[*]): void, info, (...[*]): void}), textStringPrefix: string, live:
+ *     boolean, getWebsocketClient: (function(): DefaultWebsocketClient)}}
  */
 export const chaynsHelperConfig = {
     textStringPrefix: '',
     live: false,
     getRequestErrorHandler: () => handleRequestErrors,
     getLogger: () => defaultLogger,
-    getSelector: () => useSelector
+    getWebsocketClient: () => DefaultWebsocketClient
 };
 
 /**
@@ -39,7 +50,7 @@ export const chaynsHelperConfig = {
  * @param {boolean} [live=false]
  * @param {function} [requestErrorHandler]
  * @param {logger} [logger=defaultLogger] - logger, preferably chayns-logger
- * @param {function} [selector] - useSelector hook that should be used
+ * @param {function|Class} websocketClient
  */
 export const initChaynsHelper = (
     {
@@ -47,13 +58,13 @@ export const initChaynsHelper = (
         live = false,
         requestErrorHandler = handleRequestErrors,
         logger = defaultLogger,
-        selector = useSelector
+        websocketClient = DefaultWebsocketClient
     }
 ) => {
     chaynsHelperConfig.textStringPrefix = textStringPrefix;
     chaynsHelperConfig.live = live;
     chaynsHelperConfig.getRequestErrorHandler = () => requestErrorHandler;
-    chaynsHelperConfig.getSelector = () => selector;
     chaynsHelperConfig.getLogger = () => logger;
+    chaynsHelperConfig.getWebsocketClient = () => websocketClient
     initLog(live);
 };
