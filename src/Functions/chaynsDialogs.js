@@ -1,10 +1,5 @@
 import types from './types';
 /**
- * This dialog helper cleans up the mess that chayns.js dialogs can be at times:
- * - more consistent parameters
- * - more consistent return values
- * - more comfortable to use
- *
  * The dialogs of this helper all have the parameters (message, buttons) or (message, option, buttons)
  * The dialogs of this helper all return an object like this: { buttonType: -1|0|1, value: ... }, so all results will
  * have the keys "buttonType" and "value"
@@ -32,7 +27,7 @@ const buttonType = {
     POSITIVE: 1
 };
 
-const createDialogResult = (type, value = undefined) => ({ type, value });
+const createDialogResult = (type, value = undefined) => ({ buttonType: type, value });
 
 /**
  * @typedef dialogResult
@@ -51,26 +46,30 @@ const createDialogResult = (type, value = undefined) => ({ type, value });
 /**
  * Alert dialog with only one button
  * @param {string} [message='']
+ * @param {Object} [options={}]
+ * @param {string} [options.title='']
  * @return {dialogResult|Dialog|Promise<dialogResult>}
  */
-const alert = (message = '') => new Dialog(async () => new Promise((resolve) => {
-    chayns.dialog.alert('', message)
-        .then((type) => {
-            resolve(createDialogResult(type));
-        });
+const alert = (message = '', options = {}) => new Dialog(async () => new Promise((resolve) => {
+    chayns.dialog.alert(options?.title || '', message)
+    .then((type) => {
+        resolve(createDialogResult(type));
+    });
 }));
 
 /**
  * Confirm dialog
  * @param {string} [message='']
  * @param {button[]} [buttons=undefined]
+ * @param {Object} [options={}]
+ * @param {string} [options.title='']
  * @return {dialogResult|Dialog|Promise<dialogResult>}
  */
-const confirm = (message = '', buttons = undefined) => new Dialog(async () => new Promise((resolve) => {
-    chayns.dialog.confirm('', message, buttons)
-        .then((type) => {
-            resolve(createDialogResult(type));
-        });
+const confirm = (message = '', options = {}, buttons = undefined) => new Dialog(async () => new Promise((resolve) => {
+    chayns.dialog.confirm(options?.title || '', message, buttons)
+    .then((type) => {
+        resolve(createDialogResult(type));
+    });
 }));
 
 /**
@@ -88,6 +87,7 @@ const inputType = {
  * Input dialog
  * @param {string} [message='']
  * @param {Object} [options={}]
+ * @param {string} options.title
  * @param {string} options.placeholderText - placeholder
  * @param {string} options.text - default value
  * @param {string} options.textColor
@@ -105,21 +105,21 @@ function input(message = '', options = {}, buttons = undefined) {
     this.type = { ...inputType };
     return new Dialog(async () => new Promise((resolve) => {
         chayns.dialog.input({
-            title: '',
+            title: options?.title,
             message,
-            placeholderText: options.placeholderText,
-            text: options.text,
-            textColor: options.textColor,
+            placeholderText: options?.placeholderText,
+            text: options?.text,
+            textColor: options?.textColor,
             buttons,
-            type: options.type,
-            regex: options.regex,
-            formatter: options.formatter,
-            pattern: options.pattern,
-            disableButtonTypes: options.disableButtonTypes
+            type: options?.type,
+            regex: options?.regex,
+            formatter: options?.formatter,
+            pattern: options?.pattern,
+            disableButtonTypes: options?.disableButtonTypes
         })
-            .then(({ buttonType: type, text }) => {
-                resolve(createDialogResult(type, text));
-            });
+        .then(({ buttonType: type, text }) => {
+            resolve(createDialogResult(type, text));
+        });
     }));
 }
 
@@ -156,6 +156,7 @@ const selectType = {
  * multiselect)
  * @param {string} [message='']
  * @param {Object} [options={}]
+ * @param {string} [options.title='']
  * @param {selectListItem[]} options.list
  * @param {boolean} options.multiselect
  * @param {boolean} options.quickfind
@@ -170,30 +171,30 @@ function select(message = '', options = {}, buttons = []) {
     this.type = { ...selectType };
     return new Dialog(async () => new Promise((resolve) => {
         chayns.dialog.select({
-            title: '',
+            title: options?.title,
             message,
-            list: options.list,
-            multiselect: options.multiselect,
-            quickfind: options.quickfind,
-            type: options.type,
-            preventCloseOnClick: options.preventCloseOnClick,
+            list: options?.list,
+            multiselect: options?.multiselect,
+            quickfind: options?.quickfind,
+            type: options?.type,
+            preventCloseOnClick: options?.preventCloseOnClick,
             buttons,
-            selectAllButton: options.selectAllButton
+            selectAllButton: options?.selectAllButton
         })
-            .then((result) => {
-                const { buttonType: type, selection } = result;
-                if (!options.multiselect && selection && selection.length === 1) {
-                    const { name, value } = selection;
-                    resolve(createDialogResult(type, { name, value }));
-                } else if (!options.multiselect) {
-                    resolve(createDialogResult(type, null));
-                }
-                if (options.multiselect && selection && selection.length > 0) {
-                    resolve(createDialogResult(type, selection));
-                } else {
-                    resolve(createDialogResult(type, []));
-                }
-            });
+        .then((result) => {
+            const { buttonType: type, selection } = result;
+            if (!options?.multiselect && selection && selection.length === 1) {
+                const { name, value } = selection;
+                resolve(createDialogResult(type, { name, value }));
+            } else if (!options?.multiselect) {
+                resolve(createDialogResult(type, null));
+            }
+            if (options?.multiselect && selection && selection.length > 0) {
+                resolve(createDialogResult(type, selection));
+            } else {
+                resolve(createDialogResult(type, []));
+            }
+        });
     }));
 }
 
@@ -316,6 +317,7 @@ const resolveDateSelectType = (type) => [
  * Advanced date dialog
  * @param {string} [message='']
  * @param {Object} [options={}]
+ * @param {string} [options.title='']
  * @param {dateType} options.dateType - one of chaynsDialog.dateType
  * @param {dateSelectType} options.selectType - one of chaynsDialog.dateSelectType
  * @param {Date|number|string|function} options.minDate
@@ -342,146 +344,140 @@ function advancedDate(message = '', options = {}, buttons = []) {
     this.selectType = { ...dateSelectType };
     this.textBlockPosition = { ...textBlockPosition };
     return new Dialog(async () => new Promise((resolve) => {
-        const dialogSelectType = (options.selectType !== undefined && Object.values(dateSelectType).includes(
-            options.selectType
-            )
-                                  ? options.selectType
+        const dialogSelectType = (options?.selectType !== undefined && Object.values(dateSelectType).includes(
+            options?.selectType
+                                 )
+                                  ? options?.selectType
                                   : null)
-            ?? (options.multiselect
-                ? dateSelectType.MULTISELECT
-                : null)
-            ?? (options.interval
-                ? dateSelectType.INTERVAL
-                : null)
-            ?? dateSelectType.SINGLE;
-
+                                 ?? (options?.multiselect
+                                     ? dateSelectType.MULTISELECT
+                                     : null)
+                                 ?? (options?.interval
+                                     ? dateSelectType.INTERVAL
+                                     : null)
+                                 ?? dateSelectType.SINGLE;
+        
         chayns.dialog.select({
-            title: '',
+            title: options?.title,
             message,
             buttons,
-            dateType: options.dateType,
-            minDate: validateDate(options.minDate),
-            maxDate: validateDate(options.maxDate),
-            minuteInterval: options.minuteInterval,
-            preselected: types.isArray(options.preselected)
-                         ? validateDateArray(options.preselected)
-                         : validateDate(options.preselected),
-            disabledDates: validateDateArray(options.disabledDates),
-            textBlocks: options.textBlocks,
-            yearSelect: options.yearSelect,
-            monthSelect: options.monthSelect,
-            minInterval: options.minInterval,
-            maxInterval: options.maxInterval,
-            disabledIntervals: options.disabledIntervals,
-            disabledWeekDayIntervals: options.disabledWeekDayIntervals,
+            dateType: options?.dateType,
+            minDate: validateDate(options?.minDate),
+            maxDate: validateDate(options?.maxDate),
+            minuteInterval: options?.minuteInterval,
+            preselected: types.isArray(options?.preselected)
+                         ? validateDateArray(options?.preselected)
+                         : validateDate(options?.preselected),
+            disabledDates: validateDateArray(options?.disabledDates),
+            textBlocks: options?.textBlocks,
+            yearSelect: options?.yearSelect,
+            monthSelect: options?.monthSelect,
+            minInterval: options?.minInterval,
+            maxInterval: options?.maxInterval,
+            disabledIntervals: options?.disabledIntervals,
+            disabledWeekDayIntervals: options?.disabledWeekDayIntervals,
             ...resolveDateSelectType(dialogSelectType)
         })
-            .then((result) => {
-                // single date: { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }] }
-                // multiselect : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, ...] }
-                // interval : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, { isSelected:
-                // true, timestamp: ... in s }] }
-                const { buttonType: type, selectedDates } = result;
-                if (!selectedDates) {
-                    if (dialogSelectType === 0) resolve(createDialogResult(type, null));
-                    if (dialogSelectType !== 0) resolve(createDialogResult(type, []));
-                }
-                if (dialogSelectType === 0) {
-                    const selectedDate = types.safeFirst(selectedDates);
-                    resolve(createDialogResult(
-                        type,
-                        (selectedDate && selectedDate.timestamp ? new Date(selectedDate.timestamp * 1000) : null)
-                    ));
-                } else if (dialogSelectType !== 0) {
-                    resolve(createDialogResult(
-                        type, (selectedDates || []).map((d) => (d ? new Date(d.timestamp * 1000) : null))
-                            .filter((d) => !!d)
-                    ));
-                }
-            });
+        .then((result) => {
+            // single date: { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }] }
+            // multiselect : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, ...] }
+            // interval : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, { isSelected:
+            // true, timestamp: ... in s }] }
+            const { buttonType: type, selectedDates } = result;
+            if (!selectedDates) {
+                if (dialogSelectType === 0) resolve(createDialogResult(type, null));
+                if (dialogSelectType !== 0) resolve(createDialogResult(type, []));
+            }
+            if (dialogSelectType === 0) {
+                const selectedDate = types.safeFirst(selectedDates);
+                resolve(createDialogResult(
+                    type,
+                    (selectedDate && selectedDate.timestamp ? new Date(selectedDate.timestamp * 1000) : null)
+                ));
+            } else if (dialogSelectType !== 0) {
+                resolve(createDialogResult(
+                    type, (selectedDates || []).map((d) => (d ? new Date(d.timestamp * 1000) : null))
+                    .filter((d) => !!d)
+                ));
+            }
+        });
     }));
 }
 
 /**
  * Wrapper for dialogs to add custom handlers like .positive, .negative and .cancel
- * @param {function<Promise>} dialogFn - the async function that shows the dialog and returns the already formatted
+ * Usage: chaynsDialog.confirm('Is this dialog great?')
+ *              .positive((value) => console.log('yes!'))                   // buttonType 1
+ *              .negative((value) => console.log('no!'))                    // buttonType 0
+ *              .cancel((value) => console.log('hey, you didn't answer!'))  // buttonType -1
+ *              .then(({ buttonType, value } => console.log(value));        // always
+ * or:    const { buttonType, value } = await chaynsDialog.confirm('Is this dialog great?');
+ * @param {function: Promise} dialogFn - the async function that shows the dialog and returns the already formatted
  *     result Promise
- * @param {bool} [useCustomHandlers=true] - enables or disables custom handlers. Returns the promise if set to false
+ * @param {boolean} [useCustomHandlers=true] - enables or disables custom handlers. Returns the promise if set to false
  * @return {*}
  * @constructor
  */
 function Dialog(dialogFn, useCustomHandlers = true) {
-    const handlers = {
-        positive: null,
-        negative: null,
-        cancel: null,
-        result: null
-    };
-    this.then = function (resultHandler) {
-        if (types.isFunction(resultHandler)) {
-            handlers.result = resultHandler;
+    const handlers = [];
+    this.then = (handler) => {
+        if (types.isFunction(handler)) {
+            handlers.push({
+                call: handler,
+                type: null
+            });
         }
         return this;
     };
-    this.positive = function (positiveHandler) {
-        if (types.isFunction(positiveHandler)) {
-            handlers.positive = positiveHandler;
+    this.positive = (handler) => {
+        if (types.isFunction(handler)) {
+            handlers.push({
+                call: handler,
+                type: 1
+            });
         }
         return this;
     };
-    this.negative = function (negativeHandler) {
-        if (types.isFunction(negativeHandler)) {
-            handlers.negative = negativeHandler;
+    this.negative = (handler) => {
+        if (types.isFunction(handler)) {
+            handlers.push({
+                call: handler,
+                type: 0
+            });
         }
         return this;
     };
-    this.cancel = function (cancelHandler) {
-        if (types.isFunction(cancelHandler)) {
-            handlers.cancel = cancelHandler;
+    this.cancel = (handler) => {
+        if (types.isFunction(handler)) {
+            handlers.push({
+                call: handler,
+                type: -1
+            });
         }
         return this;
     };
-
+    
     const promise = new Promise((resolve, reject) => {
         (async () => {
             try {
                 const result = await dialogFn();
                 const { type, value } = result;
-                switch (type) {
-                    case -1:
-                        if (types.isFunction(handlers.cancel)) {
-                            handlers.cancel(value);
-                        }
-                        break;
-                    case 0:
-                        if (types.isFunction(handlers.negative)) {
-                            handlers.negative(value);
-                        }
-                        break;
-                    case 1:
-                        if (types.isFunction(handlers.positive)) {
-                            handlers.positive(value);
-                        }
-                        break;
-                    default:
-                        break;
+                for (let i = 0; i < handlers.length; i += 1) {
+                    const { type: handlerType, call } = handlers[i];
+                    if (handlerType === type) {
+                        call(value);
+                    } else if (handlerType === null) {
+                        call({ ...result });
+                    }
                 }
-                if (types.isFunction(handlers.result)) handlers.result(result);
                 resolve(result);
             } catch (e) {
                 reject(e);
             }
         })();
     });
-
+    
     return useCustomHandlers ? this : promise;
-}
-
-function Subdialog(handler, value, executeHandler) {
-    if (types.isFunction(handler)) {
-        handler(value);
-    }
-    return this;
 }
 
 const chaynsDialog = {
