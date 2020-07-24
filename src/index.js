@@ -60,6 +60,8 @@ import TextStringMemo, {
     useTextStrings, getTextStrings, getAllTextStrings, TextStringComplex
 } from './textstring/TextStringMemo';
 import { initChaynsHelper } from './chaynsHelperConfig';
+import chaynsDialog from './functions/chaynsDialogs';
+import generateUUID from './functions/generateUid';
 
 export {
     DateTimeChooseButton,
@@ -129,7 +131,9 @@ export {
     isNullOrEmpty,
     extend,
     replaceAll,
-    replaceEmpty
+    replaceEmpty,
+    chaynsDialog,
+    generateUUID
 }
 
 // exports.DateTimeChooseButton = DateTimeChooseButton;
