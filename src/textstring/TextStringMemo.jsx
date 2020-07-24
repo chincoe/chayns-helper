@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import isTobitEmployee from 'chayns-components/lib/utils/tobitEmployee';
-import generateUUID from 'chayns-logger/lib/core/generate-uid';
+import generateUUID from '../functions/generateUid';
 import { isNullOrWhiteSpace } from 'chayns-components/lib/utils/is';
 import useElementProps from '../hooks/useElementProps';
 import { chaynsHelperConfig } from '../chaynsHelperConfig';

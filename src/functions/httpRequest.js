@@ -1,5 +1,4 @@
-import logger from 'chayns-logger';
-import generateUUID from 'chayns-logger/lib/core/generate-uid';
+import generateUUID from '../functions/generateUid';
 import { chaynsHelperConfig } from '../chaynsHelperConfig';
 import { showWaitCursor } from './waitCursor';
 import types from './types';
@@ -284,7 +283,7 @@ const httpRequest = async (
                         try {
                             req.setRequestHeader(headerKeys[i], requestHeaders[headerKeys[i]]);
                         } catch (ex) {
-                            logger.warning({
+                            chaynsHelperConfig.getLogger().warning({
                                 message: `[HttpRequest] Could not set header ${headerKeys[i]} on ${processName}`,
                                 data: {
                                     address,
@@ -319,7 +318,7 @@ const httpRequest = async (
                 }))();
             }
         } catch (err) {
-            logger.warning({
+            chaynsHelperConfig.getLogger().warning({
                 message: `[HttpRequest] Failed to fetch on ${processName}`,
                 data: {
                     address,
@@ -369,13 +368,13 @@ const httpRequest = async (
             sessionUid
         };
         if (response && status < 400) {
-            logger.info({
+            chaynsHelperConfig.getLogger().info({
                 ...logData,
                 message: `[HttpRequest] http request finished: Status ${status} on ${processName}`
             });
         } else if (response && status === 401) {
             const error = new RequestError(`Status ${status} on ${processName}`, status);
-            logger.warning({
+            chaynsHelperConfig.getLogger().warning({
                 ...logData,
                 message: `[HttpRequest] http request failed: Status ${status} on ${processName}`,
             }, error);
@@ -404,7 +403,7 @@ const httpRequest = async (
             }
         } else {
             const error = new RequestError(`Status ${status} on ${processName}`, status);
-            logger.error({
+            chaynsHelperConfig.getLogger().error({
                 ...logData,
                 message: `[HttpRequest] http request failed: Status ${status} on ${processName}`
             }, error);
@@ -462,7 +461,7 @@ const httpRequest = async (
                 try {
                     resolve(JSON.parse(result));
                 } catch (err) {
-                    logger.warning({
+                    chaynsHelperConfig.getLogger().warning({
                         message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`
                     });
                     // eslint-disable-next-line no-console
@@ -481,7 +480,7 @@ const httpRequest = async (
                 try {
                     resolve(useFetchApi ? await response.json() : JSON.parse(response.response));
                 } catch (err) {
-                    logger.warning({
+                    chaynsHelperConfig.getLogger().warning({
                         message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
                     });
                     // eslint-disable-next-line no-console
@@ -497,7 +496,7 @@ const httpRequest = async (
                 try {
                     resolve(await response.blob());
                 } catch (err) {
-                    logger.warning({
+                    chaynsHelperConfig.getLogger().warning({
                         message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`
                     });
                     // eslint-disable-next-line no-console

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import TobitWebSocketClient from 'tobit-websocket-service-client';
-import logger from 'chayns-logger';
+import { chaynsHelperConfig } from '../chaynsHelperConfig';
 
 /**
  * tobit-websocket-client has some unhandled errors. They don't affect the user but generate error logs. Using these
@@ -48,7 +48,7 @@ const useWebsocketService = (serviceName, conditions, events) => {
         webSocketClient.on('registered', (data) => {
             // eslint-disable-next-line no-console
             console.notLive.log('[Websocket] client registered', data);
-            logger.info({
+            chaynsHelperConfig.getLogger().info({
                 message: '[Websocket] client registered',
                 data
             });
@@ -58,14 +58,14 @@ const useWebsocketService = (serviceName, conditions, events) => {
         webSocketClient.on('register_error', (data) => {
             // eslint-disable-next-line no-console
             console.notLive.error('[Websocket] register error', data);
-            logger.error({ message: '[Websocket] registration failed' }, data);
+            chaynsHelperConfig.getLogger().error({ message: '[Websocket] registration failed' }, data);
         });
 
         // WS client default: WS connection closed
         webSocketClient.on('CLOSED', (data) => {
             // eslint-disable-next-line no-console
             console.notLive.log('[Websocket] closed', data);
-            logger.info({
+            chaynsHelperConfig.getLogger().info({
                 message: '[Websocket] connection closed',
                 data
             });
@@ -75,7 +75,7 @@ const useWebsocketService = (serviceName, conditions, events) => {
         webSocketClient.on('ERROR', (error) => {
             // eslint-disable-next-line no-console
             console.notLive.error('[Websocket] error', error);
-            logger.warning({ message: '[Websocket] error' }, error);
+            chaynsHelperConfig.getLogger().warning({ message: '[Websocket] error' }, error);
         });
 
         const eventKeys = Object.keys(events);

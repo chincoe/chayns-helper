@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './error-boundary.scss';
-import logger from 'chayns-logger';
 import { Button } from 'chayns-components';
 import CenteredButtonContainer from '../containers/CenteredButtonContainer';
+import { chaynsHelperConfig } from '../../chaynsHelperConfig';
 
 /**
  * An error-boundary.
@@ -32,7 +32,7 @@ class ErrorBoundary extends React.Component {
 
     componentDidCatch(error, errorInfo) {
         // You can also log the error to an error reporting service
-        logger.error({
+        chaynsHelperConfig.getLogger().error({
             message: '[error-boundary] Unexpected react error',
             data: { errorInfo }
         }, error);

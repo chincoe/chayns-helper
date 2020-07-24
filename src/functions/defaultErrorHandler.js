@@ -1,4 +1,4 @@
-import logger from 'chayns-logger';
+import { chaynsHelperConfig } from '../chaynsHelperConfig';
 
 /**
  * Default error handler for failed httpRequests
@@ -29,7 +29,7 @@ const handleRequestErrors = (err) => {
                 await chayns.dialog.alert('', 'Unsere Server sind zur Zeit nicht erreichbar. Bitte versuche es später noch einmal.');
                 break;
             default:
-                logger.critical({
+                chaynsHelperConfig.getLogger().critical({
                     message: 'Unknown request error occurred',
                     data: err,
                     section: 'useErrorHandler.js'

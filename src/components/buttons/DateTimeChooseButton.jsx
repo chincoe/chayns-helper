@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { ChooseButton } from 'chayns-components';
 import useElementProps from '../../hooks/useElementProps';
-import { formatDate, time } from '../../functions/timeHelper';
-import T from '../../functions/types';
+import { formatDate, time } from '../..';
+import types from '../../functions/types';
 
 /**
  * DateTimeChooseButton
@@ -37,10 +37,10 @@ const DateTimeChooseButton = (props) => {
     } = props;
 
     const roundedDate = useMemo(() => {
-        const interval = !T.isNullOrEmpty(parameters)
-                         && !T.isNullOrEmpty(parameters.minuteInterval)
+        const interval = !types.isNullOrEmpty(parameters)
+                         && !types.isNullOrEmpty(parameters.minuteInterval)
                          // eslint-disable-next-line react/prop-types
-                         && T.isCleanNumber(parameters.minuteInterval) ? parameters.minuteInterval : 15;
+                         && types.isCleanNumber(parameters.minuteInterval) ? parameters.minuteInterval : 15;
         const rounded = Math.round(new Date(date).getTime() / (interval * time.minute));
         return new Date(rounded * time.minute * interval);
     }, [date]);
