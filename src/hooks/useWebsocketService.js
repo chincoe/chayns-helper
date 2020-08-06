@@ -80,8 +80,8 @@ const useWebsocketService = (serviceName, conditions, events) => {
         const eventKeys = Object.keys(events);
 
         for (let i = 0; i < eventKeys.length; i += 1) {
-            if (chayns.utils.isString(eventKeys[i]) && chayns.utils.isFunction(events[i])) {
-                webSocketClient.on(eventKeys[i], events[i]);
+            if (chayns.utils.isString(eventKeys[i]) && chayns.utils.isFunction(events[eventKeys[i]])) {
+                webSocketClient.on(eventKeys[i], events[eventKeys[i]]);
             }
         }
 

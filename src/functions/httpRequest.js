@@ -5,6 +5,17 @@ import types from './types';
 import localStorage from '../other/localStorageHelper';
 
 /**
+ * @type {{Delete: string, Post: string, Get: string, Patch: string, Put: string}}
+ */
+export const httpMethod = {
+    Get: 'GET',
+    Post: 'POST',
+    Put: 'PUT',
+    Patch: 'PATCH',
+    Delete: 'DELETE',
+};
+
+/**
  * Custom error for error statusCodes or other errors during a httpRequest
  * @public
  */
@@ -143,7 +154,7 @@ export const handleRequest = (
  * Helper to send httpRequests. Works best if wrapped with handleRequest()
  * @param {string} address - Address of the request
  * @param {Object} [config={}] - Fetch config
- * @param {string} [config.method='GET'] - HttpMethod
+ * @param {httpMethod|string} [config.method='GET'] - HttpMethod
  * @param {Object} [config.headers] - Additional HttpHeaders
  * @param {boolean} [config.useChaynsAuth] - Add user token as authorization if available
  * @param {*} [config.body] - Body of the request

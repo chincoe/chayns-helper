@@ -14,44 +14,44 @@ export { default as SuspenseWaitCursor } from "./components/other/SuspenseWaitCu
 export { default as RestrictedAccordion } from "./components/restricted-accordion/RestrictedAccordion";
 export { hideCWFooter, setViewMode } from "./functions/chaynsCalls";
 export {
-  backgroundColorClass,
-  borderColorClass,
-  colorClass,
-  getChaynsColor,
-  getChaynsColorRgb,
-  hexToRgb,
-  mixChaynsColorRgb,
+    backgroundColorClass,
+    borderColorClass,
+    colorClass,
+    getChaynsColor,
+    getChaynsColorRgb,
+    hexToRgb,
+    mixChaynsColorRgb,
 } from "./functions/chaynsColors";
 export { default as chaynsDialog } from "./functions/chaynsDialogs";
 export { default as copyOnClick } from "./functions/copy";
 export { default as defaultErrorHandler } from "./functions/defaultErrorHandler";
 export { default as generateUUID } from "./functions/generateUid";
 export {
-  default as httpRequest,
-  handleRequest,
-  RequestError,
+    default as httpRequest,
+    handleRequest,
+    RequestError,
 } from "./functions/httpRequest";
 export { default as showSuccessAnimation } from "./functions/showSuccessAnimation";
 export {
-  fnsFormat,
-  formatDate,
-  formatDateText,
-  removeTimeZoneOffset,
-  simpleTimeFormat,
-  time,
+    fnsFormat,
+    formatDate,
+    formatDateText,
+    removeTimeZoneOffset,
+    simpleTimeFormat,
+    time,
 } from "./functions/timeHelper";
 export {
-  default as types,
-  extend,
-  forEachKey,
-  hasKey,
-  isNullOrEmpty,
-  mapObject,
-  mapObjectToArray,
-  reduceObject,
-  replaceAll,
-  replaceEmpty,
-  safeValue,
+    default as types,
+    extend,
+    forEachKey,
+    hasKey,
+    isNullOrEmpty,
+    mapObject,
+    mapObjectToArray,
+    reduceObject,
+    replaceAll,
+    replaceEmpty,
+    safeValue,
 } from "./functions/types";
 export { showWaitCursor } from "./functions/waitCursor";
 export { default as useTimeoutState } from "./hooks/uniques/useTimeoutState";
@@ -59,8 +59,8 @@ export { default as useUniqueEventListener } from "./hooks/uniques/useUniqueEven
 export { default as useUniqueInterval } from "./hooks/uniques/useUniqueInterval";
 export { default as useUniqueTimeout } from "./hooks/uniques/useUniqueTimeout";
 export {
-  default as useElementProps,
-  removeCustomProps,
+    default as useElementProps,
+    removeCustomProps,
 } from "./hooks/useElementProps";
 export { default as useFullscreenTapp } from "./hooks/useFullscreenTapp";
 export { default as useFunctionState } from "./hooks/useFunctionState";
@@ -74,9 +74,11 @@ export { default as useActions } from "./redux/useActions";
 export { default as useComplexSelector } from "./redux/useComplexSelector";
 export { default as useShallowSelector } from "./redux/useShallowSelector";
 export {
-  default as TextStringMemo,
-  getAllTextStrings,
-  getTextStrings,
-  TextStringComplex,
-  useTextStrings,
+    default as TextStringMemo,
+    getAllTextStrings,
+    getTextStrings,
+    TextStringComplex,
+    useTextStrings,
 } from "./textstring/TextStringMemo";
+export { default as AsyncPromise } from './functions/AsyncPromise';
+export { default as createThunk } from './redux/createThunk';

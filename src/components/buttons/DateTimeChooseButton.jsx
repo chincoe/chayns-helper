@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { ChooseButton } from 'chayns-components';
 import useElementProps from '../../hooks/useElementProps';
-import { formatDate, time } from '../..';
+import { formatDate, time } from '../../functions/timeHelper';
 import types from '../../functions/types';
 
 /**
