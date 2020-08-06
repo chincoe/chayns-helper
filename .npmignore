@@ -1,6 +1,5 @@
 src
 webpack.config.js
-.babelrc
-.babelrc
+babel.config.js
 .eslintrc
 .idea
