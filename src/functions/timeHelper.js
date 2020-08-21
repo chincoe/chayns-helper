@@ -107,13 +107,13 @@ export const formatDate = (pDate, useLongMonth = false) => {
 
 /**
  * datefns format function, extended by the option to use "heute"|"morgen"|"gestern"
- * @param {Date} date
+ * @param {Date|string|number} date
  * @param {string} formatString
  * @param {boolean} useToday - use "heute"|"morgen"|"gestern"
  * @return {string}
  */
 export const fnsFormat = (date, formatString, useToday = false) => {
-    const dateString = format(date, formatString, { locale: deLocale });
+    const dateString = format(new Date(date), formatString, { locale: deLocale });
     if (!useToday) return dateString;
     return dateString
         .replace(format(new Date(), formatString, { locale: deLocale }), 'Heute')
