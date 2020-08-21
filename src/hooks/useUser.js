@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { shallowEqual } from 'react-redux';
 
 /**
  * @typedef user
@@ -26,7 +27,6 @@ import { useState, useEffect } from 'react';
  * @property {string|Date} ChaynsLogin.iat
  * @property {string} ChaynsLogin.exp
  * @property {string} ChaynsLogin.sub
- *
  */
 /**
  * Wrapper for chayns.getUser to use inside a react component
@@ -35,10 +35,14 @@ import { useState, useEffect } from 'react';
  */
 const useUser = (userInfo) => {
     const [user, setUser] = useState({});
+    const [prevUserInfo, setPrevUserInfo] = useState({});
     useEffect(() => {
-        if (userInfo) {
+        if (userInfo && !shallowEqual(prevUserInfo, userInfo)) {
             chayns.getUser(userInfo)
-                .then((r) => setUser(r));
+                .then((r) => {
+                    setPrevUserInfo(userInfo);
+                    setUser(r);
+                });
         }
     }, [userInfo]);
     return user;
