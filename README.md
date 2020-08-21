@@ -40,7 +40,7 @@ initChaynsHelper({
 | [useFullscreenTapp](/src/hooks/useFullscreenTapp.js)| Hook to create a fullscreen tapp without scrolling |
 | [useFunctionState](/src/hooks/useFunctionState.js)| useState that can contain a function directly |
 | [useRefresh](/src/hooks/useRefresh.js)| generates a random ID in an interval to force re-render |
-| [useTest](/src/hooks/useTest.js)| test a short script inside your component |
+| [useTest](/src/hooks/useOnce.js)| test a short script inside your component |
 | [useTextStrings](/src/textstring/TextStringMemo.jsx)| get memoized TextStrings from a list of string names |
 | [useTimeoutState](/src/hooks/uniques/useTimeoutState.js)| useState that calls an onChange method if the value hasn't change for a certain time |
 | [useUniqueEventListener](/src/hooks/uniques/useUniqueEventListener.js)| removes an old eventListener when a new one is set |
