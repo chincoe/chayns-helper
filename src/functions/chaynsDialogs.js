@@ -190,7 +190,7 @@ function select(message = '', options = {}, buttons = undefined, useCustomHandle
         .then((result) => {
             const { buttonType: type, selection } = result;
             if (!options?.multiselect && selection && selection.length === 1) {
-                const { name, value } = selection;
+                const { name, value } = types.safeFirst(selection);
                 resolve(createDialogResult(type, { name, value }));
             } else if (!options?.multiselect) {
                 resolve(createDialogResult(type, null));
@@ -363,7 +363,7 @@ function advancedDate(message = '', options = {}, buttons = undefined, useCustom
                                      ? dateSelectType.INTERVAL
                                      : null)
                                  ?? dateSelectType.SINGLE;
-        
+
         chayns.dialog.select({
             title: options?.title,
             message,
@@ -463,12 +463,12 @@ function Dialog(dialogFn, useCustomHandlers = true) {
         }
         return this;
     };
-    
+
     const promise = new Promise((resolve, reject) => {
         (async () => {
             try {
                 const result = await dialogFn();
-                const { type, value } = result;
+                const { buttonType: type, value } = result;
                 for (let i = 0; i < handlers.length; i += 1) {
                     const { type: handlerType, call } = handlers[i];
                     if (handlerType === type) {
@@ -483,7 +483,7 @@ function Dialog(dialogFn, useCustomHandlers = true) {
             }
         })();
     });
-    
+
     return useCustomHandlers ? this : promise;
 }
 
