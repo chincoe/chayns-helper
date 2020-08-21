@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { shallowEqual } from 'react-redux';
+import types from '../functions/types';
+
+const usersCache = [];
 
 /**
  * @typedef user
@@ -38,10 +41,16 @@ const useUser = (userInfo) => {
     const [prevUserInfo, setPrevUserInfo] = useState({});
     useEffect(() => {
         if (userInfo && !shallowEqual(prevUserInfo, userInfo)) {
+            if (!types.isNullOrEmpty(usersCache)) {
+                const cacheUser = usersCache.find(u => ((userInfo.userId && u.UserID === userInfo.userId)
+                    || (userInfo.personId && u.PersonID === userInfo.personId)));
+                if (cacheUser) return cacheUser;
+            }
             chayns.getUser(userInfo)
                 .then((r) => {
                     setPrevUserInfo(userInfo);
                     setUser(r);
+                    usersCache.push(r);
                 });
         }
     }, [userInfo]);

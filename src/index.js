@@ -82,3 +82,4 @@ export {
 } from "./textstring/TextStringMemo";
 export { default as AsyncPromise } from './functions/AsyncPromise';
 export { default as createThunk } from './redux/createThunk';
+export { default as createEnum } from './functions/createEnum';
