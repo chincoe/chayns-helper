@@ -25,7 +25,7 @@ export class RequestError extends Error {
      * @param {number} statusCode - Response status code
      */
     constructor(message, statusCode) {
-        super();
+        super(message);
         this.name = `Status${statusCode}HttpRequestError`;
         this.statusCode = statusCode;
     }
