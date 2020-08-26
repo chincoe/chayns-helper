@@ -1,4 +1,39 @@
 /* eslint-disable no-unused-vars */
+/**
+ * @type {boolean}
+ * @public
+ */
+const __LIVE__ = true;
+/**
+ * @type {boolean}
+ * @public
+ */
+const __DEVELOPMENT__ = true;
+/**
+ * @type {boolean}
+ * @public
+ */
+const __DEV__ = true;
+/**
+ * @type {boolean}
+ * @public
+ */
+const __STAGING__ = true;
+/**
+ * @type {boolean}
+ * @public
+ */
+const __QA__ = true;
+/**
+ * @type {boolean}
+ * @public
+ */
+const __PROD__ = true;
+/**
+ * @type {boolean}
+ * @public
+ */
+const __PRODUCTION__ = true;
 
 /**
  * @typedef userResult {{Type: number, PersonID: string, FacebookID: number, FirstName: string, UserID: number,
