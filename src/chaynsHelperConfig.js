@@ -13,6 +13,13 @@ const defaultLogger = {
     critical(...value) {console.notLive.error(...value);}
 };
 
+/**
+ * @class
+ * @param serviceName
+ * @param conditions
+ * @returns {DefaultWebsocketClient}
+ * @constructor
+ */
 function DefaultWebsocketClient(serviceName, conditions) {
     console.warn('[WebsocketClient] Please specify a websocket client in your initChaynsHelper to use this feature');
     this.handlers = {};
@@ -23,6 +30,7 @@ function DefaultWebsocketClient(serviceName, conditions) {
         this.handlers[wsEvent] = listener;
     };
     this.closeConnection = function () {};
+    return this;
 }
 
 /**

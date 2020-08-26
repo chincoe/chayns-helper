@@ -46,6 +46,8 @@ const websocketClients = {};
  * @param {Object} conditions - conditions for the WS service
  * @param {Object.<string, wsEventHandler>} events - custom events that should be handled.
  *      Format: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
+ * @param {string} [clientGroup='default'] - services of the same client group share a ws connection and their
+ *     conditions
  * @param {boolean} [waitForDefinedConditions=true] - only init the service once all conditions are no longer undefined
  * @param {boolean} [disconnectOnUnmount=true] - disconnects the ws client once the component unmounts. Any other hook
  *     using this service will cease to work
@@ -54,12 +56,21 @@ const websocketClients = {};
  * @param {*[]} [dependencies=] - dependencies to set new event handlers
  */
 const useWebsocketService = (
-    { serviceName, conditions, events, waitForDefinedConditions = true, disconnectOnUnmount = false, forceOwnConnection = false },
+    {
+        serviceName,
+        conditions,
+        events,
+        clientGroup = '',
+        waitForDefinedConditions = true,
+        disconnectOnUnmount = false,
+        forceOwnConnection = false
+    },
     dependencies = []
 ) => {
     // events pattern: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
     const [ownClient, setOwnClient] = useState();
     const ownConnection = useMemo(() => forceOwnConnection, []);
+    const group = useMemo(() => clientGroup, []);
 
     // register default events and update conditions
     useEffect(() => {
@@ -69,7 +80,7 @@ const useWebsocketService = (
         ) {
             const isInit = ownConnection ? !ownClient : !Object.prototype.hasOwnProperty.call(
                 websocketClients,
-                serviceName
+                `${serviceName}_${group}`
             );
 
             let webSocketClient;
@@ -82,10 +93,10 @@ const useWebsocketService = (
                 if (ownConnection) {
                     setOwnClient(webSocketClient);
                 } else {
-                    websocketClients[serviceName] = webSocketClient;
+                    websocketClients[`${serviceName}_${group}`] = webSocketClient;
                 }
             } else {
-                webSocketClient = ownConnection ? ownClient : websocketClients[serviceName];
+                webSocketClient = ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`];
             }
 
             if (!shallowEqual(webSocketClient.conditions, { ...webSocketClient.conditions, ...conditions })) {
@@ -129,7 +140,7 @@ const useWebsocketService = (
             }
         }
         return disconnectOnUnmount || ownConnection ? () => {
-            const webSocketClient = ownConnection ? ownClient : websocketClients[serviceName];
+            const webSocketClient = ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`];
             if (webSocketClient) {
                 webSocketClient.closeConnection();
             }
@@ -138,7 +149,7 @@ const useWebsocketService = (
 
     // register custom events
     useEffect(() => {
-        const webSocketClient = ownConnection ? ownClient : websocketClients[serviceName];
+        const webSocketClient = ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`];
         if (webSocketClient) {
             const eventKeys = Object.keys(events);
 
@@ -157,9 +168,9 @@ const useWebsocketService = (
             };
         }
         return () => {};
-    }, [...dependencies, ownConnection ? ownClient : websocketClients[serviceName]]);
+    }, [...dependencies, ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`]]);
 
-    return ownConnection ? ownClient : websocketClients[serviceName];
+    return ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`];
 };
 
 export default useWebsocketService;
