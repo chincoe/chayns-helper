@@ -39,6 +39,25 @@ const safeFirst = (arr) => {
 };
 
 /**
+ * Array.distinct(selector)
+ * @param {*[]} arr
+ * @param {function(*)} selector
+ * @returns {null|*[]}
+ */
+const distinct = (arr, selector) => {
+    if (!isArray(arr) || !isFunction(selector)) return null;
+    return arr.reduce((total, current) => {
+        const idx = total.findIndex((t) => selector(t) === selector(current));
+        if (idx > 0) {
+            const result = [...total];
+            result[idx] = current;
+            return result;
+        }
+        return [...total, current];
+    }, []);
+};
+
+/**
  * get Type string. More different types than typeof
  * @param {*} val
  * @return {string}
@@ -278,6 +297,7 @@ const types = {
     isPromise,
     types: typeStrings,
     safeFirst,
+    distinct,
     getType,
     length,
     isNullOrEmpty,
