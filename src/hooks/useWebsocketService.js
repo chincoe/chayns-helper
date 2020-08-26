@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { shallowEqual } from 'react-redux';
 import { chaynsHelperConfig } from '../chaynsHelperConfig';
 
 /**
@@ -29,66 +30,136 @@ export const wssLoggerIgnoreMiddleware = (payload) => {
 };
 
 /**
- * Initialize a websocket client
+ * @type {Object.<string, WebSocketClient>}
+ */
+const websocketClients = {};
+
+/**
+ * @callback wsEventHandler
+ * @param {Object|*} data
+ * @param {MessageEvent} wsEvent
+ */
+
+/**
+ * Use a websocket client. Each service is only initialized once.
  * @param {string} serviceName - name of the WS service
  * @param {Object} conditions - conditions for the WS service
- * @param {Object<function>} events - custom events that should be handled.
+ * @param {Object.<string, wsEventHandler>} events - custom events that should be handled.
  *      Format: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
+ * @param {boolean} [waitForDefinedConditions=true] - only init the service once all conditions are no longer undefined
+ * @param {boolean} [disconnectOnUnmount=true] - disconnects the ws client once the component unmounts. Any other hook
+ *     using this service will cease to work
+ * @param {boolean} [forceOwnConnection=false] - don't use any existing client from other hooks. required for wallet
+ *     items to work properly
+ * @param {*[]} [dependencies=] - dependencies to set new event handlers
  */
-const useWebsocketService = (serviceName, conditions, events) => {
+const useWebsocketService = (
+    { serviceName, conditions, events, waitForDefinedConditions = true, disconnectOnUnmount = false, forceOwnConnection = false },
+    dependencies = []
+) => {
     // events pattern: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
+    const [ownClient, setOwnClient] = useState();
+    const ownConnection = useMemo(() => forceOwnConnection, []);
+
+    // register default events and update conditions
     useEffect(() => {
-        const webSocketClient = new chaynsHelperConfig.getWebsocketClient()(
-            serviceName,
-            { ...conditions }
-        );
+        if (waitForDefinedConditions
+            && Object.values(conditions)
+                .reduce((total, current) => total && current !== undefined, true)
+        ) {
+            const isInit = ownConnection ? !ownClient : !Object.prototype.hasOwnProperty.call(
+                websocketClients,
+                serviceName
+            );
 
-        // WS client default: WS registered successfully
-        webSocketClient.on('registered', (data) => {
-            // eslint-disable-next-line no-console
-            console.notLive.log('[Websocket] client registered', data);
-            chaynsHelperConfig.getLogger().info({
-                message: '[Websocket] client registered',
-                data
-            });
-        });
+            let webSocketClient;
 
-        // WS client default: WS register error (e.g. WSS webhook didn't work out)
-        webSocketClient.on('register_error', (data) => {
-            // eslint-disable-next-line no-console
-            console.notLive.error('[Websocket] register error', data);
-            chaynsHelperConfig.getLogger().error({ message: '[Websocket] registration failed' }, data);
-        });
+            if (isInit) {
+                webSocketClient = new chaynsHelperConfig.getWebsocketClient()(
+                    serviceName,
+                    { ...conditions }
+                );
+                if (ownConnection) {
+                    setOwnClient(webSocketClient);
+                } else {
+                    websocketClients[serviceName] = webSocketClient;
+                }
+            } else {
+                webSocketClient = ownConnection ? ownClient : websocketClients[serviceName];
+            }
 
-        // WS client default: WS connection closed
-        webSocketClient.on('CLOSED', (data) => {
-            // eslint-disable-next-line no-console
-            console.notLive.log('[Websocket] closed', data);
-            chaynsHelperConfig.getLogger().info({
-                message: '[Websocket] connection closed',
-                data
-            });
-        });
+            if (!shallowEqual(webSocketClient.conditions, { ...webSocketClient.conditions, ...conditions })) {
+                webSocketClient.updateConditions({ ...webSocketClient.conditions, ...conditions });
+            }
 
-        // WS client default: WS connection error
-        webSocketClient.on('ERROR', (error) => {
-            // eslint-disable-next-line no-console
-            console.notLive.error('[Websocket] error', error);
-            chaynsHelperConfig.getLogger().warning({ message: '[Websocket] error' }, error);
-        });
+            if (isInit) {
+                // WS client default: WS registered successfully
+                webSocketClient.on('registered', (data) => {
+                    // eslint-disable-next-line no-console
+                    console.notLive.log('[Websocket] client registered', data);
+                    chaynsHelperConfig.getLogger().info({
+                        message: '[Websocket] client registered',
+                        data
+                    });
+                });
 
-        const eventKeys = Object.keys(events);
+                // WS client default: WS register error (e.g. WSS webhook didn't work out)
+                webSocketClient.on('register_error', (data) => {
+                    // eslint-disable-next-line no-console
+                    console.notLive.error('[Websocket] register error', data);
+                    chaynsHelperConfig.getLogger().error({ message: '[Websocket] registration failed' }, data);
+                });
 
-        for (let i = 0; i < eventKeys.length; i += 1) {
-            if (chayns.utils.isString(eventKeys[i]) && chayns.utils.isFunction(events[eventKeys[i]])) {
-                webSocketClient.on(eventKeys[i], events[eventKeys[i]]);
+                // WS client default: WS connection closed
+                webSocketClient.on('CLOSED', (data) => {
+                    // eslint-disable-next-line no-console
+                    console.notLive.log('[Websocket] closed', data);
+                    chaynsHelperConfig.getLogger().info({
+                        message: '[Websocket] connection closed',
+                        data
+                    });
+                });
+
+                // WS client default: WS connection error
+                webSocketClient.on('ERROR', (error) => {
+                    // eslint-disable-next-line no-console
+                    console.notLive.error('[Websocket] error', error);
+                    chaynsHelperConfig.getLogger().warning({ message: '[Websocket] error' }, error);
+                });
             }
         }
+        return disconnectOnUnmount || ownConnection ? () => {
+            const webSocketClient = ownConnection ? ownClient : websocketClients[serviceName];
+            if (webSocketClient) {
+                webSocketClient.closeConnection();
+            }
+        } : () => {};
+    }, [...Object.values(conditions)]);
 
-        return () => {
-            webSocketClient.closeConnection();
-        };
-    }, []);
+    // register custom events
+    useEffect(() => {
+        const webSocketClient = ownConnection ? ownClient : websocketClients[serviceName];
+        if (webSocketClient) {
+            const eventKeys = Object.keys(events);
+
+            for (let i = 0; i < eventKeys.length; i += 1) {
+                if (chayns.utils.isString(eventKeys[i]) && chayns.utils.isFunction(events[eventKeys[i]])) {
+                    webSocketClient.on(eventKeys[i], events[eventKeys[i]]);
+                }
+            }
+
+            return () => {
+                for (let i = 0; i < eventKeys.length; i += 1) {
+                    if (chayns.utils.isString(eventKeys[i]) && chayns.utils.isFunction(events[eventKeys[i]])) {
+                        webSocketClient.off(eventKeys[i]);
+                    }
+                }
+            };
+        }
+        return () => {};
+    }, [...dependencies, ownConnection ? ownClient : websocketClients[serviceName]]);
+
+    return ownConnection ? ownClient : websocketClients[serviceName];
 };
 
 export default useWebsocketService;
