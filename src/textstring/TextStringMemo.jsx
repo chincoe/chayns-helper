@@ -15,7 +15,7 @@ import types from '../functions/types';
  * @param {Object} props
  * @param {string} props.stringName
  * @param {string} props.fallback
- * @param {Object<string>} props.replacements
+ * @param {Object.<string,string>} props.replacements
  * @param {*|*[]} props.children
  * @return {*}
  * @constructor
@@ -71,7 +71,7 @@ export default memo(TextStringMemo);
  * @param {Object} props
  * @param {string} props.stringName
  * @param {string} props.fallback
- * @param {Object} [props.replacements={}]
+ * @param {Object.<string, string|function>} [props.replacements={}]
  * @param {string|*} [props.elementName='div']
  * @param {number} [props.maxReplacements] - Max. count of replacements per replacement item to avoid being stuck in an
  *     endless replacement loop
@@ -314,7 +314,7 @@ TextStringComplex.defaultProps = {
 
 /**
  * Get a list of textStrings
- * @param {string[]|Object<string>} textStrings - format: [string_name1, string_name2]
+ * @param {string[]|Object.<string, string>} textStrings - format: [string_name1, string_name2]
  *     or { string_name1: fallback1, string_name2: fallback2 }
  * @param {string} language
  * @return {string[]}
@@ -338,7 +338,7 @@ export const getTextStrings = (textStrings, language = 'de') => {
 
 /**
  * Hook to get a list of textStrings
- * @param {string[]|Object<string>} stringObject - format: [string_name1, string_name2]
+ * @param {string[]|Object<string, string>} stringObject - format: [string_name1, string_name2]
  *     or { string_name1: fallback1, string_name2: fallback2 }
  * @param {string} language
  * @return {string[]}
