@@ -1,25 +1,27 @@
 import handleRequestErrors from './functions/defaultErrorHandler';
 import { initLog } from './functions/log';
+import WsClient from './other/WsClient';
 
 /**
  * default logger
  * @type {{critical(...[*]): void, warning(...[*]): void, error(...[*]): void, info(...[*]): void}}
  */
 const defaultLogger = {
-    info(...value) {console.notLive.log(...value)},
-    warning(...value) {console.notLive.warn(...value)},
-    error(...value) {console.notLive.error(...value)},
-    critical(...value) {console.notLive.error(...value)}
-}
+    info(...value) {console.notLive.log(...value);},
+    warning(...value) {console.notLive.warn(...value);},
+    error(...value) {console.notLive.error(...value);},
+    critical(...value) {console.notLive.error(...value);}
+};
 
 function DefaultWebsocketClient(serviceName, conditions) {
-    console.warn('[WebsocketClient] Please specify a websocket client in your initChaynsHelper to use this feature')
+    console.warn('[WebsocketClient] Please specify a websocket client in your initChaynsHelper to use this feature');
     this.handlers = {};
     this.serviceName = serviceName;
     this.conditions = conditions;
+    this.updateConditions = function () {};
     this.on = function (wsEvent, listener) {
         this.handlers[wsEvent] = listener;
-    }
+    };
     this.closeConnection = function () {};
 }
 
@@ -34,7 +36,7 @@ export const chaynsHelperConfig = {
     live: false,
     getRequestErrorHandler: () => handleRequestErrors,
     getLogger: () => defaultLogger,
-    getWebsocketClient: () => DefaultWebsocketClient
+    getWebsocketClient: () => WsClient
 };
 
 /**
@@ -65,6 +67,6 @@ export const initChaynsHelper = (
     chaynsHelperConfig.live = live;
     chaynsHelperConfig.getRequestErrorHandler = () => requestErrorHandler;
     chaynsHelperConfig.getLogger = () => logger;
-    chaynsHelperConfig.getWebsocketClient = () => websocketClient
+    chaynsHelperConfig.getWebsocketClient = () => websocketClient;
     initLog(live);
 };
