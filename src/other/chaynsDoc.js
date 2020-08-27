@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-vars,no-underscore-dangle */
 /**
  * @type {boolean}
  * @public
@@ -117,6 +117,39 @@ const __PRODUCTION__ = true;
 /**
  * @typedef loginStateResult
  * @property {loginState} loginState
+ */
+
+/**
+ * @typedef smartShopArticle
+ * @property {number} id,
+ * @property {number} amount
+ */
+
+/**
+ * @typedef smartShopConfig
+ * @property {string} introText,
+ * @property {string} headline,
+ * @property {number} branchId,
+ * @property {number} internalShopId,
+ * @property {*} tappType,
+ * @property {Object} parameters,
+ * @property {boolean} refresh,
+ * @property {boolean} createShop,
+ * @property {Object} tapp
+ * @property {boolean} [tapp.useFloatingButton=true],
+ * @property {boolean} [tapp.useFloatingButtonText=true],
+ * @property {boolean} [tapp.useSubTapp=true],
+ * @property {boolean} [tapp.replaceTapp=true],
+ * @property {boolean} [tapp.hasSubTapp=false],
+ * @property {boolean} [tapp.useExclusiveMode=false],
+ * @property {function} [tapp.floatingButtonCallback=null],
+ * @property {boolean} [tapp.forceFloatingButton=false],
+ * @property {string} [tapp.customShopUrl=null],
+ * @property {Object} [tapp.parameters=null],
+ * @property {Object} [tapp.paymentInformation=null],
+ * @property {boolean} [tapp.useFloatingButtonBadge=false],
+ * @property {string} [tapp.floatingButtonIcon='fa-shopping-cart'],
+ * @property {boolean} [tapp.suggestLogin=false]
  */
 
 /**
@@ -497,7 +530,120 @@ const __PRODUCTION__ = true;
  *      getAvailableSharingServices(): Promise<sharingServicesResult>,
  *      addScrollListener(function): boolean,
  *      scanQRCode(cameraType, number): Promise,
- *      register(*)}}
+ *      register(*)
+ *      smartShop: {
+ *  init(smartShopConfig),
+ *  settings: {
+ *      getProcessor()
+ *  },
+ *  admin: {
+ *      output(),
+ *      intercom(),
+ *      accounting(),
+ *      subscription(),
+ *      branch: {
+ *          updateText(Object)
+ *      },
+ *      processor(),
+ *      article(),
+ *      group(),
+ *      option()
+ *  },
+ *  groups: {
+ *      get()
+ *  },
+ *  subscription: {
+ *      getArticle()
+ *  },
+ *  carousel: {
+ *      isEnable()
+ *  },
+ *  branch: {
+ *      createBranchConfig(),
+ *      removeImage(),
+ *      updateBranchConfig(),
+ *      updateBranch(),
+ *      addImage(),
+ *      updateBranchText(),
+ *      updateOpmOwner(),
+ *      getBranchConfig()
+ *  },
+ *  cart: {
+ *      addArticle(smartShopArticle),
+ *      set(),
+ *      addServerArticle(),
+ *      removeArticle(smartShopArticle),
+ *      cartCount: number,
+ *      userId: {
+ *          expires: number,
+ *          firstname: string,
+ *          voucherList: [],
+ *          topFlag: boolean,
+ *          vouchers: [],
+ *          userId: number,
+ *          branchTipFactor: number,
+ *          lastname: string,
+ *          orderUid: string,
+ *          cartPrice: number,
+ *          personId: string,
+ *          fullname: string,
+ *          invoiceRequested: boolean,
+ *          tipSum: number,
+ *          articles: [{amount: number, id: number}]
+ *      },
+ *      remove(),
+ *      confirm(),
+ *      removeServerArticle(),
+ *      get(),
+ *      removeTip(),
+ *      toOrder(),
+ *      create(),
+ *      setTip(),
+ *      exp: number,
+ *      smartCheckout(*=)
+ *  },
+ *  offer: {
+ *      getCategories(),
+ *      getCategory(number)
+ *  },
+ *  utils: {
+ *      convertToClientArticle()
+ *  },
+ *  payment: {
+ *      getTssmPaymentInfo(),
+ *      getOpmStatus()
+ *  },
+ *  tapp: {
+ *      gotoCart(),
+ *      gotoShop(),
+ *      configure(Object),
+ *  },
+ *  user: {
+ *      getByQr(),
+ *      getByNfc(),
+ *      isStaff(),
+ *      getByPersonId(),
+ *      getAccountBalance()
+ *  },
+ *  order: {
+ *      cancel(),
+ *      addArticle(),
+ *      extendTtl(),
+ *      addClientArticle(),
+ *      removeArticle(),
+ *      getInternal(),
+ *      getClientOrderedArticles(),
+ *      clearClientCar(),
+ *      getClientCart(),
+ *      confirm(),
+ *      getPopular(),
+ *      getHistory(),
+ *      create(),
+ *      setClientCart(),
+ *      createFromClientCart()
+ *   }}
+ *      }}
+
  */
 const chayns = {
     /**
@@ -912,34 +1058,38 @@ const chayns = {
     env: {
         parameters: {},
         _parameters: {},
-        browser: { name: '', version: '', supportsWebP: false },
-        language: '',
+        browser: {
+            name: 'firefox',
+            version: '80',
+            supportsWebP: false
+        },
+        language: 'en',
         site: {
-            id: '',
-            locationId: 0,
-            locationPersonId: '',
-            title: '',
-            language: '',
+            id: '77895-31707',
+            locationId: 182906,
+            locationPersonId: '143-58397',
+            title: 'nboDev',
+            language: 'de',
             tapps: [
                 {
-                    id: 0,
-                    showName: '',
-                    internalName: '',
+                    id: 502162,
+                    showName: 'Verbindungen',
+                    internalName: 'Tapps502162',
                     isSubTapp: false,
-                    sortId: -0,
-                    customUrl: '',
+                    sortId: -15001,
+                    customUrl: 'id/connections',
                     isHiddenFromMenu: false,
-                    icon: '',
+                    icon: 'ts-chayns',
                     iconType: 0
                 }, {
                     id: -7,
-                    showName: '',
-                    internalName: '',
+                    showName: 'chayns.iD',
+                    internalName: 'Tapps-2',
                     isSubTapp: false,
-                    sortId: -0,
-                    customUrl: '',
+                    sortId: -10000,
+                    customUrl: 'tapp/-7',
                     isHiddenFromMenu: false,
-                    icon: '',
+                    icon: 'ts-fingerprint',
                     iconType: 0
                 }
             ],
@@ -947,19 +1097,19 @@ const chayns = {
             color: '#000000',
             colorMode: 1,
             version: '2.186',
-            domain: '',
+            domain: 'nbodev.chayns.net',
             font: 1,
-            environment: '',
+            environment: 'Staging',
             tapp: {
-                id: 0,
-                showName: '',
-                internalName: '',
+                id: 524377,
+                showName: 'local cn-surface',
+                internalName: 'Tapps524377',
                 isSubTapp: false,
-                sortId: 0,
+                sortId: 116,
                 userGroupIds: [1],
-                customUrl: '',
+                customUrl: 'localcn-surface',
                 isHiddenFromMenu: false,
-                icon: '',
+                icon: 'fa-exclamation-triangle',
                 iconType: 0
             },
             disposition: {
@@ -971,7 +1121,7 @@ const chayns = {
                 coverDetached: false
             },
             headlineFontId: 0,
-            url: ''
+            url: 'https://nbodev.chayns.net/localcn-surface'
         },
         user: {
             name: '',
@@ -982,8 +1132,17 @@ const chayns = {
             tobitAccessToken:
                 '',
             groups: [
-                { id: 1, isActive: false }, { id: 0, isActive: false }, { id: 0, isActive: false }, {
-                    id: 0,
+                {
+                    id: 1,
+                    isActive: false
+                }, {
+                    id: 75940,
+                    isActive: false
+                }, {
+                    id: 76145,
+                    isActive: false
+                }, {
+                    id: 76242,
                     isActive: false
                 }
             ],
@@ -1242,11 +1401,26 @@ const chayns = {
                 'OK',
             CANCEL: 'Cancel'
         },
-        buttonType: { CANCEL: -1, NEGATIVE: 0, POSITIVE: 1 },
-        selectType: { DEFAULT: 0, ICON: 1 },
-        dateType: { DATE: 1, TIME: 2, DATE_TIME: 3 },
+        buttonType: {
+            CANCEL: -1,
+            NEGATIVE: 0,
+            POSITIVE: 1
+        },
+        selectType: {
+            DEFAULT: 0,
+            ICON: 1
+        },
+        dateType: {
+            DATE: 1,
+            TIME: 2,
+            DATE_TIME: 3
+        },
         inputType: {
-            DEFAULT: 0, PASSWORD: 1, TEXTAREA: 2, INPUT: 3, NUMBER: 4
+            DEFAULT: 0,
+            PASSWORD: 1,
+            TEXTAREA: 2,
+            INPUT: 3,
+            NUMBER: 4
         },
         fileType: {
             IMAGE: 'image',
@@ -1260,21 +1434,49 @@ const chayns = {
             ]
         }
     },
-    urlType: { WEB: 0, AR: 1 },
-    animationType: { DEFAULT: 0, BOTTOM: 1 },
-    cameryType: { AUTO: 0, BACK: 1, FRONT: 2 },
-    logoutType: { NORMAL: 0, FORCE: 1 },
-    loginState: {
-        FACEBOOK: 0, T_WEB: 1, CANCEL: 2, ALREADY_LOGGED_IN: 3
+    urlType: {
+        WEB: 0,
+        AR: 1
     },
-    tappEvent: { ON_SHOW: 0, ON_HIDE: 1, ON_REFRESH: 2 },
+    animationType: {
+        DEFAULT: 0,
+        BOTTOM: 1
+    },
+    cameryType: {
+        AUTO: 0,
+        BACK: 1,
+        FRONT: 2
+    },
+    logoutType: {
+        NORMAL: 0,
+        FORCE: 1
+    },
+    loginState: {
+        FACEBOOK: 0,
+        T_WEB: 1,
+        CANCEL: 2,
+        ALREADY_LOGGED_IN: 3
+    },
+    tappEvent: {
+        ON_SHOW: 0,
+        ON_HIDE: 1,
+        ON_REFRESH: 2
+    },
     listeners: [null],
-    floatingButtonPosition: { RIGHT: 0, CENTER: 1, LEFT: 2 },
+    floatingButtonPosition: {
+        RIGHT: 0,
+        CENTER: 1,
+        LEFT: 2
+    },
     storage: {
         get(key, param) {},
         remove(key, param) {},
         set(key, param1, param2, param3) {},
-        accessMode: { PUBLIC: 0, PROTECTED: 1, PRIVATE: 2 }
+        accessMode: {
+            PUBLIC: 0,
+            PROTECTED: 1,
+            PRIVATE: 2
+        }
     },
     networkType: {
         NO_NETWORK: 0,
@@ -1297,9 +1499,17 @@ const chayns = {
         ETHERNET: 17
     },
     sharingApp: {
-        MAIL: 0, WHATSAPP: 1, FACEBOOK: 2, FACEBOOK_MESSENGER: 3, GOOGLE_PLUS: 4, TWITTER: 5
+        MAIL: 0,
+        WHATSAPP: 1,
+        FACEBOOK: 2,
+        FACEBOOK_MESSENGER: 3,
+        GOOGLE_PLUS: 4,
+        TWITTER: 5
     },
-    adminSwitchStatus: { ADMIN: 1, USER: 0 },
+    adminSwitchStatus: {
+        ADMIN: 1,
+        USER: 0
+    },
     orientation: {
         DEFAULT: 0,
         PORTRAIT: 1,
@@ -1310,7 +1520,10 @@ const chayns = {
         LANDSCAPE_REVERSE: 6
     },
     mimeType: {
-        DOCUMENT: 0, AUDIO: 1, IMAGE: 2, VIDEO: 3
+        DOCUMENT: 0,
+        AUDIO: 1,
+        IMAGE: 2,
+        VIDEO: 3
     },
     event: {
         addPushListener(callback) {},
@@ -1338,4 +1551,149 @@ const chayns = {
          */
         sendMessageToUser(userId, config) {}
     },
+    smartShop: {
+        init(config) {},
+        offer: {
+            getCategories() {},
+            /**
+             * @param {number} categoryId
+             */
+            getCategory(categoryId) {}
+        },
+        cart: {
+            userId: {
+                lastname: '',
+                invoiceRequested: false,
+                orderUid: '00000000-0000-4000-0000-000000000000',
+                vouchers: [],
+                userId: 0,
+                topFlag: false,
+                branchTipFactor: 0,
+                cartPrice: 1,
+                voucherList: [],
+                personId: '000-00000',
+                tipSum: 0,
+                expires: 1000000000000,
+                fullname: '',
+                firstname: '',
+                articles: [
+                    {
+                        id: 0,
+                        amount: 1
+                    }
+                ]
+            },
+            cartCount: 1,
+            exp: 100000000000000,
+            /**
+             * @param {smartShopArticle} article
+             */
+            addArticle(article) {},
+            /**
+             * @param {smartShopArticle} article
+             */
+            removeArticle(article) {},
+            /**
+             * @returns {Object}
+             */
+            get() {},
+            set() {},
+            remove() {},
+            smartCheckout(config = {}) {},
+            addServerArticle() {},
+            confirm() {},
+            create() {},
+            removeServerArticle() {},
+            removeTip() {},
+            setTip() {},
+            toOrder() {},
+
+        },
+        tapp: {
+            gotoCart() {},
+            gotoShop() {},
+            /**
+             * @param {Object} config
+             * @param {string} config.customShopUrl
+             */
+            configure(config) {},
+            /**
+             * @param {*} value
+             */
+            showFloatingButton(value) {}
+        },
+        admin: {
+            branch: {
+                /**
+                 * @param {string} field
+                 * @param {string} value
+                 */
+                updateText({ field, value }) {}
+            },
+            accounting() {},
+            article() {},
+            group() {},
+            intercom() {},
+            option() {},
+            output() {},
+            processor() {},
+            subscription() {},
+
+        },
+        settings: {
+            getProcessor() {}
+        },
+        order: {
+            getInternal() {},
+            getPopular() {},
+            addArticle() {},
+            addClientArticle() {},
+            cancel() {},
+            clearClientCar() {},
+            confirm() {},
+            create() {},
+            createFromClientCart() {},
+            extendTtl() {},
+            getClientCart() {},
+            getClientOrderedArticles() {},
+            getHistory() {},
+            removeArticle() {},
+            setClientCart() {},
+
+        },
+        branch: {
+            addImage() {},
+            createBranchConfig() {},
+            getBranchConfig() {},
+            removeImage() {},
+            updateBranch() {},
+            updateBranchConfig() {},
+            updateBranchText() {},
+            updateOpmOwner() {},
+        },
+        carousel: {
+            isEnable() {},
+        },
+        groups: {
+            get() {},
+        },
+        payment: {
+            getOpmStatus() {},
+            getTssmPaymentInfo() {},
+
+        },
+        subscription: {
+            getArticle() {}
+        },
+        user: {
+            getAccountBalance() {},
+            getByNfc() {},
+            getByPersonId() {},
+            getByQr() {},
+            isStaff() {},
+        },
+        utils: {
+            convertToClientArticle() {}
+        }
+    }
 };
