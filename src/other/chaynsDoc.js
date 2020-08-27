@@ -159,6 +159,16 @@ const __PRODUCTION__ = true;
  *     urlType: {AR: number, WEB: number},
  *     setSubTapp(subTappConfig): Promise<undefined>,
  *     utils: {
+ *          editor: {
+ *              disable(),
+ *              enable(),
+ *              enableToolbarChange(),
+ *              logger: {
+ *                  log(*, *, *),
+ *                  setLevel(number),
+ *                  level: number
+ *              }
+ *          },
  *          isJwt(*): boolean,
  *          getScaledImageUrl(string, int, int, boolean): string,
  *          isPermitted(*): boolean,
@@ -1019,6 +1029,34 @@ const chayns = {
             4000
     },
     utils: {
+        editor: {
+            /**
+             * @returns {undefined}
+             */
+            disable() {},
+            /**
+             * @returns {undefined}
+             */
+            enable() {},
+            /**
+             * @returns {undefined}
+             */
+            enableToolbarChange() {},
+            logger: {
+                /**
+                 * @param {*} param1
+                 * @param {*} param2
+                 * @param {*} param3
+                 */
+                log(param1, param2, param3){},
+                /**
+                 * @param {number} level
+                 */
+                setLevel(level){},
+                level: 0
+            }
+
+        },
         createTappUrl(param) {},
         getJwtPayload(param) {},
         getScaledImageUrl(url, height, width, preventWebP) {},
