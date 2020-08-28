@@ -12,7 +12,7 @@ export { default as RefreshComponent } from "./components/other/RefreshComponent
 export { default as ResizableWaitCursor } from "./components/other/ResizableWaitCursor";
 export { default as SuspenseWaitCursor } from "./components/other/SuspenseWaitCursor";
 export { default as RestrictedAccordion } from "./components/restricted-accordion/RestrictedAccordion";
-export { hideCWFooter, setViewMode } from "./functions/chaynsCalls";
+export { hideCWFooter, setViewMode, default as chaynsCall } from "./functions/chaynsCalls";
 export {
     backgroundColorClass,
     borderColorClass,
@@ -30,6 +30,9 @@ export {
     default as httpRequest,
     handleRequest,
     RequestError,
+    HttpMethod,
+    ResponseType,
+    LogLevel
 } from "./functions/httpRequest";
 export { default as showSuccessAnimation } from "./functions/showSuccessAnimation";
 export {

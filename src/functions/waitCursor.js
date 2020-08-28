@@ -5,7 +5,6 @@
  * @param {number} [timeout=300] = Time in ms after which the waitCursor will be shown
  * @return {function(number)} - hideWaitCursor function, will also clear the timeout
  */
-// eslint-disable-next-line import/prefer-default-export
 export const showWaitCursor = (text = undefined, textTimeout = 5000, timeout = 300) => {
     const t = setTimeout(() => {
         chayns.showWaitCursor(text, textTimeout);
