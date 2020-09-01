@@ -246,7 +246,7 @@ const httpRequest = async (
 ) => new Promise((resolve, reject) => {
     (async () => {
         /** INPUT HANDLING */
-        // read options object
+            // read options object
         const {
                 /**
                  * ResponseType, Default: json
@@ -404,6 +404,7 @@ const httpRequest = async (
                 },
                 section: 'httpRequest.js'
             }, err);
+            console.error(`[HttpRequest] Failed to fetch on ${processName}`, err);
             // with the timeout aborted requests (e.g. by reloading) won't open this dialog
             setTimeout(() => {
                 chayns.dialog.alert('', 'Verbindung fehlgeschlagen. Versuche es später nochmal.');
@@ -552,10 +553,11 @@ const httpRequest = async (
                 } catch (err) {
                     chaynsHelperConfig.getLogger().warning({
                         message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`
-                    });
+                    }, err);
                     // eslint-disable-next-line no-console
                     console.notLive.error(
-                        `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`
+                        `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,
+                        err
                     );
                     if (status >= 200 && status < 300) {
                         resolve(null);
@@ -578,10 +580,11 @@ const httpRequest = async (
                 } catch (err) {
                     chaynsHelperConfig.getLogger().warning({
                         message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
-                    });
+                    }, err);
                     // eslint-disable-next-line no-console
                     console.notLive.error(
-                        `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
+                        `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
+                        err
                     );
                     if (status >= 200 && status < 300) {
                         resolve(null);
@@ -596,10 +599,11 @@ const httpRequest = async (
                 } catch (err) {
                     chaynsHelperConfig.getLogger().warning({
                         message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`
-                    });
+                    }, err);
                     // eslint-disable-next-line no-console
                     console.notLive.error(
-                        `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`
+                        `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
+                        err
                     );
                     if (status >= 200 && status < 300) {
                         resolve(null);
@@ -614,10 +618,11 @@ const httpRequest = async (
                 } catch (err) {
                     chaynsHelperConfig.getLogger().warning({
                         message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
-                    });
+                    }, err);
                     // eslint-disable-next-line no-console
                     console.notLive.error(
-                        `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
+                        `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
+                        err
                     );
                     if (status >= 200 && status < 300) {
                         resolve(null);
