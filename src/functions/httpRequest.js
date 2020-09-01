@@ -27,7 +27,7 @@ export class RequestError extends Error {
      */
     constructor(message, statusCode) {
         super(message);
-        this.name = `Status${statusCode}HttpRequestError`;
+        this.name = `HttpRequestError${statusCode}`;
         this.statusCode = statusCode;
     }
 }
@@ -127,7 +127,7 @@ export const handleRequest = (
                 .catch((err) => {
                     hideWaitCursor();
                     // eslint-disable-next-line no-console
-                    console.notLive.error(err);
+                    if (!(err instanceof RequestError)) console.notLive.error('[HandleRequest]', err);
                     handleErrors(err);
                     reject(err);
                 })
@@ -135,7 +135,7 @@ export const handleRequest = (
         } catch (err) {
             hideWaitCursor();
             // eslint-disable-next-line no-console
-            console.notLive.error(err);
+            if (!(err instanceof RequestError)) console.notLive.error('[HandleRequest]', err);
             handleErrors(err);
             reject(err);
         }
@@ -476,7 +476,7 @@ const httpRequest = async (
                 message: `[HttpRequest] http request failed: Status ${status} on ${processName}`,
             }, error);
             // eslint-disable-next-line no-console
-            console.notLive.error(error);
+            console.notLive.error('[HttpRequest]', error);
             if (!ignoreErrors && useChaynsAuth && autoRefreshToken) {
                 try {
                     const jRes = await response.json();
@@ -499,7 +499,7 @@ const httpRequest = async (
                 message: `[HttpRequest] http request failed: Status ${status} on ${processName}`
             }, error);
             // eslint-disable-next-line no-console
-            console.notLive.error(error);
+            console.notLive.error('[HttpRequest]', error);
             tryReject(error, status);
         }
 

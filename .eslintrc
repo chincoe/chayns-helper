@@ -48,7 +48,10 @@
       1,
       {
         "allow": [
-          "error"
+          "error",
+          "group",
+          "groupCollapsed",
+          "groupEnd"
         ]
       }
     ],
