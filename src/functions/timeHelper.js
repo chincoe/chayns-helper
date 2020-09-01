@@ -111,12 +111,49 @@ export const formatDate = (pDate, useLongMonth = false) => {
  * @param {string} formatString
  * @param {boolean} useToday - use "heute"|"morgen"|"gestern"
  * @return {string}
+ *
+ * @property {string} simpleMonth
+ * @property {string} simpleMonth
+ * @property {string} shortMonth
+ * @property {string} longMonth
+ * @property {string} day
+ * @property {string} numberWeekDay
+ * @property {string} shortWeekDay
+ * @property {string} longWeekDay
+ * @property {string} shortYear
+ * @property {string} longYear
+ * @property {string} hour
+ * @property {string} simpleMinute
+ * @property {string} minute
+ *
+ * @readonly
  */
 export const fnsFormat = (date, formatString, useToday = false) => {
     const dateString = format(new Date(date), formatString, { locale: deLocale });
     if (!useToday) return dateString;
+    const tFormatString = formatString
+        .replace('H', '')
+        .replace('h', '')
+        .replace('A', '')
+        .replace('a', '')
+        .replace('s', '')
+        .replace('S', '')
+        .replace('m', '');
     return dateString
-        .replace(format(new Date(), formatString, { locale: deLocale }), 'Heute')
-        .replace(format(new Date(Date.now() + time.day), formatString.replace('H', '').replace('m', '').replace(/(^\.)/), { locale: deLocale }), 'Morgen')
-        .replace(format(new Date(Date.now() - time.day), formatString, { locale: deLocale }), 'Gestern');
+        .replace(format(new Date(), tFormatString, { locale: deLocale }), 'Heute')
+        .replace(format(new Date(Date.now() + time.day), tFormatString, { locale: deLocale }), 'Morgen')
+        .replace(format(new Date(Date.now() - time.day), tFormatString, { locale: deLocale }), 'Gestern');
 };
+fnsFormat.simpleMonth = 'M';
+fnsFormat.shortMonth = 'MMM';
+fnsFormat.longMonth = 'MMMM';
+fnsFormat.day = 'D';
+fnsFormat.numberWeekDay = 'd';
+fnsFormat.shortWeekDay = 'ddd';
+fnsFormat.longWeekDay = 'dddd';
+fnsFormat.shortYear = 'YY';
+fnsFormat.longYear = 'YYYY';
+fnsFormat.hour = 'H';
+fnsFormat.simpleMinute = 'm';
+fnsFormat.minute = 'mm';
+fnsFormat.second = 's';
