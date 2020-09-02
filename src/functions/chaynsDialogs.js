@@ -404,6 +404,22 @@ function advancedDate(message = '', options = {}, buttons = undefined) {
     });
 }
 
+function iFrame(url, config, buttons, useCustomHandlers = true) {
+    return new DialogPromise(async () => new Promise(resolve => {
+        chayns.dialog.iFrame({
+            url: config.url,
+            input: config.input,
+            buttons,
+            seamless: config.seamless,
+            transparent: config.transparent,
+            waitCursor: config.waitCursor,
+            maxHeight: config.maxHeight,
+            width: config.width,
+            customTransitionTimeout: config.customTransitionTimeout
+        }).then();
+    }), useCustomHandlers);
+}
+
 /**
  * @callback fullResolveFn
  * @param {Object} result
@@ -494,6 +510,45 @@ class DialogPromise extends Promise {
     abort() {
         return chayns.dialog.close();
     }
+}
+
+/**
+ * @class
+ * @extends DialogPromise
+ * @property {dialogThen} result
+ * @property {dialogThen} data
+ */
+class IframeDialogPromise extends DialogPromise {
+    constructor(resolveFn) {
+        super(resolveFn);
+    }
+
+    /**
+     * @param {resolveFn} resolveFn
+     * @returns {DialogPromise<dialogResult>}
+     */
+    result(resolveFn) {
+        chayns.dialog.addDialogResultListener(resolveFn);
+        this.then(() => {
+            chayns.dialog.removeDialogResultListener(resolveFn);
+        });
+        return this;
+    }
+
+    /**
+     * @param {resolveFn} resolveFn
+     * @param {boolean} getApiEvents - get sent data that has isApiEvent set
+     * @returns {DialogPromise<dialogResult>}
+     */
+    data(resolveFn, getApiEvents) {
+        chayns.dialog.addDialogDataListener(resolveFn, getApiEvents);
+        this.then(() => {
+            chayns.dialog.removeDialogDataListener(resolveFn, getApiEvents);
+        });
+        return this;
+    }
+
+
 }
 
 const chaynsDialog = {
