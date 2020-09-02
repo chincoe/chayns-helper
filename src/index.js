@@ -34,7 +34,7 @@ export {
     ResponseType,
     LogLevel
 } from "./functions/httpRequest";
-export { default as showSuccessAnimation } from "./functions/showSuccessAnimation";
+export { showSuccessAnimation, showFailureAnimation } from "./functions/showSuccessAnimation";
 export {
     fnsFormat,
     formatDate,
