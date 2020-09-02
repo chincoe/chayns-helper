@@ -307,6 +307,23 @@ const __PRODUCTION__ = true;
  *      },
  *      showFloatingButton(floatingButtonConfig, function),
  *      dialog: {
+ *          alert(string, string): Promise,
+ *          confirm(string, string, Object[]): Promise,
+ *          input(Object): Promise,
+ *          select(Object): Promise,
+ *          date(Object): Promise,
+ *          advancedDate(Object): Promise,
+ *          mediaSelect(Object): Promise,
+ *          fileSelect(Object): Promise,
+ *          iFrame(Object): Promise,
+ *          sendData(*, boolean),
+ *          addDialogDataListener(function(*), boolean),
+ *          removeDialogDataListener(function(*), boolean),
+ *          setResult(*),
+ *          addDialogResultListener(function(*)),
+ *          removeDialogResultListener(function(*)),
+ *          close(number|undefined),
+ *          disableButtons(boolean, number[])
  *          buttonText: {
  *              NO: string,
  *              YES: string,
@@ -1395,7 +1412,92 @@ const chayns = {
         }
     },
     dialog: {
-        alert(title, message, buttons) {},
+        /**
+         * @param headline
+         * @param text
+         * @returns Promise
+         */
+        alert(headline, text) {},
+        /**
+         * @param headline
+         * @param text
+         * @param buttons
+         * @returns Promise
+         */
+        confirm(headline, text, buttons) {},
+        /**
+         * @param config
+         * @returns Promise
+         */
+        input(config) {},
+        /**
+         * @param config
+         * @returns Promise
+         */
+        select(config) {},
+        /**
+         * @param config
+         * @returns Promise
+         */
+        date(config) {},
+        /**
+         * @param config
+         * @returns Promise
+         */
+        advancedDate(config) {},
+        /**
+         * @param config
+         * @returns Promise
+         */
+        mediaSelect(config) {},
+        /**
+         * @param config
+         * @returns Promise
+         */
+        fileSelect(config) {},
+        /**
+         * @param config
+         * @returns Promise
+         */
+        iFrame(config) {},
+        /**
+         * @param {*} data
+         * @param {boolean} isApiEvent
+         * @returns Promise
+         */
+        sendData(data, isApiEvent) {},
+        /**
+         * @param {function(*)} callback
+         * @param {boolean} getApiEvents
+         */
+        addDialogDataListener(callback, getApiEvents) {},
+        /**
+         * @param {function(*)} callback
+         * @param {boolean} getApiEvents
+         */
+        removeDialogDataListener(callback, getApiEvents) {},
+        /**
+         * @param {*} result
+         * @param register - internal param
+         */
+        setResult(result, register) {},
+        /**
+         * @param {function(*)} callback
+         */
+        addDialogResultListener(callback) {},
+        /**
+         * @param {function(*)} callback
+         */
+        removeDialogResultListener(callback) {},
+        /**
+         * @param {number} [buttonType=undefined]
+         */
+        close(buttonType = undefined) {},
+        /**
+         * @param {boolean} disable - true to disable, false to enable
+         * @param {number[]} buttonTypes
+         */
+        disableButtons(disable, buttonTypes) {},
         buttonText: {
             YES: 'Yes',
             NO: 'No',
