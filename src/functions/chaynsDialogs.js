@@ -48,16 +48,14 @@ const createDialogResult = (type, value = undefined) => ({ buttonType: type, val
  * @param {string} [message='']
  * @param {Object} [options={}]
  * @param {string} [options.title='']
- * @param {boolean} [useCustomHandlers=true] - false disables .positive, .negative and .cancel but enables await
- * @return {dialogResult|Dialog|Promise<dialogResult>}
+ * @return {DialogPromise<dialogResult>}
  */
-const alert = (message = '', options = {}, useCustomHandlers = true) => new Dialog(
-    async () => new Promise((resolve) => {
-        chayns.dialog.alert(options?.title || '', message)
+const alert = (message = '', options = {}) => new DialogPromise((resolve) => {
+    chayns.dialog.alert(options?.title || '', message)
         .then((type) => {
             resolve(createDialogResult(type));
         });
-    }), useCustomHandlers);
+});
 
 /**
  * Confirm dialog
@@ -65,16 +63,14 @@ const alert = (message = '', options = {}, useCustomHandlers = true) => new Dial
  * @param {button[]} [buttons=undefined]
  * @param {Object} [options={}]
  * @param {string} [options.title='']
- * @param {boolean} [useCustomHandlers=true] - false disables .positive, .negative and .cancel but enables await
- * @return {dialogResult|Dialog|Promise<dialogResult>}
+ * @return {DialogPromise<dialogResult>}
  */
-const confirm = (message = '', options = {}, buttons = undefined, useCustomHandlers = true) => new Dialog(
-    async () => new Promise((resolve) => {
-        chayns.dialog.confirm(options?.title || '', message, buttons)
+const confirm = (message = '', options = {}, buttons = undefined) => new DialogPromise((resolve) => {
+    chayns.dialog.confirm(options?.title || '', message, buttons)
         .then((type) => {
             resolve(createDialogResult(type));
         });
-    }), useCustomHandlers);
+});
 
 /**
  * Type for input dialog
@@ -103,12 +99,11 @@ const inputType = {
  * @param {buttonType[]} options.disableButtonTypes - array of the buttonTypes that will be disabled if
  *     {@link options.regex} doesn't match the input
  * @param {button[]} [buttons=undefined]
- * @param {boolean} [useCustomHandlers=true] - false disables .positive, .negative and .cancel but enables await
- * @return {dialogResult|Dialog|Promise<dialogResult>}
+ * @return {DialogPromise<dialogResult>}
  */
-function input(message = '', options = {}, buttons = undefined, useCustomHandlers = true) {
+function input(message = '', options = {}, buttons = undefined) {
     this.type = { ...inputType };
-    return new Dialog(async () => new Promise((resolve) => {
+    return new DialogPromise((resolve) => {
         chayns.dialog.input({
             title: options?.title,
             message,
@@ -122,10 +117,10 @@ function input(message = '', options = {}, buttons = undefined, useCustomHandler
             pattern: options?.pattern,
             disableButtonTypes: options?.disableButtonTypes
         })
-        .then(({ buttonType: type, text }) => {
-            resolve(createDialogResult(type, text));
-        });
-    }), useCustomHandlers);
+            .then(({ buttonType: type, text }) => {
+                resolve(createDialogResult(type, text));
+            });
+    });
 }
 
 /**
@@ -170,12 +165,11 @@ const selectType = {
  * @param {string} options.selectAllButton - add a checkbox with this prop as label that (de)selects all elements at
  *     once
  * @param {button[]} [buttons=undefined]
- * @param {boolean} [useCustomHandlers=true] - false disables .positive, .negative and .cancel but enables await
- * @return {selectDialogResult|Dialog|Promise<selectDialogResult>}
+ * @return {DialogPromise<dialogResult>}
  */
-function select(message = '', options = {}, buttons = undefined, useCustomHandlers = true) {
+function select(message = '', options = {}, buttons = undefined) {
     this.type = { ...selectType };
-    return new Dialog(async () => new Promise((resolve) => {
+    return new DialogPromise((resolve) => {
         chayns.dialog.select({
             title: options?.title,
             message,
@@ -187,21 +181,21 @@ function select(message = '', options = {}, buttons = undefined, useCustomHandle
             buttons,
             selectAllButton: options?.selectAllButton
         })
-        .then((result) => {
-            const { buttonType: type, selection } = result;
-            if (!options?.multiselect && selection && selection.length === 1) {
-                const { name, value } = types.safeFirst(selection);
-                resolve(createDialogResult(type, { name, value }));
-            } else if (!options?.multiselect) {
-                resolve(createDialogResult(type, null));
-            }
-            if (options?.multiselect && selection && selection.length > 0) {
-                resolve(createDialogResult(type, selection));
-            } else {
-                resolve(createDialogResult(type, []));
-            }
-        });
-    }), useCustomHandlers);
+            .then((result) => {
+                const { buttonType: type, selection } = result;
+                if (!options?.multiselect && selection && selection.length === 1) {
+                    const { name, value } = types.safeFirst(selection);
+                    resolve(createDialogResult(type, { name, value }));
+                } else if (!options?.multiselect) {
+                    resolve(createDialogResult(type, null));
+                }
+                if (options?.multiselect && selection && selection.length > 0) {
+                    resolve(createDialogResult(type, selection));
+                } else {
+                    resolve(createDialogResult(type, []));
+                }
+            });
+    });
 }
 
 const validateDate = (param, allowMissingValue = true) => {
@@ -343,26 +337,25 @@ const resolveDateSelectType = (type) => [
  * @param {weekDayIntervalItem[][7]} options.disabledWeekDayIntervals - array of {@link weekDayIntervalItem} with a[0]
  *     = monday, a[1] = tuesday...
  * @param {button[]} [buttons=undefined]
- * @param {boolean} [useCustomHandlers=true] - false disables .positive, .negative and .cancel but enables await
- * @return {dialogResult|Dialog|Promise<dialogResult>}
+ * @return {DialogPromise<dialogResult>}
  */
-function advancedDate(message = '', options = {}, buttons = undefined, useCustomHandlers = true) {
+function advancedDate(message = '', options = {}, buttons = undefined) {
     this.type = { ...dateType };
     this.selectType = { ...dateSelectType };
     this.textBlockPosition = { ...textBlockPosition };
-    return new Dialog(async () => new Promise((resolve) => {
+    return new DialogPromise((resolve) => {
         const dialogSelectType = (options?.selectType !== undefined && Object.values(dateSelectType).includes(
             options?.selectType
-                                 )
+            )
                                   ? options?.selectType
                                   : null)
-                                 ?? (options?.multiselect
-                                     ? dateSelectType.MULTISELECT
-                                     : null)
-                                 ?? (options?.interval
-                                     ? dateSelectType.INTERVAL
-                                     : null)
-                                 ?? dateSelectType.SINGLE;
+            ?? (options?.multiselect
+                ? dateSelectType.MULTISELECT
+                : null)
+            ?? (options?.interval
+                ? dateSelectType.INTERVAL
+                : null)
+            ?? dateSelectType.SINGLE;
 
         chayns.dialog.select({
             title: options?.title,
@@ -385,106 +378,122 @@ function advancedDate(message = '', options = {}, buttons = undefined, useCustom
             disabledWeekDayIntervals: options?.disabledWeekDayIntervals,
             ...resolveDateSelectType(dialogSelectType)
         })
-        .then((result) => {
-            // single date: { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }] }
-            // multiselect : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, ...] }
-            // interval : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, { isSelected:
-            // true, timestamp: ... in s }] }
-            const { buttonType: type, selectedDates } = result;
-            if (!selectedDates) {
-                if (dialogSelectType === 0) resolve(createDialogResult(type, null));
-                if (dialogSelectType !== 0) resolve(createDialogResult(type, []));
-            }
-            if (dialogSelectType === 0) {
-                const selectedDate = types.safeFirst(selectedDates);
-                resolve(createDialogResult(
-                    type,
-                    (selectedDate && selectedDate.timestamp ? new Date(selectedDate.timestamp * 1000) : null)
-                ));
-            } else if (dialogSelectType !== 0) {
-                resolve(createDialogResult(
-                    type, (selectedDates || []).map((d) => (d ? new Date(d.timestamp * 1000) : null))
-                    .filter((d) => !!d)
-                ));
-            }
-        });
-    }), useCustomHandlers);
+            .then((result) => {
+                // single date: { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }] }
+                // multiselect : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, ...] }
+                // interval : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, { isSelected:
+                // true, timestamp: ... in s }] }
+                const { buttonType: type, selectedDates } = result;
+                if (!selectedDates) {
+                    if (dialogSelectType === 0) resolve(createDialogResult(type, null));
+                    if (dialogSelectType !== 0) resolve(createDialogResult(type, []));
+                }
+                if (dialogSelectType === 0) {
+                    const selectedDate = types.safeFirst(selectedDates);
+                    resolve(createDialogResult(
+                        type,
+                        (selectedDate && selectedDate.timestamp ? new Date(selectedDate.timestamp * 1000) : null)
+                    ));
+                } else if (dialogSelectType !== 0) {
+                    resolve(createDialogResult(
+                        type, (selectedDates || []).map((d) => (d ? new Date(d.timestamp * 1000) : null))
+                            .filter((d) => !!d)
+                    ));
+                }
+            });
+    });
 }
 
 /**
- * Wrapper for dialogs to add custom handlers like .positive, .negative and .cancel
- * Usage: chaynsDialog.confirm('Is this dialog great?')
- *              .positive((value) => console.log('yes!'))                   // buttonType 1
- *              .negative((value) => console.log('no!'))                    // buttonType 0
- *              .cancel((value) => console.log('hey, you didn't answer!'))  // buttonType -1
- *              .then(({ buttonType, value } => console.log(value));        // always
- * or:    const { buttonType, value } = await chaynsDialog.confirm('Is this dialog great?');
- * @param {function: Promise} dialogFn - the async function that shows the dialog and returns the already formatted
- *     result Promise
- * @param {boolean} [useCustomHandlers=true] - enables or disables custom handlers. Returns the promise if set to false
- * @return {*}
- * @constructor
+ * @callback fullResolveFn
+ * @param {Object} result
+ * @param {number} result.buttonType
+ * @param {*} result.value
+ * @returns {DialogPromise<dialogResult>}
  */
-function Dialog(dialogFn, useCustomHandlers = true) {
-    const handlers = [];
-    this.then = (handler) => {
-        if (types.isFunction(handler)) {
-            handlers.push({
-                call: handler,
-                type: null
-            });
-        }
-        return this;
-    };
-    this.positive = (handler) => {
-        if (types.isFunction(handler)) {
-            handlers.push({
-                call: handler,
-                type: 1
-            });
-        }
-        return this;
-    };
-    this.negative = (handler) => {
-        if (types.isFunction(handler)) {
-            handlers.push({
-                call: handler,
-                type: 0
-            });
-        }
-        return this;
-    };
-    this.cancel = (handler) => {
-        if (types.isFunction(handler)) {
-            handlers.push({
-                call: handler,
-                type: -1
-            });
-        }
-        return this;
-    };
 
-    const promise = new Promise((resolve, reject) => {
-        (async () => {
-            try {
-                const result = await dialogFn();
-                const { buttonType: type, value } = result;
-                for (let i = 0; i < handlers.length; i += 1) {
-                    const { type: handlerType, call } = handlers[i];
-                    if (handlerType === type) {
-                        call(value);
-                    } else if (handlerType === null) {
-                        call({ ...result });
-                    }
-                }
-                resolve(result);
-            } catch (e) {
-                reject(e);
+/**
+ * @callback resolveFn
+ * @param {Object} result
+ * @param {number} result.buttonType
+ * @param {*} result.value
+ * @returns {DialogPromise<dialogResult>}
+ */
+
+/**
+ * @callback dialogThen
+ * @param {resolveFn} resolveFn
+ * @returns {DialogPromise<dialogResult>}
+ */
+
+/**
+ * @callback fullDialogThen
+ * @param {fullResolveFn} resolveFn
+ * @returns {DialogPromise<dialogResult>}
+ */
+
+/**
+ * @class
+ * @property {dialogThen} positive
+ * @property {dialogThen} negative
+ * @property {dialogThen} cancelled
+ * @property {fullDialogThen} then
+ * @property {function(Error)} catch
+ */
+class DialogPromise extends Promise {
+    constructor(resolveFn) {
+        super(resolveFn);
+        this.positive.bind(this);
+        this.negative.bind(this);
+        this.cancelled.bind(this);
+    }
+
+    /**
+     * @param {resolveFn} resolveFn
+     * @returns {DialogPromise<dialogResult>}
+     */
+    positive(resolveFn) {
+        this.then((result) => {
+            if (result.buttonType === 1) {
+                return resolveFn(result.value);
             }
-        })();
-    });
+        });
+        return this;
+    }
 
-    return useCustomHandlers ? this : promise;
+    /**
+     * @param {resolveFn} resolveFn
+     * @returns {DialogPromise<dialogResult>}
+     */
+    negative(resolveFn) {
+        this.then((result) => {
+            if (result.buttonType === 0) {
+                return resolveFn(result.value);
+            }
+        });
+        return this;
+    }
+
+    /**
+     * @param {resolveFn} resolveFn
+     * @returns {DialogPromise<dialogResult>}
+     */
+    cancelled(resolveFn) {
+        this.then((result) => {
+            if (result.buttonType === -1) {
+                return resolveFn(result.value);
+            }
+        });
+        return this;
+    }
+
+    /**
+     * close the dialog
+     * @returns {*}
+     */
+    abort() {
+        return chayns.dialog.close();
+    }
 }
 
 const chaynsDialog = {
