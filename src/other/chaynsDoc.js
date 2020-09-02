@@ -410,6 +410,7 @@ const __PRODUCTION__ = true;
  *      getGlobalData(),
  *      getNetworkStatus(),
  *      env: {
+ *          dialogInput: Object,
  *          appVersion: number,
  *          isChaynsWebMobile: boolean,
  *          language: string,
@@ -1054,8 +1055,9 @@ const chayns = {
      * @param {number} iOSFeedbackVibration
      */
     vibrate(pattern, iOSFeedbackVibration) {},
-    ready: new Promise(),
+    ready: new Promise(r => {r();}),
     env: {
+        dialogInput: {},
         parameters: {},
         _parameters: {},
         browser: {
@@ -1207,11 +1209,11 @@ const chayns = {
                  * @param {*} param2
                  * @param {*} param3
                  */
-                log(param1, param2, param3){},
+                log(param1, param2, param3) {},
                 /**
                  * @param {number} level
                  */
-                setLevel(level){},
+                setLevel(level) {},
                 level: 0
             }
 
