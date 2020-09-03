@@ -86,3 +86,4 @@ export {
 export { default as AsyncPromise } from './functions/AsyncPromise';
 export { default as createThunk } from './redux/createThunk';
 export { default as createEnum } from './functions/createEnum';
+export { default as getHookState } from './functions/getHookState';
