@@ -7,13 +7,13 @@ import localStorage from '../other/localStorageHelper';
 /**
  * @type {{Delete: string, Post: string, Get: string, Patch: string, Put: string}}
  */
-export const HttpMethod = {
+export const HttpMethod = Object.freeze({
     Get: 'GET',
     Post: 'POST',
     Put: 'PUT',
     Patch: 'PATCH',
     Delete: 'DELETE',
-};
+});
 
 /**
  * Custom error for error statusCodes or other errors during a httpRequest
@@ -148,14 +148,14 @@ export const handleRequest = (
  * @property {string} Response - Get the Response Object
  * @property {string} Blob - Get response.blob()
  * @property {string} Json - Get response.json()
- * @property {Object.<string, *>} Object - Get status and json as Object {status: number, data: Object}
+ * @property {string} Object - Get status and json as Object {status: number, data: Object}
  */
-export const ResponseType = {
+export const ResponseType = Object.freeze({
     Json: 'json',
     Blob: 'blob',
     Response: 'response',
-    Object: 'object'
-};
+    Object: 'object',
+});
 
 /**
  * @typedef objectResponse
@@ -167,13 +167,13 @@ export const ResponseType = {
  * Log Level
  * @type {{critical: string, warning: string, none: string, error: string, info: string}}
  */
-export const LogLevel = {
+export const LogLevel = Object.freeze({
     info: 'info',
     warning: 'warning',
     error: 'error',
     critical: 'critical',
     none: 'none'
-};
+});
 
 /**
  * @callback onProgressHandler
@@ -206,8 +206,9 @@ export const LogLevel = {
  * @param {boolean} [options.stringifyBody=true] - Call JSON.stringify(body) for the body passed to this function
  * @param {Object} [options.additionalLogData={}] - Additional data to be logged with this request
  * @param {boolean} [options.autoRefreshToken=true] - Automatically try to refresh the token once if it expired
- * @param {Object} [options.statusHandlers={}] - Handle response for specific success status codes
+ * @param {Object} [options.statusHandlers={}] - Handle response for specific status codes
  * Usage: { [statusCode|regexString] : (response) => { my code }, ... }
+ *    OR: { [statusCode|regexString] : responseType }
  *     - handler always receives entire response as parameter, not just the body
  *     - value returned from handler is returned as result of the request
  *     - handler can be async and will be awaited
@@ -229,7 +230,10 @@ export const LogLevel = {
  *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
  *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
- *
+ * @param {boolean|Array.<number>|Object.<string,ResponseType>} options.getBodyOnStatus -
+ *  1. bool: get body on all error status codes
+ *  2. Array<StatusCode>: get body on the specified status codes
+ *  3. Object<statusCode,responseType>: get body on these status codes with the specified response type
  * @async
  * @public
  * @return {Promise<Response|objectResponse|Blob|Object>} - response or response body
@@ -270,10 +274,9 @@ const httpRequest = async (
                 // bool: automatically try to refresh the token once if it is expired
                 autoRefreshToken = true,
                 /*
-                 * SUCCESS STATUS CODES ONLY
                  * Execute these callbacks on specific status codes. Format:
                  * 1. { [statusCodeOrRegexString] : (response) => { my code }, ... }
-                 * 2. { codes: [...statusCodeArray], handler: (response) => { my code } }
+                 * 2. { [statusCodeOrRegexString] : responseType, ... }
                  * - handler always receives entire response as parameter, not just the body
                  * - value returned from handler is returned as result of the request
                  * - handler can be async and will be awaited
@@ -281,7 +284,7 @@ const httpRequest = async (
                 statusHandlers = {},
                 /* function: Enables you to monitor download progress. Receives params (percentage, loaded, total)
                  * - CAUTION: This disallows using .json() or .blob() on the body afterwards unless you use XMLHttpRequest.
-                 *   A property "stringBody" is available instead. "returnJson" and "returnBlob" will still work. */
+                 *   A property "stringBody" is available instead. responseTypes other than "response" will still work. */
                 /**
                  * @type {onProgressHandler}
                  */
@@ -292,6 +295,7 @@ const httpRequest = async (
 
         if (responseType != null && !Object.values(ResponseType).includes(responseType)) {
             console.error(`[HttpRequest] Response type ${responseType} is not valid. Use json|blob|response|object instead.`);
+            reject("Invalid responseType");
             return;
         }
 
@@ -327,7 +331,15 @@ const httpRequest = async (
             requestAddress += `${/\?.+$/.test(address) ? '&' : '?'}${generateUUID().toString().split('-').join('')}`;
         }
 
-        const tryReject = (err = null, status = null) => {
+        const tryReject = (err = null, status = null, force = false) => {
+            if (statusHandlers[status]
+                && (
+                    types.isFunction(statusHandlers[status])
+                    || Object.values(ResponseType).includes(statusHandlers[status])
+                )
+                && !force) {
+                return;
+            }
             if (ignoreErrors === true) {
                 resolve(null);
             } else if (status && types.isArray(ignoreErrors) && ignoreErrors.includes(status)) {
@@ -510,11 +522,33 @@ const httpRequest = async (
          * 1. statusHandlers[status]
          * 2. statusHandlers[regex]
          * 3. response type
+         *    3.1. if onProgress: onProgress => response Type
+         *    3.2. responseType
          */
 
-        if (statusHandlers[status] && types.isFunction(statusHandlers[status])) {
-            resolve(await statusHandlers[status](response));
+        // statusHandlers[status]
+        if (statusHandlers[status]) {
+            if (types.isFunction(statusHandlers[status])) {
+                resolve(await statusHandlers[status](response));
+            } else {
+                switch (statusHandlers[status]) {
+                    case ResponseType.Json:
+                        jsonResolve(response, processName, resolve, tryReject, useFetchApi);
+                        return;
+                    case ResponseType.Blob:
+                        blobResolve(response, processName, resolve, tryReject, useFetchApi);
+                        return;
+                    case ResponseType.Object:
+                        objectResolve(response, processName, resolve, tryReject, useFetchApi);
+                        return;
+                    case ResponseType.Response:
+                    default:
+                        resolve(response);
+                        return;
+                }
+            }
         }
+        // statusHandlers[regex]
         if (!types.isNullOrEmpty(statusHandlers)) {
             const keys = Object.keys(statusHandlers);
             for (let i = 0; i < types.length(keys); i += 1) {
@@ -526,6 +560,8 @@ const httpRequest = async (
                 }
             }
         }
+
+        // onProgress => responseType
         if (onProgress && types.isFunction(onProgress) && useFetchApi) {
             const responseClone = response.clone();
             const reader = responseClone.body.getReader();
@@ -574,6 +610,7 @@ const httpRequest = async (
                 resolve(response);
             }
         } else {
+            // responseType
             if (responseType === null || responseType === ResponseType.Json) {
                 try {
                     resolve(useFetchApi ? await response.json() : JSON.parse(response.response));
@@ -637,5 +674,65 @@ const httpRequest = async (
         }
     })();
 });
+
+const jsonResolve = async (response, processName, resolve, tryReject, useFetchApi) => {
+    const { status } = response;
+    try {
+        resolve(useFetchApi ? await response.json() : JSON.parse(response.response));
+    } catch (err) {
+        chaynsHelperConfig.getLogger().warning({
+            message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
+        }, err);
+        // eslint-disable-next-line no-console
+        console.notLive.error(`[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`, err);
+        if (status >= 200 && status < 300) {
+            resolve(null);
+        } else {
+            tryReject(null, status, true);
+        }
+    }
+};
+
+const blobResolve = async (response, processName, resolve, tryReject, useFetchApi) => {
+    const { status } = response;
+    try {
+        resolve(useFetchApi ? await response.blob() : new Blob(response.response));
+    } catch (err) {
+        chaynsHelperConfig.getLogger().warning({
+            message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`
+        }, err);
+        // eslint-disable-next-line no-console
+        console.notLive.error(
+            `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
+            err
+        );
+        if (status >= 200 && status < 300) {
+            resolve(null);
+        } else {
+            tryReject(null, status, true);
+        }
+    }
+};
+
+const objectResolve = async (response, processName, resolve, tryReject, useFetchApi) => {
+    const { status } = response;
+    try {
+        resolve({ status, data: useFetchApi ? await response.json() : JSON.parse(response.response) });
+    } catch (err) {
+        chaynsHelperConfig.getLogger().warning({
+            message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
+        }, err);
+        // eslint-disable-next-line no-console
+        console.notLive.error(
+            `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
+            err
+        );
+        if (status >= 200 && status < 300) {
+            resolve(null);
+        } else {
+            tryReject(null, status, true);
+        }
+    }
+};
 
 export default httpRequest;
