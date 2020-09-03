@@ -46,9 +46,7 @@ module.exports = {
             ],
         },
         development: {
-            plugins: [
-                'react-hot-loader/babel',
-            ],
+            plugins: [],
         },
     },
 };

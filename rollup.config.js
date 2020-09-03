@@ -6,18 +6,18 @@ import postcss from "rollup-plugin-postcss";
 import pkg from "./package.json";
 
 export default {
-  input: "src/index.js",
-  output: [
-    { file: pkg.main, format: "cjs" },
-    { file: pkg.module, format: "esm" },
-  ],
-  plugins: [
-    postcss(),
-    autoExternal(),
-    resolve({
-      extensions: [".js", ".jsx", ".json"],
-    }),
-    commonjs(),
-    babel({ babelHelpers: "runtime" }),
-  ],
+    input: "src/index.js",
+    output: [
+        { file: pkg.main, format: "cjs" },
+        { file: pkg.module, format: "esm" },
+    ],
+    plugins: [
+        postcss(),
+        autoExternal(),
+        resolve({
+            extensions: [".js", ".jsx", ".json"],
+        }),
+        commonjs(),
+        babel({ babelHelpers: "runtime" }),
+    ],
 };
