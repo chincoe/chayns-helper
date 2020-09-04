@@ -188,7 +188,7 @@ function select(
         preventCloseOnClick = false,
         type = selectType.DEFAULT,
         selectAllButton = null
-    }, buttons = undefined
+    } = {}, buttons = undefined
 ) {
     return new DialogPromise((resolve) => {
         chayns.dialog.select({
@@ -400,7 +400,7 @@ function advancedDate(
         disabledIntervals = null,
         disabledWeekDayIntervals = null,
         getLocalTime = false
-    }, buttons = undefined
+    } = {}, buttons = undefined
 ) {
     return new DialogPromise((resolve) => {
         const dialogSelectType = (
@@ -480,7 +480,7 @@ function mediaSelect(
         title = '',
         message = '',
         multiselect = false
-    }, buttons = undefined
+    } = {}, buttons = undefined
 ) {
     return new DialogPromise((resolve) => {
         chayns.dialog.mediaSelect({
@@ -538,7 +538,7 @@ function fileSelect(
         contentType = [],
         exclude = [],
         directory = false
-    }, buttons = undefined
+    } = {}, buttons = undefined
 ) {
     return new DialogPromise((resolve) => {
         chayns.dialog.fileSelect({
@@ -584,7 +584,7 @@ function iFrame(
         maxHeight = null,
         width = null,
         customTransitionTimeout = null
-    },
+    } = {},
     buttons = []
 ) {
     return new IframeDialogPromise((resolve) => {

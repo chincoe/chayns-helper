@@ -94,7 +94,7 @@ export const handleRequest = (
         finallyHandler = () => null, // function: is always executed
         waitCursor = false, // bool/object: true or { text, textTimeout, timeout }
         cache = null // string/object: cacheKey or { key, duration, cacheResolver }
-    }
+    } = {}
 ) => new Promise(
     (resolve, reject) => {
         const useWaitCursor = !!waitCursor;
@@ -340,7 +340,7 @@ const httpRequest = async (
         onProgress = null,
         // adds a random number as url param to bypass the browser cache
         addHashToUrl = false
-    },
+    } = {},
 ) => new Promise((resolve, reject) => {
     (async () => {
         /** INPUT HANDLING */
