@@ -144,6 +144,72 @@ export const handleRequest = (
 );
 
 /**
+ * @param response
+ * @param processName
+ * @param resolve
+ * @param useFetchApi
+ * @returns {Promise<void>}
+ */
+const jsonResolve = async (response, processName, resolve, useFetchApi) => {
+    const { status } = response;
+    try {
+        resolve(useFetchApi ? await response.json() : JSON.parse(response.response));
+    } catch (err) {
+        logger.warning({
+            message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
+        }, err);
+        // eslint-disable-next-line no-console
+        console.error(`[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`, err);
+        resolve(null);
+    }
+};
+
+/**
+ * @param response
+ * @param processName
+ * @param resolve
+ * @param useFetchApi
+ * @returns {Promise<void>}
+ */
+const blobResolve = async (response, processName, resolve, useFetchApi) => {
+    const { status } = response;
+    try {
+        resolve(useFetchApi ? await response.blob() : new Blob(response.response));
+    } catch (err) {
+        logger.warning({
+            message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`
+        }, err);
+        // eslint-disable-next-line no-console
+        console.error(
+            `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
+            err
+        );
+        resolve(null);
+    }
+};
+
+/**
+ * @param response
+ * @param processName
+ * @param resolve
+ * @param useFetchApi
+ * @returns {Promise<void>}
+ */
+const objectResolve = async (response, processName, resolve, useFetchApi) => {
+    const { status } = response;
+    try {
+        resolve({ status, data: useFetchApi ? await response.json() : JSON.parse(response.response) });
+    } catch (err) {
+        logger.warning({
+            message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`
+        }, err);
+        // eslint-disable-next-line no-console
+        console.error(`[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`, err);
+        resolve({ status, data: null });
+    }
+};
+
+/**
  * httpRequest response type. Default: json
  * @type {Object}
  * @property {string} Response - Get the Response Object
@@ -217,24 +283,10 @@ export const LogLevel = Object.freeze({
  *      1. statusHandlers[status]
  *      2. statusHandlers[regex]
  *      3. response type
- * @param {statusCodeHandler} [options.statusHandlers.200]
- * @param {statusCodeHandler} [options.statusHandlers.201]
- * @param {statusCodeHandler} [options.statusHandlers.204]
- * @param {statusCodeHandler} [options.statusHandlers.304]
- * @param {statusCodeHandler} [options.statusHandlers.400]
- * @param {statusCodeHandler} [options.statusHandlers.401]
- * @param {statusCodeHandler} [options.statusHandlers.403]
- * @param {statusCodeHandler} [options.statusHandlers.404]
- * @param {statusCodeHandler} [options.statusHandlers.500]
- * @param {statusCodeHandler} [options.statusHandlers.503]
  * @param {onProgressHandler} [options.onProgress=null] - Gets called multiple times during the download of bigger data,
  *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
  *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
- * @param {boolean|Array.<number>|Object.<string,ResponseType>} options.getBodyOnStatus -
- *  1. bool: get body on all error status codes
- *  2. Array<StatusCode>: get body on the specified status codes
- *  3. Object<statusCode,responseType>: get body on these status codes with the specified response type
  * @async
  * @public
  * @return {Promise<Response|objectResponse|Blob|Object>} - response or response body
@@ -247,55 +299,56 @@ const httpRequest = async (
     // processName for logs
     processName = 'HttpRequest',
     // options for this helper
-    options = {},
+    {
+        /**
+         * ResponseType, Default: json
+         * @type {ResponseType|string|null}
+         */
+        responseType = null,
+        /**
+         * log level config of each status code
+         * Defaults: status<400 : info, status=401: warning, else: error
+         * @type {Object.<string|RegExp,LogLevel|string>}
+         */
+        logConfig = {},
+        // bool|number[]: don't throw errors on error status codes, return null instead
+        ignoreErrors = false,
+        // bool: use fetch(), use XMLHttpRequest otherwise
+        useFetchApi = true,
+        // bool: call JSON.stringify() on the body passed to this function
+        stringifyBody = true,
+        // object: additional data to be logged
+        additionalLogData = {},
+        // bool: automatically try to refresh the token once if it is expired
+        autoRefreshToken = true,
+        /*
+         * Handle responses for specific status codes manually. Format:
+         * 1. { [statusCodeOrRegexString] : (response) => { my code }, ... }
+         * 2. { [statusCodeOrRegexString] : responseType, ... }
+         * - handler always receives entire response as parameter, not just the body
+         * - value returned from handler is returned as result of the request
+         * - handler can be async and will be awaited
+         * => Use this to get jsonBody on error status codes or prefen .json() on 204
+         */
+        statusHandlers = {},
+        /* function: Enables you to monitor download progress. Receives params (percentage, loaded, total)
+         * - CAUTION: This disallows using .json() or .blob() on the body unless you use XMLHttpRequest.
+         *   A property "stringBody" is available instead. responseTypes other than "response" will still work.
+         */
+        /**
+         * @type {onProgressHandler}
+         */
+        onProgress = null,
+        // adds a random number as url param to bypass the browser cache
+        addHashToUrl = false
+    },
 ) => new Promise((resolve, reject) => {
     (async () => {
         /** INPUT HANDLING */
-            // read options object
-        const {
-                /**
-                 * ResponseType, Default: json
-                 * @type {ResponseType|string|null}
-                 */
-                responseType = null,
-                /**
-                 * log level config of each status code
-                 * Defaults: status<400 : info, status=401: warning, else: error
-                 * @type {Object.<string|RegExp,LogLevel|string>}
-                 */
-                logConfig = {},
-                // bool|number[]: don't throw errors on error status codes, return null instead
-                ignoreErrors = false,
-                // bool: use fetch(), use XMLHttpRequest otherwise
-                useFetchApi = true,
-                // bool: call JSON.stringify() on the body passed to this function
-                stringifyBody = true,
-                // object: additional data to be logged
-                additionalLogData = {},
-                // bool: automatically try to refresh the token once if it is expired
-                autoRefreshToken = true,
-                /*
-                 * Execute these callbacks on specific status codes. Format:
-                 * 1. { [statusCodeOrRegexString] : (response) => { my code }, ... }
-                 * 2. { [statusCodeOrRegexString] : responseType, ... }
-                 * - handler always receives entire response as parameter, not just the body
-                 * - value returned from handler is returned as result of the request
-                 * - handler can be async and will be awaited
-                 */
-                statusHandlers = {},
-                /* function: Enables you to monitor download progress. Receives params (percentage, loaded, total)
-                 * - CAUTION: This disallows using .json() or .blob() on the body afterwards unless you use XMLHttpRequest.
-                 *   A property "stringBody" is available instead. responseTypes other than "response" will still work. */
-                /**
-                 * @type {onProgressHandler}
-                 */
-                onProgress = null,
-                // adds a random number as url param to bypass the browser cache
-                addHashToUrl = false
-            } = options;
-
         if (responseType != null && !Object.values(ResponseType).includes(responseType)) {
-            console.error(`[HttpRequest] Response type ${responseType} is not valid. Use json|blob|response|object instead.`);
+            console.error(
+                `[HttpRequest] Response type ${responseType} is not valid. Use json|blob|response|object instead.`
+            );
             reject(new Error('Invalid responseType'));
             return;
         }
@@ -446,7 +499,8 @@ const httpRequest = async (
                     case LogLevel.none:
                         return console.error;
                     default:
-                        console.error(`[HttpRequest] LogLevel ${logConfig[levelKey]} for ${levelKey} is not valid. Please use a valid log level.`);
+                        console.error(`[HttpRequest] LogLevel ${logConfig[levelKey]} for ${levelKey} is not valid.
+                         Please use a valid log level.`);
                         return logger.warning;
                 }
             } else {
@@ -496,8 +550,16 @@ const httpRequest = async (
                     const jRes = await response.json();
                     if (jRes.message === 'token_expired') {
                         resolve(httpRequest(address, config, processName, {
-                            ...options,
-                            autoRefreshToken: false
+                            responseType,
+                            logConfig,
+                            ignoreErrors,
+                            useFetchApi,
+                            stringifyBody,
+                            additionalLogData,
+                            autoRefreshToken: false,
+                            statusHandlers,
+                            onProgress,
+                            addHashToUrl
                         }));
                     } else {
                         tryReject(error, status);
@@ -534,13 +596,13 @@ const httpRequest = async (
             } else {
                 switch (statusHandlers[status]) {
                     case ResponseType.Json:
-                        await jsonResolve(response, processName, resolve, tryReject, useFetchApi);
+                        await jsonResolve(response, processName, resolve, useFetchApi);
                         return;
                     case ResponseType.Blob:
-                        await blobResolve(response, processName, resolve, tryReject, useFetchApi);
+                        await blobResolve(response, processName, resolve, useFetchApi);
                         return;
                     case ResponseType.Object:
-                        await objectResolve(response, processName, resolve, tryReject, useFetchApi);
+                        await objectResolve(response, processName, resolve, useFetchApi);
                         return;
                     case ResponseType.Response:
                     default:
@@ -623,13 +685,13 @@ const httpRequest = async (
         } else {
             // responseType
             if (responseType === null || responseType === ResponseType.Json) {
-                await jsonResolve(response, processName, resolve, tryReject, useFetchApi);
+                await jsonResolve(response, processName, resolve, useFetchApi);
             }
             if (responseType === ResponseType.Blob) {
-                await blobResolve(response, processName, resolve, tryReject, useFetchApi);
+                await blobResolve(response, processName, resolve, useFetchApi);
             }
             if (responseType === ResponseType.Object) {
-                await objectResolve(response, processName, resolve, tryReject, useFetchApi);
+                await objectResolve(response, processName, resolve, useFetchApi);
             }
             if (responseType === ResponseType.Response) {
                 resolve(response);
@@ -637,66 +699,6 @@ const httpRequest = async (
         }
     })();
 });
-
-const jsonResolve = async (response, processName, resolve, tryReject, useFetchApi) => {
-    const { status } = response;
-    try {
-        resolve(useFetchApi ? await response.json() : JSON.parse(response.response));
-    } catch (err) {
-        logger.warning({
-            message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
-        }, err);
-        // eslint-disable-next-line no-console
-        console.error(`[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`, err);
-        if (status >= 200 && status < 300) {
-            resolve(null);
-        } else {
-            tryReject(null, status, true);
-        }
-    }
-};
-
-const blobResolve = async (response, processName, resolve, tryReject, useFetchApi) => {
-    const { status } = response;
-    try {
-        resolve(useFetchApi ? await response.blob() : new Blob(response.response));
-    } catch (err) {
-        logger.warning({
-            message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`
-        }, err);
-        // eslint-disable-next-line no-console
-        console.error(
-            `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
-            err
-        );
-        if (status >= 200 && status < 300) {
-            resolve(null);
-        } else {
-            tryReject(null, status, true);
-        }
-    }
-};
-
-const objectResolve = async (response, processName, resolve, tryReject, useFetchApi) => {
-    const { status } = response;
-    try {
-        resolve({ status, data: useFetchApi ? await response.json() : JSON.parse(response.response) });
-    } catch (err) {
-        logger.warning({
-            message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
-        }, err);
-        // eslint-disable-next-line no-console
-        console.error(
-            `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
-            err
-        );
-        if (status >= 200 && status < 300) {
-            resolve(null);
-        } else {
-            tryReject(null, status, true);
-        }
-    }
-};
 
 /**
  * @type {{responseType: Object, logLevel: {critical: string, warning: string, none: string, error: string, info:
