@@ -698,4 +698,25 @@ const objectResolve = async (response, processName, resolve, tryReject, useFetch
     }
 };
 
-export default httpRequest;
+/**
+ * @type {{responseType: Object, logLevel: {critical: string, warning: string, none: string, error: string, info:
+ *     string}, method: {Delete: string, Post: string, Get: string, Patch: string, Put: string}, fetch:
+ *     (function(string, {method?: (HttpMethod|string), headers?: Object, useChaynsAuth?: boolean, body?: *, signal?:
+ *     *}=, string=, {responseType?: (ResponseType|string), ignoreErrors?: (boolean|number[]), useFetchApi?: boolean,
+ *     logConfig?: Object<string, LogLevel>, stringifyBody?: boolean, additionalLogData?: Object, autoRefreshToken?:
+ *     boolean, statusHandlers?: statusCodeHandler, onProgress?: onProgressHandler, addHashToUrl?: boolean,
+ *     getBodyOnStatus: (boolean|Array<number>|Object<string, ResponseType>)}=):
+ *     Promise<Response|objectResponse|Blob|Object>), handle: (function(Promise<*>, requestErrorHandler=,
+ *     {finallyHandler?: Function, waitCursor?: {text?: string, textTimeout?: number, timeout?: number}, cache?: {key:
+ *     string, duration?: number, cacheResolver?: cacheResolverCallback}}=): Promise<unknown>), error: RequestError}}
+ */
+const request = {
+    fetch: httpRequest,
+    handle: handleRequest,
+    error: RequestError,
+    responseType: ResponseType,
+    logLevel: LogLevel,
+    method: HttpMethod
+};
+
+export default request;

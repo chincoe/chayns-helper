@@ -147,3 +147,18 @@ fnsFormat.hour = 'H';
 fnsFormat.simpleMinute = 'm';
 fnsFormat.minute = 'mm';
 fnsFormat.second = 's';
+
+/**
+ * @type {{formatDate: (function(Date, boolean=): string), fnsFormat: (function((Date|string|number), string,
+ *     boolean=): string), formatDateText: (function(*=): string), time: {hour: number, day: number, second: number,
+ *     minute: number}, removeTimeZoneOffset: (function(Date): Date)}}
+ */
+const timeHelper = {
+    time,
+    fnsFormat,
+    formatDateText,
+    formatDate,
+    removeTimeZoneOffset
+};
+
+export default timeHelper;

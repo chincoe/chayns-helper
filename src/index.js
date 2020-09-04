@@ -17,46 +17,22 @@ import chaynsCall from './functions/chaynsCalls/chaynsCalls';
 import setViewMode from './functions/chaynsCalls/setViewMode';
 import hideCwFooter from './functions/chaynsCalls/hideCwFooter';
 import openChaynsSite from './functions/chaynsCalls/openChaynsSite';
-import {
-    backgroundColorClass,
-    borderColorClass,
-    colorClass,
-    getChaynsColor,
-    getChaynsColorRgb,
-    hexToRgb,
-    mixChaynsColorRgb,
-} from './functions/chaynsColors';
+import colors from './functions/chaynsColors';
 import chaynsDialog from './functions/chaynsDialogs';
 import copyOnClick from './functions/copy';
 import defaultErrorHandler from './config/default-error-handler';
 import generateUUID from './functions/generateUid';
-import httpRequest, {
-    handleRequest,
-    RequestError,
-    HttpMethod,
-    ResponseType,
-    LogLevel
-} from './functions/httpRequest';
+import request from './functions/httpRequest';
 import showSuccessAnimation from './functions/statusAnimations/showSuccessAnimation';
 import showFailureAnimation from './functions/statusAnimations/showFailureAnimation';
-import {
-    fnsFormat,
-    formatDate,
-    formatDateText,
-    removeTimeZoneOffset,
-    time,
-} from './functions/timeHelper';
-import types, {
-    extend
-} from './functions/types';
+import timeHelper from './functions/timeHelper';
+import types from './functions/types';
+import extend from './functions/extend';
 import showWaitCursor from './functions/waitCursor';
 import useTimeoutState from './hooks/uniques/useTimeoutState';
 import useUniqueEventListener from './hooks/uniques/useUniqueEventListener';
 import useUniqueInterval from './hooks/uniques/useUniqueInterval';
 import useUniqueTimeout from './hooks/uniques/useUniqueTimeout';
-import useElementProps, {
-    removeCustomProps,
-} from './hooks/useElementProps';
 import useFullscreenTapp from './hooks/useFullscreenTapp';
 import useFunctionState from './hooks/useFunctionState';
 import useRefresh from './hooks/useRefresh';
@@ -64,12 +40,10 @@ import userUser from './hooks/useUser';
 import useWebsocketService from './hooks/useWebsocketService';
 import localStorage from './other/localStorageHelper';
 import WebsocketClient from './other/WsClient';
-import TextStringMemo, {
-    getAllTextStrings,
-    getTextStrings,
-    TextStringComplex,
-    useTextStrings,
-} from './textstring/TextStringMemo';
+import TextStringMemo from './textstring/TextStringMemo';
+import TextStringComplex from './textstring/TextStringComplex';
+import useTextStrings from './textstring/useTextStrings';
+import getTextStrings from './textstring/getTextStrings';
 import AsyncPromise from './functions/AsyncPromise';
 import createEnum from './functions/createEnum';
 import getHookState from './functions/getHookState';
@@ -94,30 +68,15 @@ export {
     openChaynsSite,
     setViewMode,
     chaynsCall,
-    backgroundColorClass,
-    borderColorClass,
-    colorClass,
-    getChaynsColor,
-    getChaynsColorRgb,
-    hexToRgb,
-    mixChaynsColorRgb,
+    colors,
     chaynsDialog,
     copyOnClick,
     defaultErrorHandler,
     generateUUID,
-    httpRequest,
-    HttpMethod,
-    handleRequest,
-    ResponseType,
-    RequestError,
-    LogLevel,
+    request,
     showFailureAnimation,
     showSuccessAnimation,
-    fnsFormat,
-    formatDate,
-    formatDateText,
-    removeTimeZoneOffset,
-    time,
+    timeHelper,
     types,
     extend,
     showWaitCursor,
@@ -125,8 +84,6 @@ export {
     useUniqueEventListener,
     useUniqueInterval,
     useUniqueTimeout,
-    useElementProps,
-    removeCustomProps,
     useFullscreenTapp,
     useFunctionState,
     useRefresh,
@@ -135,7 +92,6 @@ export {
     localStorage,
     WebsocketClient,
     TextStringMemo,
-    getAllTextStrings,
     getTextStrings,
     TextStringComplex,
     useTextStrings,
