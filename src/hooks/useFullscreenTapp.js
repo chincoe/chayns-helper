@@ -57,56 +57,19 @@ const correctWindowData = (data) => {
  * @param {boolean} initialValue - fullscreen active initially or not
  * @param {Object} options
  * @param {boolean} [options.forceExclusive=false]
- * @param {boolean} [options.ultrawide=false]
+ * @param {boolean} [options.fullBrowserWidth=false]
  * @param {number} [options.maxWidth=851]
  * @return {[Object, function, boolean]}
  */
-const useFullscreenTapp = (initialValue = true, options = {}) => {
-    const {
-        forceExclusive = false,
-        ultrawide = false,
-        maxWidth = 851
-    } = options;
+const useFullscreenTapp = (initialValue = true, {
+    forceExclusive = false,
+    fullBrowserWidth = false,
+    maxWidth = 851
+}) => {
     const [isFullscreenActive, setIsFullscreenActive] = useState(initialValue);
     const [windowData, setWindowData] = useReducer(windowDataReducer, undefined);
     const [resizeInterval, setResizeInterval] = useState(0);
     const defaultExclusive = useMemo(() => chayns.env.site.tapp.isExclusiveView, []);
-
-    useEffect(() => {
-        Promise.all([
-            chayns.hideTitleImage(),
-            hideCWFooter(),
-            ...(forceExclusive || ultrawide ? [
-                setViewMode(isFullscreenActive ? true : defaultExclusive, ultrawide)
-            ] : [])
-        ]);
-        let interval = 0;
-        clearInterval(resizeInterval);
-        const tapp = document.querySelector('.tapp');
-        if (isFullscreenActive) {
-            chayns.scrollToY(-1000);
-            getWindowData();
-            tapp.style.padding = '0';
-            tapp.style.width = '100vw';
-            tapp.style.height = '100vh';
-            tapp.style.maxWidth = types.isNumber(maxWidth) ? `${maxWidth}px` : maxWidth;
-            interval = setInterval(() => {
-                getWindowData(false);
-            }, 2000);
-            setResizeInterval(interval);
-            if (!chayns.env.isApp) chayns.addWindowMetricsListener(getWindowData, true);
-        } else {
-            chayns.removeWindowMetricsListener(getWindowData);
-            tapp.style.padding = null;
-            tapp.style.width = null;
-            tapp.style.height = null;
-            chayns.setHeight({
-                height: window.innerHeight,
-                forceHeight: false
-            });
-        }
-        return () => { clearInterval(interval); };
-    }, [isFullscreenActive]);
 
     const getWindowData = (force = true) => {
         chayns.getWindowMetrics()
@@ -127,6 +90,46 @@ const useFullscreenTapp = (initialValue = true, options = {}) => {
                 }
             });
     };
+
+    useEffect(() => {
+        Promise.all([
+            chayns.hideTitleImage(),
+            hideCWFooter(),
+            ...(forceExclusive || fullBrowserWidth ? [
+                setViewMode(isFullscreenActive ? true : defaultExclusive, fullBrowserWidth)
+            ] : [])
+        ]);
+        let interval = 0;
+        clearInterval(resizeInterval);
+        const tapp = document.querySelector('.tapp');
+        if (isFullscreenActive) {
+            chayns.scrollToY(-1000);
+            getWindowData();
+            tapp.style.padding = '0';
+            tapp.style.width = '100vw';
+            tapp.style.height = '100vh';
+            tapp.style.maxWidth = types.isNumber(maxWidth) ? `${maxWidth}px` : maxWidth;
+            if (!chayns.env.isMobile) {
+                interval = setInterval(() => {
+                    getWindowData(false);
+                }, 2000);
+            } else {
+                chayns.addOnActivateListener(() => getWindowData(false));
+            }
+            setResizeInterval(interval);
+            if (!chayns.env.isApp) chayns.addWindowMetricsListener(getWindowData, true);
+        } else {
+            chayns.removeWindowMetricsListener(getWindowData);
+            tapp.style.padding = null;
+            tapp.style.width = null;
+            tapp.style.height = null;
+            chayns.setHeight({
+                height: window.innerHeight,
+                forceHeight: false
+            });
+        }
+        return () => { clearInterval(interval); };
+    }, [isFullscreenActive]);
 
     return [windowData, setIsFullscreenActive, isFullscreenActive];
 };
