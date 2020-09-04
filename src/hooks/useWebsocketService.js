@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { shallowEqual } from 'react-redux';
-import { chaynsHelperConfig } from '../chaynsHelperConfig';
+import logger from 'chayns-logger';
+import WsClient from '../other/WsClient';
 
 /**
  * tobit-websocket-client has some unhandled errors. They don't affect the user but generate error logs. Using these
@@ -86,7 +87,7 @@ const useWebsocketService = (
             let webSocketClient;
 
             if (isInit) {
-                webSocketClient = new chaynsHelperConfig.getWebsocketClient()(
+                webSocketClient = new WsClient(
                     serviceName,
                     { ...conditions }
                 );
@@ -108,7 +109,7 @@ const useWebsocketService = (
                 webSocketClient.on('registered', (data) => {
                     // eslint-disable-next-line no-console
                     console.notLive.log('[Websocket] client registered', data);
-                    chaynsHelperConfig.getLogger().info({
+                    logger.info({
                         message: '[Websocket] client registered',
                         data
                     });
@@ -117,15 +118,15 @@ const useWebsocketService = (
                 // WS client default: WS register error (e.g. WSS webhook didn't work out)
                 webSocketClient.on('register_error', (data) => {
                     // eslint-disable-next-line no-console
-                    console.notLive.error('[Websocket] register error', data);
-                    chaynsHelperConfig.getLogger().error({ message: '[Websocket] registration failed' }, data);
+                    console.error('[Websocket] register error', data);
+                    logger.error({ message: '[Websocket] registration failed' }, data);
                 });
 
                 // WS client default: WS connection closed
                 webSocketClient.on('CLOSED', (data) => {
                     // eslint-disable-next-line no-console
                     console.notLive.log('[Websocket] closed', data);
-                    chaynsHelperConfig.getLogger().info({
+                    logger.info({
                         message: '[Websocket] connection closed',
                         data
                     });
@@ -134,8 +135,8 @@ const useWebsocketService = (
                 // WS client default: WS connection error
                 webSocketClient.on('ERROR', (error) => {
                     // eslint-disable-next-line no-console
-                    console.notLive.error('[Websocket] error', error);
-                    chaynsHelperConfig.getLogger().warning({ message: '[Websocket] error' }, error);
+                    console.error('[Websocket] error', error);
+                    logger.warning({ message: '[Websocket] error' }, error);
                 });
             }
         }

@@ -1,3 +1,4 @@
+/* eslint-disable no-proto,no-underscore-dangle */
 import { fnsFormat, time } from './timeHelper';
 
 const isArray = (arr) => (Array.isArray(arr));
@@ -105,7 +106,7 @@ const length = (val) => {
  * @param {*} value
  * @return {boolean}
  */
-export const isNullOrEmpty = (value) => {
+const isNullOrEmpty = (value) => {
     const type = getType(value);
     switch (type) {
         case 'undefined':
@@ -131,7 +132,7 @@ export const isNullOrEmpty = (value) => {
  * @param {*} replacement
  * @return {*}
  */
-export const replaceEmpty = (value, replacement) => (isNullOrEmpty(value) ? replacement : value);
+const replaceEmpty = (value, replacement) => (isNullOrEmpty(value) ? replacement : value);
 
 /**
  * Get key from object if it exists, return null otherwise
@@ -139,7 +140,7 @@ export const replaceEmpty = (value, replacement) => (isNullOrEmpty(value) ? repl
  * @param {string} key
  * @return {null|*}
  */
-export const safeValue = (object, key) => {
+const safeValue = (object, key) => {
     if (!isObject || !Object.hasOwnProperty.call(object, key)) return null;
     return object[key];
 };
@@ -149,7 +150,7 @@ export const safeValue = (object, key) => {
  * @param {string }key
  * @return {boolean}
  */
-export const hasKey = (obj, key) => Object.hasOwnProperty.call(obj, key);
+const hasKey = (obj, key) => Object.hasOwnProperty.call(obj, key);
 
 /**
  * @callback forEachKeyCallback
@@ -163,7 +164,7 @@ export const hasKey = (obj, key) => Object.hasOwnProperty.call(obj, key);
  * @param {Object} obj
  * @param {forEachKeyCallback} callback
  */
-export const forEachKey = (obj, callback) => {
+const forEachKey = (obj, callback) => {
     if (!isObject(obj) || !isFunction(callback)) return;
     const keys = Object.keys(obj);
     for (let i = 0; i < length(keys); i += 1) {
@@ -177,7 +178,7 @@ export const forEachKey = (obj, callback) => {
  * @param {forEachKeyCallback} callback
  * @return {Object}
  */
-export const mapObject = (obj, callback) => {
+const mapObject = (obj, callback) => {
     if (!isObject(obj) || !isFunction(callback)) return {};
     const keys = Object.keys(obj);
     const newObj = { ...obj };
@@ -193,7 +194,7 @@ export const mapObject = (obj, callback) => {
  * @param {forEachKeyCallback} callback
  * @return {[]|*[]}
  */
-export const mapObjectToArray = (obj, callback) => {
+const mapObjectToArray = (obj, callback) => {
     if (!isObject(obj) || !isFunction(callback)) return [];
     const keys = Object.keys(obj);
     const arr = [];
@@ -218,7 +219,7 @@ export const mapObjectToArray = (obj, callback) => {
  * @param {Object} [initialValue={}]
  * @return {{}}
  */
-export const reduceObject = (obj, callback, initialValue = {}) => {
+const reduceObject = (obj, callback, initialValue = {}) => {
     if (!isObject(obj) || !isFunction(callback)) return {};
     const keys = Object.keys(obj);
     let newObj = initialValue;
@@ -236,7 +237,7 @@ export const reduceObject = (obj, callback, initialValue = {}) => {
  * @param {number} maxReplacements
  * @return {string}
  */
-export const replaceAll = (string, search, replacement, maxReplacements = 50) => {
+const replaceAll = (string, search, replacement, maxReplacements = 50) => {
     let i = 0;
     let newString = string;
     while (i < maxReplacements) {
@@ -307,7 +308,7 @@ export const extend = (element, mutate = false) => {
                 return mapObjectToArray(this, callback);
             },
             /**
-             * @param {forEachKeyCallback} callback
+             * @param {reduceCallback} callback
              * @param {*} initialValue
              * @returns {Array|Object|*}
              */

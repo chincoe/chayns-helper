@@ -53,6 +53,6 @@ ResizableWaitCursor.defaultProps = {
     style: {}
 };
 
-ResizableWaitCursor.displayName = 'ResizableWaitCursor'
+ResizableWaitCursor.displayName = 'ResizableWaitCursor';
 
 export default React.memo(ResizableWaitCursor);

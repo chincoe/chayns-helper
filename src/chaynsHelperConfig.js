@@ -1,51 +1,11 @@
-import handleRequestErrors from './functions/defaultErrorHandler';
+// eslint-disable-next-line import/no-cycle
+import { errorHandlerConfig } from 'default-error-handler';
+import logger from 'chayns-logger';
+import { loggerConfig } from './config/chayns-logger';
+import handleRequestErrors from './config/default-error-handler';
 import { initLog } from './functions/log';
-import WsClient from './other/WsClient';
-
-/**
- * default logger
- * @type {{critical(...[*]): void, warning(...[*]): void, error(...[*]): void, info(...[*]): void}}
- */
-const defaultLogger = {
-    info(...value) {console.notLive.log(...value);},
-    warning(...value) {console.notLive.warn(...value);},
-    error(...value) {console.notLive.error(...value);},
-    critical(...value) {console.notLive.error(...value);}
-};
-
-/**
- * @class
- * @param serviceName
- * @param conditions
- * @returns {DefaultWebsocketClient}
- * @constructor
- */
-function DefaultWebsocketClient(serviceName, conditions) {
-    console.warn('[WebsocketClient] Please specify a websocket client in your initChaynsHelper to use this feature');
-    this.handlers = {};
-    this.serviceName = serviceName;
-    this.conditions = conditions;
-    this.updateConditions = function () {};
-    this.on = function (wsEvent, listener) {
-        this.handlers[wsEvent] = listener;
-    };
-    this.closeConnection = function () {};
-    return this;
-}
-
-/**
- * config
- * @type {{getRequestErrorHandler: (function(): handleRequestErrors), getLogger: (function(): {critical, (...[*]):
- *     void, warning, (...[*]): void, error, (...[*]): void, info, (...[*]): void}), textStringPrefix: string, live:
- *     boolean, getWebsocketClient: (function(): DefaultWebsocketClient)}}
- */
-export const chaynsHelperConfig = {
-    textStringPrefix: '',
-    live: false,
-    getRequestErrorHandler: () => handleRequestErrors,
-    getLogger: () => defaultLogger,
-    getWebsocketClient: () => WsClient
-};
+import { ENVIRONMENT } from './config/environment';
+import { TEXTSTRING_CONFIG } from './textstring/TextStringMemo';
 
 /**
  * @typedef logger
@@ -60,21 +20,20 @@ export const chaynsHelperConfig = {
  * @param {boolean} [live=false]
  * @param {function} [requestErrorHandler]
  * @param {logger} [logger=defaultLogger] - logger, preferably chayns-logger
- * @param {function|Class} websocketClient
  */
-export const initChaynsHelper = (
+const initChaynsHelper = (
     {
         textStringPrefix = '',
         live = false,
         requestErrorHandler = handleRequestErrors,
-        logger = defaultLogger,
-        websocketClient = DefaultWebsocketClient
+        pLogger = logger,
     }
 ) => {
-    chaynsHelperConfig.textStringPrefix = textStringPrefix;
-    chaynsHelperConfig.live = live;
-    chaynsHelperConfig.getRequestErrorHandler = () => requestErrorHandler;
-    chaynsHelperConfig.getLogger = () => logger;
-    chaynsHelperConfig.getWebsocketClient = () => websocketClient;
+    TEXTSTRING_CONFIG.PREFIX = textStringPrefix;
+    ENVIRONMENT.PRODUCTION = live;
+    errorHandlerConfig.getErrorHandler = () => requestErrorHandler;
+    loggerConfig.getLogger = () => pLogger;
     initLog(live);
 };
+
+export default initChaynsHelper;

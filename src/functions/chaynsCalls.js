@@ -1,5 +1,6 @@
 import generateUid from './generateUid';
 import types from './types';
+
 /**
  * Set the viewMode of a tapp (normal, exclusive, wide)
  * @param {boolean} exclusive
@@ -58,7 +59,7 @@ export const openChaynsSite = (siteId, tappId, jsonParam) => chayns.invokeCall({
  * @param {Object} call
  * @param {number} call.action
  * @param {Object} [call.value=]
- * @param {string} [call.value.callback=]
+ * @param {string|function} [call.value.callback=]
  * @param {string} [call.value.addJSONParam=]
  * @returns {Promise<chaynsCallResult>}
  */

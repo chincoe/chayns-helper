@@ -1,6 +1,7 @@
+// eslint-disable-next-line max-classes-per-file
 import types from './types';
 /**
- * The dialogs of this helper all have the parameters (message, buttons) or (message, option, buttons)
+ * The dialogs of this helper all have the parameters (message, buttons), (message, options, buttons) or (option, buttons)
  * The dialogs of this helper all return an object like this: { buttonType: -1|0|1, value: ... }, so all results will
  * have the keys "buttonType" and "value"
  * Custom handlers based on buttonType:
@@ -20,6 +21,7 @@ import types from './types';
 /**
  * possible button Types
  * @type {{POSITIVE: number, CANCEL: number, NEGATIVE: number}}
+ * @enum
  */
 const buttonType = {
     CANCEL: -1,
@@ -75,6 +77,7 @@ const confirm = (message = '', options = {}, buttons = undefined) => new DialogP
 /**
  * Type for input dialog
  * @type {{NUMBER: number, TEXTAREA: number, INPUT: number, PASSWORD: number}}
+ * @enum
  */
 const inputType = {
     PASSWORD: chayns.dialog.inputType.PASSWORD,
@@ -99,10 +102,12 @@ const inputType = {
  * @param {buttonType[]} options.disableButtonTypes - array of the buttonTypes that will be disabled if
  *     {@link options.regex} doesn't match the input
  * @param {button[]} [buttons=undefined]
+ *
+ * @property {inputType} type
+ *
  * @return {DialogPromise<dialogResult>}
  */
 function input(message = '', options = {}, buttons = undefined) {
-    this.type = { ...inputType };
     return new DialogPromise((resolve) => {
         chayns.dialog.input({
             title: options?.title,
@@ -123,9 +128,12 @@ function input(message = '', options = {}, buttons = undefined) {
     });
 }
 
+input.type = { ...inputType };
+
 /**
  * select dialog type
  * @type {{ICON: number, DEFAULT: number}}
+ * @enum
  */
 const selectType = {
     DEFAULT: chayns.dialog.selectType.DEFAULT,
@@ -154,49 +162,64 @@ const selectType = {
 /**
  * Select dialog. Returns an array of selections as value (with multiselect) or the selected object as value (without
  * multiselect)
- * @param {string} [message='']
- * @param {Object} [options={}]
+ * @param {Object} [options]
+ * @param {string} [options.message='']
  * @param {string} [options.title='']
  * @param {selectListItem[]} options.list
- * @param {boolean} options.multiselect
- * @param {boolean} options.quickfind
- * @param {selectType} options.type - one of chaynsDialog.selectType
- * @param {boolean} options.preventCloseOnClick
- * @param {string} options.selectAllButton - add a checkbox with this prop as label that (de)selects all elements at
+ * @param {boolean} [options.multiselect]
+ * @param {boolean|null} [options.quickfind]
+ * @param {selectType} [options.type] - one of chaynsDialog.selectType
+ * @param {boolean} [options.preventCloseOnClick]
+ * @param {?string} [options.selectAllButton] - add a checkbox with this prop as label that (de)selects all elements at
  *     once
  * @param {button[]} [buttons=undefined]
+ *
+ * @property {selectType} type
+ *
  * @return {DialogPromise<dialogResult>}
  */
-function select(message = '', options = {}, buttons = undefined) {
-    this.type = { ...selectType };
+function select(
+    {
+        message = '',
+        title = '',
+        list = null,
+        multiselect = false,
+        quickfind = null,
+        preventCloseOnClick = false,
+        type = selectType.DEFAULT,
+        selectAllButton = null
+    }, buttons = undefined
+) {
     return new DialogPromise((resolve) => {
         chayns.dialog.select({
-            title: options?.title,
+            title,
             message,
-            list: options?.list,
-            multiselect: options?.multiselect,
-            quickfind: options?.quickfind,
-            type: options?.type,
-            preventCloseOnClick: options?.preventCloseOnClick,
+            list,
+            multiselect,
+            quickfind: quickfind === null ? types.length(list) > 5 : quickfind,
+            type,
+            preventCloseOnClick,
             buttons,
-            selectAllButton: options?.selectAllButton
+            selectAllButton
         })
             .then((result) => {
-                const { buttonType: type, selection } = result;
-                if (!options?.multiselect && selection && selection.length === 1) {
+                const { buttonType: bType, selection } = result;
+                if (!multiselect && selection && selection?.length === 1) {
                     const { name, value } = types.safeFirst(selection);
-                    resolve(createDialogResult(type, { name, value }));
-                } else if (!options?.multiselect) {
-                    resolve(createDialogResult(type, null));
+                    resolve(createDialogResult(bType, { name, value }));
+                } else if (!multiselect) {
+                    resolve(createDialogResult(bType, null));
                 }
-                if (options?.multiselect && selection && selection.length > 0) {
-                    resolve(createDialogResult(type, selection));
+                if (multiselect && selection && selection?.length > 0) {
+                    resolve(createDialogResult(bType, selection));
                 } else {
-                    resolve(createDialogResult(type, []));
+                    resolve(createDialogResult(bType, []));
                 }
             });
     });
 }
+
+select.type = { ...selectType };
 
 const validateDate = (param, allowMissingValue = true) => {
     if (allowMissingValue && (param === null || param === undefined)) return param;
@@ -205,10 +228,10 @@ const validateDate = (param, allowMissingValue = true) => {
     }
     if (types.isString(param)) {
         try {
-            const date = new Date(param);
-            return date;
+            return new Date(param);
         } catch (e) {
-            console.notLive.error('[ChaynsDialog] date parameter of type string could not be parsed as Date');
+            // eslint-disable-next-line no-console
+            console.error('[ChaynsDialog] date parameter of type string could not be parsed as Date');
             return undefined;
         }
     }
@@ -216,24 +239,27 @@ const validateDate = (param, allowMissingValue = true) => {
         try {
             const date = param();
             if (types.isDate(date)) return date;
-            console.notLive.error('[ChaynsDialog] date parameter of type function did not return a date');
+            // eslint-disable-next-line no-console
+            console.error('[ChaynsDialog] date parameter of type function did not return a date');
             return undefined;
         } catch (e) {
-            console.notLive.error('[ChaynsDialog] date parameter of type function failed to execute');
+            // eslint-disable-next-line no-console
+            console.error('[ChaynsDialog] date parameter of type function failed to execute');
             return undefined;
         }
     }
     if (types.isInteger(param) && types.isCleanNumber(param)) {
         try {
-            const date = new Date(param);
-            return date;
+            return new Date(param);
         } catch (e) {
-            console.notLive.error('[ChaynsDialog] date parameter of type number could not be parsed as Date');
+            // eslint-disable-next-line no-console
+            console.error('[ChaynsDialog] date parameter of type number could not be parsed as Date');
             return undefined;
         }
     }
-    console.notLive.error(
-        '[ChaynsDialog] date parameter type invalid. Allowed types: timestamp: number, dateString: string, Date, function: Date'
+    // eslint-disable-next-line no-console
+    console.error(
+        '[ChaynsDialog] date parameter type invalid. Allowed types: number, dateString, Date, function: Date'
     );
     return undefined;
 };
@@ -248,6 +274,7 @@ const validateDateArray = (paramArray) => paramArray.map((p) => validateDate(p, 
 /**
  * text block position
  * @type {{ABOVE_SECOND: number, ABOVE_FIRST: number, ABOVE_THIRD: number}}
+ * @enum
  */
 const textBlockPosition = {
     ABOVE_FIRST: 0,
@@ -264,6 +291,7 @@ const textBlockPosition = {
 /**
  * date dialog type
  * @type {{DATE: number, TIME: number, DATE_TIME: number}}
+ * @enum
  */
 const dateType = {
     DATE: chayns.dialog.dateType.DATE,
@@ -274,6 +302,7 @@ const dateType = {
 /**
  * Method of selection
  * @type {{INTERVAL: number, SINGLE: number, MULTISELECT: number}}
+ * @enum
  */
 const dateSelectType = {
     SINGLE: 0,
@@ -314,110 +343,265 @@ const resolveDateSelectType = (type) => [
  */
 
 /**
- * Advanced date dialog
+ * Advanced date dialog.
+ * Prefer to use new prop "selectType" to use single/interval/multiselect
  * @param {string} [message='']
  * @param {Object} [options={}]
  * @param {string} [options.title='']
  * @param {dateType} options.dateType - one of chaynsDialog.dateType
  * @param {dateSelectType} options.selectType - one of chaynsDialog.dateSelectType
- * @param {Date|number|string|function} options.minDate
- * @param {Date|number|string|function} options.maxDate
- * @param {number} options.minuteInterval
- * @param {Date|number|string|Date[]|number[]|string[]} options.preselected - a preselected date or an array of
- *     preselected dates
- * @param {boolean} options.multiselect - select multiple date, exclusive with {@link options.interval}
- * @param {Date[]|number[]|string[]} options.disabledDates - array of disabled dates
- * @param {Object[]} options.textBlocks - text blocks that are displayed between date select and time select
- * @param {boolean} options.yearSelect
- * @param {boolean} options.monthSelect
- * @param {boolean} options.interval - select date intervals, exclusive with {@link options.multiselect}
- * @param {number} options.minInterval - minimum number of minutes per interval
- * @param {number} options.maxInterval - maximum number of minutes per interval
- * @param {intervalObject[]} options.disabledIntervals
- * @param {weekDayIntervalItem[][7]} options.disabledWeekDayIntervals - array of {@link weekDayIntervalItem} with a[0]
- *     = monday, a[1] = tuesday...
+ * @param {Date|number|string|function} [options.minDate]
+ * @param {Date|number|string|function} [options.maxDate]
+ * @param {number} [options.minuteInterval]
+ * @param {Date|number|string|Date[]|number[]|string[]|intervalObject} [options.preSelect] - a preselected date or an
+ *     array of preselected dates
+ * @param {boolean} [options.multiselect] - select multiple date, exclusive with {@link options.interval}
+ * @param {Date[]|number[]|string[]} [options.disabledDates] - array of disabled dates
+ * @param {textBlock[]} [options.textBlocks] - text blocks that are displayed between date select and time select
+ * @param {boolean} [options.yearSelect]
+ * @param {boolean} [options.monthSelect]
+ * @param {boolean} [options.interval] - select date intervals, exclusive with {@link options.multiselect}
+ * @param {?number} [options.minInterval] - minimum number of minutes per interval
+ * @param {?number} [options.maxInterval] - maximum number of minutes per interval
+ * @param {intervalObject[]} [options.disabledIntervals]
+ * @param {weekDayIntervalItem[][7]} [options.disabledWeekDayIntervals] - array of {@link weekDayIntervalItem} with
+ *     a[0] = monday, a[1] = tuesday...
  * @param {button[]} [buttons=undefined]
- * @return {DialogPromise<dialogResult>}
+ *
+ * @property {dateType} type
+ * @property {dateSelectType} selectType
+ * @property {textBlockPosition} textBlockPosition
+ *
+ * @return {DialogPromise<dialogResult>} returnValue - Format:
+ *  { buttonType, value }
+ *  value:
+ *      SINGLE: Date
+ *      MULTISELECT: Date[]
+ *      INTERVAL: Date[2]
  */
-function advancedDate(message = '', options = {}, buttons = undefined) {
-    this.type = { ...dateType };
-    this.selectType = { ...dateSelectType };
-    this.textBlockPosition = { ...textBlockPosition };
+function advancedDate(
+    {
+        message = '',
+        title = '',
+        dateType: pDateType = dateType.DATE_TIME,
+        selectType: pSelectType = dateSelectType.SINGLE,
+        minDate = 0,
+        maxDate = null,
+        minuteInterval = 1,
+        preSelect = new Date(),
+        multiselect = false,
+        disabledDates = null,
+        textBlocks = null,
+        yearSelect = false,
+        monthSelect = false,
+        interval = false,
+        minInterval = null,
+        maxInterval = null,
+        disabledIntervals = null,
+        disabledWeekDayIntervals = null,
+        getLocalTime = false
+    }, buttons = undefined
+) {
     return new DialogPromise((resolve) => {
-        const dialogSelectType = (options?.selectType !== undefined && Object.values(dateSelectType).includes(
-            options?.selectType
-            )
-                                  ? options?.selectType
-                                  : null)
-            ?? (options?.multiselect
+        const dialogSelectType = (
+                pSelectType !== undefined
+                && Object.values(dateSelectType).includes(pSelectType) ? pSelectType : null)
+            ?? (multiselect
                 ? dateSelectType.MULTISELECT
                 : null)
-            ?? (options?.interval
+            ?? (interval
                 ? dateSelectType.INTERVAL
                 : null)
             ?? dateSelectType.SINGLE;
 
-        chayns.dialog.select({
-            title: options?.title,
+        chayns.dialog.advancedDate({
+            title,
             message,
             buttons,
-            dateType: options?.dateType,
-            minDate: validateDate(options?.minDate),
-            maxDate: validateDate(options?.maxDate),
-            minuteInterval: options?.minuteInterval,
-            preselected: types.isArray(options?.preselected)
-                         ? validateDateArray(options?.preselected)
-                         : validateDate(options?.preselected),
-            disabledDates: validateDateArray(options?.disabledDates),
-            textBlocks: options?.textBlocks,
-            yearSelect: options?.yearSelect,
-            monthSelect: options?.monthSelect,
-            minInterval: options?.minInterval,
-            maxInterval: options?.maxInterval,
-            disabledIntervals: options?.disabledIntervals,
-            disabledWeekDayIntervals: options?.disabledWeekDayIntervals,
+            dateType: pDateType,
+            minDate: validateDate(minDate),
+            maxDate: validateDate(maxDate),
+            minuteInterval,
+            preSelect: types.isArray(preSelect)
+                       ? validateDateArray(preSelect)
+                       : types.isObject(preSelect)
+                         && preSelect?.start
+                         && preSelect?.end
+                         ? { start: validateDate(preSelect?.start), end: validateDate(preSelect?.end), }
+                         : validateDate(preSelect),
+            disabledDates: validateDateArray(disabledDates),
+            textBlocks,
+            yearSelect,
+            monthSelect,
+            minInterval,
+            maxInterval,
+            disabledIntervals,
+            disabledWeekDayIntervals,
+            getLocalTime,
             ...resolveDateSelectType(dialogSelectType)
         })
             .then((result) => {
+                // result from chayns dialog
                 // single date: { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }] }
                 // multiselect : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, ...] }
                 // interval : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, { isSelected:
                 // true, timestamp: ... in s }] }
                 const { buttonType: type, selectedDates } = result;
-                if (!selectedDates) {
-                    if (dialogSelectType === 0) resolve(createDialogResult(type, null));
-                    if (dialogSelectType !== 0) resolve(createDialogResult(type, []));
-                }
-                if (dialogSelectType === 0) {
-                    const selectedDate = types.safeFirst(selectedDates);
-                    resolve(createDialogResult(
-                        type,
-                        (selectedDate && selectedDate.timestamp ? new Date(selectedDate.timestamp * 1000) : null)
-                    ));
-                } else if (dialogSelectType !== 0) {
-                    resolve(createDialogResult(
-                        type, (selectedDates || []).map((d) => (d ? new Date(d.timestamp * 1000) : null))
-                            .filter((d) => !!d)
-                    ));
+
+                const validDates = (selectedDates || []).map((d) => ({
+                    ...(d ?? {}),
+                    timestamp: d?.timestamp ? new Date(d.timestamp) * 1000 : d?.timestamp
+                }));
+
+                if (dialogSelectType === dateSelectType.SINGLE) {
+                    const selectedDate = types.safeFirst(validDates);
+                    resolve(createDialogResult(type, selectedDate));
+                } else if (dialogSelectType !== dateSelectType.SINGLE) {
+                    resolve(createDialogResult(type, validDates));
                 }
             });
     });
 }
 
-function iFrame(url, config, buttons, useCustomHandlers = true) {
-    return new DialogPromise(async () => new Promise(resolve => {
-        chayns.dialog.iFrame({
-            url: config.url,
-            input: config.input,
+advancedDate.type = { ...dateType };
+advancedDate.selectType = { ...dateSelectType };
+advancedDate.textBlockPosition = { ...textBlockPosition };
+
+/**
+ * Select an image from Pixabay
+ * @param {string} [title]
+ * @param {string} [message]
+ * @param {boolean} [multiselect]
+ * @param {button[]} [buttons]
+ * @returns {DialogPromise<dialogResult>}
+ */
+function mediaSelect(
+    {
+        title = '',
+        message = '',
+        multiselect = false
+    }, buttons = undefined
+) {
+    return new DialogPromise((resolve) => {
+        chayns.dialog.mediaSelect({
+            title,
+            message,
+            multiSelect: multiselect,
+            buttons
+        })
+            .then((result) => {
+                resolve(createDialogResult(result?.buttonType, result?.selection));
+            });
+    });
+}
+
+/**
+ * fileTypes
+ * @type {{IMAGE: string, VIDEO: string, DOCUMENT: string[], AUDIO: string}}
+ */
+const fileType = {
+    IMAGE: 'image',
+    VIDEO: 'video',
+    AUDIO: 'audio',
+    DOCUMENT: [
+        'application/x-latex',
+        'application/x-tex',
+        'text/',
+        'application/json',
+        'application/pdf',
+        'application/msword',
+        'application/msexcel',
+        'application/mspowerpoint',
+        'application/vnd.ms-word',
+        'application/vnd.ms-excel',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument',
+        'application/vnd.oasis.opendocument'
+    ]
+};
+
+/**
+ * Upload and select a file from chayns space
+ * @param {string} [title]
+ * @param {string} [message]
+ * @param {boolean} [multiselect]
+ * @param {fileType[]} [contentType]
+ * @param {fileType[]} [exclude]
+ * @param {boolean} [directory]
+ * @param {button[]} [buttons]
+ */
+function fileSelect(
+    {
+        title = '',
+        message = '',
+        multiselect = false,
+        contentType = [],
+        exclude = [],
+        directory = false
+    }, buttons = undefined
+) {
+    return new DialogPromise((resolve) => {
+        chayns.dialog.fileSelect({
+            title,
+            message,
+            multiselect,
             buttons,
-            seamless: config.seamless,
-            transparent: config.transparent,
-            waitCursor: config.waitCursor,
-            maxHeight: config.maxHeight,
-            width: config.width,
-            customTransitionTimeout: config.customTransitionTimeout
-        }).then();
-    }), useCustomHandlers);
+            contentType,
+            exclude,
+            directory
+        })
+            .then((result) => {
+                resolve(createDialogResult(result?.buttonType, result?.selection));
+            });
+    });
+}
+
+/**
+ * IFrame Dialog
+ * Possible Usage:
+ * const { buttonType } = await chaynsDialog.iFrame({ url, ...config }, buttons)
+ *      .data(dialogDataListener)
+ *      .result(dialogResultListener)
+ *      .positive(positiveButtonTypeListener)
+ * @param {string} url
+ * @param {?Object|*} [input=null]
+ * @param {boolean} [seamless=true]
+ * @param {boolean} [transparent=false]
+ * @param {boolean} [waitCursor=true]
+ * @param {?string} [maxHeight=null]
+ * @param {?number} [width=null]
+ * @param {?number} [customTransitionTimeout=null]
+ * @param {?button[]} [buttons=[]]
+ * @returns {IframeDialogPromise<dialogResult>}
+ */
+function iFrame(
+    {
+        url,
+        input: dialogInput = null,
+        seamless = true,
+        transparent = false,
+        waitCursor = true,
+        maxHeight = null,
+        width = null,
+        customTransitionTimeout = null
+    },
+    buttons = []
+) {
+    return new IframeDialogPromise((resolve) => {
+        chayns.dialog.iFrame({
+            url,
+            input: dialogInput,
+            buttons,
+            seamless,
+            transparent,
+            waitCursor,
+            maxHeight,
+            width,
+            customTransitionTimeout
+        }).then((result) => {
+            resolve(createDialogResult(result.buttonType, result?.value));
+        });
+    });
 }
 
 /**
@@ -471,7 +655,7 @@ class DialogPromise extends Promise {
     positive(resolveFn) {
         this.then((result) => {
             if (result.buttonType === 1) {
-                return resolveFn(result.value);
+                resolveFn(result.value);
             }
         });
         return this;
@@ -484,7 +668,7 @@ class DialogPromise extends Promise {
     negative(resolveFn) {
         this.then((result) => {
             if (result.buttonType === 0) {
-                return resolveFn(result.value);
+                resolveFn(result.value);
             }
         });
         return this;
@@ -497,7 +681,7 @@ class DialogPromise extends Promise {
     cancelled(resolveFn) {
         this.then((result) => {
             if (result.buttonType === -1) {
-                return resolveFn(result.value);
+                resolveFn(result.value);
             }
         });
         return this;
@@ -507,6 +691,7 @@ class DialogPromise extends Promise {
      * close the dialog
      * @returns {*}
      */
+    // eslint-disable-next-line class-methods-use-this
     abort() {
         return chayns.dialog.close();
     }
@@ -521,6 +706,8 @@ class DialogPromise extends Promise {
 class IframeDialogPromise extends DialogPromise {
     constructor(resolveFn) {
         super(resolveFn);
+        this.result.bind(this);
+        this.data.bind(this);
     }
 
     /**
@@ -547,16 +734,18 @@ class IframeDialogPromise extends DialogPromise {
         });
         return this;
     }
-
-
 }
 
 const chaynsDialog = {
     alert,
     confirm,
     input,
+    iFrame,
     select,
     advancedDate,
+    fileSelect,
+    mediaSelect,
+    fileType,
     buttonType,
     inputType,
     selectType,

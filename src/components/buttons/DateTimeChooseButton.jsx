@@ -55,7 +55,7 @@ const DateTimeChooseButton = (props) => {
             message: 'Wähle ein Datum',
             dateType: chayns.dialog.dateType.DATE_TIME,
             minuteInterval: 15,
-            minDate: T.isFunction(parameters.minDate) ? parameters.minDate() : parameters.minDate,
+            minDate: types.isFunction(parameters.minDate) ? parameters.minDate() : parameters.minDate,
             ...parameters
         });
 

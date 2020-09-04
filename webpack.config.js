@@ -9,7 +9,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = (env) => {
     const dev = env === 'development';
     return {
-        mode: dev? 'development' : 'production',
+        mode: dev ? 'development' : 'production',
         // optimization: {
         //     minimizer: [
         //         new TerserPlugin({
@@ -22,7 +22,12 @@ module.exports = (env) => {
             index: './src/index.js'
         },
         resolve: {
-            extensions: ['.js', '.jsx']
+            extensions: ['.js', '.jsx'],
+            alias: {
+                'chayns-logger': 'src/config/chayns-logger.js',
+                'default-error-handler': 'src/config/default-error-handler',
+                environment: 'src/config/environment'
+            }
         },
         output: {
             path: path.resolve('dist'),
@@ -65,7 +70,7 @@ module.exports = (env) => {
                 }
             ]
         },
-        devtool: dev? 'inline-source-map' : undefined,
+        devtool: dev ? 'inline-source-map' : undefined,
         plugins: [
             new CleanWebpackPlugin(),
             // new webpack.optimize.AggressiveMergingPlugin(),

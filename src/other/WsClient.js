@@ -6,17 +6,22 @@
  */
 class WebSocketClient {
     reconnectTimeoutTime;
+
     checkConnectionIntervalTime;
 
     application = null;
+
     conditions = null;
 
     /**
      * @type {WebSocket|null}
      */
     socket = null;
+
     checkConnectionInterval = null;
+
     reconnectTimeout = null;
+
     answeredPing = false;
 
     listener = {};
@@ -158,7 +163,7 @@ class WebSocketClient {
      * @public
      */
     off = (event) => {
-        this.listener[event] = function () {};
+        this.listener[event] = () => {};
     };
 
     /**
@@ -170,7 +175,7 @@ class WebSocketClient {
     once = (event, listener) => {
         this.listener[event] = (data, wsEvent) => {
             listener(data, wsEvent);
-            this.listener[event] = function () {};
+            this.listener[event] = () => {};
         };
     };
 

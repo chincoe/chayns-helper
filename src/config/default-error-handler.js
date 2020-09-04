@@ -1,4 +1,4 @@
-import { chaynsHelperConfig } from '../chaynsHelperConfig';
+import logger from 'chayns-logger';
 
 /**
  * Default error handler for failed httpRequests
@@ -13,8 +13,11 @@ const handleRequestErrors = (err) => {
                 await chayns.dialog.alert('', 'Anfrage fehlgeschlagen. Bitte überprüfe deine Eingaben.');
                 break;
             case 401:
-                if (!chayns.env.user.isAuthenticated) chayns.login();
-                else chayns.refreshAccessToken();
+                if (!chayns.env.user.isAuthenticated) {
+                    chayns.login();
+                } else {
+                    chayns.refreshAccessToken();
+                }
                 break;
             case 403:
                 await chayns.dialog.alert('', 'Du has keine Berechtigungen für diesen Zugriff.');
@@ -23,13 +26,19 @@ const handleRequestErrors = (err) => {
                 await chayns.dialog.alert('', 'Die angefragte Ressource ist zur Zeit nicht verfügbar.');
                 break;
             case 500:
-                await chayns.dialog.alert('', 'Ein unerwarteter Fehler ist aufgetreten. Wir werden das bei nächster Gelegenheit beheben. Versuche es später nochmal.');
+                await chayns.dialog.alert(
+                    '',
+                    'Ein unerwarteter Fehler ist aufgetreten. Wir werden das bei nächster Gelegenheit beheben. Versuche es später nochmal.'
+                );
                 break;
             case 503:
-                await chayns.dialog.alert('', 'Unsere Server sind zur Zeit nicht erreichbar. Bitte versuche es später noch einmal.');
+                await chayns.dialog.alert(
+                    '',
+                    'Unsere Server sind zur Zeit nicht erreichbar. Bitte versuche es später noch einmal.'
+                );
                 break;
             default:
-                chaynsHelperConfig.getLogger().critical({
+                logger.critical({
                     message: 'Unknown request error occurred',
                     data: err,
                     section: 'useErrorHandler.js'
@@ -38,4 +47,8 @@ const handleRequestErrors = (err) => {
     })();
 };
 
-export default handleRequestErrors;
+export const errorHandlerConfig = {
+    getErrorHandler: () => handleRequestErrors
+};
+
+export default errorHandlerConfig.getErrorHandler();

@@ -1,6 +1,7 @@
-import generateUUID from '../functions/generateUid';
-import { chaynsHelperConfig } from '../chaynsHelperConfig';
-import { showWaitCursor } from './waitCursor';
+import logger from 'chayns-logger';
+import defaultErrorHandler from 'default-error-handler';
+import generateUUID from './generateUid';
+import showWaitCursor from './waitCursor';
 import types from './types';
 import localStorage from '../other/localStorageHelper';
 
@@ -63,7 +64,7 @@ export class RequestError extends Error {
  *
  * @param {Promise<*>} request - Promise of the un-awaited request
  * @param {requestErrorHandler} [errorHandler=undefined] - Function to handle error statusCodes. Defaults to
- *     defaultErrorHandler.js
+ *     default-error-handler.js
  * @param {Object} [options={}] - other options for this wrapper
  * @param {function} [options.finallyHandler] - Function that should always be executed after the request
  * @param {boolean|waitCursorOptions} [options.waitCursor] - Show chayns waitCursor. Set true to show. Set to an object
@@ -86,7 +87,7 @@ export class RequestError extends Error {
 export const handleRequest = (
     // promise: The un-awaited request.
     request,
-    // function: An error handler. Defaults to defaultErrorHandler.js in this folder
+    // function: An error handler. Defaults to default-error-handler.js in this folder
     errorHandler = undefined,
     // object: other options for this handler
     options = {}
@@ -99,7 +100,7 @@ export const handleRequest = (
         } = (options || {});
         const useWaitCursor = !!waitCursor;
         const { text = undefined, textTimeout = 5000, timeout = 300 } = (types.isObject(waitCursor) ? waitCursor : {});
-        const handleErrors = errorHandler || chaynsHelperConfig.getRequestErrorHandler();
+        const handleErrors = errorHandler || defaultErrorHandler;
         let hideWaitCursor = () => {};
         try {
             if (useWaitCursor) hideWaitCursor = showWaitCursor(text, textTimeout, timeout);
@@ -118,7 +119,7 @@ export const handleRequest = (
                         const cacheKey = types.isObject(cache) ? `${cache?.key}` : `${cache}`;
                         const cacheResolver = (types.isObject(
                             cache
-                        ) ? cache?.cacheResolver : null) || function (v) { return v; };
+                        ) ? cache?.cacheResolver : null) || ((v) => v);
                         localStorage.set(cacheKey, cacheResolver(result));
                     }
                     resolve(result);
@@ -127,7 +128,7 @@ export const handleRequest = (
                 .catch((err) => {
                     hideWaitCursor();
                     // eslint-disable-next-line no-console
-                    if (!(err instanceof RequestError)) console.notLive.error('[HandleRequest]', err);
+                    if (!(err instanceof RequestError)) console.error('[HandleRequest]', err);
                     handleErrors(err);
                     reject(err);
                 })
@@ -135,7 +136,7 @@ export const handleRequest = (
         } catch (err) {
             hideWaitCursor();
             // eslint-disable-next-line no-console
-            if (!(err instanceof RequestError)) console.notLive.error('[HandleRequest]', err);
+            if (!(err instanceof RequestError)) console.error('[HandleRequest]', err);
             handleErrors(err);
             reject(err);
         }
@@ -144,7 +145,7 @@ export const handleRequest = (
 
 /**
  * httpRequest response type. Default: json
- * @type
+ * @type {Object}
  * @property {string} Response - Get the Response Object
  * @property {string} Blob - Get response.blob()
  * @property {string} Json - Get response.json()
@@ -295,7 +296,7 @@ const httpRequest = async (
 
         if (responseType != null && !Object.values(ResponseType).includes(responseType)) {
             console.error(`[HttpRequest] Response type ${responseType} is not valid. Use json|blob|response|object instead.`);
-            reject("Invalid responseType");
+            reject(new Error('Invalid responseType'));
             return;
         }
 
@@ -367,7 +368,7 @@ const httpRequest = async (
                         try {
                             req.setRequestHeader(headerKeys[i], requestHeaders[headerKeys[i]]);
                         } catch (ex) {
-                            chaynsHelperConfig.getLogger().warning({
+                            logger.warning({
                                 message: `[HttpRequest] Could not set header ${headerKeys[i]} on ${processName}`,
                                 data: {
                                     address,
@@ -387,7 +388,8 @@ const httpRequest = async (
                             if (event.lengthComputable) {
                                 onProgress((event.loaded / event.total) * 100, event.loaded, event.total);
                             } else {
-                                console.notLive.warn('[HttpRequest] Can\'t monitor progress: length not computable');
+                                // eslint-disable-next-line no-console
+                                console.warn('[HttpRequest] Can\'t monitor progress: length not computable');
                             }
                         });
                     }
@@ -402,7 +404,7 @@ const httpRequest = async (
                 }))();
             }
         } catch (err) {
-            chaynsHelperConfig.getLogger().warning({
+            logger.warning({
                 message: `[HttpRequest] Failed to fetch on ${processName}`,
                 data: {
                     address,
@@ -428,9 +430,8 @@ const httpRequest = async (
         const { status } = response;
 
         const log = (() => {
-            const logger = chaynsHelperConfig.getLogger();
             const levelKey = Object.keys(logConfig)
-                .find(key => (/^[\d]$/.test(key) && parseInt(key, 10) === status)
+                .find((key) => (/^[\d]$/.test(key) && parseInt(key, 10) === status)
                     || new RegExp(key).test(status));
             if (levelKey && logConfig[levelKey]) {
                 switch (logConfig[levelKey]) {
@@ -489,7 +490,7 @@ const httpRequest = async (
                 message: `[HttpRequest] http request failed: Status ${status} on ${processName}`,
             }, error);
             // eslint-disable-next-line no-console
-            console.notLive.error('[HttpRequest]', error);
+            console.error('[HttpRequest]', error);
             if (!ignoreErrors && useChaynsAuth && autoRefreshToken) {
                 try {
                     const jRes = await response.json();
@@ -512,7 +513,7 @@ const httpRequest = async (
                 message: `[HttpRequest] http request failed: Status ${status} on ${processName}`
             }, error);
             // eslint-disable-next-line no-console
-            console.notLive.error('[HttpRequest]', error);
+            console.error('[HttpRequest]', error);
             tryReject(error, status);
         }
 
@@ -533,13 +534,13 @@ const httpRequest = async (
             } else {
                 switch (statusHandlers[status]) {
                     case ResponseType.Json:
-                        jsonResolve(response, processName, resolve, tryReject, useFetchApi);
+                        await jsonResolve(response, processName, resolve, tryReject, useFetchApi);
                         return;
                     case ResponseType.Blob:
-                        blobResolve(response, processName, resolve, tryReject, useFetchApi);
+                        await blobResolve(response, processName, resolve, tryReject, useFetchApi);
                         return;
                     case ResponseType.Object:
-                        objectResolve(response, processName, resolve, tryReject, useFetchApi);
+                        await objectResolve(response, processName, resolve, tryReject, useFetchApi);
                         return;
                     case ResponseType.Response:
                     default:
@@ -587,14 +588,11 @@ const httpRequest = async (
                 try {
                     resolve(JSON.parse(result));
                 } catch (err) {
-                    chaynsHelperConfig.getLogger().warning({
+                    logger.warning({
                         message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`
                     }, err);
                     // eslint-disable-next-line no-console
-                    console.notLive.error(
-                        `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,
-                        err
-                    );
+                    console.error(`[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`, err);
                     if (status >= 200 && status < 300) {
                         resolve(null);
                     } else {
@@ -603,7 +601,20 @@ const httpRequest = async (
                 }
             }
             if (responseType === ResponseType.Object) {
-                resolve({ status, data: JSON.parse(result) });
+                try {
+                    resolve({ status, data: JSON.parse(result) });
+                } catch (err) {
+                    logger.warning({
+                        message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`
+                    }, err);
+                    // eslint-disable-next-line no-console
+                    console.error(`[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`, err);
+                    if (status >= 200 && status < 300) {
+                        resolve(null);
+                    } else {
+                        tryReject(null, status);
+                    }
+                }
             }
             if (responseType === ResponseType.Response) {
                 response.bodyString = result;
@@ -612,61 +623,13 @@ const httpRequest = async (
         } else {
             // responseType
             if (responseType === null || responseType === ResponseType.Json) {
-                try {
-                    resolve(useFetchApi ? await response.json() : JSON.parse(response.response));
-                } catch (err) {
-                    chaynsHelperConfig.getLogger().warning({
-                        message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
-                    }, err);
-                    // eslint-disable-next-line no-console
-                    console.notLive.error(
-                        `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
-                        err
-                    );
-                    if (status >= 200 && status < 300) {
-                        resolve(null);
-                    } else {
-                        tryReject(null, status);
-                    }
-                }
+                await jsonResolve(response, processName, resolve, tryReject, useFetchApi);
             }
             if (responseType === ResponseType.Blob) {
-                try {
-                    resolve(await response.blob());
-                } catch (err) {
-                    chaynsHelperConfig.getLogger().warning({
-                        message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`
-                    }, err);
-                    // eslint-disable-next-line no-console
-                    console.notLive.error(
-                        `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
-                        err
-                    );
-                    if (status >= 200 && status < 300) {
-                        resolve(null);
-                    } else {
-                        tryReject(null, status);
-                    }
-                }
+                await blobResolve(response, processName, resolve, tryReject, useFetchApi);
             }
             if (responseType === ResponseType.Object) {
-                try {
-                    resolve({ status, data: useFetchApi ? await response.json() : JSON.parse(response.response) });
-                } catch (err) {
-                    chaynsHelperConfig.getLogger().warning({
-                        message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
-                    }, err);
-                    // eslint-disable-next-line no-console
-                    console.notLive.error(
-                        `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
-                        err
-                    );
-                    if (status >= 200 && status < 300) {
-                        resolve(null);
-                    } else {
-                        tryReject(null, status);
-                    }
-                }
+                await objectResolve(response, processName, resolve, tryReject, useFetchApi);
             }
             if (responseType === ResponseType.Response) {
                 resolve(response);
@@ -680,11 +643,11 @@ const jsonResolve = async (response, processName, resolve, tryReject, useFetchAp
     try {
         resolve(useFetchApi ? await response.json() : JSON.parse(response.response));
     } catch (err) {
-        chaynsHelperConfig.getLogger().warning({
+        logger.warning({
             message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
         }, err);
         // eslint-disable-next-line no-console
-        console.notLive.error(`[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`, err);
+        console.error(`[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`, err);
         if (status >= 200 && status < 300) {
             resolve(null);
         } else {
@@ -698,11 +661,11 @@ const blobResolve = async (response, processName, resolve, tryReject, useFetchAp
     try {
         resolve(useFetchApi ? await response.blob() : new Blob(response.response));
     } catch (err) {
-        chaynsHelperConfig.getLogger().warning({
+        logger.warning({
             message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`
         }, err);
         // eslint-disable-next-line no-console
-        console.notLive.error(
+        console.error(
             `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
             err
         );
@@ -719,11 +682,11 @@ const objectResolve = async (response, processName, resolve, tryReject, useFetch
     try {
         resolve({ status, data: useFetchApi ? await response.json() : JSON.parse(response.response) });
     } catch (err) {
-        chaynsHelperConfig.getLogger().warning({
+        logger.warning({
             message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
         }, err);
         // eslint-disable-next-line no-console
-        console.notLive.error(
+        console.error(
             `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
             err
         );

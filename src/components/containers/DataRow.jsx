@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './containers.scss';
 import useElementProps from '../../hooks/useElementProps';
-import T from '../../functions/types';
+import types from '../../functions/types';
 
 /**
  * DataRow
@@ -33,9 +33,9 @@ const DataRow = (props) => {
             style={style}
             {...elementProps}
         >
-            {T.isArray(children) ? T.safeFirst(children) : children}
-            {T.isArray(children)
-             && <div className="chayns__utils__container--datarow--right">{children.slice(1)}</div>}
+            {types.isArray(children) ? types.safeFirst(children) : children}
+            {types.isArray(children)
+            && <div className="chayns__utils__container--datarow--right">{children.slice(1)}</div>}
         </div>
     );
 };
@@ -52,6 +52,6 @@ DataRow.defaultProps = {
     elementType: 'div'
 };
 
-DataRow.displayName = 'DataRow'
+DataRow.displayName = 'DataRow';
 
 export default DataRow;

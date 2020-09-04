@@ -4,11 +4,14 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import isTobitEmployee from 'chayns-components/lib/utils/tobitEmployee';
-import generateUUID from '../functions/generateUid';
 import { isNullOrWhiteSpace } from 'chayns-components/lib/utils/is';
+import generateUUID from '../functions/generateUid';
 import useElementProps from '../hooks/useElementProps';
-import { chaynsHelperConfig } from '../chaynsHelperConfig';
 import types from '../functions/types';
+
+export const TEXTSTRING_CONFIG = {
+    PREFIX: ''
+};
 
 /**
  * Memoized textstring Component that adds prefix automatically
@@ -35,7 +38,7 @@ const TextStringMemo = (props) => {
     return (
         <TextString
             {...elementProps}
-            stringName={`${chaynsHelperConfig.textStringPrefix}${stringName}`}
+            stringName={`${TEXTSTRING_CONFIG.PREFIX}${stringName}`}
             fallback={fallback}
             replacements={replacements}
         >
@@ -53,6 +56,13 @@ TextStringMemo.propTypes = {
 
 TextStringMemo.defaultProps = {
     replacements: undefined
+};
+
+TextStringMemo.displayName = 'TextStringMemo';
+
+TextStringMemo.loadLibrary = async (...params) => {
+    TEXTSTRING_CONFIG.PREFIX = types.safeFirst(params);
+    await TextString.loadLibrary(...params);
 };
 
 export default memo(TextStringMemo);
@@ -149,7 +159,7 @@ export const TextStringComplex = memo((props) => {
     const changeStringResult = (data, lang) => {
         if (data.buttonType === 1 && (data.text || data.value)) {
             TextString.changeTextString(
-                `${chaynsHelperConfig.textStringPrefix}${stringName}`,
+                `${TEXTSTRING_CONFIG.PREFIX}${stringName}`,
                 useDangerouslySetInnerHTML ? data.value : data.text, lang.value
             )
                 .then((result) => {
@@ -273,11 +283,11 @@ export const TextStringComplex = memo((props) => {
                 if (e.ctrlKey && useClickToEdit) {
                     isTobitEmployee()
                         .then(() => {
-                            selectTextStringLanguage(`${chaynsHelperConfig.textStringPrefix}${stringName}`);
+                            selectTextStringLanguage(`${TEXTSTRING_CONFIG.PREFIX}${stringName}`);
                         })
                         .catch((err) => {
                             // eslint-disable-next-line no-console
-                            console.notLive.warn(err);
+                            console.warn(err);
                         });
                     e.stopPropagation();
                 } else {
@@ -312,6 +322,8 @@ TextStringComplex.defaultProps = {
     replacements: {}
 };
 
+TextStringComplex.displayName = 'TextStringComplex';
+
 /**
  * Get a list of textStrings
  * @param {string[]|Object.<string, string>} textStrings - format: [string_name1, string_name2]
@@ -327,7 +339,7 @@ export const getTextStrings = (textStrings, language = 'de') => {
         const current = strings[i];
         const fallback = isSimple ? current : textStrings[strings[i]];
         const text = TextString.getTextString(
-            `${chaynsHelperConfig.textStringPrefix}${current}`,
+            `${TEXTSTRING_CONFIG.PREFIX}${current}`,
             language,
             fallback
         );

@@ -1,4 +1,4 @@
-import { chaynsHelperConfig } from '../chaynsHelperConfig';
+import logger from 'chayns-logger';
 
 const isStringAndNotWhitespace = (str) => typeof str === 'string' && str.trim() !== '';
 
@@ -81,8 +81,8 @@ class WebSocketClient {
 
         this.socket.onerror = () => {
             this.connectionFails += 1;
-    
-            chaynsHelperConfig.getLogger().warning({
+
+            logger.warning({
                 message: 'Error occured in websocket client',
                 section: 'WebSocketClient_initialize_onerror',
                 data: {

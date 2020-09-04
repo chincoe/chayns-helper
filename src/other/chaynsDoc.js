@@ -1072,7 +1072,7 @@ const chayns = {
      * @param {number} iOSFeedbackVibration
      */
     vibrate(pattern, iOSFeedbackVibration) {},
-    ready: new Promise(r => {r();}),
+    ready: new Promise((r) => { r(); }),
     env: {
         dialogInput: {},
         parameters: {},
