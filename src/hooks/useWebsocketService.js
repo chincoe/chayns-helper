@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import shallowEqual from '../functions/shallowEqual';
 import logger from 'chayns-logger';
+import shallowEqual from '../functions/shallowEqual';
 import WsClient from '../other/WsClient';
+import {ENVIRONMENT} from '../config/environment';
 
 /**
  * tobit-websocket-client has some unhandled errors. They don't affect the user but generate error logs. Using these
@@ -108,7 +109,7 @@ const useWebsocketService = (
                 // WS client default: WS registered successfully
                 webSocketClient.on('registered', (data) => {
                     // eslint-disable-next-line no-console
-                    console.notLive.log('[Websocket] client registered', data);
+                    if (!ENVIRONMENT.PRODUCTION) console.log('[Websocket] client registered', data);
                     logger.info({
                         message: '[Websocket] client registered',
                         data
@@ -125,7 +126,7 @@ const useWebsocketService = (
                 // WS client default: WS connection closed
                 webSocketClient.on('CLOSED', (data) => {
                     // eslint-disable-next-line no-console
-                    console.notLive.log('[Websocket] closed', data);
+                    if (!ENVIRONMENT.PRODUCTION) console.log('[Websocket] closed', data);
                     logger.info({
                         message: '[Websocket] connection closed',
                         data
