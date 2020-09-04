@@ -25,6 +25,7 @@
         "ignore": [
           "chayns-components",
           "chayns-logger",
+          "react-redux",
           "default-error-handler",
           "environment",
           "react",

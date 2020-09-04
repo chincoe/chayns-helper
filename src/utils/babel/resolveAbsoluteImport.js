@@ -47,7 +47,8 @@ module.exports = function resolveAbsoluteImport(importName) {
         AsyncPromise: 'functions/AsyncPromise',
         createEnum: 'functions/createEnum',
         getHookState: 'functions/getHookState',
-        shallowEqual: 'functions/shallowEqual'
+        shallowEqual: 'functions/shallowEqual',
+        useShallowSelector: 'hooks/useShallowSelector'
     };
 
     if (!values[importName]) {

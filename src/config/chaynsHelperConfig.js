@@ -1,14 +1,12 @@
 // eslint-disable-next-line import/no-cycle
 import { errorHandlerConfig } from 'default-error-handler';
 import logger from 'chayns-logger';
-import ReactDOM from 'react-dom';
 import { loggerConfig } from './chayns-logger';
 import handleRequestErrors from './default-error-handler';
 import { initLog } from '../functions/log';
 import { ENVIRONMENT } from './environment';
 import { TEXTSTRING_CONFIG } from '../textstring/TextStringMemo';
-
-export const reactDomVersion = ReactDOM.version;
+import { reduxConfig } from './react-redux';
 
 /**
  * @typedef logger
@@ -30,12 +28,14 @@ const initChaynsHelper = (
         live = false,
         requestErrorHandler = handleRequestErrors,
         pLogger = logger,
+        useSelector = () => {}
     }
 ) => {
     TEXTSTRING_CONFIG.PREFIX = textStringPrefix;
     ENVIRONMENT.PRODUCTION = live;
     errorHandlerConfig.getErrorHandler = () => requestErrorHandler;
     loggerConfig.getLogger = () => pLogger;
+    reduxConfig.getSelector = () => useSelector;
     initLog(live);
 };
 

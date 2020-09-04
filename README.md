@@ -8,9 +8,14 @@ Initialize the helper in your index.js to make sure that every feature actually 
 initChaynsHelper({
     textStringPrefix: 'txt_chayns_myapp_', // necessary to use all textString helpers
     live: __PROD__, // used by a variety of helpers, though it mostly affects only logs
-    requestErrorHandler: myRequestErrorHandler // default is defaultErrorHandler, used only by handleRequest
+    requestErrorHandler: myRequestErrorHandler, // default is defaultErrorHandler, used only by handleRequest
+    logger: chaynsLogger // access the chayns logger as it cannot be a dependency for this public package
 });
 ```
+
+> **_NOTE:_** This package lacks markdown documentations and examples but features JsDoc comments instead. If you would like me to add examples and a readme to a function, let me know and I'll add them.
+
+
 
 ##Contents
 ###Components

@@ -48,6 +48,7 @@ import AsyncPromise from './functions/AsyncPromise';
 import createEnum from './functions/createEnum';
 import getHookState from './functions/getHookState';
 import shallowEqual from './functions/shallowEqual';
+import useShallowSelector from './hooks/useShallowSelector';
 
 export {
     initChaynsHelper,
@@ -98,5 +99,6 @@ export {
     AsyncPromise,
     createEnum,
     getHookState,
-    shallowEqual
+    shallowEqual,
+    useShallowSelector
 };
