@@ -90,14 +90,13 @@ export const handleRequest = (
     // function: An error handler. Defaults to default-error-handler.js in this folder
     errorHandler = undefined,
     // object: other options for this handler
-    options = {}
+    {
+        finallyHandler = () => null, // function: is always executed
+        waitCursor = false, // bool/object: true or { text, textTimeout, timeout }
+        cache = null // string/object: cacheKey or { key, duration, cacheResolver }
+    }
 ) => new Promise(
     (resolve, reject) => {
-        const {
-            finallyHandler = () => null, // function: is always executed
-            waitCursor = false, // bool/object: true or { text, textTimeout, timeout }
-            cache = null // string/object: cacheKey or { key, duration, cacheResolver }
-        } = (options || {});
         const useWaitCursor = !!waitCursor;
         const { text = undefined, textTimeout = 5000, timeout = 300 } = (types.isObject(waitCursor) ? waitCursor : {});
         const handleErrors = errorHandler || defaultErrorHandler;
