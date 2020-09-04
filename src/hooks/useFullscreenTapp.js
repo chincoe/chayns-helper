@@ -1,9 +1,10 @@
 import {
     useState, useEffect, useReducer, useMemo
 } from 'react';
+import hideCWFooter from '../functions/chaynsCalls/hideCwFooter';
+import setViewMode from '../functions/chaynsCalls/setViewMode';
 import shallowEqual from '../functions/shallowEqual';
 import types from '../functions/types';
-import { hideCWFooter, setViewMode } from '../functions/chaynsCalls/chaynsCalls';
 
 /**
  * Reducer to update the windowData state

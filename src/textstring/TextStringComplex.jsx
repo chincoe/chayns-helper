@@ -7,7 +7,8 @@ import PropTypes from 'prop-types';
 import generateUUID from '../functions/generateUid';
 import types from '../functions/types';
 import useElementProps from '../hooks/useElementProps';
-import { TEXTSTRING_CONFIG, useTextStrings } from './TextStringMemo';
+import { TEXTSTRING_CONFIG } from './TextStringMemo';
+import useTextStrings from './useTextStrings';
 
 // memoized textstring component
 // adds prefix automatically
