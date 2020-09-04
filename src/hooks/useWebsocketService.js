@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { shallowEqual } from 'react-redux';
+import shallowEqual from '../functions/shallowEqual';
 import logger from 'chayns-logger';
 import WsClient from '../other/WsClient';
 

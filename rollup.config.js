@@ -4,15 +4,26 @@ import resolve from '@rollup/plugin-node-resolve';
 import autoExternal from 'rollup-plugin-auto-external';
 import postcss from 'rollup-plugin-postcss';
 import alias from '@rollup/plugin-alias';
-import pkg from './package.json';
+import external from 'rollup-plugin-peer-deps-external';
+
+const pkg = require('./package.json');
+
+const env = process.env.NODE_ENV;
 
 export default {
     input: 'src/index.js',
-    output: [
-        { file: pkg.main, format: 'cjs' },
-        { file: pkg.module, format: 'esm' },
-    ],
+    output: {
+        file: {
+            es: pkg.module,
+            cjs: pkg.main,
+        }[env],
+        format: env,
+    },
+    external: [...Object.keys(pkg.dependencies), ...Object.keys(pkg.peerDependencies)],
     plugins: [
+        external({
+            packageJsonPath: 'src/package.json'
+        }),
         alias({
             entries: [
                 { find: 'chayns-logger', replacement: 'src/config/chayns-logger.js' },
@@ -20,12 +31,17 @@ export default {
                 { find: 'environment', replacement: 'src/config/environment.js' },
             ]
         }),
-        postcss(),
+        postcss({
+            plugins: []
+        }),
         autoExternal(),
         resolve({
-            extensions: ['.js', '.jsx', '.json'],
+            extensions: ['.js', '.jsx'],
         }),
         commonjs(),
-        babel({ babelHelpers: 'runtime' }),
+        babel({
+            exclude: /node_modules/,
+            babelHelpers: 'runtime'
+        }),
     ],
 };

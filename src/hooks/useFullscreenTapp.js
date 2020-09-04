@@ -1,9 +1,9 @@
 import {
     useState, useEffect, useReducer, useMemo
 } from 'react';
-import { shallowEqual } from 'react-redux';
+import shallowEqual from '../functions/shallowEqual';
 import types from '../functions/types';
-import { hideCWFooter, setViewMode } from '../functions/chaynsCalls';
+import { hideCWFooter, setViewMode } from '../functions/chaynsCalls/chaynsCalls';
 
 /**
  * Reducer to update the windowData state

@@ -22,16 +22,6 @@ export const removeTimeZoneOffset = (date) => new Date(
 );
 
 /**
- * Format: HH:mm
- * @param {Date} pDate
- * @return {string}
- */
-export const simpleTimeFormat = (pDate) => {
-    const date = new Date(pDate);
-    return `${date.getHours()}:${`00${date.getMinutes()}`.slice(-2)}`;
-};
-
-/**
  * Format: [day]:[month], e.g. 12.3.
  * @param {Date} date
  * @return {string}

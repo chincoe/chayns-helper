@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { shallowEqual } from 'react-redux';
+import shallowEqual from '../../functions/shallowEqual';
 import useUniqueTimeout from './useUniqueTimeout';
 
 /**

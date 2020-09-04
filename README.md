@@ -73,14 +73,14 @@ initChaynsHelper({
 | [getChaynsColorRgb](/src/functions/chaynsColors.js)| get a chayns color in rgb from its color name |
 | [handleRequest](/src/functions/httpRequest.js)| try/catch-wrapper for http requests |
 | [hexToRgb](/src/functions/chaynsColors.js)| convert hex color string to rgb |
-| [hideCWFooter](/src/functions/chaynsCalls.js)| hide the chayns web footer |
+| [hideCWFooter](/src/functions/chaynsCalls/chaynsCalls.js)| hide the chayns web footer |
 | [httpRequest](/src/functions/httpRequest.js)| fetch helper with loads of options |
 | [localStorage](/src/other/localStorageHelper.js)| helper to cache httpRequest JSON strings in local storage |
 | [mixChaynsColorRgb](/src/functions/chaynsColors.js)| mix 2 chayns colors |
 | [removeTimeZoneOffset](/src/functions/timeHelper.js)| Remove timezone offset of dates that claim to be UTC but are actually local |
 | [RequestError](/src/functions/httpRequest.js)| Error class for error status codes |
-| [setViewMode](/src/functions/chaynsCalls.js)| toggle exclusive mode |
-| [showSuccessAnimation](/src/functions/showSuccessAnimation.js)| show a dialog with a success animation |
+| [setViewMode](/src/functions/chaynsCalls/chaynsCalls.js)| toggle exclusive mode |
+| [showSuccessAnimation](/src/functions/statusAnimations/showSuccessAnimation.js)| show a dialog with a success animation |
 | [simpleTimeFormat](/src/functions/timeHelper.js)| Format date: HH:mm |
 | [time](/src/functions/timeHelper.js)| constant for times based on ms |
 | [types](/src/functions/types.js)| a collection of helpers for types in general but especially objects and arrays. Includes: mapObject, reduceObject, mapObjectToArray, forEachKey, firstOrDefault, replaceAll, type checking |
