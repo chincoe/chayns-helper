@@ -17,7 +17,7 @@ export default {
             es: pkg.module,
             cjs: pkg.main,
         }[env],
-        format: env,
+        format: env
     },
     external: [...Object.keys(pkg.dependencies), ...Object.keys(pkg.peerDependencies)],
     plugins: [

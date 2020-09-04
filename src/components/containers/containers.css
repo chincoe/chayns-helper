@@ -17,8 +17,9 @@
 .chayns__utils__container--datarow {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 5px 0; }
+  align-items: center; }
+  .chayns__utils__container--datarow:last-child {
+    margin-bottom: 5px; }
   .chayns__utils__container--datarow--right {
     display: flex;
     flex-direction: column;
