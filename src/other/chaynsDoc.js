@@ -440,6 +440,7 @@ const __PRODUCTION__ = true;
  *              version: string,
  *              supportsWebP: boolean
  *          },
+ *          isChaynsnetRuntime: boolean|undefined
  *          isChaynsWebDesktop: boolean,
  *          isInFrame: boolean,
  *          isMobile: boolean,
@@ -1190,8 +1191,8 @@ const chayns = {
         isApp: false,
         isBrowser: true,
         isDesktop: true,
-        os:
-            'noOS',
+        os: 'noOS',
+        isChaynsnetRuntime: undefined,
         isChaynsWebMobile: false,
         isChaynsWebDesktop: true,
         isChaynsWeb: true,

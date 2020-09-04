@@ -9,7 +9,8 @@ initChaynsHelper({
     textStringPrefix: 'txt_chayns_myapp_', // necessary to use all textString helpers
     live: __PROD__, // used by a variety of helpers, though it mostly affects only logs
     requestErrorHandler: myRequestErrorHandler, // default is defaultErrorHandler, used only by handleRequest
-    logger: chaynsLogger // access the chayns logger as it cannot be a dependency for this public package
+    logger: chaynsLogger, // access the chayns logger as it cannot be a dependency for this public package
+    useSelector // react-redux useSelector hook, required to use useShallowSelector
 });
 ```
 
@@ -53,14 +54,8 @@ initChaynsHelper({
 | [useUniqueTimeout](/src/hooks/uniques/useUniqueTimeout.js)| clears a previous timeout when a new one is set |
 | [useUser](/src/hooks/useUser.js)| chayns.getUser() hook |
 | [useWebsocketService](/src/hooks/useWebsocketService.js)| configure a tobit-websocket-service-client |
+| [useShallowSelector](/src/hooks/useShallowSelector.js)| a useSelector Hook with shallowEqual |
 
-###Redux
-| Asset                                                                 | Description                   |
-|----------------------------------------------------------------------|-------------------------------|
-| [rtkThunkCase](/src/redux/rtkThunkCase.js)| create the 3 reducer cases for a ReduxToolkit async thunk |
-| [useActions](/src/redux/useActions.js)| bind a list of action creators |
-| [useComplexSelector](/src/redux/useComplexSelector.js)| a useSelector Hook using reselect's createSelector |
-| [useShallowSelector](/src/redux/useShallowSelector.js)| a useSelector Hook with shallowEqual |
 
 ###Functions
 | Function                                                                 | Description                   |

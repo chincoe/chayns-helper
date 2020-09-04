@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import shallowEqual from '../functions/shallowEqual';
 import types from '../functions/types';
 
+/**
+ * @type {user[]}
+ */
 const usersCache = [];
 
 /**
@@ -42,9 +45,12 @@ const useUser = (userInfo) => {
     useEffect(() => {
         if (userInfo && !shallowEqual(prevUserInfo, userInfo)) {
             if (!types.isNullOrEmpty(usersCache)) {
-                const cacheUser = usersCache.find(u => ((userInfo.userId && u.UserID === userInfo.userId)
+                const cacheUser = usersCache.find((u) => ((userInfo.userId && u.UserID === userInfo.userId)
                     || (userInfo.personId && u.PersonID === userInfo.personId)));
-                if (cacheUser) return cacheUser;
+                if (cacheUser) {
+                    setPrevUserInfo(userInfo);
+                    setUser(cacheUser);
+                }
             }
             chayns.getUser(userInfo)
                 .then((r) => {

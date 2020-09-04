@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import logger from 'chayns-logger';
 import shallowEqual from '../functions/shallowEqual';
 import WsClient from '../other/WsClient';
-import {ENVIRONMENT} from '../config/environment';
+import { ENVIRONMENT } from '../config/environment';
 
 /**
  * tobit-websocket-client has some unhandled errors. They don't affect the user but generate error logs. Using these

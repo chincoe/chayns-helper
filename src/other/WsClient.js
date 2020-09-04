@@ -1,4 +1,5 @@
 /**
+ * This websocket client works exactly like the tobit-websocket-service-client but had additional null value handling
  * @class
  * @type {{closeConnection: function(), createConnection: function(), updateConditions: function(Object), on:
  *     function(string, wsEventHandler), once: function(string, wsEventHandler), off: function(string)}}

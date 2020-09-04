@@ -31,7 +31,7 @@ import useElementProps from '../../hooks/useElementProps';
  * @return {*}
  * @constructor
  */
-const ChaynsEditor = (props) => {
+function ChaynsEditor(props) {
     const {
         elementType = 'div',
         value,
@@ -100,7 +100,7 @@ const ChaynsEditor = (props) => {
             {initialValue}
         </Component>
     );
-};
+}
 
 const ChaynsEditorTools = {
     block: {

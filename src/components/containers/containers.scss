@@ -35,9 +35,12 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 5px 0;
 
-        &--right{
+        &:last-child {
+            margin-bottom: 5px;
+        }
+
+        &--right {
             display: flex;
             flex-direction: column;
             align-items: flex-end;

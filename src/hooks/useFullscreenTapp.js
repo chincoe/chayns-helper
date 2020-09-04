@@ -1,5 +1,5 @@
 import {
-    useState, useEffect, useReducer, useMemo
+    useState, useEffect, useReducer, useMemo,
 } from 'react';
 import hideCWFooter from '../functions/chaynsCalls/hideCwFooter';
 import setViewMode from '../functions/chaynsCalls/setViewMode';
@@ -48,7 +48,7 @@ const correctWindowData = (data) => {
         ...data,
         windowHeight: data.windowHeight || window.innerHeight,
         frameY: data.frameY === undefined ? (chayns.env.isChaynsnetRuntime ? 0 : 45) : data.frameY,
-        pageYOffset: data.pageYOffset || 0
+        pageYOffset: data.pageYOffset || 0,
     };
 };
 
@@ -64,7 +64,7 @@ const correctWindowData = (data) => {
 const useFullscreenTapp = (initialValue = true, {
     forceExclusive = false,
     fullBrowserWidth = false,
-    maxWidth = 851
+    maxWidth = 851,
 }) => {
     const [isFullscreenActive, setIsFullscreenActive] = useState(initialValue);
     const [windowData, setWindowData] = useReducer(windowDataReducer, undefined);
@@ -77,15 +77,16 @@ const useFullscreenTapp = (initialValue = true, {
                 const data = correctWindowData(winData);
                 setWindowData({
                     data,
-                    type: force ? 'force' : 'compare'
+                    type: force ? 'force' : 'compare',
                 });
                 if (!chayns.env.user.adminMode) {
                     chayns.setHeight({
                         height: data.windowHeight - (
                             chayns.utils.isNumber(data.frameY) && chayns.utils.isNumber(data.pageYOffset)
                             ? (data.frameY + data.pageYOffset)
-                            : 45),
-                        forceHeight: true
+                            : 45
+                        ),
+                        forceHeight: true,
                     });
                 }
             });
@@ -96,8 +97,8 @@ const useFullscreenTapp = (initialValue = true, {
             chayns.hideTitleImage(),
             hideCWFooter(),
             ...(forceExclusive || fullBrowserWidth ? [
-                setViewMode(isFullscreenActive ? true : defaultExclusive, fullBrowserWidth)
-            ] : [])
+                setViewMode(isFullscreenActive ? true : defaultExclusive, fullBrowserWidth),
+            ] : []),
         ]);
         let interval = 0;
         clearInterval(resizeInterval);
@@ -125,7 +126,7 @@ const useFullscreenTapp = (initialValue = true, {
             tapp.style.height = null;
             chayns.setHeight({
                 height: window.innerHeight,
-                forceHeight: false
+                forceHeight: false,
             });
         }
         return () => { clearInterval(interval); };
