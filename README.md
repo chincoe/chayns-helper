@@ -15,10 +15,8 @@ initChaynsHelper({
 
 > **_NOTE:_** This package lacks markdown documentations and examples but features JsDoc comments instead. If you would like me to add examples and a readme to a function, let me know and I'll add them.
 
-
-
-##Contents
-###Components
+## Contents
+### Components
 | Component                                                                | Description                 |
 |--------------------------------------------------------------------------|-----------------------------|
 | [CenteredButtonContainer](/src/components/containers/CenteredButtonContainer.jsx)| Centered container for Buttons |
@@ -38,7 +36,7 @@ initChaynsHelper({
 | [TextStringMemo](/src/textstring/TextStringMemo.jsx)| Memoized Textstring Component, adds prefix |
 | [UACGroupChooseButton](/src/components/buttons/UACGroupChooseButton.jsx)| ChooseButton for UAC groups |
 
-###Hooks
+### Hooks
 | Hook                                                                 | Description                   |
 |----------------------------------------------------------------------|-------------------------------|
 | [useElementProps](/src/hooks/useElementProps.js)| Remove custom props to spread the remaining props on an HTML element |
@@ -57,7 +55,7 @@ initChaynsHelper({
 | [useAxis](/src/functions/recharts/useAxis.js)| a hook to generate a better recharts axis |
 
 
-###Functions
+### Functions
 | Function                                                                 | Description                   |
 |----------------------------------------------------------------------|-------------------------------|
 | [backgroundColorClass](/src/functions/chaynsColors.js)| get a chayns background color class name |
