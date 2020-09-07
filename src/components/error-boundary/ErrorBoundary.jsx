@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import './error-boundary.scss';
 import { Button } from 'chayns-components';
 import logger from 'chayns-logger';
-import { ENVIRONMENT } from 'environment';
 import CenteredButtonContainer from '../containers/CenteredButtonContainer';
 
 /**
@@ -52,7 +51,7 @@ class ErrorBoundary extends React.Component {
                            <div className="ErrorBoundary__content__card content__card content__card--warning">
                                <h2>Es ist ein Fehler aufgetreten</h2>
                                <p>Wir sind bereits davon informiert und beheben den Fehler so schnell wie möglich.</p>
-                               {!ENVIRONMENT.PRODUCTION && (
+                               {process.env.NODE_ENV === 'development' && (
                                    <p>
                                        {`Fehler: ${state.error.toString()}`}
                                    </p>

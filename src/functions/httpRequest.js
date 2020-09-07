@@ -1,5 +1,5 @@
 import logger from 'chayns-logger';
-import defaultErrorHandler from 'default-error-handler';
+import defaultErrorHandler from './defaultErrorHandler';
 import generateUUID from './generateUid';
 import showWaitCursor from './waitCursor';
 import types from './types';
@@ -64,7 +64,7 @@ export class RequestError extends Error {
  *
  * @param {Promise<*>} request - Promise of the un-awaited request
  * @param {requestErrorHandler} [errorHandler=undefined] - Function to handle error statusCodes. Defaults to
- *     default-error-handler.js
+ *     defaultErrorHandler.js
  * @param {Object} [options={}] - other options for this wrapper
  * @param {function} [options.finallyHandler] - Function that should always be executed after the request
  * @param {boolean|waitCursorOptions} [options.waitCursor] - Show chayns waitCursor. Set true to show. Set to an object
@@ -87,7 +87,7 @@ export class RequestError extends Error {
 export const handleRequest = (
     // promise: The un-awaited request.
     request,
-    // function: An error handler. Defaults to default-error-handler.js in this folder
+    // function: An error handler. Defaults to defaultErrorHandler.js in this folder
     errorHandler = undefined,
     // object: other options for this handler
     {

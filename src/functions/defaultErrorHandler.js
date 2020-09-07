@@ -1,4 +1,4 @@
-import logger from 'chayns-logger';
+import logger from 'src/config/chayns-logger';
 
 /**
  * Default error handler for failed httpRequests
