@@ -2,7 +2,7 @@
  * All storage keys. A set of data needs a key to be managed by this helper
  * @type {{}}
  */
-const storageKeys = {};
+export const storageKeys = {};
 
 /**
  * True: Cache is active
@@ -10,19 +10,22 @@ const storageKeys = {};
  * Disables cache in DEV and/or if the URL parameter "nocache" is present
  * @return {boolean}
  */
-const isStorageActive = () => !(__DEV__ || Object.prototype.hasOwnProperty.call(chayns.env.parameters, 'nocache'));
+export const isStorageActive = () => !(__DEV__ || Object.prototype.hasOwnProperty.call(
+    chayns.env.parameters,
+    'nocache'
+));
 // const isStorageActive = () => true;
 
-const minutes = (t) => t * 60 * 1000;
+export const minutes = (t) => t * 60 * 1000;
 
-const storageSettings = [];
+export const storageSettings = [];
 
 /**
  * Add a key to the storage
  * @param {string} name
  * @param {number} [duration=5] - maximum cache age in minutes
  */
-const addKey = (name, duration = 5) => {
+export const addKey = (name, duration = 5) => {
     storageSettings.push({
         key: name,
         duration: minutes(duration)
@@ -35,9 +38,10 @@ const addKey = (name, duration = 5) => {
  * If no key is provided, clear the cache for all keys
  * @param {string} [key=undefined]
  */
-const clearStorage = (key = undefined) => {
-    if (key) chayns.utils.ls.remove(key);
-    else {
+export const clearStorage = (key = undefined) => {
+    if (key) {
+        chayns.utils.ls.remove(key);
+    } else {
         const keys = Object.keys(storageKeys);
         for (let i = 0; i < keys.length; i += 1) {
             chayns.utils.ls.remove(keys[i]);
@@ -50,7 +54,7 @@ const clearStorage = (key = undefined) => {
  * @param {string} key
  * @return {null|*}
  */
-const getStorage = (key) => {
+export const getStorage = (key) => {
     const cache = chayns.utils.ls.get(key);
     if (isStorageActive()
         && cache
@@ -69,7 +73,7 @@ const getStorage = (key) => {
  * @param {string} key
  * @param {*} value
  */
-const setStorage = (key, value) => {
+export const setStorage = (key, value) => {
     chayns.utils.ls.set(key, {
         timestamp: new Date().getTime(),
         data: value

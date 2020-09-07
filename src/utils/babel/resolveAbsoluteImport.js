@@ -20,7 +20,7 @@ module.exports = function resolveAbsoluteImport(importName) {
         colors: 'functions/chaynsColors',
         chaynsDialog: 'functions/chaynsDialogs',
         copyOnClick: 'functions/copy',
-        defaultErrorHandler: 'config/default-error-handler',
+        defaultErrorHandler: 'functions/defaultErrorHandler',
         generateUUID: 'functions/generateUid',
         request: 'functions/httpRequest',
         showFailureAnimation: 'functions/statusAnimations/showSuccessAnimation',
@@ -48,7 +48,9 @@ module.exports = function resolveAbsoluteImport(importName) {
         createEnum: 'functions/createEnum',
         getHookState: 'functions/getHookState',
         shallowEqual: 'functions/shallowEqual',
-        useShallowSelector: 'hooks/useShallowSelector'
+        useShallowSelector: 'hooks/useShallowSelector',
+        generateAxis: 'functions/recharts/generateAxis',
+        useAxis: 'functions/recharts/useAxis'
     };
 
     if (!values[importName]) {

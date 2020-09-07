@@ -1,6 +1,21 @@
-import { useMemo } from 'react';
-
-export const generateAxis = (
+/**
+ * @typedef tickFormatter
+ * @param {number|*} start
+ * @param {number} intervalLength
+ * @param {number} i
+ *
+ * @returns {number|*}
+ */
+/**
+ * @param {number|*} start - minimum value of data or axis start
+ * @param {number|*} end - maximum value of data
+ * @param {number} divisor - for all axis ticks: tick % divisor = 0
+ * @param {number} maxTicks - maximum amount of ticks
+ * @param {number} minTicks - minimum amount of ticks
+ * @param {tickFormatter} tickFormatter - function to format
+ * @returns {{min: *, max: *, ticks: [], intervalCount: number, intervalLength: number}}
+ */
+const generateAxis = (
     start,
     end,
     divisor,
@@ -26,13 +41,4 @@ export const generateAxis = (
     };
 };
 
-export const useAxis = (
-    {
-        start,
-        end,
-        divisor,
-        maxTicks,
-        minTicks = 0,
-        tickFormatter = (base, intervalLength, i) => (base + intervalLength * i)
-    }, deps
-) => useMemo(() => generateAxis(start, end, divisor, maxTicks, minTicks, tickFormatter), deps);
+export default generateAxis;

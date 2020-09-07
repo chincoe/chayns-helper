@@ -290,7 +290,7 @@ export const LogLevel = Object.freeze({
  * @public
  * @return {Promise<Response|objectResponse|Blob|Object>} - response or response body
  */
-const httpRequest = async (
+export const httpRequest = async (
     // full request address. URLs should be defined as functions or constants in a separate file
     address,
     // fetch config

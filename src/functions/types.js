@@ -1,26 +1,27 @@
+// eslint-disable-next-line import/no-cycle
 import extend from './extend';
 
-const isArray = (arr) => (Array.isArray(arr));
-const isObject = (obj) => (Object.prototype.toString.call(obj) === '[object Object]');
-const isBasedOnObject = (obj) => (obj !== null && typeof (obj) === 'object');
-const isFunction = (func) => (typeof (func) === 'function');
-const isBoolean = (func) => (typeof (func) === 'boolean');
-const isString = (string) => (typeof (string) === 'string');
-const isDate = (date) => (Object.prototype.toString.call(date) === '[object Date]');
+export const isArray = (arr) => (Array.isArray(arr));
+export const isObject = (obj) => (Object.prototype.toString.call(obj) === '[object Object]');
+export const isBasedOnObject = (obj) => (obj !== null && typeof (obj) === 'object');
+export const isFunction = (func) => (typeof (func) === 'function');
+export const isBoolean = (func) => (typeof (func) === 'boolean');
+export const isString = (string) => (typeof (string) === 'string');
+export const isDate = (date) => (Object.prototype.toString.call(date) === '[object Date]');
 // eslint-disable-next-line no-restricted-globals
-const isNumber = (num) => (typeof (num) === 'number' && !isNaN(num));
+export const isNumber = (num) => (typeof (num) === 'number' && !isNaN(num));
 // eslint-disable-next-line no-restricted-globals
-const isCleanNumber = (num) => (typeof (num) === 'number' && num !== Infinity && !(isNaN(num)));
+export const isCleanNumber = (num) => (typeof (num) === 'number' && num !== Infinity && !(isNaN(num)));
 // eslint-disable-next-line no-restricted-globals
-const isInteger = (int) => (typeof (int) === 'number' && int !== Infinity && !(isNaN(int)) && int % 1 === 0);
+export const isInteger = (int) => (typeof (int) === 'number' && int !== Infinity && !(isNaN(int)) && int % 1 === 0);
 // eslint-disable-next-line no-prototype-builtins
-const isPromise = (prom) => Promise.prototype.isPrototypeOf(prom);
+export const isPromise = (prom) => Promise.prototype.isPrototypeOf(prom);
 
 /**
  * @type {{date: string, number: string, string: string, null: string, array: string, function: string, object: string,
  *     undefined: string}}
  */
-const typeStrings = {
+export const typeStrings = {
     array: '[object Array]',
     object: '[object Object]',
     function: '[object Function]',
@@ -43,7 +44,7 @@ const typeStrings = {
  * @param {selectorCb} callback
  * @return {null|*}
  */
-const safeFirst = (arr, callback = () => true) => {
+export const safeFirst = (arr, callback = () => true) => {
     if (!isArray(arr)) return null;
     const relevantArray = (arr || []);
     if (!types.isFunction(callback)) return relevantArray[0] || null;
@@ -56,7 +57,7 @@ const safeFirst = (arr, callback = () => true) => {
  * @param {function(*)} selector
  * @returns {null|*[]}
  */
-const distinct = (arr, selector) => {
+export const distinct = (arr, selector) => {
     if (!isArray(arr) || !isFunction(selector)) return null;
     return arr.reduce((total, current) => {
         const idx = total.findIndex((t) => selector(t) === selector(current));
@@ -74,7 +75,7 @@ const distinct = (arr, selector) => {
  * @param {*} val
  * @return {string}
  */
-const getType = (val) => ({}.toString.call(val))
+export const getType = (val) => ({}.toString.call(val))
     .replace('[object ', '')
     .replace(']', '')
     .toLowerCase();
@@ -84,7 +85,7 @@ const getType = (val) => ({}.toString.call(val))
  * @param {*[]|Object|string|number} val
  * @return {number}
  */
-const length = (val) => {
+export const length = (val) => {
     if (!isArray(val) && !isString(val) && !isObject(val) && !isNumber(val)) return 0;
     const type = getType(val);
     switch (type) {
@@ -105,7 +106,7 @@ const length = (val) => {
  * @param {*} value
  * @return {boolean}
  */
-const isNullOrEmpty = (value) => {
+export const isNullOrEmpty = (value) => {
     const type = getType(value);
     switch (type) {
         case 'undefined':
@@ -131,7 +132,7 @@ const isNullOrEmpty = (value) => {
  * @param {*} replacement
  * @return {*}
  */
-const replaceEmpty = (value, replacement) => (isNullOrEmpty(value) ? replacement : value);
+export const replaceEmpty = (value, replacement) => (isNullOrEmpty(value) ? replacement : value);
 
 /**
  * Get key from object if it exists, return null otherwise
@@ -139,7 +140,7 @@ const replaceEmpty = (value, replacement) => (isNullOrEmpty(value) ? replacement
  * @param {string} key
  * @return {null|*}
  */
-const safeValue = (object, key) => {
+export const safeValue = (object, key) => {
     if (!isObject || !Object.hasOwnProperty.call(object, key)) return null;
     return object[key];
 };
@@ -149,7 +150,7 @@ const safeValue = (object, key) => {
  * @param {string }key
  * @return {boolean}
  */
-const hasKey = (obj, key) => Object.hasOwnProperty.call(obj, key);
+export const hasKey = (obj, key) => Object.hasOwnProperty.call(obj, key);
 
 /**
  * @callback forEachKeyCallback
@@ -163,7 +164,7 @@ const hasKey = (obj, key) => Object.hasOwnProperty.call(obj, key);
  * @param {Object} obj
  * @param {forEachKeyCallback} callback
  */
-const forEachKey = (obj, callback) => {
+export const forEachKey = (obj, callback) => {
     if (!isObject(obj) || !isFunction(callback)) return;
     const keys = Object.keys(obj);
     for (let i = 0; i < length(keys); i += 1) {
@@ -177,7 +178,7 @@ const forEachKey = (obj, callback) => {
  * @param {forEachKeyCallback} callback
  * @return {Object}
  */
-const mapObject = (obj, callback) => {
+export const mapObject = (obj, callback) => {
     if (!isObject(obj) || !isFunction(callback)) return {};
     const keys = Object.keys(obj);
     const newObj = { ...obj };
@@ -193,7 +194,7 @@ const mapObject = (obj, callback) => {
  * @param {forEachKeyCallback} callback
  * @return {[]|*[]}
  */
-const mapObjectToArray = (obj, callback) => {
+export const mapObjectToArray = (obj, callback) => {
     if (!isObject(obj) || !isFunction(callback)) return [];
     const keys = Object.keys(obj);
     const arr = [];
@@ -218,7 +219,7 @@ const mapObjectToArray = (obj, callback) => {
  * @param {Object} [initialValue={}]
  * @return {{}}
  */
-const reduceObject = (obj, callback, initialValue = {}) => {
+export const reduceObject = (obj, callback, initialValue = {}) => {
     if (!isObject(obj) || !isFunction(callback)) return {};
     const keys = Object.keys(obj);
     let newObj = initialValue;
@@ -236,7 +237,7 @@ const reduceObject = (obj, callback, initialValue = {}) => {
  * @param {number} maxReplacements
  * @return {string}
  */
-const replaceAll = (string, search, replacement, maxReplacements = 50) => {
+export const replaceAll = (string, search, replacement, maxReplacements = 50) => {
     let i = 0;
     let newString = string;
     while (i < maxReplacements) {
@@ -250,7 +251,7 @@ const replaceAll = (string, search, replacement, maxReplacements = 50) => {
     return newString;
 };
 
-const regex = {
+export const regex = {
     number: /^[\d]*$/,
     integer: /^[0-9]*$/,
     httpsUrl: /(?:(?:(?:https):)\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)+(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?/i,
