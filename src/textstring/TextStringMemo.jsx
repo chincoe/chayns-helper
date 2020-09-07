@@ -1,9 +1,8 @@
 import { TextString } from 'chayns-components';
 import React, {
-    memo, useMemo
+    memo
 } from 'react';
 import PropTypes from 'prop-types';
-import { isNullOrWhiteSpace } from 'chayns-components/lib/utils/is';
 import useElementProps from '../hooks/useElementProps';
 import types from '../functions/types';
 

@@ -23,13 +23,145 @@ import types from './types';
  * @type {{POSITIVE: number, CANCEL: number, NEGATIVE: number}}
  * @enum
  */
-const buttonType = {
+export const buttonType = {
     CANCEL: -1,
     NEGATIVE: 0,
     POSITIVE: 1
 };
 
-const createDialogResult = (type, value = undefined) => ({ buttonType: type, value });
+export const createDialogResult = (type, value = undefined) => ({ buttonType: type, value });
+
+/**
+ * @callback fullResolveFn
+ * @param {Object} result
+ * @param {number} result.buttonType
+ * @param {*} result.value
+ * @returns {DialogPromise<dialogResult>}
+ */
+
+/**
+ * @callback resolveFn
+ * @param {Object} result
+ * @param {number} result.buttonType
+ * @param {*} result.value
+ * @returns {DialogPromise<dialogResult>}
+ */
+
+/**
+ * @callback dialogThen
+ * @param {resolveFn} resolveFn
+ * @returns {DialogPromise<dialogResult>}
+ */
+
+/**
+ * @callback fullDialogThen
+ * @param {fullResolveFn} resolveFn
+ * @returns {DialogPromise<dialogResult>}
+ */
+
+/**
+ * @class
+ * @property {dialogThen} positive
+ * @property {dialogThen} negative
+ * @property {dialogThen} cancelled
+ * @property {fullDialogThen} then
+ * @property {function(Error)} catch
+ */
+export class DialogPromise extends Promise {
+    constructor(resolveFn) {
+        super(resolveFn);
+        this.positive.bind(this);
+        this.negative.bind(this);
+        this.cancelled.bind(this);
+    }
+
+    /**
+     * @param {resolveFn} resolveFn
+     * @returns {DialogPromise<dialogResult>}
+     */
+    positive(resolveFn) {
+        this.then((result) => {
+            if (result.buttonType === 1) {
+                resolveFn(result.value);
+            }
+        });
+        return this;
+    }
+
+    /**
+     * @param {resolveFn} resolveFn
+     * @returns {DialogPromise<dialogResult>}
+     */
+    negative(resolveFn) {
+        this.then((result) => {
+            if (result.buttonType === 0) {
+                resolveFn(result.value);
+            }
+        });
+        return this;
+    }
+
+    /**
+     * @param {resolveFn} resolveFn
+     * @returns {DialogPromise<dialogResult>}
+     */
+    cancelled(resolveFn) {
+        this.then((result) => {
+            if (result.buttonType === -1) {
+                resolveFn(result.value);
+            }
+        });
+        return this;
+    }
+
+    /**
+     * close the dialog
+     * @returns {*}
+     */
+    // eslint-disable-next-line class-methods-use-this
+    abort() {
+        return chayns.dialog.close();
+    }
+}
+
+/**
+ * @class
+ * @extends DialogPromise
+ * @property {dialogThen} result
+ * @property {dialogThen} data
+ */
+export class IframeDialogPromise extends DialogPromise {
+    constructor(resolveFn) {
+        super(resolveFn);
+        this.result.bind(this);
+        this.data.bind(this);
+    }
+
+    /**
+     * @param {resolveFn} resolveFn
+     * @returns {DialogPromise<dialogResult>}
+     */
+    result(resolveFn) {
+        chayns.dialog.addDialogResultListener(resolveFn);
+        this.then(() => {
+            chayns.dialog.removeDialogResultListener(resolveFn);
+        });
+        return this;
+    }
+
+    /**
+     * @param {resolveFn} resolveFn
+     * @param {boolean} getApiEvents - get sent data that has isApiEvent set
+     * @returns {DialogPromise<dialogResult>}
+     */
+    data(resolveFn, getApiEvents) {
+        chayns.dialog.addDialogDataListener(resolveFn, getApiEvents);
+        this.then(() => {
+            chayns.dialog.removeDialogDataListener(resolveFn, getApiEvents);
+        });
+        return this;
+    }
+}
 
 /**
  * @typedef dialogResult
@@ -52,7 +184,7 @@ const createDialogResult = (type, value = undefined) => ({ buttonType: type, val
  * @param {string} [options.title='']
  * @return {DialogPromise<dialogResult>}
  */
-const alert = (message = '', options = {}) => new DialogPromise((resolve) => {
+export const alert = (message = '', options = {}) => new DialogPromise((resolve) => {
     chayns.dialog.alert(options?.title || '', message)
         .then((type) => {
             resolve(createDialogResult(type));
@@ -67,7 +199,7 @@ const alert = (message = '', options = {}) => new DialogPromise((resolve) => {
  * @param {string} [options.title='']
  * @return {DialogPromise<dialogResult>}
  */
-const confirm = (message = '', options = {}, buttons = undefined) => new DialogPromise((resolve) => {
+export const confirm = (message = '', options = {}, buttons = undefined) => new DialogPromise((resolve) => {
     chayns.dialog.confirm(options?.title || '', message, buttons)
         .then((type) => {
             resolve(createDialogResult(type));
@@ -79,7 +211,7 @@ const confirm = (message = '', options = {}, buttons = undefined) => new DialogP
  * @type {{NUMBER: number, TEXTAREA: number, INPUT: number, PASSWORD: number}}
  * @enum
  */
-const inputType = {
+export const inputType = {
     PASSWORD: chayns.dialog.inputType.PASSWORD,
     TEXTAREA: chayns.dialog.inputType.TEXTAREA,
     INPUT: chayns.dialog.inputType.INPUT,
@@ -107,7 +239,7 @@ const inputType = {
  *
  * @return {DialogPromise<dialogResult>}
  */
-function input(message = '', options = {}, buttons = undefined) {
+export function input(message = '', options = {}, buttons = undefined) {
     return new DialogPromise((resolve) => {
         chayns.dialog.input({
             title: options?.title,
@@ -135,7 +267,7 @@ input.type = { ...inputType };
  * @type {{ICON: number, DEFAULT: number}}
  * @enum
  */
-const selectType = {
+export const selectType = {
     DEFAULT: chayns.dialog.selectType.DEFAULT,
     ICON: chayns.dialog.selectType.ICON
 };
@@ -178,7 +310,7 @@ const selectType = {
  *
  * @return {DialogPromise<dialogResult>}
  */
-function select(
+export function select(
     {
         message = '',
         title = '',
@@ -221,7 +353,7 @@ function select(
 
 select.type = { ...selectType };
 
-const validateDate = (param, allowMissingValue = true) => {
+export const validateDate = (param, allowMissingValue = true) => {
     if (allowMissingValue && (param === null || param === undefined)) return param;
     if (types.isDate(param)) {
         return param;
@@ -264,7 +396,7 @@ const validateDate = (param, allowMissingValue = true) => {
     return undefined;
 };
 
-const validateDateArray = (paramArray) => paramArray.map((p) => validateDate(p, false));
+export const validateDateArray = (paramArray) => paramArray.map((p) => validateDate(p, false));
 
 /**
  * @typedef intervalObject
@@ -276,7 +408,7 @@ const validateDateArray = (paramArray) => paramArray.map((p) => validateDate(p, 
  * @type {{ABOVE_SECOND: number, ABOVE_FIRST: number, ABOVE_THIRD: number}}
  * @enum
  */
-const textBlockPosition = {
+export const textBlockPosition = {
     ABOVE_FIRST: 0,
     ABOVE_SECOND: 1,
     ABOVE_THIRD: 2
@@ -293,7 +425,7 @@ const textBlockPosition = {
  * @type {{DATE: number, TIME: number, DATE_TIME: number}}
  * @enum
  */
-const dateType = {
+export const dateType = {
     DATE: chayns.dialog.dateType.DATE,
     TIME: chayns.dialog.dateType.TIME,
     DATE_TIME: chayns.dialog.dateType.DATE_TIME
@@ -304,7 +436,7 @@ const dateType = {
  * @type {{INTERVAL: number, SINGLE: number, MULTISELECT: number}}
  * @enum
  */
-const dateSelectType = {
+export const dateSelectType = {
     SINGLE: 0,
     MULTISELECT: 1,
     INTERVAL: 2
@@ -317,7 +449,7 @@ const dateSelectType = {
  *     minInterval: *, interval: boolean, maxInterval: *}|{multiselect: boolean, interval: boolean}|{multiselect:
  *     boolean, minInterval: undefined, interval: boolean, maxInterval: undefined}}
  */
-const resolveDateSelectType = (type) => [
+export const resolveDateSelectType = (type) => [
     {
         multiselect: false,
         interval: false,
@@ -379,7 +511,7 @@ const resolveDateSelectType = (type) => [
  *      MULTISELECT: Date[]
  *      INTERVAL: Date[2]
  */
-function advancedDate(
+export function advancedDate(
     {
         message = '',
         title = '',
@@ -475,7 +607,7 @@ advancedDate.textBlockPosition = { ...textBlockPosition };
  * @param {button[]} [buttons]
  * @returns {DialogPromise<dialogResult>}
  */
-function mediaSelect(
+export function mediaSelect(
     {
         title = '',
         message = '',
@@ -499,7 +631,7 @@ function mediaSelect(
  * fileTypes
  * @type {{IMAGE: string, VIDEO: string, DOCUMENT: string[], AUDIO: string}}
  */
-const fileType = {
+export const fileType = {
     IMAGE: 'image',
     VIDEO: 'video',
     AUDIO: 'audio',
@@ -530,7 +662,7 @@ const fileType = {
  * @param {boolean} [directory]
  * @param {button[]} [buttons]
  */
-function fileSelect(
+export function fileSelect(
     {
         title = '',
         message = '',
@@ -574,7 +706,7 @@ function fileSelect(
  * @param {?button[]} [buttons=[]]
  * @returns {IframeDialogPromise<dialogResult>}
  */
-function iFrame(
+export function iFrame(
     {
         url,
         input: dialogInput = null,
@@ -602,138 +734,6 @@ function iFrame(
             resolve(createDialogResult(result.buttonType, result?.value));
         });
     });
-}
-
-/**
- * @callback fullResolveFn
- * @param {Object} result
- * @param {number} result.buttonType
- * @param {*} result.value
- * @returns {DialogPromise<dialogResult>}
- */
-
-/**
- * @callback resolveFn
- * @param {Object} result
- * @param {number} result.buttonType
- * @param {*} result.value
- * @returns {DialogPromise<dialogResult>}
- */
-
-/**
- * @callback dialogThen
- * @param {resolveFn} resolveFn
- * @returns {DialogPromise<dialogResult>}
- */
-
-/**
- * @callback fullDialogThen
- * @param {fullResolveFn} resolveFn
- * @returns {DialogPromise<dialogResult>}
- */
-
-/**
- * @class
- * @property {dialogThen} positive
- * @property {dialogThen} negative
- * @property {dialogThen} cancelled
- * @property {fullDialogThen} then
- * @property {function(Error)} catch
- */
-class DialogPromise extends Promise {
-    constructor(resolveFn) {
-        super(resolveFn);
-        this.positive.bind(this);
-        this.negative.bind(this);
-        this.cancelled.bind(this);
-    }
-
-    /**
-     * @param {resolveFn} resolveFn
-     * @returns {DialogPromise<dialogResult>}
-     */
-    positive(resolveFn) {
-        this.then((result) => {
-            if (result.buttonType === 1) {
-                resolveFn(result.value);
-            }
-        });
-        return this;
-    }
-
-    /**
-     * @param {resolveFn} resolveFn
-     * @returns {DialogPromise<dialogResult>}
-     */
-    negative(resolveFn) {
-        this.then((result) => {
-            if (result.buttonType === 0) {
-                resolveFn(result.value);
-            }
-        });
-        return this;
-    }
-
-    /**
-     * @param {resolveFn} resolveFn
-     * @returns {DialogPromise<dialogResult>}
-     */
-    cancelled(resolveFn) {
-        this.then((result) => {
-            if (result.buttonType === -1) {
-                resolveFn(result.value);
-            }
-        });
-        return this;
-    }
-
-    /**
-     * close the dialog
-     * @returns {*}
-     */
-    // eslint-disable-next-line class-methods-use-this
-    abort() {
-        return chayns.dialog.close();
-    }
-}
-
-/**
- * @class
- * @extends DialogPromise
- * @property {dialogThen} result
- * @property {dialogThen} data
- */
-class IframeDialogPromise extends DialogPromise {
-    constructor(resolveFn) {
-        super(resolveFn);
-        this.result.bind(this);
-        this.data.bind(this);
-    }
-
-    /**
-     * @param {resolveFn} resolveFn
-     * @returns {DialogPromise<dialogResult>}
-     */
-    result(resolveFn) {
-        chayns.dialog.addDialogResultListener(resolveFn);
-        this.then(() => {
-            chayns.dialog.removeDialogResultListener(resolveFn);
-        });
-        return this;
-    }
-
-    /**
-     * @param {resolveFn} resolveFn
-     * @param {boolean} getApiEvents - get sent data that has isApiEvent set
-     * @returns {DialogPromise<dialogResult>}
-     */
-    data(resolveFn, getApiEvents) {
-        chayns.dialog.addDialogDataListener(resolveFn, getApiEvents);
-        this.then(() => {
-            chayns.dialog.removeDialogDataListener(resolveFn, getApiEvents);
-        });
-        return this;
-    }
 }
 
 const chaynsDialog = {

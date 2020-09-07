@@ -49,6 +49,8 @@ import createEnum from './functions/createEnum';
 import getHookState from './functions/getHookState';
 import shallowEqual from './functions/shallowEqual';
 import useShallowSelector from './hooks/useShallowSelector';
+import generateAxis from './functions/recharts/generateAxis';
+import useAxis from './functions/recharts/useAxis';
 
 export {
     initChaynsHelper,
@@ -100,5 +102,7 @@ export {
     createEnum,
     getHookState,
     shallowEqual,
-    useShallowSelector
+    useShallowSelector,
+    generateAxis,
+    useAxis
 };

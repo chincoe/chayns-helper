@@ -26,7 +26,7 @@ export const removeTimeZoneOffset = (date) => new Date(
  * @param {Date} date
  * @return {string}
  */
-const getDaySimple = (date) => format(new Date(date), 'd.M.', { locale: deLocale });
+export const getDaySimple = (date) => format(new Date(date), 'd.M.', { locale: deLocale });
 
 /**
  * Format: [day]:[month], e.g. 12.3.
@@ -34,7 +34,7 @@ const getDaySimple = (date) => format(new Date(date), 'd.M.', { locale: deLocale
  * @param {Date} date
  * @return {string}
  */
-const getDate = (date) => `${getDaySimple(
+export const getDate = (date) => `${getDaySimple(
     date
 )}${date.getFullYear() === new Date().getFullYear() ? '' : date.getFullYear()}`;
 
@@ -43,7 +43,7 @@ const getDate = (date) => `${getDaySimple(
  * @param {Date} date
  * @return {string}
  */
-const getDayLong = (date) => format(new Date(date), 'dd. MMM.', { locale: deLocale });
+export const getDayLong = (date) => format(new Date(date), 'dd. MMM.', { locale: deLocale });
 
 // gestern um 13:40 Uhr
 // am 12.3. um 13:40 Uhr
