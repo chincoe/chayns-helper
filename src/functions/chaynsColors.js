@@ -68,11 +68,35 @@ const backgroundColorClass = (c, i = false) => `chayns__background-color--${c}${
  */
 const colorClass = (c, i = false) => `chayns__color--${c}${i ? 'i' : ''}`;
 
+function hashCode(str) { // java String#hashCode
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        // eslint-disable-next-line no-bitwise
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return hash;
+}
+
+function intToRGB(i) {
+    // eslint-disable-next-line no-bitwise
+    const c = (i & 0x00FFFFFF)
+        .toString(16)
+        .toUpperCase();
+
+    return '00000'.substring(0, 6 - c.length) + c;
+}
+
+/**
+ * @param {string} str - string to be hashed and converted to a hex color
+ * @returns {string} hexColor
+ */
+const getColorFromStringHash = (str) => intToRGB(hashCode(str));
+
 /**
  * @type {{getChaynsColor: (function(string): string), mixChaynsColorRgb: (function(string, string, number=):
- *     rgbColorObject), colorClass: (function(string, boolean=): string), getChaynsColorRgb: (function(string):
- *     rgbColorObject), borderColorClass: (function(string, boolean=): string), hexToRgb: (function(*=):
- *     rgbColorObject), backgroundColorClass: (function(string, boolean=): string)}}
+ *     rgbColorObject), colorClass: (function(string, boolean=): string), getColorFromStringHash: (function(string):
+ *     string), getChaynsColorRgb: (function(string): rgbColorObject), borderColorClass: (function(string, boolean=):
+ *     string), hexToRgb: (function(*=): rgbColorObject), backgroundColorClass: (function(string, boolean=): string)}}
  */
 const colors = {
     hexToRgb,
@@ -81,7 +105,8 @@ const colors = {
     mixChaynsColorRgb,
     borderColorClass,
     backgroundColorClass,
-    colorClass
+    colorClass,
+    getColorFromStringHash
 };
 
 export default colors;

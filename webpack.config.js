@@ -25,7 +25,6 @@ module.exports = (env) => {
             extensions: ['.js', '.jsx'],
             alias: {
                 'chayns-logger': 'src/config/chayns-logger.js',
-                'default-error-handler': 'src/config/default-error-handler.js',
                 environment: 'src/config/environment.js'
             }
         },

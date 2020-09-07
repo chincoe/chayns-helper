@@ -27,8 +27,6 @@ export default {
         alias({
             entries: [
                 { find: 'chayns-logger', replacement: 'src/config/chayns-logger.js' },
-                { find: 'default-error-handler', replacement: 'src/config/default-error-handler.js' },
-                { find: 'environment', replacement: 'src/config/environment.js' },
                 { find: 'react-redux', replacement: 'src/config/react-redux.js' },
             ]
         }),

@@ -20,7 +20,7 @@ import openChaynsSite from './functions/chaynsCalls/openChaynsSite';
 import colors from './functions/chaynsColors';
 import chaynsDialog from './functions/chaynsDialogs';
 import copyOnClick from './functions/copy';
-import defaultErrorHandler from './config/default-error-handler';
+import defaultErrorHandler from './functions/defaultErrorHandler';
 import generateUUID from './functions/generateUid';
 import request from './functions/httpRequest';
 import showSuccessAnimation from './functions/statusAnimations/showSuccessAnimation';

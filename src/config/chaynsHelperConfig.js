@@ -1,10 +1,9 @@
 // eslint-disable-next-line import/no-cycle
-import { errorHandlerConfig } from 'default-error-handler';
-import logger from 'chayns-logger';
+import chaynsLogger from 'chayns-logger';
+import handleRequestErrors, { errorHandlerConfig } from '../functions/defaultErrorHandler';
 import { loggerConfig } from './chayns-logger';
-import handleRequestErrors from './default-error-handler';
+
 import { initLog } from '../functions/log';
-import { ENVIRONMENT } from './environment';
 import { TEXTSTRING_CONFIG } from '../textstring/TextStringMemo';
 import { reduxConfig } from './react-redux';
 
@@ -18,25 +17,25 @@ import { reduxConfig } from './react-redux';
 /**
  * Initialize the chaynsHelpers, call in index.js
  * @param {string} [textStringPrefix='']
- * @param {boolean} [live=false]
- * @param {function} [requestErrorHandler]
- * @param {logger} [logger=defaultLogger] - logger, preferably chayns-logger
+ * @param {function} requestErrorHandler
+ * @param {logger} logger - logger, preferably chayns-logger
+ * @param {function} useSelector - react-redux useSelector function
  */
 const initChaynsHelper = (
     {
         textStringPrefix = '',
-        live = false,
         requestErrorHandler = handleRequestErrors,
-        pLogger = logger,
-        useSelector = () => {}
+        logger = chaynsLogger,
+        useSelector = () => {
+            console.error('[ChaynsHelper] Please call initChaynsHelper({ useSelector }) to use this function');
+        }
     }
 ) => {
     TEXTSTRING_CONFIG.PREFIX = textStringPrefix;
-    ENVIRONMENT.PRODUCTION = live;
     errorHandlerConfig.getErrorHandler = () => requestErrorHandler;
-    loggerConfig.getLogger = () => pLogger;
+    loggerConfig.getLogger = () => logger;
     reduxConfig.getSelector = () => useSelector;
-    initLog(live);
+    initLog(process.env.NODE_ENV !== 'development');
 };
 
 export default initChaynsHelper;

@@ -65,7 +65,7 @@ initChaynsHelper({
 | [chaynsDialogs](/src/functions/chaynsDialogs.js)| makes using chayns dialogs so much more comfortable |
 | [colorClass](/src/functions/chaynsColors.js)| get a chayns color class name |
 | [copyOnClick](/src/functions/copy.js)| copy a value to the user's clipboard |
-| [defaultErrorHandler](/src/config/default-error-handler.js)| default request error handling with dialogs for error status codes |
+| [defaultErrorHandler](/src/functions/defaultErrorHandler.js)| default request error handling with dialogs for error status codes |
 | [fnsFormat](/src/functions/timeHelper.js)| datefns format with option to use today/tomorrow/yesterday |
 | [formatDate](/src/functions/timeHelper.js)| Format date: [Gestern/Heute/Morgen/12.3./12.3.2019], HH:mm Uhr |
 | [formatDateText](/src/functions/timeHelper.js)| Format date: [gestern/heute/mMorgen/am 12.3./am 12.3.2019] um HH:mm Uhr |
