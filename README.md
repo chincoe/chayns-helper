@@ -7,7 +7,6 @@ Initialize the helper in your index.js to make sure that every feature actually 
 ```javascript
 initChaynsHelper({
     textStringPrefix: 'txt_chayns_myapp_', // necessary to use all textString helpers
-    live: __PROD__, // used by a variety of helpers, though it mostly affects only logs
     requestErrorHandler: myRequestErrorHandler, // default is defaultErrorHandler, used only by handleRequest
     logger: chaynsLogger, // access the chayns logger as it cannot be a dependency for this public package
     useSelector // react-redux useSelector hook, required to use useShallowSelector
@@ -55,6 +54,7 @@ initChaynsHelper({
 | [useUser](/src/hooks/useUser.js)| chayns.getUser() hook |
 | [useWebsocketService](/src/hooks/useWebsocketService.js)| configure a tobit-websocket-service-client |
 | [useShallowSelector](/src/hooks/useShallowSelector.js)| a useSelector Hook with shallowEqual |
+| [useAxis](/src/functions/recharts/useAxis.js)| a hook to generate a better recharts axis |
 
 
 ###Functions
@@ -86,6 +86,7 @@ initChaynsHelper({
 | [types](/src/functions/types.js)| a collection of helpers for types in general but especially objects and arrays. Includes: mapObject, reduceObject, mapObjectToArray, forEachKey, firstOrDefault, replaceAll, type checking |
 | [waitCursor](/src/functions/waitCursor.js)| helper for chayns.showWaitCursor with a timeout before displaying |
 | [WebSocketClient](/src/other/webSocketClient.js)| custom alternative to tobit-websocket-service-client |
+| [generateAxis](/src/functions/recharts/generateAxis.js)| a function to generate a better recharts axis |
 
 
 

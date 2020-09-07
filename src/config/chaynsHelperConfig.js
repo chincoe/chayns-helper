@@ -28,7 +28,7 @@ const initChaynsHelper = (config) => {
         requestErrorHandler = handleRequestErrors,
         logger = chaynsLogger,
         useSelector = () => {
-            console.error('[ChaynsHelper] Please call initChaynsHelper({ useSelector }) to use this function');
+            console.error('[ChaynsHelper] Please pass useSelector to initChaynsHelper() to use this function');
         }
     } = config || {};
     TEXTSTRING_CONFIG.PREFIX = textStringPrefix;

@@ -58,10 +58,7 @@ const websocketClients = {};
  *     wallet items to work properly
  * @param {*[]} [dependencies=] - dependencies to set new event handlers
  */
-const useWebsocketService = (
-    config,
-    dependencies
-) => {
+const useWebsocketService = (config, dependencies) => {
     const {
         serviceName,
         conditions,

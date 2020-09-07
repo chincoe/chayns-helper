@@ -28,7 +28,8 @@ const handleRequestErrors = (err) => {
             case 500:
                 await chayns.dialog.alert(
                     '',
-                    'Ein unerwarteter Fehler ist aufgetreten. Wir werden das bei nächster Gelegenheit beheben. Versuche es später nochmal.'
+                    `Ein unerwarteter Fehler ist aufgetreten. Wir werden das bei nächster Gelegenheit beheben.
+                     Versuche es später nochmal.`
                 );
                 break;
             case 503:

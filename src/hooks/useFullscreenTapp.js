@@ -59,14 +59,15 @@ const correctWindowData = (data) => {
  * @param {boolean} [options.forceExclusive=false]
  * @param {boolean} [options.fullBrowserWidth=false]
  * @param {number} [options.maxWidth=851]
- * @return {[Object, function, boolean]}
+ * @return {[Object, boolean, function]} - [windowData, isFullscreenActive, setFullscreenActive]
  */
-const useFullscreenTapp = (initialValue = true, {
-    forceExclusive = false,
-    fullBrowserWidth = false,
-    maxWidth = 851,
-}) => {
-    const [isFullscreenActive, setIsFullscreenActive] = useState(initialValue);
+const useFullscreenTapp = (initialValue, options) => {
+    const {
+        forceExclusive = false,
+        fullBrowserWidth = false,
+        maxWidth = 851,
+    } = options || {};
+    const [isFullscreenActive, setIsFullscreenActive] = useState(initialValue ?? true);
     const [windowData, setWindowData] = useReducer(windowDataReducer, undefined);
     const [resizeInterval, setResizeInterval] = useState(0);
     const defaultExclusive = useMemo(() => chayns.env.site.tapp.isExclusiveView, []);
@@ -132,7 +133,7 @@ const useFullscreenTapp = (initialValue = true, {
         return () => { clearInterval(interval); };
     }, [isFullscreenActive]);
 
-    return [windowData, setIsFullscreenActive, isFullscreenActive];
+    return [windowData, isFullscreenActive, setIsFullscreenActive];
 };
 
 export default useFullscreenTapp;

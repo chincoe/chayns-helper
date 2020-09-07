@@ -2,10 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 
 /**
  * Hook to keep refreshing a component in an interval by using the refreshId as id somewhere
- * @param interval
+ * @param {number} interval
  * @return {[number, function]}
  */
-const useRefresh = (interval = null) => {
+const useRefresh = (interval) => {
     const [refresh, setRefresh] = useState(0);
 
     const manualRefresh = useCallback(() => {
