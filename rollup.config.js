@@ -30,17 +30,17 @@ export default {
                 { find: 'react-redux', replacement: 'src/config/react-redux.js' },
             ]
         }),
-        postcss({
-            plugins: []
-        }),
         autoExternal(),
+        babel({
+            exclude: /node_modules/,
+            babelHelpers: 'runtime'
+        }),
         resolve({
             extensions: ['.js', '.jsx'],
         }),
         commonjs(),
-        babel({
-            exclude: /node_modules/,
-            babelHelpers: 'runtime'
+        postcss({
+            plugins: []
         }),
     ],
 };
