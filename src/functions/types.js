@@ -60,7 +60,7 @@ const distinct = (arr, selector) => {
     if (!isArray(arr) || !isFunction(selector)) return null;
     return arr.reduce((total, current) => {
         const idx = total.findIndex((t) => selector(t) === selector(current));
-        if (idx > 0) {
+        if (idx >= 0) {
             const result = [...total];
             result[idx] = current;
             return result;
