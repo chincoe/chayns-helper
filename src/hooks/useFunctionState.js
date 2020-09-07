@@ -5,8 +5,8 @@ import { useState, useCallback } from 'react';
  * @param initialState
  * @return {[function(), function(function)]}
  */
-const useFunctionState = (initialState = () => null) => {
-    const [state, setState] = useState({ call: initialState });
+const useFunctionState = (initialState) => {
+    const [state, setState] = useState({ call: initialState ?? (() => null) });
     const setter = useCallback((func) => {
         // check type
         if (func && {}.toString.call(func) === '[object Function]') { setState({ call: func }); }
