@@ -16,21 +16,21 @@ import { reduxConfig } from './react-redux';
  */
 /**
  * Initialize the chaynsHelpers, call in index.js
- * @param {string} [textStringPrefix='']
- * @param {function} requestErrorHandler
- * @param {logger} logger - logger, preferably chayns-logger
- * @param {function} useSelector - react-redux useSelector function
+ * @param {Object} config
+ * @param {string} [config.textStringPrefix='']
+ * @param {function} [config.requestErrorHandler]
+ * @param {logger} config.logger - logger, preferably chayns-logger
+ * @param {function} [config.useSelector] - react-redux useSelector function
  */
-const initChaynsHelper = (
-    {
+const initChaynsHelper = (config) => {
+    const {
         textStringPrefix = '',
         requestErrorHandler = handleRequestErrors,
         logger = chaynsLogger,
         useSelector = () => {
             console.error('[ChaynsHelper] Please call initChaynsHelper({ useSelector }) to use this function');
         }
-    }
-) => {
+    } = config || {};
     TEXTSTRING_CONFIG.PREFIX = textStringPrefix;
     errorHandlerConfig.getErrorHandler = () => requestErrorHandler;
     loggerConfig.getLogger = () => logger;

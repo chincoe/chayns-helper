@@ -1493,7 +1493,7 @@ const chayns = {
         /**
          * @param {number} [buttonType=undefined]
          */
-        close(buttonType = undefined) {},
+        close(buttonType) {},
         /**
          * @param {boolean} disable - true to disable, false to enable
          * @param {number[]} buttonTypes
@@ -1704,7 +1704,7 @@ const chayns = {
             get() {},
             set() {},
             remove() {},
-            smartCheckout(config = {}) {},
+            smartCheckout(config) {},
             addServerArticle() {},
             confirm() {},
             create() {},
