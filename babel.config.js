@@ -17,22 +17,27 @@ module.exports = {
         '@babel/plugin-proposal-throw-expressions',
         '@babel/plugin-syntax-import-meta',
         [
-            'transform-imports', {
-            'chayns-components': {
-                transform: resolveAbsoluteImport,
-                preventFullImport: true,
-            },
-        }
+            'transform-imports',
+            {
+                'chayns-components': {
+                    transform: resolveAbsoluteImport,
+                    preventFullImport: true,
+                },
+            }
         ],
+        [
+            'transform-rename-import',
+            {
+                original: '^(.+)\\.scss$',
+                replacement: '$1.css'
+            }
+        ]
     ],
     presets: [
         [
             '@babel/preset-env',
             {
-                modules: false,
-                targets: {
-                    "node": "current"
-                }
+                modules: false
             }
         ],
         '@babel/preset-react',

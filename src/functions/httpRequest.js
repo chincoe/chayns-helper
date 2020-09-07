@@ -1,9 +1,9 @@
 import logger from 'chayns-logger';
+import localStorage from '../other/localStorageHelper';
 import defaultErrorHandler from './defaultErrorHandler';
 import generateUUID from './generateUid';
-import showWaitCursor from './waitCursor';
 import types from './types';
-import localStorage from '../other/localStorageHelper';
+import showWaitCursor from './waitCursor';
 
 /**
  * @type {{Delete: string, Post: string, Get: string, Patch: string, Put: string}}
@@ -531,6 +531,24 @@ const httpRequest = async (
             section: 'httpRequest.js',
             sessionUid
         };
+
+        if (responseType === ResponseType.Json
+            || responseType === ResponseType.Object
+            || statusHandlers[status] === ResponseType.Json
+            || statusHandlers[status] === ResponseType.Object) {
+            try {
+                const responseClone = response.clone();
+                logData.responseBody = await responseClone.json();
+            } catch (e1) {
+                try {
+                    const responseClone = response.clone();
+                    logData.responseBody = responseClone.text();
+                } catch (e2) {
+                    // ignored
+                }
+            }
+        }
+
         if (response && status < 400) {
             log({
                 ...logData,
