@@ -21,8 +21,10 @@ const generateAxis = (
     divisor,
     maxTicks,
     minTicks,
-    tickFormatter = (base, intervalLength, i) => (base + intervalLength * i)
+    tickFormatter
 ) => {
+    // eslint-disable-next-line no-param-reassign
+    if (!tickFormatter) tickFormatter = (base, intervalLength, i) => (base + intervalLength * i);
     const difference = end - start;
     const intervalLength = Math.ceil(difference / divisor / maxTicks) * divisor;
     const intervalCount = Math.max(Math.ceil(difference / intervalLength), minTicks);

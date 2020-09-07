@@ -1,13 +1,11 @@
 // eslint-disable-next-line max-classes-per-file
 import types from './types';
 /**
- * The dialogs of this helper all have the parameters (message, buttons), (message, options, buttons) or (option, buttons)
- * The dialogs of this helper all return an object like this: { buttonType: -1|0|1, value: ... }, so all results will
- * have the keys "buttonType" and "value"
- * Custom handlers based on buttonType:
- * ButtonType 1: chaynsDialog.dialog().positive(value => ...)
- * ButtonType 0: chaynsDialog.dialog().negative(value => ...)
- * ButtonType -1: chaynsDialog.dialog().cancel(value => ...)
+ * The dialogs of this helper all have the parameters (message, buttons), (message, options, buttons) or (option,
+ * buttons) The dialogs of this helper all return an object like this: { buttonType: -1|0|1, value: ... }, so all
+ * results will have the keys "buttonType" and "value" Custom handlers based on buttonType: ButtonType 1:
+ * chaynsDialog.dialog().positive(value => ...) ButtonType 0: chaynsDialog.dialog().negative(value => ...) ButtonType
+ * -1: chaynsDialog.dialog().cancel(value => ...)
  *
  * General: chaynsDialog.dialog().then(({ buttonType, value }) => ...)
  * or: const { buttonType, value } = await chaynsDialog.dialog();
@@ -184,8 +182,8 @@ export class IframeDialogPromise extends DialogPromise {
  * @param {string} [options.title='']
  * @return {DialogPromise<dialogResult>}
  */
-export const alert = (message = '', options = {}) => new DialogPromise((resolve) => {
-    chayns.dialog.alert(options?.title || '', message)
+export const alert = (message, options) => new DialogPromise((resolve) => {
+    chayns.dialog.alert(options?.title || '', message ?? '')
         .then((type) => {
             resolve(createDialogResult(type));
         });
@@ -199,8 +197,8 @@ export const alert = (message = '', options = {}) => new DialogPromise((resolve)
  * @param {string} [options.title='']
  * @return {DialogPromise<dialogResult>}
  */
-export const confirm = (message = '', options = {}, buttons = undefined) => new DialogPromise((resolve) => {
-    chayns.dialog.confirm(options?.title || '', message, buttons)
+export const confirm = (message, options, buttons) => new DialogPromise((resolve) => {
+    chayns.dialog.confirm(options?.title || '', message ?? '', buttons)
         .then((type) => {
             resolve(createDialogResult(type));
         });
@@ -239,11 +237,11 @@ export const inputType = {
  *
  * @return {DialogPromise<dialogResult>}
  */
-export function input(message = '', options = {}, buttons = undefined) {
+export function input(message, options, buttons) {
     return new DialogPromise((resolve) => {
         chayns.dialog.input({
             title: options?.title,
-            message,
+            message: message ?? '',
             placeholderText: options?.placeholderText,
             text: options?.text,
             textColor: options?.textColor,
@@ -310,19 +308,18 @@ export const selectType = {
  *
  * @return {DialogPromise<dialogResult>}
  */
-export function select(
-    {
-        message = '',
-        title = '',
-        list = null,
-        multiselect = false,
-        quickfind = null,
-        preventCloseOnClick = false,
-        type = selectType.DEFAULT,
-        selectAllButton = null
-    } = {}, buttons = undefined
-) {
+export function select(options, buttons) {
     return new DialogPromise((resolve) => {
+        const {
+            message = '',
+            title = '',
+            list = null,
+            multiselect = false,
+            quickfind = null,
+            preventCloseOnClick = false,
+            type = selectType.DEFAULT,
+            selectAllButton = null
+        } = options || {};
         chayns.dialog.select({
             title,
             message,
@@ -477,8 +474,8 @@ export const resolveDateSelectType = (type) => [
 /**
  * Advanced date dialog.
  * Prefer to use new prop "selectType" to use single/interval/multiselect
- * @param {string} [message='']
  * @param {Object} [options={}]
+ * @param {string} [options.message='']
  * @param {string} [options.title='']
  * @param {dateType} options.dateType - one of chaynsDialog.dateType
  * @param {dateSelectType} options.selectType - one of chaynsDialog.dateSelectType
@@ -511,30 +508,29 @@ export const resolveDateSelectType = (type) => [
  *      MULTISELECT: Date[]
  *      INTERVAL: Date[2]
  */
-export function advancedDate(
-    {
-        message = '',
-        title = '',
-        dateType: pDateType = dateType.DATE_TIME,
-        selectType: pSelectType = dateSelectType.SINGLE,
-        minDate = 0,
-        maxDate = null,
-        minuteInterval = 1,
-        preSelect = new Date(),
-        multiselect = false,
-        disabledDates = null,
-        textBlocks = null,
-        yearSelect = false,
-        monthSelect = false,
-        interval = false,
-        minInterval = null,
-        maxInterval = null,
-        disabledIntervals = null,
-        disabledWeekDayIntervals = null,
-        getLocalTime = false
-    } = {}, buttons = undefined
-) {
+export function advancedDate(options, buttons) {
     return new DialogPromise((resolve) => {
+        const {
+            message = '',
+            title = '',
+            dateType: pDateType = dateType.DATE_TIME,
+            selectType: pSelectType = dateSelectType.SINGLE,
+            minDate = 0,
+            maxDate = null,
+            minuteInterval = 1,
+            preSelect = new Date(),
+            multiselect = false,
+            disabledDates = null,
+            textBlocks = null,
+            yearSelect = false,
+            monthSelect = false,
+            interval = false,
+            minInterval = null,
+            maxInterval = null,
+            disabledIntervals = null,
+            disabledWeekDayIntervals = null,
+            getLocalTime = false
+        } = options || {};
         const dialogSelectType = (
                 pSelectType !== undefined
                 && Object.values(dateSelectType).includes(pSelectType) ? pSelectType : null)
@@ -601,20 +597,20 @@ advancedDate.textBlockPosition = { ...textBlockPosition };
 
 /**
  * Select an image from Pixabay
- * @param {string} [title]
- * @param {string} [message]
- * @param {boolean} [multiselect]
+ * @param {Object} [options={}]
+ * @param {string} [options.title]
+ * @param {string} [options.message]
+ * @param {boolean} [options.multiselect]
  * @param {button[]} [buttons]
  * @returns {DialogPromise<dialogResult>}
  */
-export function mediaSelect(
-    {
-        title = '',
-        message = '',
-        multiselect = false
-    } = {}, buttons = undefined
-) {
+export function mediaSelect(options, buttons) {
     return new DialogPromise((resolve) => {
+        const {
+            title = '',
+            message = '',
+            multiselect = false
+        } = options || {};
         chayns.dialog.mediaSelect({
             title,
             message,
@@ -654,25 +650,27 @@ export const fileType = {
 
 /**
  * Upload and select a file from chayns space
- * @param {string} [title]
- * @param {string} [message]
- * @param {boolean} [multiselect]
- * @param {fileType[]} [contentType]
- * @param {fileType[]} [exclude]
- * @param {boolean} [directory]
+ * @param {Object} [options={}]
+ * @param {string} [options.title]
+ * @param {string} [options.message]
+ * @param {boolean} [options.multiselect]
+ * @param {fileType[]} [options.contentType]
+ * @param {fileType[]} [options.exclude]
+ * @param {boolean} [options.directory]
  * @param {button[]} [buttons]
  */
 export function fileSelect(
-    {
-        title = '',
-        message = '',
-        multiselect = false,
-        contentType = [],
-        exclude = [],
-        directory = false
-    } = {}, buttons = undefined
+    options, buttons = undefined
 ) {
     return new DialogPromise((resolve) => {
+        const {
+            title = '',
+            message = '',
+            multiselect = false,
+            contentType = [],
+            exclude = [],
+            directory = false
+        } = options || {};
         chayns.dialog.fileSelect({
             title,
             message,
@@ -695,35 +693,34 @@ export function fileSelect(
  *      .data(dialogDataListener)
  *      .result(dialogResultListener)
  *      .positive(positiveButtonTypeListener)
- * @param {string} url
- * @param {?Object|*} [input=null]
- * @param {boolean} [seamless=true]
- * @param {boolean} [transparent=false]
- * @param {boolean} [waitCursor=true]
- * @param {?string} [maxHeight=null]
- * @param {?number} [width=null]
- * @param {?number} [customTransitionTimeout=null]
+ * @param {Object} options
+ * @param {string} options.url
+ * @param {?Object|*} [options.input=null]
+ * @param {boolean} [options.seamless=true]
+ * @param {boolean} [options.transparent=false]
+ * @param {boolean} [options.waitCursor=true]
+ * @param {?string} [options.maxHeight=null]
+ * @param {?number} [options.width=null]
+ * @param {?number} [options.customTransitionTimeout=null]
  * @param {?button[]} [buttons=[]]
  * @returns {IframeDialogPromise<dialogResult>}
  */
-export function iFrame(
-    {
-        url,
-        input: dialogInput = null,
-        seamless = true,
-        transparent = false,
-        waitCursor = true,
-        maxHeight = null,
-        width = null,
-        customTransitionTimeout = null
-    } = {},
-    buttons = []
-) {
+export function iFrame(options, buttons) {
     return new IframeDialogPromise((resolve) => {
+        const {
+            url,
+            input: dialogInput = null,
+            seamless = true,
+            transparent = false,
+            waitCursor = true,
+            maxHeight = null,
+            width = null,
+            customTransitionTimeout = null
+        } = options || {};
         chayns.dialog.iFrame({
             url,
             input: dialogInput,
-            buttons,
+            buttons: buttons ?? [],
             seamless,
             transparent,
             waitCursor,

@@ -43,21 +43,26 @@ const websocketClients = {};
 
 /**
  * Use a websocket client. Each service is only initialized once.
- * @param {string} serviceName - name of the WS service
- * @param {Object} conditions - conditions for the WS service
- * @param {Object.<string, wsEventHandler>} events - custom events that should be handled.
+ * @param {Object} config
+ * @param {string} config.serviceName - name of the WS service
+ * @param {Object} config.conditions - conditions for the WS service
+ * @param {Object.<string, wsEventHandler>} config.events - custom events that should be handled.
  *      Format: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
- * @param {string} [clientGroup='default'] - services of the same client group share a ws connection and their
+ * @param {string} [config.clientGroup='default'] - services of the same client group share a ws connection and their
  *     conditions
- * @param {boolean} [waitForDefinedConditions=true] - only init the service once all conditions are no longer undefined
- * @param {boolean} [disconnectOnUnmount=true] - disconnects the ws client once the component unmounts. Any other hook
- *     using this service will cease to work
- * @param {boolean} [forceOwnConnection=false] - don't use any existing client from other hooks. required for wallet
- *     items to work properly
+ * @param {boolean} [config.waitForDefinedConditions=true] - only init the service once all conditions are no longer
+ *     undefined
+ * @param {boolean} [config.disconnectOnUnmount=true] - disconnects the ws client once the component unmounts. Any
+ *     other hook using this service will cease to work
+ * @param {boolean} [config.forceOwnConnection=false] - don't use any existing client from other hooks. required for
+ *     wallet items to work properly
  * @param {*[]} [dependencies=] - dependencies to set new event handlers
  */
 const useWebsocketService = (
-    {
+    config,
+    dependencies
+) => {
+    const {
         serviceName,
         conditions,
         events,
@@ -65,9 +70,7 @@ const useWebsocketService = (
         waitForDefinedConditions = true,
         disconnectOnUnmount = false,
         forceOwnConnection = false
-    },
-    dependencies = []
-) => {
+    } = config || {};
     // events pattern: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
     const [ownClient, setOwnClient] = useState();
     const ownConnection = useMemo(() => forceOwnConnection, []);
@@ -169,7 +172,7 @@ const useWebsocketService = (
             };
         }
         return () => {};
-    }, [...dependencies, ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`]]);
+    }, [...(dependencies || []), ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`]]);
 
     return ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`];
 };

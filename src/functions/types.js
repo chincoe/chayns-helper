@@ -41,10 +41,10 @@ export const typeStrings = {
 /**
  * Array.firstOrDefault
  * @param {*[]} arr
- * @param {selectorCb} callback
+ * @param {selectorCb} [callback]
  * @return {null|*}
  */
-export const safeFirst = (arr, callback = () => true) => {
+export const safeFirst = (arr, callback) => {
     if (!isArray(arr)) return null;
     const relevantArray = (arr || []);
     if (!types.isFunction(callback)) return relevantArray[0] || null;

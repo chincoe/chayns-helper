@@ -99,7 +99,7 @@ export const formatDate = (pDate, useLongMonth = false) => {
  * datefns format function, extended by the option to use "heute"|"morgen"|"gestern"
  * @param {Date|string|number} date
  * @param {string} formatString
- * @param {boolean} useToday - use "heute"|"morgen"|"gestern"
+ * @param {boolean} [useToday=false] - use "heute"|"morgen"|"gestern"
  * @return {string}
  *
  * @property {string} simpleMonth
@@ -118,7 +118,7 @@ export const formatDate = (pDate, useLongMonth = false) => {
  *
  * @readonly
  */
-export const fnsFormat = (date, formatString, useToday = false) => {
+export const fnsFormat = (date, formatString, useToday) => {
     const dateString = format(new Date(date), formatString, { locale: deLocale });
     if (!useToday) return dateString;
     const tFormatString = formatString
