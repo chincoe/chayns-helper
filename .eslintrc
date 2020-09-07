@@ -16,7 +16,10 @@
   },
   "parser": "babel-eslint",
   "plugins": [
-    "react-hooks"
+    "react-hooks",
+    "react",
+    "jsx-a11y",
+    "import"
   ],
   "rules": {
     "import/no-unresolved": [
@@ -26,8 +29,6 @@
           "chayns-components",
           "chayns-logger",
           "react-redux",
-          "default-error-handler",
-          "environment",
           "react",
           "react-dom"
         ]

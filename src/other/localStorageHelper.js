@@ -25,10 +25,10 @@ export const storageSettings = [];
  * @param {string} name
  * @param {number} [duration=5] - maximum cache age in minutes
  */
-export const addKey = (name, duration = 5) => {
+export const addKey = (name, duration) => {
     storageSettings.push({
         key: name,
-        duration: minutes(duration)
+        duration: minutes(duration ?? 5)
     });
     storageKeys[name] = name;
 };

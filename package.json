@@ -1,12 +1,11 @@
 {
   "name": "chayns-helper",
-  "version": "1.1.11",
+  "version": "1.1.12",
   "description": "my personal helpers for chayns development",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "lib_esnext/index.js",
   "scripts": {
-    "test": "test",
     "prepublishOnly": "npm run build",
     "build": "npm run build:sass && npm run build:es && npm run build:cjs && npm run build:lib:es",
     "build:es": "cross-env NODE_ENV=es rollup -c",
