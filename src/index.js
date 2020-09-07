@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import initChaynsHelper from './config/chaynsHelperConfig';
 import DateTimeChooseButton from './components/buttons/DateTimeChooseButton';
 import UACGroupChooseButton from './components/buttons/UACGroupChooseButton';
