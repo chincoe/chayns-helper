@@ -107,7 +107,7 @@ export function handleRequest(
             const handleErrors = errorHandler || defaultErrorHandler;
             let hideWaitCursor = () => {};
             try {
-                if (useWaitCursor) hideWaitCursor = showWaitCursor(text, textTimeout, timeout);
+                if (useWaitCursor) hideWaitCursor = showWaitCursor({ text, textTimeout, timeout });
                 if (cache) {
                     const cacheKey = types.isObject(cache) ? `${cache?.key}` : `${cache}`;
                     const duration = types.isObject(cache) ? (cache?.duration ?? 5) : 5;
@@ -133,7 +133,7 @@ export function handleRequest(
                         hideWaitCursor();
                         // eslint-disable-next-line no-console
                         if (!(err instanceof RequestError)) console.error('[HandleRequest]', err);
-                        handleErrors(err);
+                        handleErrors(err, err?.statusCode);
                         reject(err);
                     })
                     .finally(finallyHandler);
@@ -141,7 +141,7 @@ export function handleRequest(
                 hideWaitCursor();
                 // eslint-disable-next-line no-console
                 if (!(err instanceof RequestError)) console.error('[HandleRequest]', err);
-                handleErrors(err);
+                handleErrors(err, err?.statusCode);
                 reject(err);
             }
         }
@@ -200,6 +200,30 @@ const blobResolve = async (response, processName, resolve, useFetchApi) => {
  * @param useFetchApi
  * @returns {Promise<void>}
  */
+const textResolve = async (response, processName, resolve, useFetchApi) => {
+    const { status } = response;
+    try {
+        resolve(useFetchApi ? await response.text() : response.response);
+    } catch (err) {
+        logger.warning({
+            message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`
+        }, err);
+        // eslint-disable-next-line no-console
+        console.error(
+            `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
+            err
+        );
+        resolve(null);
+    }
+};
+
+/**
+ * @param response
+ * @param processName
+ * @param resolve
+ * @param useFetchApi
+ * @returns {Promise<void>}
+ */
 const objectResolve = async (response, processName, resolve, useFetchApi) => {
     const { status } = response;
     try {
@@ -221,12 +245,16 @@ const objectResolve = async (response, processName, resolve, useFetchApi) => {
  * @property {string} Blob - Get response.blob()
  * @property {string} Json - Get response.json()
  * @property {string} Object - Get status and json as Object {status: number, data: Object}
+ * @property {string} Text - Get response.text()
+ * @property {string} None - Get null
  */
 export const ResponseType = Object.freeze({
     Json: 'json',
     Blob: 'blob',
     Response: 'response',
     Object: 'object',
+    Text: 'text',
+    None: 'none'
 });
 
 /**
@@ -635,6 +663,12 @@ export function httpRequest(
                         case ResponseType.Object:
                             await objectResolve(response, processName, resolve, useFetchApi);
                             return;
+                        case ResponseType.Text:
+                            await textResolve(response, processName, resolve, useFetchApi);
+                            return;
+                        case ResponseType.None:
+                            resolve();
+                            return;
                         case ResponseType.Response:
                         default:
                             resolve(response);
@@ -715,6 +749,28 @@ export function httpRequest(
                         }
                     }
                 }
+                if (responseType === ResponseType.Text) {
+                    try {
+                        resolve(result);
+                    } catch (err) {
+                        logger.warning({
+                            message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`
+                        }, err);
+                        // eslint-disable-next-line no-console
+                        console.error(
+                            `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,
+                            err
+                        );
+                        if (status >= 200 && status < 300) {
+                            resolve(null);
+                        } else {
+                            tryReject(null, status);
+                        }
+                    }
+                }
+                if (responseType === ResponseType.None) {
+                    resolve();
+                }
                 if (responseType === ResponseType.Response) {
                     response.bodyString = result;
                     resolve(response);
@@ -723,14 +779,17 @@ export function httpRequest(
                 // responseType
                 if (responseType === null || responseType === ResponseType.Json) {
                     await jsonResolve(response, processName, resolve, useFetchApi);
-                }
-                if (responseType === ResponseType.Blob) {
+                } else if (responseType === ResponseType.Blob) {
                     await blobResolve(response, processName, resolve, useFetchApi);
-                }
-                if (responseType === ResponseType.Object) {
+                } else if (responseType === ResponseType.Object) {
                     await objectResolve(response, processName, resolve, useFetchApi);
-                }
-                if (responseType === ResponseType.Response) {
+                } else if (responseType === ResponseType.Text) {
+                    await textResolve(response, processName, resolve, useFetchApi);
+                } else if (responseType === ResponseType.None) {
+                    resolve(null);
+                } else if (responseType === ResponseType.Response) {
+                    resolve(response);
+                } else {
                     resolve(response);
                 }
             }
