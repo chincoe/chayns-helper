@@ -37,21 +37,21 @@ initChaynsHelper({
 | [UACGroupChooseButton](/src/components/buttons/UACGroupChooseButton.jsx)| ChooseButton for UAC groups |
 
 ### Hooks
-| Hook                                                                 | Description                   |
-|----------------------------------------------------------------------|-------------------------------|
+| Hook                                                                 | Description                   | Readme |
+|----------------------------------------------------------------------|-------------------------------| --------|
 | [useAxis](/src/functions/recharts/useAxis.js)| a hook to generate a better recharts axis |
 | [useElementProps](/src/hooks/useElementProps.js)| Remove custom props to spread the remaining props on an HTML element |
-| [useFullscreenTapp](/src/hooks/useFullscreenTapp.js)| Hook to create a fullscreen tapp without scrolling |
+| [useFullscreenTapp](/src/hooks/useFullscreenTapp.js)| Hook to create a fullscreen tapp without scrolling | [useFullscreenTapp.md](/src/hooks/useFullscreenTapp.md) |
 | [useFunctionState](/src/hooks/useFunctionState.js)| useState that can contain a function directly |
 | [useRefresh](/src/hooks/useRefresh.js)| generates a random ID in an interval to force re-render |
 | [useTest](/src/hooks/useOnce.js)| test a short script inside your component |
 | [useTextStrings](/src/textstring/TextStringMemo.jsx)| get memoized TextStrings from a list of string names |
-| [useTimeoutState](/src/hooks/uniques/useTimeoutState.js)| useState that calls an onChange method if the value hasn't change for a certain time |
+| [useTimeoutState](/src/hooks/uniques/useTimeoutState.js)| useState that calls an onChange method if the value hasn't change for a certain time | [useTimeoutState.md](/src/hooks/uniques/useTimeoutState.md) |
 | [useUniqueEventListener](/src/hooks/uniques/useUniqueEventListener.js)| removes an old eventListener when a new one is set |
 | [useUniqueInterval](/src/hooks/uniques/useUniqueInterval.js)| clears a previous interval when a new one is set |
 | [useUniqueTimeout](/src/hooks/uniques/useUniqueTimeout.js)| clears a previous timeout when a new one is set |
 | [useUser](/src/hooks/useUser.js)| chayns.getUser() hook |
-| [useWebsocketService](/src/hooks/useWebsocketService.js)| configure a tobit-websocket-service-client |
+| [useWebsocketService](/src/hooks/useWebsocketService.js)| configure a tobit-websocket-service-client | [useWebsocketService.md](/src/hooks/useWebsocketService.md) |
 | [useShallowSelector](/src/hooks/useShallowSelector.js)| a useSelector Hook with shallowEqual |
 
 
@@ -64,7 +64,7 @@ initChaynsHelper({
 | [colorClass](/src/functions/chaynsColors.js)| get a chayns color class name |  |
 | [copyOnClick](/src/functions/copy.js)| copy a value to the user's clipboard | |
 | [defaultErrorHandler](/src/functions/defaultErrorHandler.js)| default request error handling with dialogs for error status codes | |
-| [fnsFormat](/src/functions/timeHelper.js)| datefns format with option to use today/tomorrow/yesterday | |
+| [fnsFormat](/src/functions/timeHelper.js)| date-fns format with option to use today/tomorrow/yesterday | |
 | [formatDate](/src/functions/timeHelper.js)| Format date: [Gestern/Heute/Morgen/12.3./12.3.2019], HH:mm Uhr | |
 | [formatDateText](/src/functions/timeHelper.js)| Format date: [gestern/heute/Morgen/am 12.3./am 12.3.2019] um HH:mm Uhr | |
 | [generateAxis](/src/functions/recharts/generateAxis.js)| a function to generate a better recharts axis | |

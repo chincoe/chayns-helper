@@ -21,6 +21,7 @@ A fetch helper function, meant to be called in a api js file (e.g. `getBoard.js`
 |options.statusHandlers| Handle responses for specific status codes. Format: <br> 1.`{ [status/regex] : (response) => { my code }, ... }`<br> 2. `{ [status/regex] : responseType, ... }` | Object<status/regex, responseType/responseHandler> | `{}` |
 |options.onProgress| Experimental feature: Callback that will allow you to monitor download progress | function | `null` |
 |options.addHashToUrl | Add a random hash to the request url | boolean | `false`|
+| **@returns** | Promise of: Response specified via response type or throws an error | Promise<Json/String/Object/Blob/Response/null> | |
 
 #### Examples
 * Set logLevel for 3xx response status codes to warning and for 500 to critical
@@ -69,6 +70,8 @@ A try/catch wrapper for a request, meant to be called e.g. in your redux thunk
 |options.cache.key | localStorage key | string | required if cache is Object |
 |options.cache.duration | duration in minutes to cache this request | number | `5` |
 |options.cache.cacheResolver | function that receives the request result and should format it into a serializable object | function(response/Object/json/blob/null) | `(v) => v` |
+| **@returns** | Promise of request result | Promise<*> | |
+
 
 #### Example
 ```javascript
