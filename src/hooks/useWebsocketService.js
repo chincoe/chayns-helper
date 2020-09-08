@@ -66,7 +66,7 @@ const useWebsocketService = (config, dependencies) => {
         clientGroup = '',
         waitForDefinedConditions = true,
         disconnectOnUnmount = false,
-        forceOwnConnection = false
+        forceOwnConnection = chayns.env.site.tapp.id === 250357
     } = config || {};
     // events pattern: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
     const [ownClient, setOwnClient] = useState();
@@ -107,11 +107,21 @@ const useWebsocketService = (config, dependencies) => {
             if (isInit) {
                 // WS client default: WS registered successfully
                 webSocketClient.on('registered', (data) => {
-                    // eslint-disable-next-line no-console
-                    if (process.env.NODE_ENV === 'development') console.log('[Websocket] client registered', data);
+                    if (process.env.NODE_ENV === 'development') {
+                        // eslint-disable-next-line no-console
+                        console.log(
+                            '[Websocket] client registered',
+                            { serviceName, conditions, clientGroup }
+                        );
+                    }
                     logger.info({
                         message: '[Websocket] client registered',
-                        data
+                        data: {
+                            data,
+                            conditions,
+                            serviceName,
+                            clientGroup
+                        }
                     });
                 });
 
