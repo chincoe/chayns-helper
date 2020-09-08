@@ -1,4 +1,4 @@
-## [Request](src/functions/httpRequest.js)
+## [Request](httpRequest.js)
 
 ### request.fetch(address, config, processName, options)
 A fetch helper function, meant to be called in a api js file (e.g. `getBoard.js`).
