@@ -13,5 +13,28 @@ Uses only one client instance for all hooks unless otherwise specified via confi
 |config.disconnectOnUnmount | Disconnect the WS client when unmounting the component. Use **only once per clientGroup**, preferably in the top level component | boolean | false |
 |config.forceOwnConnection | Use a separate WS client instance for this hook. Overrides clientGroup. | boolean | `false` (`true` if in Wallet) |
 |dependencies | dependencies for updating event listeners | Array<*> | [] |
+| **@returns** | The used WebsocketClient instance | WsClient | |
 
 Because all wallet items of the same system use the same script, all usages in the wallet need to have either `config.forceOwnConnection = true` or have `config.clientGroup` set to something unique to the wallet item (e.g. the wallet GUID).
+
+#### Example
+This example uses the service `'my_ws_service'` and listens for the websocket event `'send_data'`:
+```javascript
+const App = () => {
+    const websocketClient = useWebsocketService({
+        serviceName: 'my_ws_service',
+        conditions: {
+            tappId: chayns.env.site.tapp.id
+        },
+        events: {
+            send_data: (data) => {
+                console.log(data);
+            }
+        },
+        disconnectOnUnmount: true
+    }, [])
+
+
+    return (<h1>Hello world</h1>)
+};
+```

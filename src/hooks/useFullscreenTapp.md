@@ -14,3 +14,18 @@ Not sufficiently tested for location apps and chayns.runtime.
 |options.forceExclusive| Force the tapp into exclusive mode | boolean |`false`|
 |options.fullBrowserWidth | Try to set the tapp width to the full viewport width. Only works on certain site layouts. | boolean |`false`|
 |options.maxWidth | Limit the tapp's maximum width. Probably useless if options.fullBrowserWidth is false | number | `851`|
+| **@returns** | `[windowData, isFullscreenActive, setIsFullscreenActive]` | [Object, boolean, function(boolean)] | |
+
+#### Example
+```javascript
+const App = () => {
+    // simple
+    useFullscreenTapp();
+    // force exclusive
+    const [windowData, isFullscreenActive, setIsFullscreenActive] = useFullscreenTapp(true, {
+        forceExclusive: true
+    });
+
+    return (<h1>Hello world</h1>)
+};
+```
