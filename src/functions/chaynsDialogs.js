@@ -64,13 +64,19 @@ export const createDialogResult = (type, value = undefined) => ({ buttonType: ty
  * @property {dialogThen} cancelled
  * @property {fullDialogThen} then
  * @property {function(Error)} catch
+ * @property {function()} abort
  */
 export class DialogPromise extends Promise {
+    isPending = true;
+
     constructor(resolveFn) {
         super(resolveFn);
         this.positive.bind(this);
         this.negative.bind(this);
         this.cancelled.bind(this);
+        this.then(() => {
+            this.isPending = false;
+        });
     }
 
     /**
@@ -114,11 +120,15 @@ export class DialogPromise extends Promise {
 
     /**
      * close the dialog
-     * @returns {*}
+     * @returns {boolean} success
      */
     // eslint-disable-next-line class-methods-use-this
     abort() {
-        return chayns.dialog.close();
+        if (this.isPending) {
+            chayns.dialog.close();
+            return true;
+        }
+        return false;
     }
 }
 
@@ -218,8 +228,8 @@ export const inputType = {
 
 /**
  * Input dialog
- * @param {string} [message='']
  * @param {Object} [options={}]
+ * @param {string} [options.message='']
  * @param {string} options.title
  * @param {string} options.placeholderText - placeholder
  * @param {string} options.text - default value
@@ -237,11 +247,11 @@ export const inputType = {
  *
  * @return {DialogPromise<dialogResult>}
  */
-export function input(message, options, buttons) {
+export function input(options, buttons) {
     return new DialogPromise((resolve) => {
         chayns.dialog.input({
             title: options?.title,
-            message: message ?? '',
+            message: options?.message ?? '',
             placeholderText: options?.placeholderText,
             text: options?.text,
             textColor: options?.textColor,

@@ -4,7 +4,7 @@
  * @param {string} [config.text=undefined] - Text that will be displayed after {@link textTimeout}
  * @param {number} [config.textTimeout=5000] - Time in ms after which {@link text} will be shown
  * @param {number} [config.timeout=300] = Time in ms after which the waitCursor will be shown
- * @return {function(number)} - hideWaitCursor function, will also clear the timeout
+ * @return {function()} - hideWaitCursor function, will also clear the timeout
  */
 const showWaitCursor = (config) => {
     const {
