@@ -1,6 +1,3 @@
-// eslint-disable-next-line import/no-cycle
-import extend from './extend';
-
 const isArray = (arr) => (Array.isArray(arr));
 const isObject = (obj) => (Object.prototype.toString.call(obj) === '[object Object]');
 const isBasedOnObject = (obj) => (obj !== null && typeof (obj) === 'object');
@@ -284,8 +281,7 @@ const types = {
     mapObjectToArray,
     reduceObject,
     replaceAll,
-    regex,
-    extend
+    regex
 };
 
 export default types;
