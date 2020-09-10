@@ -80,6 +80,7 @@ export class RequestError extends Error {
  * @param {number} [options.cache.duration=5] - The duration in minutes after which the cache will be refreshed
  * @param {cacheResolverCallback} [options.cache.cacheResolver] - Function to transform the cache content before
  *     setting, e.g. reading a request body
+ * @param {boolean} [options.noReject=false] - Do not reject promise on error, resolve with null instead
  *
  * @public
  * @async
@@ -98,12 +99,17 @@ export function handleRequest(
             const {
                 finallyHandler = () => null, // function: is always executed
                 waitCursor = false, // bool/object: true or { text, textTimeout, timeout }
-                cache = null // string/object: cacheKey or { key, duration, cacheResolver }
+                cache = null, // string/object: cacheKey or { key, duration, cacheResolver }
+                noReject = false
             } = options || {};
             const useWaitCursor = !!waitCursor;
-            const { text = undefined, textTimeout = 5000, timeout = 300 } = (types.isObject(waitCursor)
-                                                                             ? waitCursor
-                                                                             : {});
+            const {
+                text = undefined,
+                textTimeout = 5000,
+                timeout = 300
+            } = (types.isObject(waitCursor)
+                 ? waitCursor
+                 : {});
             const handleErrors = errorHandler || defaultErrorHandler;
             let hideWaitCursor = () => {};
             try {
@@ -133,16 +139,22 @@ export function handleRequest(
                         hideWaitCursor();
                         // eslint-disable-next-line no-console
                         if (!(err instanceof RequestError)) console.error('[HandleRequest]', err);
-                        handleErrors(err, err?.statusCode);
-                        reject(err);
+                        try {
+                            handleErrors(err, err?.statusCode);
+                        } catch (e) {
+                            console.error('[HandleRequest] Error in error handler:', e);
+                        }
+                        if (!noReject) reject(err);
+                        else resolve(null);
                     })
-                    .finally(finallyHandler);
+                    .then(finallyHandler, finallyHandler);
             } catch (err) {
                 hideWaitCursor();
                 // eslint-disable-next-line no-console
                 if (!(err instanceof RequestError)) console.error('[HandleRequest]', err);
                 handleErrors(err, err?.statusCode);
-                reject(err);
+                if (!noReject) reject(err);
+                else resolve(null);
             }
         }
     );

@@ -23,6 +23,18 @@ A fetch helper function, meant to be called in a api js file (e.g. `getBoard.js`
 |options.addHashToUrl | Add a random hash to the request url | boolean | `false`|
 | **@returns** | Promise of: Response specified via response type or throws an error | Promise<Json/String/Object/Blob/Response/null> | |
 
+#### Default behavior
+This helper works with the following presumptions:
+
+ * Responses with status < 400 are usually a success
+ * Responses with status >= 400 are usually errors and will thus throw an error / reject the promise
+
+This behavior makes it necessary to wrap a request into `try/catch` or define a `.catch` on the promise.
+`request.handle()` is the preferred try/catch-wrapper to handle these errors.
+
+`request.handle()` will still reject the Promise on error, thus code after the request may not be executed.
+
+
 #### Examples
 * Set logLevel for 3xx response status codes to warning and for 500 to critical
 ```javascript
@@ -114,6 +126,7 @@ A try/catch wrapper for a request, meant to be called e.g. in your redux thunk
 |options.cache.key | localStorage key | string | required if cache is Object |
 |options.cache.duration | duration in minutes to cache this request | number | `5` |
 |options.cache.cacheResolver | function that receives the request result and should format it into a serializable object | function(response/Object/json/blob/null) | `(v) => v` |
+|options.noReject | Do not reject on error, resolve with null instead. Ensures that code after request.handle() will always be executed | boolean | `false` |
 | **@returns** | Promise of request result | Promise<*> | |
 
 
