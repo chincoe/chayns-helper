@@ -275,6 +275,55 @@ export const LogLevel = Object.freeze({
     none: 'none'
 });
 
+export const defaultConfig = {
+    options: {},
+    address: '',
+    config: {}
+};
+
+/**
+ * Set defaults for httpRequest
+ * @param {string} [address=''] - Address of the request. Address will be appended to this default if it doesn't start
+ *     with a protocol but starts with a '/'.
+ * @param {Object} [config={}] - Fetch config
+ * @param {HttpMethod|string} [config.method='GET'] - HttpMethod
+ * @param {Object} [config.headers] - Additional HttpHeaders
+ * @param {boolean} [config.useChaynsAuth] - Add user token as authorization if available
+ * @param {*} [config.body] - Body of the request
+ * @param {*} [config.signal] - Signal to abort request while running, use with RTK thunks
+ * @param {Object} [options={}] - Additional options for the request
+ * @param {ResponseType|string} [options.responseType=null] - type of response that is expected
+ * @param {boolean|number[]} [options.ignoreErrors=false] - Don't throw errors for this request if true or if this
+ *     array contains the response status. Return null on error instead. Errors will still be logged as usual.
+ * @param {boolean} [options.useFetchApi=true] - use fetch(), use XMLHttpRequest otherwise
+ * @param {Object.<string,LogLevel>} [options.logConfig={}] - Define the logLevel for these status codes. Can use
+ *     status code or regex string as key. Values must be info|warning|error|critical|none.
+ * @param {boolean} [options.stringifyBody=true] - Call JSON.stringify(body) for the body passed to this function
+ * @param {Object} [options.additionalLogData={}] - Additional data to be logged with this request
+ * @param {boolean} [options.autoRefreshToken=true] - Automatically try to refresh the token once if it expired
+ * @param {Object} [options.statusHandlers={}] - Handle response for specific status codes
+ * Usage: { [statusCode|regexString] : (response) => { my code }, ... }
+ *    OR: { [statusCode|regexString] : responseType }
+ *     - handler always receives entire response as parameter, not just the body
+ *     - value returned from handler is returned as result of the request
+ *     - handler can be async and will be awaited
+ *     Response handling priorities:
+ *      1. statusHandlers[status]
+ *      2. statusHandlers[regex]
+ *      3. response type
+ * @param {onProgressHandler} [options.onProgress=null] - Gets called multiple times during the download of bigger
+ *     data,
+ *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
+ *     added to read the body instead. Response types other than 'response' will work as usual.
+ * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
+ * @public
+ */
+export const setRequestDefaults = (address, config, options) => {
+    defaultConfig.address = address || '';
+    defaultConfig.config = config || {};
+    defaultConfig.options = options || {};
+};
+
 /**
  * @callback onProgressHandler
  * @param {number} percentage - Percentage of content downloaded
@@ -374,13 +423,23 @@ export function httpRequest(
                  * - CAUTION: This disallows using .json() or .blob() on the body unless you use XMLHttpRequest.
                  *   A property "stringBody" is available instead. responseTypes other than "response" will still work.
                  */
-                /**
-                 * @type {onProgressHandler}
-                 */
                 onProgress = null,
                 // adds a random number as url param to bypass the browser cache
                 addHashToUrl = false
-            } = options || {};
+            } = {
+                responseType: ResponseType.Json,
+                logConfig: {},
+                ignoreErrors: false,
+                useFetchApi: true,
+                stringifyBody: true,
+                additionalLogData: {},
+                autoRefreshToken: true,
+                statusHandlers: {},
+                onProgress: null,
+                addHashToUrl: false,
+                ...(defaultConfig.options || {}),
+                ...(options || {})
+            };
             // eslint-disable-next-line no-param-reassign
             if (!processName) processName = 'HttpRequest';
             if (responseType != null && !Object.values(ResponseType).includes(responseType)) {
@@ -395,6 +454,7 @@ export function httpRequest(
             const fetchConfig = {
                 method: HttpMethod.Get,
                 useChaynsAuth: chayns.env.user.isAuthenticated,
+                ...(defaultConfig.config || {}),
                 ...(config || {})
             };
             const {
@@ -407,10 +467,11 @@ export function httpRequest(
             const jsonBody = body && stringifyBody ? JSON.stringify(body) : null;
 
             // create request headers
-            let requestHeaders = { 'Content-Type': 'application/json' };
+            let requestHeaders = stringifyBody ? { 'Content-Type': 'application/json' } : {};
             if (useChaynsAuth) requestHeaders.Authorization = `Bearer ${chayns.env.user.tobitAccessToken}`;
             requestHeaders = {
                 ...requestHeaders,
+                ...(defaultConfig?.config?.headers || {}),
                 ...headers
             };
 
@@ -418,7 +479,15 @@ export function httpRequest(
             const remainingFetchConfig = { ...fetchConfig };
             delete remainingFetchConfig.useChaynsAuth;
 
-            let requestAddress = address;
+            let requestAddress = '';
+            if (!types.isNullOrEmpty(defaultConfig.address)
+                && !/^.+?:\/\//.test(address)
+                && /^.+?:\/\//.test(defaultConfig.address)
+                && /^\//.test(address)) {
+                requestAddress = `${defaultConfig.address}${address}`;
+            } else {
+                requestAddress = address;
+            }
             if (addHashToUrl) {
                 requestAddress += `${/\?.+$/.test(address) ? '&' : '?'}${generateUUID()
                     .toString()
@@ -815,7 +884,8 @@ const request = {
     error: RequestError,
     responseType: ResponseType,
     logLevel: LogLevel,
-    method: HttpMethod
+    method: HttpMethod,
+    defaults: setRequestDefaults
 };
 
 export default request;

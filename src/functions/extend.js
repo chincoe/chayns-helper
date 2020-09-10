@@ -1,6 +1,5 @@
 /* eslint-disable no-proto,no-underscore-dangle */
 import { fnsFormat, time } from './timeHelper';
-// eslint-disable-next-line import/no-cycle
 import types from './types';
 
 /**
