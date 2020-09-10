@@ -53,6 +53,50 @@ const response = request.fetch(
 );
 ```
 
+### request.defaults(address, config, options)
+Set a base url as well as defaults for fetch config and request.fetch()-options.
+
+| Parameter              | Description                 | Type | Default / required |
+|------------------------|-----------------------------|------|-----------|
+| address | A base url. Will be used as prefix to the address in request.fetch() if:<br> - This default address starts with a protocol (e.g. `https://`)<br> - The request address doesn't start with a protocol <br> - The request address starts with a `/` | string | `''` |
+| config | A fetch config object. See request.fetch() for all properties. Properties that are not specified will keep their default value | Object | `{}` |
+| options | A request.fetch() options object. See request.fetch() for all properties. Properties that are not specified will keep their default value | Object | `{}` |
+
+##### Example
+```javascript
+// index.jsx
+
+// set base url and some default config and options
+request.defaults('https://example.server.com/MyApp/v1.0', // notice how the base url can't end with a slash
+    {
+        useChaynsAuth: false,
+        mode: 'no-cors'
+    },
+    {
+        // always get Object with json body and status unless otherwise specified
+        responseType: ResponseType.Object,
+        // log 2xx as info, 3xx as warning, 401 as warning and anything else as error
+        logConfig: {
+            "2[\d]{2}": 'info',
+            "3[\d]{2}": 'warning',
+            401: 'warning',
+            "*": 'error'
+        },
+        // don't try to get json body on 204
+        statusHandlers: {
+            204: ResponseType.Response
+        }
+    }
+);
+
+/* ... */
+
+// myRequest.js
+
+// usage for base url
+request.fetch('/controller/endpoint/boardId', {}, 'myRequest'); // notice how the url has to start with a slash to use the base url
+```
+
 ### request.handle(request, errorHandler, options)
 A try/catch wrapper for a request, meant to be called e.g. in your redux thunk
 
