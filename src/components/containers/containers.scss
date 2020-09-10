@@ -21,12 +21,10 @@
         }
 
         &-container {
-
-        }
-
-        &-buttoncontainer {
-            > *:not(:last-child) {
-                margin-right: 15px;
+            &--gap {
+                > *:not(:last-child) {
+                    margin-right: 15px;
+                }
             }
         }
     }

@@ -1,4 +1,5 @@
 module.exports = function resolveAbsoluteImport(importName) {
+    // TODO: Add last commit's changes
     const values = {
         initChaynsHelper: 'config/chaynsHelperConfig.js',
         DateTimeChooseButton: 'components/buttons/DateTimeChooseButton',
@@ -41,7 +42,7 @@ module.exports = function resolveAbsoluteImport(importName) {
         localStorage: 'other/localStorageHelper',
         WebsocketClient: 'other/WsClient',
         TextStringMemo: 'textstring/TextStringMemo',
-        TextStringComplex: 'textstring/TextStringComplex',
+        TextStringComplex: 'textstring/TextStringMemo',
         useTextStrings: 'textstring/useTextStrings',
         getTextStrings: 'textstring/getTextStrings',
         AsyncPromise: 'functions/AsyncPromise',

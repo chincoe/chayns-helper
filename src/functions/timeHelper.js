@@ -13,15 +13,6 @@ export const time = {
 };
 
 /**
- * Remove the timezone offset of dates that are falsely declared as UTC despite being a local date
- * @param {Date} date
- * @return {Date}
- */
-export const removeTimeZoneOffset = (date) => new Date(
-    new Date(date).getTime() - new Date().getTimezoneOffset() * time.minute
-);
-
-/**
  * Format: [day]:[month], e.g. 12.3.
  * @param {Date} date
  * @return {string}
@@ -37,63 +28,6 @@ export const getDaySimple = (date) => format(new Date(date), 'd.M.', { locale: d
 export const getDate = (date) => `${getDaySimple(
     date
 )}${date.getFullYear() === new Date().getFullYear() ? '' : date.getFullYear()}`;
-
-/**
- * Format: [day]:[monthAsText], e.g. 12.Jan.
- * @param {Date} date
- * @return {string}
- */
-export const getDayLong = (date) => format(new Date(date), 'dd. MMM.', { locale: deLocale });
-
-// gestern um 13:40 Uhr
-// am 12.3. um 13:40 Uhr
-// am 12.3.2019 um 13:40 Uhr
-/**
- * Format: [gestern|heute|morgen|am 12.3.|am 12.3.2019] um HH:mm Uhr
- * @param pDate
- * @return {string}
- */
-export const formatDateText = (pDate) => {
-    const date = new Date(pDate);
-    let day = `am ${getDate(date)}`;
-    if (date.getFullYear() === new Date().getFullYear()) {
-        if (getDate(date) === getDate(new Date())) {
-            day = 'heute';
-        } else if (getDate(date) === getDate(new Date(Date.now() - (time.day)))) {
-            day = 'gestern';
-        } else if (getDate(date) === getDate(new Date(Date.now() + (time.day)))) {
-            day = 'morgen';
-        }
-    }
-    return `${day} um ${format(date, 'HH:mm', { locale: deLocale })} Uhr`;
-};
-
-// Heute, 13:40 Uhr
-// 12.3., 13:40 Uhr
-// 12.3.2019, 13:40 Uhr
-/**
- * Format: [Gestern|Heute|Morgen|12.3.|12.3.2019], HH:mm Uhr
- * @param {Date} pDate
- * @param {boolean} useLongMonth - month as 12.1. or 12.Jan.
- * @return {string}
- */
-export const formatDate = (pDate, useLongMonth = false) => {
-    const gDay = useLongMonth ? getDayLong : getDaySimple;
-
-    const date = new Date(pDate);
-    let day = `${gDay(date)}${date.getFullYear() !== new Date().getFullYear() ? ` ${date.getFullYear()}` : ''}`;
-    if (date.getFullYear() === new Date().getFullYear()) {
-        if (gDay(date) === gDay(new Date())) {
-            day = 'Heute';
-        } else if (gDay(date) === gDay(new Date(Date.now() - (time.day)))) {
-            day = 'Gestern';
-        } else if (gDay(date) === gDay(new Date(Date.now() + (time.day)))) {
-            day = 'Morgen';
-        }
-    }
-
-    return `${day}, ${format(date, 'HH:mm', { locale: deLocale })} Uhr`;
-};
 
 /**
  * datefns format function, extended by the option to use "heute"|"morgen"|"gestern"
@@ -149,16 +83,12 @@ fnsFormat.minute = 'mm';
 fnsFormat.second = 's';
 
 /**
- * @type {{formatDate: (function(Date, boolean=): string), fnsFormat: (function((Date|string|number), string,
- *     boolean=): string), formatDateText: (function(*=): string), time: {hour: number, day: number, second: number,
- *     minute: number}, removeTimeZoneOffset: (function(Date): Date)}}
+ * @type {{fnsFormat: (function((Date|string|number), string, boolean=): string), time: {hour: number, day: number,
+ *     second: number, minute: number}}}
  */
 const timeHelper = {
     time,
-    fnsFormat,
-    formatDateText,
-    formatDate,
-    removeTimeZoneOffset
+    fnsFormat
 };
 
 export default timeHelper;

@@ -21,7 +21,7 @@ initChaynsHelper({
 |--------------------------------------------------------------------------|-----------------------------|
 | [CenteredButtonContainer](/src/components/containers/CenteredButtonContainer.jsx)| Centered container for Buttons |
 | [CenteredContainer](/src/components/containers/CenteredContainer.jsx)| Centered container |
-| [CenteredWaitCursor](/src/components/containers/CenteredWaitCursor.jsx)| Inline-waitCursor, centered and with padding |
+| [CenteredWaitCursor](/src/components/wait-cursor/CenteredWaitCursor.jsx)| Inline-waitCursor, centered and with padding |
 | [ChaynsEditor](/src/components/chayns-editor/ChaynsEditor.jsx)| Chayns-Editor Wrapper |
 | [DataRow](/src/components/containers/DataRow.jsx)| Container for a row with a label and e.g. a button |
 | [DateTimeChooseButton](/src/components/buttons/DateTimeChooseButton.jsx)| Choose button to choose a date with an advancedDate dialog |
@@ -29,10 +29,10 @@ initChaynsHelper({
 | [refresh](/src/components/other/Refresh.jsx)| HOC to rerender a Component in an interval |
 | [RefreshComponent](/src/components/other/RefreshComponent.jsx)| Component to rerender its children in an interval |
 | [RefreshComponent](/src/components/other/RefreshComponent.jsx)| Component to rerender its children in an interval |
-| [ResizableWaitCursor](/src/components/other/ResizableWaitCursor.jsx)| chayns SmallWaitCursor but resizable |
+| [ResizableWaitCursor](/src/components/wait-cursor/ResizableWaitCursor.jsx)| chayns SmallWaitCursor but resizable |
 | [RestrictedAccordion](/src/components/restricted-accordion/RestrictedAccordion.jsx)| Accordion with lock-icon for admins |
-| [SuspenseWaitCursor](/src/components/other/SuspenseWaitCursor.jsx)| Suspense-Component that provides a fallback for React lazy loading |
-| [TextStringComplex](/src/textstring/TextStringMemo.jsx)| Memoized Textstring Component, adds prefix. Allows complex replacements with JSX and CTRL+Click to edit |
+| [SuspenseWaitCursor](/src/components/wait-cursor/SuspenseWaitCursor.jsx)| Suspense-Component that provides a fallback for React lazy loading |
+| [TextStringMemo](/src/textstring/TextStringMemo.jsx)| Memoized Textstring Component, adds prefix. Allows complex replacements with JSX and CTRL+Click to edit |
 | [TextStringMemo](/src/textstring/TextStringMemo.jsx)| Memoized Textstring Component, adds prefix |
 | [UACGroupChooseButton](/src/components/buttons/UACGroupChooseButton.jsx)| ChooseButton for UAC groups |
 
