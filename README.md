@@ -13,7 +13,7 @@ initChaynsHelper({
 });
 ```
 
-> **_NOTE:_** This package lacks markdown documentations and examples but features JsDoc comments instead. If you would like me to add examples and a readme to a function, let me know and I'll add them.
+> **_NOTE:_** This package may lack markdown documentations and examples but features JsDoc comments instead. If you would like me to add examples and a readme to a feature, let me know and I'll add them.
 
 ## Contents
 ### Components
