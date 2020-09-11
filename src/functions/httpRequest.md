@@ -115,7 +115,7 @@ A try/catch wrapper for a request, meant to be called e.g. in your redux thunk
 | Parameter              | Description                 | Type | Default / required |
 |------------------------|-----------------------------|------|-----------|
 |request | The un-awaited promise of the request function | Promise | required |
-|errorHandler | A handler that receives an error with status code. Handle error responses here. Pass undefined to use default| function(RequestError/Error, statusCode) | defaultErrorHandler from initChaynsHelper() |
+|errorHandler | A handler that receives an error with status code as well as resolve and reject to determine the result of the entire promise. Handle error responses here. Pass undefined to use default| function(RequestError/Error, statusCode, resolve, reject) | defaultErrorHandler from initChaynsHelper() |
 |options | Options to configure the request handling with | Object | `{}` |
 |options.finallyHandler | function to always be executed after the request is done | function() | `() => null`|
 |options.waitCursor| Show a waitcursor during the request. Use an object for more detailed config | bool/waitCursorObject | `false`|
