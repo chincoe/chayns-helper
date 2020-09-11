@@ -1,3 +1,6 @@
+/**
+ * @type {{success: string, failure: string}}
+ */
 const statusAnimations = {
     success: `<div style="text-align: center">  
                  <style>  

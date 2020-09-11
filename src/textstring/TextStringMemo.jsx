@@ -6,12 +6,9 @@ import isTobitEmployee from 'chayns-components/lib/utils/tobitEmployee';
 import PropTypes from 'prop-types';
 import generateUUID from '../functions/generateUid';
 import types from '../functions/types';
-import useElementProps from '../hooks/useElementProps';
+import useElementProps from '../_internal/useElementProps';
 import useTextStrings from './useTextStrings';
-
-export const TEXTSTRING_CONFIG = {
-    PREFIX: ''
-};
+import TEXTSTRING_PREFIX from './textstringPrefix';
 
 // memoized textstring component
 // adds prefix automatically
@@ -105,7 +102,7 @@ const TextStringMemo = memo((props) => {
     const changeStringResult = (data, lang) => {
         if (data.buttonType === 1 && (data.text || data.value)) {
             TextString.changeTextString(
-                `${TEXTSTRING_CONFIG.PREFIX}${stringName}`,
+                `${TEXTSTRING_PREFIX.value}${stringName}`,
                 useDangerouslySetInnerHTML ? data.value : data.text, lang.value
             )
                 .then((result) => {
@@ -229,7 +226,7 @@ const TextStringMemo = memo((props) => {
                 if (e.ctrlKey && useClickToEdit) {
                     isTobitEmployee()
                         .then(() => {
-                            selectTextStringLanguage(`${TEXTSTRING_CONFIG.PREFIX}${stringName}`);
+                            selectTextStringLanguage(`${TEXTSTRING_PREFIX.value}${stringName}`);
                         })
                         .catch((err) => {
                             // eslint-disable-next-line no-console

@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import './containers.scss';
-import useElementProps from '../../hooks/useElementProps';
+import './centered-container.scss';
+import useElementProps from '../../_internal/useElementProps';
 
 /**
  * CenteredContainer

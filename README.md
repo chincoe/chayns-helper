@@ -19,32 +19,23 @@ initChaynsHelper({
 ### Components
 | Component                                                                | Description                 |
 |--------------------------------------------------------------------------|-----------------------------|
-| [CenteredButtonContainer](/src/components/containers/CenteredButtonContainer.jsx)| Centered container for Buttons |
 | [CenteredContainer](/src/components/containers/CenteredContainer.jsx)| Centered container |
 | [CenteredWaitCursor](/src/components/wait-cursor/CenteredWaitCursor.jsx)| Inline-waitCursor, centered and with padding |
-| [ChaynsEditor](/src/components/chayns-editor/ChaynsEditor.jsx)| Chayns-Editor Wrapper |
 | [DataRow](/src/components/containers/DataRow.jsx)| Container for a row with a label and e.g. a button |
-| [DateTimeChooseButton](/src/components/buttons/DateTimeChooseButton.jsx)| Choose button to choose a date with an advancedDate dialog |
 | [ErrorBoundary](/src/components/error-boundary/ErrorBoundary.jsx)| Customizable ErrorBoundary to catch errors during render |
-| [refresh](/src/components/other/Refresh.jsx)| HOC to rerender a Component in an interval |
-| [RefreshComponent](/src/components/other/RefreshComponent.jsx)| Component to rerender its children in an interval |
-| [RefreshComponent](/src/components/other/RefreshComponent.jsx)| Component to rerender its children in an interval |
+| [refresh](/src/components/other/refresh.jsx)| HOC to rerender a Component in an interval |
+| [Refresh](/src/components/other/RefreshComponent.jsx)| Component to rerender its children in an interval |
 | [ResizableWaitCursor](/src/components/wait-cursor/ResizableWaitCursor.jsx)| chayns SmallWaitCursor but resizable |
 | [RestrictedAccordion](/src/components/restricted-accordion/RestrictedAccordion.jsx)| Accordion with lock-icon for admins |
 | [SuspenseWaitCursor](/src/components/wait-cursor/SuspenseWaitCursor.jsx)| Suspense-Component that provides a fallback for React lazy loading |
 | [TextStringMemo](/src/textstring/TextStringMemo.jsx)| Memoized Textstring Component, adds prefix. Allows complex replacements with JSX and CTRL+Click to edit |
-| [TextStringMemo](/src/textstring/TextStringMemo.jsx)| Memoized Textstring Component, adds prefix |
 | [UACGroupChooseButton](/src/components/buttons/UACGroupChooseButton.jsx)| ChooseButton for UAC groups |
 
 ### Hooks
 | Hook                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------| --------|
 | [useAxis](/src/functions/recharts/useAxis.js)| a hook to generate a better recharts axis |
-| [useElementProps](/src/hooks/useElementProps.js)| Remove custom props to spread the remaining props on an HTML element |
 | [useFullscreenTapp](/src/hooks/useFullscreenTapp.js)| Hook to create a fullscreen tapp without scrolling | [useFullscreenTapp.md](/src/hooks/useFullscreenTapp.md) |
-| [useFunctionState](/src/hooks/useFunctionState.js)| useState that can contain a function directly |
-| [useRefresh](/src/hooks/useRefresh.js)| generates a random ID in an interval to force re-render |
-| [useTest](/src/hooks/useOnce.js)| test a short script inside your component |
 | [useTextStrings](/src/textstring/TextStringMemo.jsx)| get memoized TextStrings from a list of string names |
 | [useTimeoutState](/src/hooks/uniques/useTimeoutState.js)| useState that calls an onChange method if the value hasn't change for a certain time | [useTimeoutState.md](/src/hooks/uniques/useTimeoutState.md) |
 | [useUniqueEventListener](/src/hooks/uniques/useUniqueEventListener.js)| removes an old eventListener when a new one is set |
@@ -54,42 +45,37 @@ initChaynsHelper({
 | [useWebsocketService](/src/hooks/useWebsocketService.js)| configure a tobit-websocket-service-client | [useWebsocketService.md](/src/hooks/useWebsocketService.md) |
 | [useShallowSelector](/src/hooks/useShallowSelector.js)| a useSelector Hook with shallowEqual |
 
-
 ### Functions
 | Function                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------|----- |
-| [backgroundColorClass](/src/functions/chaynsColors.js)| get a chayns background color class name | |
-| [borderColorClass](/src/functions/chaynsColors.js)| get a chayns border color class name | |
+| [chaynsColors](/src/functions/chaynsColors.js)| a collection of helpers to get chayns colors, color class names as well as mix them and convert them to rgb | |
 | [chaynsDialogs](/src/functions/chaynsDialogs.js)| makes using chayns dialogs so much more comfortable | |
-| [colorClass](/src/functions/chaynsColors.js)| get a chayns color class name |  |
-| [copyOnClick](/src/functions/copy.js)| copy a value to the user's clipboard | |
+| [copyToClipboard](/src/functions/copy.js)| copy a value to the user's clipboard | |
 | [defaultErrorHandler](/src/functions/defaultErrorHandler.js)| default request error handling with dialogs for error status codes | |
-| [fnsFormat](/src/functions/timeHelper.js)| date-fns format with option to use today/tomorrow/yesterday | |
-| [formatDate](/src/functions/timeHelper.js)| Format date: [Gestern/Heute/Morgen/12.3./12.3.2019], HH:mm Uhr | |
-| [formatDateText](/src/functions/timeHelper.js)| Format date: [gestern/heute/Morgen/am 12.3./am 12.3.2019] um HH:mm Uhr | |
+| [extend](/src/functions/extend.js)| extend a value's prototype to add the functions of types.js and then some | |
+| [fnsFormat](/src/functions/timeHelper/fnsFormat.js)| date-fns format with option to use today/tomorrow/yesterday and append the year if it's not the current year | |
 | [generateAxis](/src/functions/recharts/generateAxis.js)| a function to generate a better recharts axis | |
-| [getChaynsColor](/src/functions/chaynsColors.js)| get a chayns color in hex from its color name | |
-| [getChaynsColorRgb](/src/functions/chaynsColors.js)| get a chayns color in rgb from its color name | |
-| [handleRequest](/src/functions/httpRequest.js)| try/catch-wrapper for http requests | |
-| [hexToRgb](/src/functions/chaynsColors.js)| convert hex color string to rgb | |
+| [generateUUID](/src/functions/generateUid.js)| generate a GUID | |
+| [getHookState](/src/functions/getHookState.js)| get the current state of a hook via the setState function | |
 | [hideCWFooter](/src/functions/chaynsCalls/chaynsCalls.js)| hide the chayns web footer | |
-| [httpRequest](/src/functions/httpRequest.js)| fetch helper with loads of options | [httpRequest.md](/src/functions/httpRequest.md) |
+| [request](/src/functions/httpRequest.js)| fetch helper with loads of options, constants and a try/catch wrapper | [httpRequest.md](/src/functions/httpRequest.md) |
 | [localStorage](/src/other/localStorageHelper.js)| helper to cache httpRequest JSON strings in local storage | |
-| [mixChaynsColorRgb](/src/functions/chaynsColors.js)| mix 2 chayns colors | |
-| [removeTimeZoneOffset](/src/functions/timeHelper.js)| Remove timezone offset of dates that claim to be UTC but are actually local | |
-| [RequestError](/src/functions/httpRequest.js)| Error class for error status codes | |
 | [setViewMode](/src/functions/chaynsCalls/chaynsCalls.js)| toggle exclusive mode | |
-| [showSuccessAnimation](/src/functions/statusAnimations/showSuccessAnimation.js)| show a dialog with a success animation | |
-| [simpleTimeFormat](/src/functions/timeHelper.js)| Format date: HH:mm | |
-| [time](/src/functions/timeHelper.js)| constant for times based on ms | |
+| [shallowEqual](/src/functions/shallowEqual.js)| check 2 values for equality | |
 | [types](/src/functions/types.js)| a collection of helpers for types in general but especially objects and arrays. Includes: mapObject, reduceObject, mapObjectToArray, forEachKey, firstOrDefault, replaceAll, type checking | |
-| [waitCursor](/src/functions/waitCursor.js)| helper for chayns.showWaitCursor with a timeout before displaying ||
-| [WebSocketClient](/src/other/webSocketClient.js)| custom alternative to tobit-websocket-service-client | |
+| [showWaitCursor](/src/functions/waitCursor.js)| helper for chayns.showWaitCursor with a timeout before displaying ||
+| [WebSocketClient](/src/other/WsClient.js)| custom alternative to tobit-websocket-service-client | |
 
+### Constants
+| Constant                                                     | Description                   | Readme |
+|--------------------------------------------------------------|-------------------------------|----- |
+| [statusAnimations](/src/constants/statusAnimations.js) | success and failure animation html string for dialogs | |
+| [time](/src/constants/time.js)| constant for times based on ms | |
 
-
-
-
+### Other
+| Asset                                                     | Description                   | Readme |
+|--------------------------------------------------------------|-------------------------------|----- |
+| [chaynsDoc](/src/other/chaynsDoc.js) | A JsDoc documentation of the global chayns Object that enables auto completion in WebStorm | |
 
 
 

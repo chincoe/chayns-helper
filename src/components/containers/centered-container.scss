@@ -1,0 +1,18 @@
+.chayns__utils__container {
+    &--centered {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 12px;
+
+        &-container {
+            &--gap {
+                > *:not(:last-child) {
+                    margin-right: 15px;
+                }
+            }
+        }
+    }
+}
+
+

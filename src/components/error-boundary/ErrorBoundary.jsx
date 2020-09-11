@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './error-boundary.scss';
 import { Button } from 'chayns-components';
 import logger from 'chayns-logger';
-import CenteredButtonContainer from '../containers/CenteredButtonContainer';
+import CenteredContainer from '../../../lib/components/containers/CenteredContainer';
 
 /**
  * An ErrorBoundary.
@@ -56,7 +56,7 @@ class ErrorBoundary extends React.Component {
                                        {`Fehler: ${state.error.toString()}`}
                                    </p>
                                )}
-                               <CenteredButtonContainer>
+                               <CenteredContainer>
                                    <Button onClick={() => {
                                        chayns.appendUrlParameter({ nocache: true }, true);
                                        // eslint-disable-next-line no-restricted-globals
@@ -65,7 +65,7 @@ class ErrorBoundary extends React.Component {
                                    >
                                        Neu Laden
                                    </Button>
-                               </CenteredButtonContainer>
+                               </CenteredContainer>
                            </div>
                        </div>
                    );
