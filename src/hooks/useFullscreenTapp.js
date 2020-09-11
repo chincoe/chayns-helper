@@ -1,10 +1,11 @@
 import {
-    useState, useEffect, useReducer, useMemo,
+    useState, useEffect, useReducer, useMemo
 } from 'react';
-import hideCWFooter from '../functions/chaynsCalls/hideCwFooter';
+import hideCwFooter from '../functions/chaynsCalls/hideCwFooter';
 import setViewMode from '../functions/chaynsCalls/setViewMode';
 import shallowEqual from '../functions/shallowEqual';
 import types from '../functions/types';
+import getHookState from '../functions/getHookState';
 
 /**
  * Reducer to update the windowData state
@@ -70,33 +71,36 @@ const useFullscreenTapp = (initialValue, options) => {
     const [isFullscreenActive, setIsFullscreenActive] = useState(initialValue ?? true);
     const [windowData, setWindowData] = useReducer(windowDataReducer, undefined);
     const [resizeInterval, setResizeInterval] = useState(0);
+    const [, setWindowWidth] = useState(0);
     const defaultExclusive = useMemo(() => chayns.env.site.tapp.isExclusiveView, []);
 
-    const getWindowData = (force = true) => {
-        chayns.getWindowMetrics()
-            .then((winData) => {
-                const data = correctWindowData(winData);
-                setWindowData({
-                    data,
-                    type: force ? 'force' : 'compare',
-                });
-                if (!chayns.env.user.adminMode) {
-                    chayns.setHeight({
-                        height: data.windowHeight - (
-                            chayns.utils.isNumber(data.frameY) && chayns.utils.isNumber(data.pageYOffset)
-                            ? (data.frameY + data.pageYOffset)
-                            : 45
-                        ),
-                        forceHeight: true,
-                    });
-                }
+    const getWindowData = (height, force = true) => {
+        Promise.all([
+            chayns.getWindowMetrics(),
+            getHookState(setWindowWidth)
+        ]).then(([winData, winWidth]) => {
+            if (chayns.env.isMobile && winWidth === window.innerWidth) return;
+            setWindowWidth(window.innerWidth);
+            const data = correctWindowData(winData);
+            setWindowData({
+                data,
+                type: force ? 'force' : 'compare',
             });
+            chayns.setHeight({
+                height: data.windowHeight - (
+                    chayns.utils.isNumber(data.frameY) && chayns.utils.isNumber(data.pageYOffset)
+                    ? (data.frameY + data.pageYOffset)
+                    : 45
+                ),
+                forceHeight: true,
+            });
+        });
     };
 
     useEffect(() => {
         Promise.all([
             chayns.hideTitleImage(),
-            hideCWFooter(),
+            hideCwFooter(),
             ...(forceExclusive || fullBrowserWidth ? [
                 setViewMode(isFullscreenActive ? true : defaultExclusive, fullBrowserWidth),
             ] : []),
@@ -106,20 +110,17 @@ const useFullscreenTapp = (initialValue, options) => {
         const tapp = document.querySelector('.tapp');
         if (isFullscreenActive) {
             chayns.scrollToY(-1000);
-            getWindowData();
+            getWindowData(0);
             tapp.style.padding = '0';
             tapp.style.width = '100vw';
             tapp.style.height = '100vh';
             tapp.style.maxWidth = types.isNumber(maxWidth) ? `${maxWidth}px` : maxWidth;
-            if (!chayns.env.isMobile) {
-                interval = setInterval(() => {
-                    getWindowData(false);
-                }, 2000);
-            } else {
-                chayns.addOnActivateListener(() => getWindowData(false));
-            }
+            interval = setInterval(() => {
+                getWindowData(0, false);
+            }, 2000);
+            if (chayns.env.isMobile) chayns.addOnActivateListener(() => getWindowData(0, false));
             setResizeInterval(interval);
-            if (!chayns.env.isApp) chayns.addWindowMetricsListener(getWindowData, true);
+            chayns.addWindowMetricsListener(getWindowData);
         } else {
             chayns.removeWindowMetricsListener(getWindowData);
             tapp.style.padding = null;
