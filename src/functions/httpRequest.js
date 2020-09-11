@@ -608,7 +608,8 @@ export function httpRequest(
                     chayns.dialog.alert('', 'Verbindung fehlgeschlagen. Versuche es später nochmal.');
                 }, 300);
                 err.statusCode = -1;
-                tryReject(err);
+                tryReject(err, null, true);
+                return;
             }
 
             const { status } = response;
