@@ -12,7 +12,7 @@ A fetch helper function, meant to be called in a api js file (e.g. `getBoard.js`
 |processName| Name of this request for all logs | string | `'HttpRequest'` |
 |options| Options to configure the request helper | Object | `{}` |
 |options.responseType | expected response format (json/blob/Object/Response) | ResponseType/string | `'json'` |
-|options.logConfig | Configure the log level of specific status codes | Object<statusCode/regex, LogLevel> | `{"[1-3][\d]{2}":'info', 401: 'warning', "*": 'error'}`|
+|options.logConfig | Configure the log level of specific status codes | Object<statusCode/regex, LogLevel> | `{"[1-3][\\d]{2}":'info', 401: 'warning', "[\\d]+": 'error'}`|
 |options.ignoreErrors | Don't throw errors on error status codes, return null instead | boolean / Array<statusCode> | `false` |
 |options.useFetchApi | Use fetch(), use XMLHttpRequest otherwise  | boolean | `true` |
 |options.stringifyBody | Call JSON.stringify() on config.body before passing it to fetch() | boolean | `true` |
@@ -82,17 +82,17 @@ Set a base url as well as defaults for fetch config and request.fetch()-options.
 request.defaults('https://example.server.com/MyApp/v1.0', // notice how the base url can't end with a slash
     {
         useChaynsAuth: false,
-        mode: 'no-cors'
+        cache: 'no-cache'
     },
     {
         // always get Object with json body and status unless otherwise specified
         responseType: ResponseType.Object,
         // log 2xx as info, 3xx as warning, 401 as warning and anything else as error
         logConfig: {
-            "2[\d]{2}": 'info',
-            "3[\d]{2}": 'warning',
+            "2[\\d]{2}": 'info',
+            "3[\\d]{2}": 'warning',
             401: 'warning',
-            "*": 'error'
+            "[\\d]+": 'error'
         },
         // don't try to get json body on 204
         statusHandlers: {
