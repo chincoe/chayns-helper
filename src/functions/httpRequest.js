@@ -312,6 +312,14 @@ export const defaultConfig = {
  * @param {boolean} [config.useChaynsAuth] - Add user token as authorization if available
  * @param {*} [config.body] - Body of the request
  * @param {*} [config.signal] - Signal to abort request while running, use with RTK thunks
+ * @param {string} [config.cache]
+ * @param {string} [config.referrer]
+ * @param {string} [config.referrerPolicy]
+ * @param {string} [config.mode]
+ * @param {string} [config.redirect]
+ * @param {string} [config.integrity]
+ * @param {boolean} [config.keepalive]
+ * @param {Window} [config.window]
  * @param {Object} [options={}] - Additional options for the request
  * @param {ResponseType|string} [options.responseType=null] - type of response that is expected
  * @param {boolean|number[]} [options.ignoreErrors=false] - Don't throw errors for this request if true or if this
@@ -365,6 +373,14 @@ export const setRequestDefaults = (address, config, options) => {
  * @param {Object} [config.headers] - Additional HttpHeaders
  * @param {boolean} [config.useChaynsAuth] - Add user token as authorization if available
  * @param {*} [config.body] - Body of the request
+ * @param {string} [config.cache]
+ * @param {string} [config.referrer]
+ * @param {string} [config.referrerPolicy]
+ * @param {string} [config.mode]
+ * @param {string} [config.redirect]
+ * @param {string} [config.integrity]
+ * @param {boolean} [config.keepalive]
+ * @param {Window} [config.window]
  * @param {*} [config.signal] - Signal to abort request while running, use with RTK thunks
  * @param {string} [processName='HttpRequest'] - Name of the process in the logs
  * @param {Object} [options={}] - Additional options for the request
