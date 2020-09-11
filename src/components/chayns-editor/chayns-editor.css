@@ -1,6 +1,0 @@
-.ChaynsEditor.chayns-editor--disabled {
-  border: none; }
-  .ChaynsEditor.chayns-editor--disabled [chayns-editor=image] {
-    pointer-events: none;
-    border: none;
-    cursor: default; }

@@ -1,6 +1,7 @@
 /* eslint-disable no-proto,no-underscore-dangle */
-import { fnsFormat, time } from './timeHelper';
 import types from './types';
+import fnsFormat from './timeHelper/fnsFormat';
+import time from '../constants/time';
 
 /**
  * @param {Object|Array.<*>|string|number|function|Date|Promise|boolean} element

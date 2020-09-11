@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './resizable-wait-cursor.scss';
 import { SmallWaitCursor } from 'chayns-components';
 import classNames from 'classnames';
-import useElementProps from '../../hooks/useElementProps';
+import useElementProps from '../../_internal/useElementProps';
 
 /**
  * ResizableWaitCursor
