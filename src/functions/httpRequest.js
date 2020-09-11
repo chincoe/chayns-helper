@@ -36,6 +36,9 @@ export class RequestError extends Error {
 /**
  * @callback requestErrorHandler
  * @param {Error|RequestError} error
+ * @param {?number} statusCode
+ * @param {function(*)} resolve
+ * @param {function(*)} reject
  */
 /**
  * @typedef {Object} waitCursorOptions
@@ -139,22 +142,28 @@ export function handleRequest(
                         hideWaitCursor();
                         // eslint-disable-next-line no-console
                         if (!(err instanceof RequestError)) console.error('[HandleRequest]', err);
+                        let errorResult;
                         try {
-                            handleErrors(err, err?.statusCode);
+                            errorResult = handleErrors(err, err?.statusCode, resolve, reject);
                         } catch (e) {
                             console.error('[HandleRequest] Error in error handler:', e);
                         }
-                        if (!noReject) reject(err);
-                        else resolve(null);
+                        if (!noReject) reject(errorResult || err);
+                        else resolve(errorResult || null);
                     })
                     .then(finallyHandler, finallyHandler);
             } catch (err) {
                 hideWaitCursor();
                 // eslint-disable-next-line no-console
                 if (!(err instanceof RequestError)) console.error('[HandleRequest]', err);
-                handleErrors(err, err?.statusCode);
-                if (!noReject) reject(err);
-                else resolve(null);
+                let errorResult;
+                try {
+                    errorResult = handleErrors(err, err?.statusCode, resolve, reject);
+                } catch (e) {
+                    console.error('[HandleRequest] Error in error handler:', e);
+                }
+                if (!noReject) reject(errorResult || err);
+                else resolve(errorResult || null);
             }
         }
     );
