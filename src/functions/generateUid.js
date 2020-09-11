@@ -1,10 +1,8 @@
 export default function generateUUID() {
     let d = Date.now();
-
     if (typeof window !== 'undefined' && window.performance && typeof window.performance.now === 'function') {
         d += performance.now();
     }
-
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
         // eslint-disable-next-line no-bitwise
         const r = (d + Math.random() * 16) % 16 | 0;

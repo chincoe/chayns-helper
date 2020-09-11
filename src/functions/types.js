@@ -44,7 +44,7 @@ export const typeStrings = {
 const safeFirst = (arr, callback) => {
     if (!isArray(arr)) return null;
     const relevantArray = (arr || []);
-    if (!types.isFunction(callback)) return relevantArray[0] || null;
+    if (!isFunction(callback)) return relevantArray[0] || null;
     return relevantArray.filter(callback)[0] || null;
 };
 

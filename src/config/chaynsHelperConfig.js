@@ -2,10 +2,8 @@
 import chaynsLogger from 'chayns-logger';
 import handleRequestErrors, { errorHandlerConfig } from '../functions/defaultErrorHandler';
 import { loggerConfig } from './chayns-logger';
-
-import { initLog } from '../functions/log';
-import { TEXTSTRING_CONFIG } from '../textstring/TextStringMemo';
 import { reduxConfig } from './react-redux';
+import TEXTSTRING_PREFIX from '../textstring/textstringPrefix';
 
 /**
  * @typedef logger
@@ -31,11 +29,10 @@ const initChaynsHelper = (config) => {
             console.error('[ChaynsHelper] Please pass useSelector to initChaynsHelper() to use this function');
         }
     } = config || {};
-    TEXTSTRING_CONFIG.PREFIX = textStringPrefix;
+    TEXTSTRING_PREFIX.value = textStringPrefix;
     errorHandlerConfig.getErrorHandler = () => requestErrorHandler;
     loggerConfig.getLogger = () => logger;
     reduxConfig.getSelector = () => useSelector;
-    initLog(process.env.NODE_ENV !== 'development');
 };
 
 export default initChaynsHelper;

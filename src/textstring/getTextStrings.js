@@ -1,7 +1,7 @@
 import { TextString } from 'chayns-components';
 import { isNullOrWhiteSpace } from 'chayns-components/lib/utils/is';
 import types from '../functions/types';
-import { TEXTSTRING_CONFIG } from './TextStringMemo';
+import TEXTSTRING_PREFIX from './textstringPrefix';
 
 /**
  * Get a list of textStrings
@@ -18,7 +18,7 @@ const getTextStrings = (textStrings, language = 'de') => {
         const current = strings[i];
         const fallback = isSimple ? current : textStrings[strings[i]];
         const text = TextString.getTextString(
-            `${TEXTSTRING_CONFIG.PREFIX}${current}`,
+            `${TEXTSTRING_PREFIX.value}${current}`,
             language,
             fallback
         );

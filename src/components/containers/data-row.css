@@ -1,19 +1,3 @@
-.chayns__utils__container--centered {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 12px; }
-
-@keyframes fade-in {
-  0% {
-    transform: scale(0); }
-  99% {
-    transform: scale(0); }
-  100% {
-    transform: scale(1); } }
-  .chayns__utils__container--centered-buttoncontainer > *:not(:last-child) {
-    margin-right: 15px; }
-
 .chayns__utils__container--datarow {
   display: flex;
   justify-content: space-between;
