@@ -131,7 +131,17 @@ const useFullscreenTapp = (initialValue, options) => {
                 forceHeight: false,
             });
         }
-        return () => { clearInterval(interval); };
+        return () => {
+            clearInterval(interval);
+            chayns.removeWindowMetricsListener(getWindowData);
+            tapp.style.padding = null;
+            tapp.style.width = null;
+            tapp.style.height = null;
+            chayns.setHeight({
+                height: window.innerHeight,
+                forceHeight: false,
+            });
+        };
     }, [isFullscreenActive]);
 
     return [windowData, isFullscreenActive, setIsFullscreenActive];
