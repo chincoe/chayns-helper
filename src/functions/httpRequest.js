@@ -148,8 +148,11 @@ export function handleRequest(
                         } catch (e) {
                             console.error('[HandleRequest] Error in error handler:', e);
                         }
-                        if (!noReject) reject(errorResult || err);
-                        else resolve(errorResult || null);
+                        if (!noReject) {
+                            reject(errorResult || err);
+                        } else {
+                            resolve(errorResult || null);
+                        }
                     })
                     .then(finallyHandler, finallyHandler);
             } catch (err) {
@@ -162,8 +165,11 @@ export function handleRequest(
                 } catch (e) {
                     console.error('[HandleRequest] Error in error handler:', e);
                 }
-                if (!noReject) reject(errorResult || err);
-                else resolve(errorResult || null);
+                if (!noReject) {
+                    reject(errorResult || err);
+                } else {
+                    resolve(errorResult || null);
+                }
             }
         }
     );
@@ -568,6 +574,9 @@ export function httpRequest(
                             try {
                                 req.setRequestHeader(headerKeys[i], requestHeaders[headerKeys[i]]);
                             } catch (ex) {
+                                // eslint-disable-next-line no-console
+                                console.warn(`[HttpRequest] Could not set header ${headerKeys[i]} on
+                                 ${processName} to ${requestHeaders[headerKeys[i]]}`);
                                 logger.warning({
                                     message: `[HttpRequest] Could not set header ${headerKeys[i]} on ${processName}`,
                                     data: {
