@@ -33,21 +33,12 @@ export const createDialogResult = (type, value = undefined) => ({ buttonType: ty
  * @callback fullResolveFn
  * @param {Object} result
  * @param {number} result.buttonType
- * @param {*} result.value
- * @returns {DialogPromise<dialogResult>}
- */
-
-/**
- * @callback resolveFn
- * @param {Object} result
- * @param {number} result.buttonType
- * @param {*} result.value
- * @returns {DialogPromise<dialogResult>}
+ * @param {?*} result.value
  */
 
 /**
  * @callback dialogThen
- * @param {resolveFn} resolveFn
+ * @param {function(*): *|void} resolveFn
  * @returns {DialogPromise<dialogResult>}
  */
 
@@ -65,26 +56,31 @@ export const createDialogResult = (type, value = undefined) => ({ buttonType: ty
  * @property {fullDialogThen} then
  * @property {function(Error)} catch
  * @property {function()} abort
+ * @extends Promise
  */
 export class DialogPromise extends Promise {
     isPending = true;
 
     constructor(resolveFn) {
-        super(resolveFn);
-        this.positive.bind(this);
-        this.negative.bind(this);
-        this.cancelled.bind(this);
-        this.then(() => {
-            this.isPending = false;
+        super((resolve, reject) => {
+            new Promise((res, rej) => {
+                resolveFn(res, rej);
+            }).then((result) => {
+                this.isPending = false;
+                resolve(result);
+            }, (result) => {
+                this.isPending = false;
+                reject(result);
+            });
         });
     }
 
     /**
-     * @param {resolveFn} resolveFn
+     * @param {function(*): *|void} resolveFn
      * @returns {DialogPromise<dialogResult>}
      */
     positive(resolveFn) {
-        this.then((result) => {
+        super.then((result) => {
             if (result.buttonType === 1) {
                 resolveFn(result.value);
             }
@@ -93,11 +89,11 @@ export class DialogPromise extends Promise {
     }
 
     /**
-     * @param {resolveFn} resolveFn
+     * @param {function(*): *|void} resolveFn
      * @returns {DialogPromise<dialogResult>}
      */
     negative(resolveFn) {
-        this.then((result) => {
+        super.then((result) => {
             if (result.buttonType === 0) {
                 resolveFn(result.value);
             }
@@ -106,11 +102,11 @@ export class DialogPromise extends Promise {
     }
 
     /**
-     * @param {resolveFn} resolveFn
+     * @param {function(*): *|void} resolveFn
      * @returns {DialogPromise<dialogResult>}
      */
     cancelled(resolveFn) {
-        this.then((result) => {
+        super.then((result) => {
             if (result.buttonType === -1) {
                 resolveFn(result.value);
             }
@@ -122,7 +118,6 @@ export class DialogPromise extends Promise {
      * close the dialog
      * @returns {boolean} success
      */
-    // eslint-disable-next-line class-methods-use-this
     abort() {
         if (this.isPending) {
             chayns.dialog.close();
@@ -139,14 +134,8 @@ export class DialogPromise extends Promise {
  * @property {dialogThen} data
  */
 export class IframeDialogPromise extends DialogPromise {
-    constructor(resolveFn) {
-        super(resolveFn);
-        this.result.bind(this);
-        this.data.bind(this);
-    }
-
     /**
-     * @param {resolveFn} resolveFn
+     * @param {function(*): *|void} resolveFn
      * @returns {DialogPromise<dialogResult>}
      */
     result(resolveFn) {
@@ -158,7 +147,7 @@ export class IframeDialogPromise extends DialogPromise {
     }
 
     /**
-     * @param {resolveFn} resolveFn
+     * @param {function(*): *|void} resolveFn
      * @param {boolean} getApiEvents - get sent data that has isApiEvent set
      * @returns {DialogPromise<dialogResult>}
      */
@@ -456,7 +445,7 @@ export const dateSelectType = {
  *     minInterval: *, interval: boolean, maxInterval: *}|{multiselect: boolean, interval: boolean}|{multiselect:
  *     boolean, minInterval: undefined, interval: boolean, maxInterval: undefined}}
  */
-export const resolveDateSelectType = (type) => [
+export const resolveDateSelectType = (type) => ([
     {
         multiselect: false,
         interval: false,
@@ -473,7 +462,7 @@ export const resolveDateSelectType = (type) => [
         multiselect: false,
         interval: true
     }
-][type || 0];
+][type || 0]);
 
 /**
  * @typedef weekDayIntervalItem
