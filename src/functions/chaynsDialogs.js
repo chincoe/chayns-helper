@@ -403,7 +403,7 @@ export const validateDate = (param, allowMissingValue = true) => {
     return undefined;
 };
 
-export const validateDateArray = (paramArray) => paramArray.map((p) => validateDate(p, false));
+export const validateDateArray = (paramArray) => paramArray?.map((p) => validateDate(p, false) ?? undefined);
 
 /**
  * @typedef intervalObject
@@ -451,7 +451,7 @@ export const dateSelectType = {
 
 /**
  * Get the values for a dateSelectType
- * @param {dateSelectType} type
+ * @param {dateSelectType|number} type
  * @return {{multiselect: boolean, minInterval: *, interval: boolean, maxInterval: *}|{multiselect: boolean,
  *     minInterval: *, interval: boolean, maxInterval: *}|{multiselect: boolean, interval: boolean}|{multiselect:
  *     boolean, minInterval: undefined, interval: boolean, maxInterval: undefined}}
@@ -487,8 +487,8 @@ export const resolveDateSelectType = (type) => [
  * @param {Object} [options={}]
  * @param {string} [options.message='']
  * @param {string} [options.title='']
- * @param {dateType} options.dateType - one of chaynsDialog.dateType
- * @param {dateSelectType} options.selectType - one of chaynsDialog.dateSelectType
+ * @param {dateType} [options.dateType] - one of chaynsDialog.dateType
+ * @param {dateSelectType|number} [options.selectType] - one of chaynsDialog.dateSelectType
  * @param {Date|number|string|function} [options.minDate]
  * @param {Date|number|string|function} [options.maxDate]
  * @param {number} [options.minuteInterval]

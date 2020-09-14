@@ -148,8 +148,11 @@ export function handleRequest(
                         } catch (e) {
                             console.error('[HandleRequest] Error in error handler:', e);
                         }
-                        if (!noReject) reject(errorResult || err);
-                        else resolve(errorResult || null);
+                        if (!noReject) {
+                            reject(errorResult || err);
+                        } else {
+                            resolve(errorResult || null);
+                        }
                     })
                     .then(finallyHandler, finallyHandler);
             } catch (err) {
@@ -162,8 +165,11 @@ export function handleRequest(
                 } catch (e) {
                     console.error('[HandleRequest] Error in error handler:', e);
                 }
-                if (!noReject) reject(errorResult || err);
-                else resolve(errorResult || null);
+                if (!noReject) {
+                    reject(errorResult || err);
+                } else {
+                    resolve(errorResult || null);
+                }
             }
         }
     );
@@ -185,7 +191,7 @@ const jsonResolve = async (response, processName, resolve, useFetchApi) => {
             message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
         }, err);
         // eslint-disable-next-line no-console
-        console.error(`[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`, err);
+        console.warn(`[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`, err);
         resolve(null);
     }
 };
@@ -206,7 +212,7 @@ const blobResolve = async (response, processName, resolve, useFetchApi) => {
             message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`
         }, err);
         // eslint-disable-next-line no-console
-        console.error(
+        console.warn(
             `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
             err
         );
@@ -230,7 +236,7 @@ const textResolve = async (response, processName, resolve, useFetchApi) => {
             message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`
         }, err);
         // eslint-disable-next-line no-console
-        console.error(
+        console.warn(
             `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
             err
         );
@@ -254,7 +260,7 @@ const objectResolve = async (response, processName, resolve, useFetchApi) => {
             message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`
         }, err);
         // eslint-disable-next-line no-console
-        console.error(`[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`, err);
+        console.warn(`[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`, err);
         resolve({ status, data: null });
     }
 };
@@ -568,6 +574,9 @@ export function httpRequest(
                             try {
                                 req.setRequestHeader(headerKeys[i], requestHeaders[headerKeys[i]]);
                             } catch (ex) {
+                                // eslint-disable-next-line no-console
+                                console.warn(`[HttpRequest] Could not set header ${headerKeys[i]} on
+                                 ${processName} to ${requestHeaders[headerKeys[i]]}`);
                                 logger.warning({
                                     message: `[HttpRequest] Could not set header ${headerKeys[i]} on ${processName}`,
                                     data: {
