@@ -280,7 +280,7 @@ const __PRODUCTION__ = true;
  *      setHeight(setHeightConfig): Promise<undefined>,
  *      allowRefreshScroll(): Promise<undefined>,
  *      hideBackButton(),
- *      showWaitCursor(string, number): Promise<undefined>,
+ *      showWaitCursor(string=, number=): Promise<undefined>,
  *      updateCloudImage(),
  *      addAdminSwitchListener(function): boolean,
  *      openImage([string], number): Promise<undefined>,
@@ -1047,8 +1047,8 @@ const chayns = {
     showTitleImage() {},
     /**
      * @returns {Promise}
-     * @param {string} text
-     * @param {number} textTimeout
+     * @param {string} [text=]
+     * @param {number} [textTimeout=]
      */
     showWaitCursor(text, textTimeout) {},
     updateChaynsId(param) {},
