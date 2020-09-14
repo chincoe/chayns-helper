@@ -185,7 +185,7 @@ const jsonResolve = async (response, processName, resolve, useFetchApi) => {
             message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
         }, err);
         // eslint-disable-next-line no-console
-        console.error(`[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`, err);
+        console.warn(`[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`, err);
         resolve(null);
     }
 };
@@ -206,7 +206,7 @@ const blobResolve = async (response, processName, resolve, useFetchApi) => {
             message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`
         }, err);
         // eslint-disable-next-line no-console
-        console.error(
+        console.warn(
             `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
             err
         );
@@ -230,7 +230,7 @@ const textResolve = async (response, processName, resolve, useFetchApi) => {
             message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`
         }, err);
         // eslint-disable-next-line no-console
-        console.error(
+        console.warn(
             `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
             err
         );
@@ -254,7 +254,7 @@ const objectResolve = async (response, processName, resolve, useFetchApi) => {
             message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`
         }, err);
         // eslint-disable-next-line no-console
-        console.error(`[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`, err);
+        console.warn(`[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`, err);
         resolve({ status, data: null });
     }
 };
