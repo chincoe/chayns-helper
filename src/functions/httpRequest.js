@@ -4,6 +4,7 @@ import defaultErrorHandler from './defaultErrorHandler';
 import generateUUID from './generateUid';
 import types from './types';
 import showWaitCursor from './waitCursor';
+import stringToRegex from './stringToRegex';
 
 /**
  * @type {{Delete: string, Post: string, Get: string, Patch: string, Put: string}}
@@ -642,7 +643,7 @@ export function httpRequest(
             const log = (() => {
                 const levelKey = Object.keys(logConfig)
                     .find((key) => (/^[\d]$/.test(key) && parseInt(key, 10) === status)
-                        || new RegExp(key).test(status));
+                        || stringToRegex(key).test(status));
                 if (levelKey && logConfig[levelKey]) {
                     switch (logConfig[levelKey]) {
                         case LogLevel.info:
@@ -811,7 +812,7 @@ export function httpRequest(
             if (!types.isNullOrEmpty(statusHandlers)) {
                 const keys = Object.keys(statusHandlers);
                 for (let i = 0; i < types.length(keys); i += 1) {
-                    const regExp = new RegExp(keys[i]);
+                    const regExp = stringToRegex(keys[i]);
                     if (regExp.test(status?.toString()) && types.isFunction(statusHandlers[keys[i]])) {
                         // eslint-disable-next-line no-await-in-loop
                         resolve(await statusHandlers[keys[i]](response));
