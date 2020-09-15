@@ -49,13 +49,7 @@ export const createDialogResult = (type, value = undefined) => ({ buttonType: ty
  */
 
 /**
- * @class
- * @property {dialogThen} positive
- * @property {dialogThen} negative
- * @property {dialogThen} cancelled
- * @property {fullDialogThen} then
- * @property {function(Error)} catch
- * @property {function()} abort
+ * Custom extension to Promise for dialogs
  * @extends Promise
  */
 export class DialogPromise extends Promise {
@@ -128,10 +122,8 @@ export class DialogPromise extends Promise {
 }
 
 /**
- * @class
+ * Custom extension to DialogPromise for the iFrame dialog
  * @extends DialogPromise
- * @property {dialogThen} result
- * @property {dialogThen} data
  */
 export class IframeDialogPromise extends DialogPromise {
     /**
