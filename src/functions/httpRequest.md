@@ -18,7 +18,7 @@ A fetch helper function, meant to be called in a api js file (e.g. `getBoard.js`
 |options.stringifyBody | Call JSON.stringify() on config.body before passing it to fetch() | boolean | `true` |
 |options.additionalLogData | This data will be logged with the request logs. Doesn't affect functionality at all | Object | `{}`|
 |options.autoRefreshToken | Automatically repeat a request with config.useChaynsAuth if it fails due to expired access token after refreshing said access token | boolean | `true` |
-|options.statusHandlers| Handle responses for specific status codes. Format: <br> 1.`{ [status/regex] : (response) => { my code }, ... }`<br> 2. `{ [status/regex] : responseType, ... }` | Object<status/regex, responseType/responseHandler> | `{}` |
+|options.statusHandlers| Handle responses for specific status codes using the codes or regex. Format: <br> 1.`{ [status/regex] : (response) => { my code }, ... }`<br> 2. `{ [status/regex] : responseType, ... }` | Object<status/regex, responseType/responseHandler> | `{}` |
 |options.onProgress| Experimental feature: Callback that will allow you to monitor download progress | function | `null` |
 |options.addHashToUrl | Add a random hash to the request url | boolean | `false`|
 | **@returns** | Promise of: Response specified via response type or throws an error | Promise<Json/String/Object/Blob/Response/null> | |
@@ -36,16 +36,18 @@ This behavior makes it necessary to wrap a request into `try/catch` or define a 
 
 
 #### Examples
-* Set logLevel for 3xx response status codes to warning and for 500 to critical
+* Set logLevel for 3xx response status codes to warning, 4xx to error and for 500 to critical
 ```javascript
 const response = request.fetch(
     'https://www.example.com', 
-    { method: HttpMethod.Post }, 
+    { method: request.method.Post }, 
     'getExample', 
     {
         logConfig: {
-            "3[0-9]{2}": LogLevel.warning,
-            "500": LogLevel.critical
+            "3[0-9]{2}": request.LogLevel.warning,
+            // computed property names using regex are viable as well
+            [/4[\d]/]: request.LogLevel.error,
+            "500": request.LogLevel.critical
         }
     }
 );
@@ -54,12 +56,12 @@ const response = request.fetch(
 ```javascript
 const response = request.fetch(
     'https://www.example.com', 
-    { method: HttpMethod.Post }, 
+    { method: request.method.Post }, 
     'getExample', 
     {
         statusHandlers: {
             "(204)|3[0-9]{2}": (response) => null,
-            "400": ResponseType.Json
+            "400": request.responseType.Json
         }   
     }
 );
@@ -86,7 +88,7 @@ request.defaults('https://example.server.com/MyApp/v1.0', // notice how the base
     },
     {
         // always get Object with json body and status unless otherwise specified
-        responseType: ResponseType.Object,
+        responseType: request.responseType.Object,
         // log 2xx as info, 3xx as warning, 401 as warning and anything else as error
         logConfig: {
             "2[\\d]{2}": 'info',
@@ -96,7 +98,7 @@ request.defaults('https://example.server.com/MyApp/v1.0', // notice how the base
         },
         // don't try to get json body on 204
         statusHandlers: {
-            204: ResponseType.Response
+            204: request.responseType.Response
         }
     }
 );
@@ -137,7 +139,7 @@ const getExample = (data) => {
     return request.fetch(
         'https://www.example.com', 
         { 
-            method: HttpMethod.Post,
+            method: request.method.Post,
             body: data
         }, 
         'getExample'
@@ -148,7 +150,7 @@ const getExample = async (data) => {
     const result = await request.fetch(
         'https://www.example.com', 
         {
-            method: HttpMethod.Post,
+            method: request.method.Post,
             body: data
         }, 
         'getExample'
@@ -168,7 +170,7 @@ const result = await request.handle(
 );
 ```
 
-### request.ResponseType - enum
+### request.responseType - enum
 | Property | Value | Response |
 |----------|-------| ------|
 |Json| `'json'`| response.json()|
@@ -178,7 +180,7 @@ const result = await request.handle(
 |Text | `'text'` | body string |
 |None | `'none'` | `undefined`|
 
-### request.LogLevel - enum
+### request.logLevel - enum
 | Property | Value |
 |----------|-------|
 | info | `'info'`|
@@ -187,7 +189,7 @@ const result = await request.handle(
 |critical| `'critical'`|
 |none |`'none'`|
 
-### request.HttpMethod - enum
+### request.method - enum
 ```javascript
 const HttpMethod = {
     Get: 'GET',
@@ -198,7 +200,7 @@ const HttpMethod = {
 };
 ```
 
-### request.RequestError extends Error
+### request.error extends Error
 `constructor(message, statusCode)`
 
 | Manual Property | value |
