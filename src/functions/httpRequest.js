@@ -654,7 +654,8 @@ export function httpRequest(
                         case LogLevel.critical:
                             return logger.critical;
                         case LogLevel.none:
-                            return console.error;
+                            // eslint-disable-next-line no-console
+                            return console.warn;
                         default:
                             console.error(`[HttpRequest] LogLevel ${logConfig[levelKey]} for ${levelKey} is not valid.
                          Please use a valid log level.`);
@@ -673,6 +674,19 @@ export function httpRequest(
                                  ? response.headers.get('X-Request-Id') : undefined
                                : response.getAllResponseHeaders && response.getResponseHeader('X-Request-Id')
                                  ? response.getResponseHeader('X-Request-Id') : undefined;
+
+            let responseBody = null;
+            try {
+                const resClone = response.clone();
+                try {
+                    responseBody = await resClone.json();
+                } catch (e) {
+                    responseBody = await resClone.text();
+                }
+            } catch (e) {
+                // ignored
+            }
+
             const logData = {
                 data: {
                     additionalLogData,
@@ -684,7 +698,8 @@ export function httpRequest(
                         Authorization: undefined
                     },
                     status,
-                    sessionUid
+                    sessionUid,
+                    responseBody
                 },
                 section: 'httpRequest.js',
                 sessionUid
