@@ -4,7 +4,6 @@ import {
 import hideCwFooter from '../functions/chaynsCalls/hideCwFooter';
 import setViewMode from '../functions/chaynsCalls/setViewMode';
 import shallowEqual from '../functions/shallowEqual';
-import types from '../functions/types';
 import getHookState from '../functions/getHookState';
 
 /**
@@ -114,7 +113,7 @@ const useFullscreenTapp = (initialValue, options) => {
             tapp.style.padding = '0';
             tapp.style.width = '100vw';
             tapp.style.height = '100vh';
-            tapp.style.maxWidth = types.isNumber(maxWidth) ? `${maxWidth}px` : maxWidth;
+            tapp.style.maxWidth = chayns.utils.isNumber(maxWidth) ? `${maxWidth}px` : maxWidth;
             interval = setInterval(() => {
                 getWindowData(0, false);
             }, 2000);

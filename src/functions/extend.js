@@ -88,17 +88,16 @@ const extend = (element, mutate = false) => {
             _revert() {
                 this.__proto__ = Object.prototype;
             },
-            ...Object.prototype
+            __proto__: Object.prototype
         };
         if (mutate) {
             // eslint-disable-next-line no-param-reassign
             element.__proto__ = proto;
             return element;
         }
-        return {
-            ...element,
-            __proto__: proto
-        };
+        const resultElement = { ...element };
+        resultElement.__proto__ = proto;
+        return resultElement;
     }
     if (types.isArray(element)) {
         const proto = {
@@ -113,7 +112,7 @@ const extend = (element, mutate = false) => {
              * @returns {*}
              */
             firstOrDefault(callback = () => true) {
-                types.safeFirst(this, callback);
+                return types.safeFirst(this, callback);
             },
             /**
              * @param {function(*)} selector
@@ -135,7 +134,7 @@ const extend = (element, mutate = false) => {
             _revert() {
                 this.__proto__ = Array.prototype;
             },
-            ...Array.prototype
+            __proto__: Array.prototype
         };
         if (mutate) {
             // eslint-disable-next-line no-param-reassign
@@ -178,7 +177,7 @@ const extend = (element, mutate = false) => {
             _revert() {
                 this.__proto__ = String.prototype;
             },
-            ...String.prototype
+            __proto__: String.prototype
         };
         // eslint-disable-next-line no-new-wrappers
         const result = new String(element);
@@ -200,7 +199,7 @@ const extend = (element, mutate = false) => {
             _revert() {
                 this.__proto__ = Number.prototype;
             },
-            ...Number.prototype
+            __proto__: Number.prototype
         };
         // eslint-disable-next-line no-new-wrappers
         const result = new Number(element);
@@ -303,7 +302,7 @@ const extend = (element, mutate = false) => {
             format(formatString, useToday = false) {
                 return fnsFormat(this, formatString, useToday);
             },
-            ...Date.prototype
+            __proto__: Date.prototype
         };
         if (mutate) {
             // eslint-disable-next-line no-param-reassign
