@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import './resizable-wait-cursor.scss';
 import { SmallWaitCursor } from 'chayns-components';
 import classNames from 'classnames';
-import useElementProps from '../../_internal/useElementProps';
 
 /**
  * ResizableWaitCursor
@@ -15,9 +14,14 @@ import useElementProps from '../../_internal/useElementProps';
  * @return {*}
  * @constructor
  */
-const ResizableWaitCursor = (props) => {
-    const { size = 32, className = '', style = {} } = props;
-    const elementProps = useElementProps(props, { size, className, style });
+const ResizableWaitCursor = (
+    {
+        size = 32,
+        className = '',
+        style = {},
+        ...elementProps
+    }
+) => {
     useEffect(() => {
         if (size % 3 !== 0) {
             // eslint-disable-next-line no-console

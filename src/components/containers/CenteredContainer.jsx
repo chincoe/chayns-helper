@@ -2,31 +2,33 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './centered-container.scss';
-import useElementProps from '../../_internal/useElementProps';
 
 /**
  * CenteredContainer
  * Contains and centers one or more children
  * @param {Object} props
- * @param {*|*[]} props.children
- * @param {Object} [props.style={}]
- * @param {string} [props.className='']
- * @param {string} [props.elementType='div'] - Html element type of the container
- * @param {string} [props.gap=false] - Leave a gap between each child element
+ * @param {*|*[]} children
+ * @param {Object} [style={}]
+ * @param {string} [className='']
+ * @param {string} [elementType='div'] - Html element type of the container
+ * @param {boolean} [gap=false] - Leave a gap between each child element
  * @return {*}
  * @constructor
  */
-const CenteredContainer = (props) => {
-    const {
-        className, style, children, gap = false, elementType = 'div'
-    } = props;
-    const elementProps = useElementProps(props, {
-        className, style, children, elementType
-    });
+const CenteredContainer = (
+    {
+        className,
+        style,
+        children,
+        gap = false,
+        elementType = 'div',
+        ...props
+    }
+) => {
     const Component = elementType;
     return (
         <Component
-            {...elementProps}
+            {...props}
             className={classNames(
                 'chayns__utils__container',
                 'chayns__utils__container--centered',

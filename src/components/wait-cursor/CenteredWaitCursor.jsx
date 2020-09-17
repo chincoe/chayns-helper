@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { SmallWaitCursor } from 'chayns-components';
 import './centered-wait-cursor.scss';
-import useElementProps from '../../_internal/useElementProps';
 
 /**
  * CenteredWaitCursor
@@ -18,13 +17,16 @@ import useElementProps from '../../_internal/useElementProps';
  * @return {*}
  * @constructor
  */
-const CenteredWaitCursor = (props) => {
-    const {
-        className, style, children, elementType = 'div', delay = 300
-    } = props;
-    const elementProps = useElementProps(props, {
-        className, style, children, delay, elementType
-    });
+const CenteredWaitCursor = (
+    {
+        className,
+        style,
+        children,
+        elementType = 'div',
+        delay = 300,
+        ...elementProps
+    }
+) => {
     const Component = elementType;
     return (
         <Component

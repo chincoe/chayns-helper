@@ -1,45 +1,33 @@
 import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import useRefresh from '../../_internal/useRefresh';
-import CustomComponent from '../../_internal/CustomComponent';
 
 /**
  * Refresh
  * A component that rerenders its child in a certain interval
  * @param {Object} props
- * @param {number} [props.interval=10000] - Interval to rerender this component and its children in ms
- * @param {*|*[]} [props.children=null]
- * @param {string|*} [props.elementType='div']
+ * @param {number} [interval=10000] - Interval to rerender this component and its children in ms
+ * @param {*|*[]} [children=null]
+ * @param {string|*} [elementType='div']
  * @return {*}
  * @constructor
  */
-const Refresh = (props) => {
-    const { interval = 10000, children, elementType = 'div' } = props;
+const Refresh = (
+    {
+        interval = 10000,
+        children,
+        elementType = 'div',
+        ...props
+    }
+) => {
     const [refreshId] = useRefresh(interval);
+    const Component = elementType;
 
-    return children ? (
-        <CustomComponent
-            customProps={{
-                id: `refresh_${refreshId}`,
-                elementType,
-                interval: undefined
-            }}
-            elementProps={props}
-            elementType={elementType}
-        >
+    return (
+        <Component id={refreshId} {...props}>
             {children}
-        </CustomComponent>
-    ) : (
-               <CustomComponent
-                   customProps={{
-                       id: `refresh_${refreshId}`,
-                       elementType,
-                       interval: undefined
-                   }}
-                   elementProps={props}
-                   elementType={elementType}
-               />
-           );
+        </Component>
+    );
 };
 
 Refresh.propTypes = {

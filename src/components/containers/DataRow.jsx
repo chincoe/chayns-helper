@@ -2,41 +2,43 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './data-row.scss';
-import useElementProps from '../../_internal/useElementProps';
 import types from '../../functions/types';
 
 /**
  * DataRow
  * Contains several elements and positions the first as label on the left and everything else on the right
  * @param {Object} props
- * @param {*|*[]} props.children
- * @param {Object} [props.style={}]
- * @param {string} [props.className='']
- * @param {string} [props.elementType='div'] - Html element type of the container
+ * @param {*|*[]} children
+ * @param {Object} [style={}]
+ * @param {string} [className='']
+ * @param {string} [elementType='div'] - Html element type of the container
  * @return {*}
  * @constructor
  */
-const DataRow = (props) => {
-    const {
-        className, style, children, elementType = 'div'
-    } = props;
-    const elementProps = useElementProps(props, {
-        className, style, children, elementType
-    });
+const DataRow = (
+    {
+        className,
+        style,
+        children,
+        elementType = 'div',
+        ...props
+    }
+) => {
+    const Component = elementType;
     return (
-        <div
+        <Component
             className={classNames(
                 'chayns__utils__container',
                 'chayns__utils__container--datarow',
                 className
             )}
             style={style}
-            {...elementProps}
+            {...props}
         >
             {types.isArray(children) ? types.safeFirst(children) : children}
             {types.isArray(children)
             && <div className="chayns__utils__container--datarow--right">{children.slice(1)}</div>}
-        </div>
+        </Component>
     );
 };
 DataRow.propTypes = {

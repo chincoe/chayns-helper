@@ -2,36 +2,28 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { SelectButton } from 'chayns-components';
 import { httpRequest } from '../../functions/httpRequest';
-import useElementProps from '../../_internal/useElementProps';
 import ResizableWaitCursor from '../wait-cursor/ResizableWaitCursor';
 
 /**
  * UACGroupChooseButton
  * @param {Object} props
- * @param {number} [props.value=null] - id of the chosen UAC-group
+ * @param {number} [value=null] - id of the chosen UAC-group
  * @param {function(number)} props.onChange - receives new GroupId as parameter
- * @param {boolean} [props.multiselect=false]
- * @param {boolean} [props.disabled=false]
+ * @param {boolean} [multiselect=false]
+ * @param {boolean} [disabled=false]
  * @return {*}
  * @constructor
  */
-const UACGroupChooseButton = (props) => {
-    const [uacGroups, setUacGroups] = useState();
-    const {
-        value, onChange, multiSelect = false, disabled = false
-    } = props;
-    const elementProps = useElementProps(props, {
+const UACGroupChooseButton = (
+    {
         value,
         onChange,
-        multiSelect,
-        disabled,
-        list: null,
-        label: null,
-        onSelect: null,
-        listKey: null,
-        listValue: null,
-        quickfind: null
-    });
+        multiSelect = false,
+        disabled = false,
+        ...props
+    }
+) => {
+    const [uacGroups, setUacGroups] = useState();
     useEffect(() => {
         httpRequest(
             `https://sub50.tobit.com/backend/${chayns.env.site.locationId}/UserGroup`,
@@ -55,7 +47,7 @@ const UACGroupChooseButton = (props) => {
             listValue="name"
             quickFind
             disabled={disabled}
-            {...elementProps}
+            {...props}
         />
     ) : (<ResizableWaitCursor size={24}/>);
 };
