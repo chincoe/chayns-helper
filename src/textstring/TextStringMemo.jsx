@@ -6,7 +6,6 @@ import isTobitEmployee from 'chayns-components/lib/utils/tobitEmployee';
 import PropTypes from 'prop-types';
 import generateUUID from '../functions/generateUid';
 import types from '../functions/types';
-import useElementProps from '../_internal/useElementProps';
 import useTextStrings from './useTextStrings';
 import TEXTSTRING_PREFIX from './textstringPrefix';
 
@@ -34,8 +33,8 @@ import TEXTSTRING_PREFIX from './textstringPrefix';
  * @param {boolean} [useClickToEdit=true]
  * @return {*}
  */
-const TextStringMemo = memo((props) => {
-    const {
+const TextStringMemo = memo((
+    {
         stringName,
         fallback,
         replacements = {},
@@ -44,9 +43,10 @@ const TextStringMemo = memo((props) => {
         useDangerouslySetInnerHTML = false,
         language = 'de',
         onClick = () => null,
-        useClickToEdit = true
-    } = props;
-
+        useClickToEdit = true,
+        ...elementProps
+    }
+) => {
     const [text] = useTextStrings(fallback ? { [stringName]: fallback } : [stringName]);
 
     const content = useMemo(() => {
@@ -85,18 +85,6 @@ const TextStringMemo = memo((props) => {
         }
         return result;
     }, [text, replacements]);
-
-    const elementProps = useElementProps(props, {
-        stringName,
-        fallback,
-        replacements,
-        elementName,
-        maxReplacements,
-        useDangerouslySetInnerHTML,
-        useClickToEdit,
-        language,
-        onClick
-    });
 
     // copied from chayns-components textstring
     const changeStringResult = (data, lang) => {

@@ -3,7 +3,7 @@ const fullMatchRegex = /(^\^)|(\$$)/g;
 
 /**
  * Turn a string into a regex.
- * Will recognize a stringified regex (e.g. /..../g
+ * Will recognize a stringified regex (e.g. "/..../g")
  * @param {string} str
  * @param {boolean} [fullMatch=false]
  * @returns {RegExp}

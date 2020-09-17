@@ -4,7 +4,7 @@ import defaultErrorHandler from './defaultErrorHandler';
 import generateUUID from './generateUid';
 import types from './types';
 import showWaitCursor from './waitCursor';
-import stringToRegex from './stringToRegex';
+import stringToRegex from '../_internal/stringToRegex';
 
 /**
  * @type {{Delete: string, Post: string, Get: string, Patch: string, Put: string}}
