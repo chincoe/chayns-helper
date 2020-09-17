@@ -5,6 +5,7 @@ import autoExternal from 'rollup-plugin-auto-external';
 import postcss from 'rollup-plugin-postcss';
 import alias from '@rollup/plugin-alias';
 import external from 'rollup-plugin-peer-deps-external';
+import autoprefixer from 'autoprefixer';
 
 const pkg = require('./package.json');
 
@@ -40,7 +41,7 @@ export default {
         }),
         commonjs(),
         postcss({
-            plugins: []
+            plugins: [autoprefixer]
         })
     ],
 };
