@@ -352,6 +352,7 @@ export const defaultConfig = {
  *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
  *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
+ * @param {boolean} [options.showDialogs=true] - Show a dialog when you have no connection
  * @public
  */
 export const setRequestDefaults = (address, config, options) => {
@@ -414,6 +415,7 @@ export const setRequestDefaults = (address, config, options) => {
  *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
  *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
+ * @param {boolean} [options.showDialogs=true] - Show a dialog when you have no connection
  * @async
  * @public
  * @return {Promise<Response|objectResponse|Blob|Object>} - response or response body
@@ -469,7 +471,8 @@ export function httpRequest(
                  */
                 onProgress = null,
                 // adds a random number as url param to bypass the browser cache
-                addHashToUrl = false
+                addHashToUrl = false,
+                showDialogs = true
             } = {
                 responseType: ResponseType.Json,
                 logConfig: {},
@@ -631,7 +634,9 @@ export function httpRequest(
                 console.error(`[HttpRequest] Failed to fetch on ${processName}`, err);
                 // with the timeout aborted requests (e.g. by reloading) won't open this dialog
                 setTimeout(() => {
-                    chayns.dialog.alert('', 'Verbindung fehlgeschlagen. Versuche es später nochmal.');
+                    if (showDialogs) {
+                        chayns.dialog.alert('', 'Verbindung fehlgeschlagen. Versuche es später nochmal.');
+                    }
                 }, 300);
                 err.statusCode = -1;
                 tryReject(err, null, true);
