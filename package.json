@@ -1,6 +1,6 @@
 {
   "name": "chayns-helper",
-  "version": "1.1.26",
+  "version": "1.1.27",
   "description": "my personal helpers for chayns development",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -87,8 +87,7 @@
   "keywords": [
     "chayns",
     "react",
-    "hooks",
-    "redux"
+    "hooks"
   ],
   "author": "Christian Nagel",
   "license": "MIT",
