@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import deLocale from 'date-fns/locale/de';
-import { time } from '../../../lib/functions/timeHelper';
+import time from '../../constants/time';
 
 /**
  * datefns format function, extended by the option to use "heute"|"morgen"|"gestern"

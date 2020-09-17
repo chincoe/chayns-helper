@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './error-boundary.scss';
 import { Button } from 'chayns-components';
 import logger from 'chayns-logger';
-import CenteredContainer from '../../../lib/components/containers/CenteredContainer';
+import CenteredContainer from '../containers/CenteredContainer';
 
 /**
  * An ErrorBoundary.

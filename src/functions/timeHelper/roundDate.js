@@ -1,4 +1,4 @@
-import { time } from '../../../lib/functions/timeHelper';
+import time from '../../constants/time';
 
 /**
  * Round a date
