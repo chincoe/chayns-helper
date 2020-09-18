@@ -55,18 +55,10 @@ const correctWindowData = (data) => {
 /**
  * Hook to maintain a fullscreen tapp without scrolling, title image and footer
  * @param {boolean} initialValue - fullscreen active initially or not
- * @param {Object} options
- * @param {boolean} [options.forceExclusive=false]
- * @param {boolean} [options.fullBrowserWidth=false]
- * @param {number} [options.maxWidth=851]
+ * @param {boolean} [forceExclusive=false]
  * @return {[Object, boolean, function]} - [windowData, isFullscreenActive, setFullscreenActive]
  */
-const useFullscreenTapp = (initialValue, options) => {
-    const {
-        forceExclusive = false,
-        fullBrowserWidth = false,
-        maxWidth = 851,
-    } = options || {};
+const useFullscreenTapp = (initialValue, forceExclusive) => {
     const [isFullscreenActive, setIsFullscreenActive] = useState(initialValue ?? true);
     const [windowData, setWindowData] = useReducer(windowDataReducer, undefined);
     const [resizeInterval, setResizeInterval] = useState(0);
@@ -100,8 +92,8 @@ const useFullscreenTapp = (initialValue, options) => {
         Promise.all([
             chayns.hideTitleImage(),
             hideCwFooter(),
-            ...(forceExclusive || fullBrowserWidth ? [
-                setViewMode(isFullscreenActive ? true : defaultExclusive, fullBrowserWidth),
+            ...(forceExclusive ? [
+                setViewMode(isFullscreenActive ? true : defaultExclusive, false),
             ] : []),
         ]);
         let interval = 0;
@@ -113,7 +105,6 @@ const useFullscreenTapp = (initialValue, options) => {
             tapp.style.padding = '0';
             tapp.style.width = '100vw';
             tapp.style.height = '100vh';
-            tapp.style.maxWidth = chayns.utils.isNumber(maxWidth) ? `${maxWidth}px` : maxWidth;
             interval = setInterval(() => {
                 getWindowData(0, false);
             }, 2000);

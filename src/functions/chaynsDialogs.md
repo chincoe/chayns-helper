@@ -1,6 +1,6 @@
 ## chaynsDialogs
-The chayns js dialogs can be somewhat complicated to use.
-Unintuitive return values as well as unexpected behavior such as mutations and timestamps in seconds often force you to transform your input and output to fit the dialog.
+The chayns-js dialogs can be somewhat complicated to use.
+Unintuitive return values as well as unexpected behavior such as timestamps in seconds often force you to transform your input and output to fit the dialog.
 This helper aims to solve this problem by wrapping all chayns dialogs to allow a more consistent experience.
 
 ### Basic Improvements
