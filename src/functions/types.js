@@ -8,7 +8,7 @@ const isDate = (date) => (Object.prototype.toString.call(date) === '[object Date
 // eslint-disable-next-line no-restricted-globals
 const isNumber = (num) => (typeof (num) === 'number' && !isNaN(num));
 // eslint-disable-next-line no-restricted-globals
-const isCleanNumber = (num) => (typeof (num) === 'number' && num !== Infinity && !(isNaN(num)));
+const isFiniteNumber = (num) => (typeof (num) === 'number' && num !== Infinity && !(isNaN(num)));
 // eslint-disable-next-line no-restricted-globals
 const isInteger = (int) => (typeof (int) === 'number' && int !== Infinity && !(isNaN(int)) && int % 1 === 0);
 // eslint-disable-next-line no-prototype-builtins
@@ -264,7 +264,7 @@ const types = {
     isDate,
     isBoolean,
     isNumber,
-    isCleanNumber,
+    isFiniteNumber,
     isInteger,
     isPromise,
     types: typeStrings,

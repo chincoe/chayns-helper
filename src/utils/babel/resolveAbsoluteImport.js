@@ -14,7 +14,6 @@ module.exports = function resolveAbsoluteImport(importName) {
         hideCwFooter: 'functions/chaynsCalls/hideCwFooter',
         setViewMode: 'functions/chaynsCalls/setViewMode',
         chaynsCall: 'functions/chaynsCalls/chaynsCalls',
-        colors: 'functions/chaynsColors',
         chaynsDialog: 'functions/chaynsDialogs',
         copyToClipboard: 'functions/copy',
         defaultErrorHandler: 'functions/defaultErrorHandler',

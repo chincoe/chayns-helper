@@ -12,7 +12,6 @@ import RestrictedAccordion from './components/restricted-accordion/RestrictedAcc
 import chaynsCall from './functions/chaynsCalls/chaynsCalls';
 import setViewMode from './functions/chaynsCalls/setViewMode';
 import hideCwFooter from './functions/chaynsCalls/hideCwFooter';
-import colors from './functions/chaynsColors';
 import chaynsDialog from './functions/chaynsDialogs';
 import copyToClipboard from './functions/copy';
 import defaultErrorHandler from './functions/defaultErrorHandler';
@@ -57,7 +56,6 @@ export {
     hideCwFooter,
     setViewMode,
     chaynsCall,
-    colors,
     chaynsDialog,
     copyToClipboard,
     defaultErrorHandler,
