@@ -25,7 +25,6 @@ module.exports = function resolveAbsoluteImport(importName) {
         time: 'constants/time',
         roundDate: 'functions/timeHelper/roundDate',
         types: 'functions/types',
-        extend: 'functions/extend',
         showWaitCursor: 'functions/waitCursor',
         useTimeoutState: 'hooks/uniques/useTimeoutState',
         useUniqueEventListener: 'hooks/uniques/useUniqueEventListener',

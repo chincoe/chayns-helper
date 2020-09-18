@@ -19,7 +19,6 @@ import defaultErrorHandler from './functions/defaultErrorHandler';
 import generateUUID from './functions/generateUid';
 import request from './functions/httpRequest';
 import types from './functions/types';
-import extend from './functions/extend';
 import showWaitCursor from './functions/waitCursor';
 import useTimeoutState from './hooks/uniques/useTimeoutState';
 import useUniqueEventListener from './hooks/uniques/useUniqueEventListener';
@@ -68,7 +67,6 @@ export {
     fnsFormat,
     roundDate,
     types,
-    extend,
     showWaitCursor,
     useTimeoutState,
     useUniqueEventListener,
