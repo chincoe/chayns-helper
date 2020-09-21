@@ -12,14 +12,12 @@ import RestrictedAccordion from './components/restricted-accordion/RestrictedAcc
 import chaynsCall from './functions/chaynsCalls/chaynsCalls';
 import setViewMode from './functions/chaynsCalls/setViewMode';
 import hideCwFooter from './functions/chaynsCalls/hideCwFooter';
-import colors from './functions/chaynsColors';
 import chaynsDialog from './functions/chaynsDialogs';
 import copyToClipboard from './functions/copy';
 import defaultErrorHandler from './functions/defaultErrorHandler';
 import generateUUID from './functions/generateUid';
 import request from './functions/httpRequest';
 import types from './functions/types';
-import extend from './functions/extend';
 import showWaitCursor from './functions/waitCursor';
 import useTimeoutState from './hooks/uniques/useTimeoutState';
 import useUniqueEventListener from './hooks/uniques/useUniqueEventListener';
@@ -58,7 +56,6 @@ export {
     hideCwFooter,
     setViewMode,
     chaynsCall,
-    colors,
     chaynsDialog,
     copyToClipboard,
     defaultErrorHandler,
@@ -68,7 +65,6 @@ export {
     fnsFormat,
     roundDate,
     types,
-    extend,
     showWaitCursor,
     useTimeoutState,
     useUniqueEventListener,

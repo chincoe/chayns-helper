@@ -52,7 +52,6 @@ initChaynsHelper({
 | [chaynsDialogs](/src/functions/chaynsDialogs.js)| makes using chayns dialogs so much more comfortable | |
 | [copyToClipboard](/src/functions/copy.js)| copy a value to the user's clipboard | |
 | [defaultErrorHandler](/src/functions/defaultErrorHandler.js)| default request error handling with dialogs for error status codes | |
-| [extend](/src/functions/extend.js)| extend a value's prototype to add the functions of types.js and then some | |
 | [fnsFormat](/src/functions/timeHelper/fnsFormat.js)| date-fns format with option to use today/tomorrow/yesterday and append the year if it's not the current year | |
 | [generateAxis](/src/functions/recharts/generateAxis.js)| a function to generate a better recharts axis | |
 | [generateUUID](/src/functions/generateUid.js)| generate a GUID | |
