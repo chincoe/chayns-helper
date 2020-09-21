@@ -41,7 +41,8 @@ module.exports = function resolveAbsoluteImport(importName) {
         shallowEqual: 'functions/shallowEqual',
         useShallowSelector: 'hooks/useShallowSelector',
         generateAxis: 'functions/recharts/generateAxis',
-        useAxis: 'functions/recharts/useAxis'
+        useAxis: 'functions/recharts/useAxis',
+        Guid: 'functions/guid'
     };
 
     if (!values[importName]) {

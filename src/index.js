@@ -40,6 +40,7 @@ import statusAnimations from './constants/statusAnimations';
 import time from './constants/time';
 import fnsFormat from './functions/timeHelper/fnsFormat';
 import roundDate from './functions/timeHelper/roundDate';
+import Guid from './functions/guid';
 
 export {
     initChaynsHelper,
@@ -83,5 +84,6 @@ export {
     useShallowSelector,
     generateAxis,
     useAxis,
-    statusAnimations
+    statusAnimations,
+    Guid
 };
