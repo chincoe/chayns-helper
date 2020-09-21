@@ -975,7 +975,7 @@ export function httpRequest(
  *     getBodyOnStatus: (boolean|Array<number>|Object<string, ResponseType>)}=):
  *     Promise<Response|objectResponse|Blob|Object>), handle: (function(Promise<*>, requestErrorHandler=,
  *     {finallyHandler?: Function, waitCursor?: {text?: string, textTimeout?: number, timeout?: number}, cache?: {key:
- *     string, duration?: number, cacheResolver?: cacheResolverCallback}}=): Promise<unknown>), error: RequestError}}
+ *     string, duration?: number, cacheResolver?: cacheResolverCallback}}=): Promise<*>), error: RequestError}}
  */
 const request = {
     fetch: httpRequest,

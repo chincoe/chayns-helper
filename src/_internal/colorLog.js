@@ -6,7 +6,7 @@ const isFirefox = typeof InstallTrigger !== 'undefined';
  */
 // eslint-disable-next-line no-console
 export default function colorLog(elements) {
-    if (!isChromeBased || !isFirefox) return [Object.keys(elements).join(' ')];
+    if (!isChromeBased && !isFirefox) return [Object.keys(elements).join(' ')];
     const logs = [];
     const styles = [];
     const keys = Object.keys(elements);
