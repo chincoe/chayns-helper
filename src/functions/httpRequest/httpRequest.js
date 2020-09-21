@@ -1,38 +1,15 @@
 import logger from 'chayns-logger';
-import localStorage from '../other/localStorageHelper';
-import defaultErrorHandler from './defaultErrorHandler';
-import generateUUID from './generateUid';
-import types from './types';
-import showWaitCursor from './waitCursor';
-import stringToRegex from '../_internal/stringToRegex';
-
-/**
- * @type {{Delete: string, Post: string, Get: string, Patch: string, Put: string}}
- */
-export const HttpMethod = Object.freeze({
-    Get: 'GET',
-    Post: 'POST',
-    Put: 'PUT',
-    Patch: 'PATCH',
-    Delete: 'DELETE',
-});
-
-/**
- * Custom error for error statusCodes or other errors during a httpRequest
- * @public
- * @class
- */
-export class RequestError extends Error {
-    /**
-     * @param {string} message - Error message
-     * @param {number} statusCode - Response status code
-     */
-    constructor(message, statusCode) {
-        super(message);
-        this.name = `HttpRequestError${statusCode}`;
-        this.statusCode = statusCode;
-    }
-}
+import colorLog from '../../_internal/colorLog';
+import localStorage from '../../other/localStorageHelper';
+import defaultErrorHandler from '../defaultErrorHandler';
+import generateUUID from '../generateUid';
+import types from '../types';
+import showWaitCursor from '../waitCursor';
+import stringToRegex from '../../_internal/stringToRegex';
+import HttpMethod from './HttpMethod';
+import RequestError from './RequestError';
+import ResponseType from './ResponseType';
+import LogLevel from './LogLevel';
 
 /**
  * @callback requestErrorHandler
@@ -142,12 +119,19 @@ export function handleRequest(
                     .catch((err) => {
                         hideWaitCursor();
                         // eslint-disable-next-line no-console
-                        if (!(err instanceof RequestError)) console.error('[HandleRequest]', err);
+                        if (!(err instanceof RequestError)) {
+                            console.error(...colorLog({
+                                '[HandleRequest]': 'color: #aaaaaa'
+                            }), err);
+                        }
                         let errorResult;
                         try {
                             errorResult = handleErrors(err, err?.statusCode, resolve, reject);
                         } catch (e) {
-                            console.error('[HandleRequest] Error in error handler:', e);
+                            console.error(...colorLog({
+                                '[HandleRequest]': 'color: #aaaaaa',
+                                'Error in error handler:': ''
+                            }), e);
                         }
                         if (!noReject) {
                             reject(errorResult || err);
@@ -159,12 +143,19 @@ export function handleRequest(
             } catch (err) {
                 hideWaitCursor();
                 // eslint-disable-next-line no-console
-                if (!(err instanceof RequestError)) console.error('[HandleRequest]', err);
+                if (!(err instanceof RequestError)) {
+                    console.error(...colorLog({
+                        '[HandleRequest]': 'color: #aaaaaa'
+                    }), err);
+                }
                 let errorResult;
                 try {
                     errorResult = handleErrors(err, err?.statusCode, resolve, reject);
                 } catch (e) {
-                    console.error('[HandleRequest] Error in error handler:', e);
+                    console.error(...colorLog({
+                        '[HandleRequest]': 'color: #aaaaaa',
+                        'Error in error handler:': ''
+                    }), e);
                 }
                 if (!noReject) {
                     reject(errorResult || err);
@@ -175,43 +166,6 @@ export function handleRequest(
         }
     );
 }
-
-/**
- * httpRequest response type. Default: json
- * @type {Object}
- * @property {string} Response - Get the Response Object
- * @property {string} Blob - Get response.blob()
- * @property {string} Json - Get response.json()
- * @property {string} Object - Get status and json as Object {status: number, data: Object}
- * @property {string} Text - Get response.text()
- * @property {string} None - Get null
- */
-export const ResponseType = Object.freeze({
-    Json: 'json',
-    Blob: 'blob',
-    Response: 'response',
-    Object: 'object',
-    Text: 'text',
-    None: 'none'
-});
-
-/**
- * @typedef objectResponse
- * @property {number} status,
- * @property {Object} data
- */
-
-/**
- * Log Level
- * @type {{critical: string, warning: string, none: string, error: string, info: string}}
- */
-export const LogLevel = Object.freeze({
-    info: 'info',
-    warning: 'warning',
-    error: 'error',
-    critical: 'critical',
-    none: 'none'
-});
 
 /**
  * @param response
@@ -233,13 +187,11 @@ const jsonResolve = async (response, processName, resolve, useFetchApi, internal
             }
         }, err);
         // eslint-disable-next-line no-console
-        console.warn(
+        console.warn(...colorLog({
+            '[HttpRequest]': 'color: #aaaaaa',
             // eslint-disable-next-line max-len
-            `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`,
-            { [status]: ResponseType.None },
-            '\n',
-            err
-        );
+            [`Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`]: ''
+        }), { [status]: ResponseType.None }, '\n', err);
         resolve(null);
     }
 };
@@ -264,13 +216,11 @@ const blobResolve = async (response, processName, resolve, useFetchApi, internal
             }
         }, err);
         // eslint-disable-next-line no-console
-        console.warn(
+        console.warn(...colorLog({
+            '[HttpRequest]': 'color: #aaaaaa',
             // eslint-disable-next-line max-len
-            `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`,
-            { [status]: ResponseType.None },
-            '\n',
-            err
-        );
+            [`Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`]: ''
+        }), { [status]: ResponseType.None }, '\n', err);
         resolve(null);
     }
 };
@@ -293,13 +243,11 @@ const textResolve = async (response, processName, resolve, useFetchApi, internal
             data: { internalRequestGuid }
         }, err);
         // eslint-disable-next-line no-console
-        console.warn(
+        console.warn(...colorLog({
+            '[HttpRequest]': 'color: #aaaaaa',
             // eslint-disable-next-line max-len
-            `[HttpRequest] Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`,
-            { [status]: ResponseType.None },
-            '\n',
-            err
-        );
+            [`Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`]: ''
+        }), { [status]: ResponseType.None }, '\n', err);
         resolve(null);
     }
 };
@@ -322,13 +270,11 @@ const objectResolve = async (response, processName, resolve, useFetchApi, intern
             data: { internalRequestGuid }
         }, err);
         // eslint-disable-next-line no-console
-        console.warn(
+        console.warn(...colorLog({
+            '[HttpRequest]': 'color: #aaaaaa',
             // eslint-disable-next-line max-len
-            `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`,
-            { [status]: ResponseType.None },
-            '\n',
-            err
-        );
+            [`Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`]: ''
+        }), { [status]: ResponseType.None }, '\n', err);
         resolve({ status, data: null });
     }
 };
@@ -522,7 +468,11 @@ export function httpRequest(
             if (!processName) processName = 'HttpRequest';
             if (responseType != null && !Object.values(ResponseType).includes(responseType)) {
                 console.error(
-                    `[HttpRequest] Response type ${responseType} is not valid. Use json|blob|response|object instead.`
+                    ...colorLog({
+                        '[HttpRequest]': 'color: #aaaaaa',
+                        // eslint-disable-next-line max-len
+                        [`Response type "${responseType}" is not valid. Use json|blob|response|object|none instead.`]: ''
+                    })
                 );
                 reject(new Error('Invalid responseType'));
                 return;
@@ -623,8 +573,13 @@ export function httpRequest(
                                 req.setRequestHeader(headerKeys[i], requestHeaders[headerKeys[i]]);
                             } catch (ex) {
                                 // eslint-disable-next-line no-console
-                                console.warn(`[HttpRequest] Could not set header ${headerKeys[i]} on
-                                 ${processName} to ${requestHeaders[headerKeys[i]]}`);
+                                console.warn(
+                                    ...colorLog({
+                                        '[HttpRequest]': 'color: #aaaaaa',
+                                        // eslint-disable-next-line max-len
+                                        [`Could not set header ${headerKeys[i]} on ${processName} to ${requestHeaders[headerKeys[i]]}`]: ''
+                                    })
+                                );
                                 logger.warning({
                                     message: `[HttpRequest] Could not set header ${headerKeys[i]} on ${processName}`,
                                     data: {
@@ -648,7 +603,11 @@ export function httpRequest(
                                     onProgress((event.loaded / event.total) * 100, event.loaded, event.total);
                                 } else {
                                     // eslint-disable-next-line no-console
-                                    console.warn('[HttpRequest] Can\'t monitor progress: length not computable');
+                                    console.warn(...colorLog({
+                                        '[HttpRequest]': 'color: #aaaaaa',
+                                        // eslint-disable-next-line max-len
+                                        'Can\'t monitor progress: length not computable': ''
+                                    }));
                                 }
                             });
                         }
@@ -681,7 +640,11 @@ export function httpRequest(
                     },
                     section: 'httpRequest.js'
                 }, err);
-                console.error(`[HttpRequest] Failed to fetch on ${processName}`, err);
+                console.error(...colorLog({
+                    '[HttpRequest]': 'color: #aaaaaa',
+                    // eslint-disable-next-line max-len
+                    [`Failed to fetch on ${processName}`]: ''
+                }), err);
                 // with the timeout aborted requests (e.g. by reloading) won't open this dialog
                 setTimeout(() => {
                     if (showDialogs) {
@@ -713,8 +676,11 @@ export function httpRequest(
                             // eslint-disable-next-line no-console
                             return console.warn;
                         default:
-                            console.error(`[HttpRequest] LogLevel ${logConfig[levelKey]} for ${levelKey} is not valid.
-                         Please use a valid log level.`);
+                            console.error(...colorLog({
+                                '[HttpRequest]': 'color: #aaaaaa',
+                                // eslint-disable-next-line max-len
+                                [`LogLevel ${logConfig[levelKey]} for ${levelKey} is not valid.Please use a valid log level.`]: ''
+                            }));
                             return logger.warning;
                     }
                 } else {
@@ -794,7 +760,9 @@ export function httpRequest(
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`,
                 }, error);
                 // eslint-disable-next-line no-console
-                console.error('[HttpRequest]', error);
+                console.error(...colorLog({
+                    '[HttpRequest]': 'color: #aaaaaa'
+                }), error);
                 if (!ignoreErrors && useChaynsAuth && autoRefreshToken) {
                     try {
                         const jRes = await response.json();
@@ -826,7 +794,9 @@ export function httpRequest(
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`
                 }, error);
                 // eslint-disable-next-line no-console
-                console.error('[HttpRequest]', error);
+                console.error(...colorLog({
+                    '[HttpRequest]': 'color: #aaaaaa'
+                }), error);
                 tryReject(error, status);
             }
 
@@ -912,10 +882,11 @@ export function httpRequest(
                             data: { internalRequestGuid }
                         }, err);
                         // eslint-disable-next-line no-console
-                        console.error(
-                            `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,
-                            err
-                        );
+                        console.error(...colorLog({
+                            '[HttpRequest]': 'color: #aaaaaa',
+                            // eslint-disable-next-line max-len
+                            [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
+                        }), err);
                         if (status >= 200 && status < 300) {
                             resolve(null);
                         } else {
@@ -932,10 +903,11 @@ export function httpRequest(
                             data: { internalRequestGuid }
                         }, err);
                         // eslint-disable-next-line no-console
-                        console.error(
-                            `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,
-                            err
-                        );
+                        console.error(...colorLog({
+                            '[HttpRequest]': 'color: #aaaaaa',
+                            // eslint-disable-next-line max-len
+                            [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
+                        }), err);
                         if (status >= 200 && status < 300) {
                             resolve(null);
                         } else {
@@ -952,10 +924,11 @@ export function httpRequest(
                             data: { internalRequestGuid }
                         }, err);
                         // eslint-disable-next-line no-console
-                        console.error(
-                            `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,
-                            err
-                        );
+                        console.error(...colorLog({
+                            '[HttpRequest]': 'color: #aaaaaa',
+                            // eslint-disable-next-line max-len
+                            [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
+                        }), err);
                         if (status >= 200 && status < 300) {
                             resolve(null);
                         } else {

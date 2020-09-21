@@ -18,7 +18,11 @@ module.exports = function resolveAbsoluteImport(importName) {
         copyToClipboard: 'functions/copy',
         defaultErrorHandler: 'functions/defaultErrorHandler',
         generateUUID: 'functions/generateUid',
-        request: 'functions/httpRequest',
+        request: 'functions/httpRequest/httpRequest',
+        HttpMethod: 'functions/httpRequest/HttpMethod',
+        RequestError: 'functions/httpRequest/RequestError',
+        ResponseType: 'functions/httpRequest/ResponseType',
+        LogLevel: 'functions/httpRequest/LogLevel',
         statusAnimations: 'constants/statusAnimations',
         fnsFormat: 'functions/timeHelper/fnsFormat',
         time: 'constants/time',
@@ -41,7 +45,8 @@ module.exports = function resolveAbsoluteImport(importName) {
         shallowEqual: 'functions/shallowEqual',
         useShallowSelector: 'hooks/useShallowSelector',
         generateAxis: 'functions/recharts/generateAxis',
-        useAxis: 'functions/recharts/useAxis'
+        useAxis: 'functions/recharts/useAxis',
+        Guid: 'functions/guid'
     };
 
     if (!values[importName]) {

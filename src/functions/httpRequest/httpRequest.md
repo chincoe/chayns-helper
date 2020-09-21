@@ -172,6 +172,8 @@ const result = await request.handle(
 ```
 
 ### request.responseType - enum
+> Exported as `ResponseType` and `request.responseType`
+
 | Property | Value | Response |
 |----------|-------| ------|
 |Json| `'json'`| response.json()|
@@ -191,6 +193,8 @@ const result = await request.handle(
 |none |`'none'`|
 
 ### request.method - enum
+> Exported as `HttpMethod` and `request.method`
+
 ```javascript
 const HttpMethod = {
     Get: 'GET',
@@ -202,6 +206,8 @@ const HttpMethod = {
 ```
 
 ### request.error extends Error
+> Exported as `RequestError` and `request.error`
+
 `constructor(message, statusCode)`
 
 | Manual Property | value |

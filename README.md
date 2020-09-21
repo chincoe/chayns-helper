@@ -48,7 +48,6 @@ initChaynsHelper({
 ### Functions
 | Function                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------|----- |
-| [chaynsColors](/src/functions/chaynsColors.js)| a collection of helpers to get chayns colors, color class names as well as mix them and convert them to rgb | |
 | [chaynsDialogs](/src/functions/chaynsDialogs.js)| makes using chayns dialogs so much more comfortable | |
 | [copyToClipboard](/src/functions/copy.js)| copy a value to the user's clipboard | |
 | [defaultErrorHandler](/src/functions/defaultErrorHandler.js)| default request error handling with dialogs for error status codes | |
@@ -56,8 +55,9 @@ initChaynsHelper({
 | [generateAxis](/src/functions/recharts/generateAxis.js)| a function to generate a better recharts axis | |
 | [generateUUID](/src/functions/generateUid.js)| generate a GUID | |
 | [getHookState](/src/functions/getHookState.js)| get the current state of a hook via the setState function | |
+| [Guid](/src/functions/guid.js)| a Guid class | |
 | [hideCWFooter](/src/functions/chaynsCalls/chaynsCalls.js)| hide the chayns web footer | |
-| [request](/src/functions/httpRequest.js)| fetch helper with loads of options, constants and a try/catch wrapper | [httpRequest.md](/src/functions/httpRequest.md) |
+| [request](/src/functions/httpRequest/httpRequest.js)| fetch helper with loads of options, constants and a try/catch wrapper | [httpRequest.md](/src/functions/httpRequest/httpRequest.md) |
 | [localStorage](/src/other/localStorageHelper.js)| helper to cache httpRequest JSON strings in local storage | |
 | [setViewMode](/src/functions/chaynsCalls/chaynsCalls.js)| toggle exclusive mode | |
 | [shallowEqual](/src/functions/shallowEqual.js)| check 2 values for equality | |

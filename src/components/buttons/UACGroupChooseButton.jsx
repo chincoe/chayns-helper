@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { SelectButton } from 'chayns-components';
-import { httpRequest } from '../../functions/httpRequest';
+import { httpRequest } from '../../functions/httpRequest/httpRequest';
 import ResizableWaitCursor from '../wait-cursor/ResizableWaitCursor';
 
 /**
