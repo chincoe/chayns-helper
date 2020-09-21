@@ -177,96 +177,6 @@ export function handleRequest(
 }
 
 /**
- * @param response
- * @param processName
- * @param resolve
- * @param useFetchApi
- * @returns {Promise<void>}
- */
-const jsonResolve = async (response, processName, resolve, useFetchApi) => {
-    const { status } = response;
-    try {
-        resolve(useFetchApi ? await response.json() : JSON.parse(response.response));
-    } catch (err) {
-        logger.warning({
-            message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`
-        }, err);
-        // eslint-disable-next-line no-console
-        console.warn(`[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`, err);
-        resolve(null);
-    }
-};
-
-/**
- * @param response
- * @param processName
- * @param resolve
- * @param useFetchApi
- * @returns {Promise<void>}
- */
-const blobResolve = async (response, processName, resolve, useFetchApi) => {
-    const { status } = response;
-    try {
-        resolve(useFetchApi ? await response.blob() : new Blob(response.response));
-    } catch (err) {
-        logger.warning({
-            message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`
-        }, err);
-        // eslint-disable-next-line no-console
-        console.warn(
-            `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
-            err
-        );
-        resolve(null);
-    }
-};
-
-/**
- * @param response
- * @param processName
- * @param resolve
- * @param useFetchApi
- * @returns {Promise<void>}
- */
-const textResolve = async (response, processName, resolve, useFetchApi) => {
-    const { status } = response;
-    try {
-        resolve(useFetchApi ? await response.text() : response.response);
-    } catch (err) {
-        logger.warning({
-            message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`
-        }, err);
-        // eslint-disable-next-line no-console
-        console.warn(
-            `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
-            err
-        );
-        resolve(null);
-    }
-};
-
-/**
- * @param response
- * @param processName
- * @param resolve
- * @param useFetchApi
- * @returns {Promise<void>}
- */
-const objectResolve = async (response, processName, resolve, useFetchApi) => {
-    const { status } = response;
-    try {
-        resolve({ status, data: useFetchApi ? await response.json() : JSON.parse(response.response) });
-    } catch (err) {
-        logger.warning({
-            message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`
-        }, err);
-        // eslint-disable-next-line no-console
-        console.warn(`[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`, err);
-        resolve({ status, data: null });
-    }
-};
-
-/**
  * httpRequest response type. Default: json
  * @type {Object}
  * @property {string} Response - Get the Response Object
@@ -302,6 +212,126 @@ export const LogLevel = Object.freeze({
     critical: 'critical',
     none: 'none'
 });
+
+/**
+ * @param response
+ * @param processName
+ * @param resolve
+ * @param useFetchApi
+ * @param internalRequestGuid
+ * @returns {Promise<void>}
+ */
+const jsonResolve = async (response, processName, resolve, useFetchApi, internalRequestGuid = null) => {
+    const { status } = response;
+    try {
+        resolve(useFetchApi ? await response.json() : JSON.parse(response.response));
+    } catch (err) {
+        logger.warning({
+            message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
+            data: {
+                internalRequestGuid
+            }
+        }, err);
+        // eslint-disable-next-line no-console
+        console.warn(
+            // eslint-disable-next-line max-len
+            `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`,
+            { [status]: ResponseType.None },
+            '\n',
+            err
+        );
+        resolve(null);
+    }
+};
+
+/**
+ * @param response
+ * @param processName
+ * @param resolve
+ * @param useFetchApi
+ * @param internalRequestGuid
+ * @returns {Promise<void>}
+ */
+const blobResolve = async (response, processName, resolve, useFetchApi, internalRequestGuid = null) => {
+    const { status } = response;
+    try {
+        resolve(useFetchApi ? await response.blob() : new Blob(response.response));
+    } catch (err) {
+        logger.warning({
+            message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
+            data: {
+                internalRequestGuid
+            }
+        }, err);
+        // eslint-disable-next-line no-console
+        console.warn(
+            // eslint-disable-next-line max-len
+            `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`,
+            { [status]: ResponseType.None },
+            '\n',
+            err
+        );
+        resolve(null);
+    }
+};
+
+/**
+ * @param response
+ * @param processName
+ * @param resolve
+ * @param useFetchApi
+ * @param internalRequestGuid
+ * @returns {Promise<void>}
+ */
+const textResolve = async (response, processName, resolve, useFetchApi, internalRequestGuid = null) => {
+    const { status } = response;
+    try {
+        resolve(useFetchApi ? await response.text() : response.response);
+    } catch (err) {
+        logger.warning({
+            message: `[HttpRequest] Getting text body failed on Status ${status} on ${processName}`,
+            data: { internalRequestGuid }
+        }, err);
+        // eslint-disable-next-line no-console
+        console.warn(
+            // eslint-disable-next-line max-len
+            `[HttpRequest] Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`,
+            { [status]: ResponseType.None },
+            '\n',
+            err
+        );
+        resolve(null);
+    }
+};
+
+/**
+ * @param response
+ * @param processName
+ * @param resolve
+ * @param useFetchApi
+ * @param internalRequestGuid
+ * @returns {Promise<void>}
+ */
+const objectResolve = async (response, processName, resolve, useFetchApi, internalRequestGuid = null) => {
+    const { status } = response;
+    try {
+        resolve({ status, data: useFetchApi ? await response.json() : JSON.parse(response.response) });
+    } catch (err) {
+        logger.warning({
+            message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`,
+            data: { internalRequestGuid }
+        }, err);
+        // eslint-disable-next-line no-console
+        console.warn(
+            // eslint-disable-next-line max-len
+            `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`,
+            { [status]: ResponseType.None },
+            '\n',
+            err
+        );
+        resolve({ status, data: null });
+    }
+};
 
 export const defaultConfig = {
     options: {},
@@ -430,7 +460,7 @@ export function httpRequest(
     // options for this helper
     options,
 ) {
-    return new Promise((resolve, reject) => {
+    return new Promise((globalResolve, reject) => {
         (async () => {
             /** INPUT HANDLING */
             const {
@@ -472,7 +502,8 @@ export function httpRequest(
                 onProgress = null,
                 // adds a random number as url param to bypass the browser cache
                 addHashToUrl = false,
-                showDialogs = true
+                showDialogs = true,
+                internalRequestGuid = generateUUID()
             } = {
                 responseType: ResponseType.Json,
                 logConfig: {},
@@ -542,6 +573,17 @@ export function httpRequest(
                     .join('')}`;
             }
 
+            const resolve = (value) => {
+                globalResolve(value);
+                logger.info({
+                    message: `[HttpRequest] ${processName} resolved`,
+                    data: {
+                        resolveValue: value,
+                        internalRequestGuid
+                    }
+                });
+            };
+
             const tryReject = (err = null, status = null, force = false) => {
                 if (statusHandlers[status]
                     && (
@@ -559,6 +601,8 @@ export function httpRequest(
                     reject(err);
                 }
             };
+
+            const fetchStartTime = Date.now();
 
             /** REQUEST */
             let response;
@@ -591,7 +635,8 @@ export function httpRequest(
                                             ...requestHeaders,
                                             Authorization: undefined
                                         },
-                                        processName
+                                        processName,
+                                        internalRequestGuid
                                     },
                                     section: 'httpRequest.js'
                                 }, ex);
@@ -621,7 +666,7 @@ export function httpRequest(
                 logger.warning({
                     message: `[HttpRequest] Failed to fetch on ${processName}`,
                     data: {
-                        address,
+                        address: requestAddress,
                         method,
                         body,
                         additionalLogData,
@@ -629,7 +674,10 @@ export function httpRequest(
                             ...requestHeaders,
                             Authorization: undefined
                         },
-                        processName
+                        processName,
+                        requestDuration: `${Date.now() - fetchStartTime} ms`,
+                        requestTime: new Date(fetchStartTime).toISOString(),
+                        internalRequestGuid
                     },
                     section: 'httpRequest.js'
                 }, err);
@@ -698,7 +746,7 @@ export function httpRequest(
             const logData = {
                 data: {
                     additionalLogData,
-                    address,
+                    address: requestAddress,
                     method,
                     body,
                     headers: {
@@ -708,7 +756,10 @@ export function httpRequest(
                     status,
                     sessionUid,
                     responseBody,
-                    processName
+                    processName,
+                    requestDuration: `${Date.now() - fetchStartTime} ms`,
+                    requestTime: new Date(fetchStartTime).toISOString(),
+                    internalRequestGuid
                 },
                 section: 'httpRequest.js',
                 sessionUid
@@ -758,7 +809,8 @@ export function httpRequest(
                                 autoRefreshToken: false,
                                 statusHandlers,
                                 onProgress,
-                                addHashToUrl
+                                addHashToUrl,
+                                internalRequestGuid
                             }));
                         } else {
                             tryReject(error, status);
@@ -795,16 +847,16 @@ export function httpRequest(
                 } else {
                     switch (statusHandlers[status]) {
                         case ResponseType.Json:
-                            await jsonResolve(response, processName, resolve, useFetchApi);
+                            await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
                             return;
                         case ResponseType.Blob:
-                            await blobResolve(response, processName, resolve, useFetchApi);
+                            await blobResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
                             return;
                         case ResponseType.Object:
-                            await objectResolve(response, processName, resolve, useFetchApi);
+                            await objectResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
                             return;
                         case ResponseType.Text:
-                            await textResolve(response, processName, resolve, useFetchApi);
+                            await textResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
                             return;
                         case ResponseType.None:
                             resolve();
@@ -856,7 +908,8 @@ export function httpRequest(
                         resolve(JSON.parse(result));
                     } catch (err) {
                         logger.warning({
-                            message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`
+                            message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,
+                            data: { internalRequestGuid }
                         }, err);
                         // eslint-disable-next-line no-console
                         console.error(
@@ -875,7 +928,8 @@ export function httpRequest(
                         resolve({ status, data: JSON.parse(result) });
                     } catch (err) {
                         logger.warning({
-                            message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`
+                            message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,
+                            data: { internalRequestGuid }
                         }, err);
                         // eslint-disable-next-line no-console
                         console.error(
@@ -894,7 +948,8 @@ export function httpRequest(
                         resolve(result);
                     } catch (err) {
                         logger.warning({
-                            message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`
+                            message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,
+                            data: { internalRequestGuid }
                         }, err);
                         // eslint-disable-next-line no-console
                         console.error(
@@ -918,13 +973,13 @@ export function httpRequest(
             } else {
                 // responseType
                 if (responseType === null || responseType === ResponseType.Json) {
-                    await jsonResolve(response, processName, resolve, useFetchApi);
+                    await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
                 } else if (responseType === ResponseType.Blob) {
-                    await blobResolve(response, processName, resolve, useFetchApi);
+                    await blobResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
                 } else if (responseType === ResponseType.Object) {
-                    await objectResolve(response, processName, resolve, useFetchApi);
+                    await objectResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
                 } else if (responseType === ResponseType.Text) {
-                    await textResolve(response, processName, resolve, useFetchApi);
+                    await textResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
                 } else if (responseType === ResponseType.None) {
                     resolve(null);
                 } else if (responseType === ResponseType.Response) {
