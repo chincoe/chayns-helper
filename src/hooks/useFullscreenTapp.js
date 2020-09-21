@@ -102,7 +102,6 @@ const useFullscreenTapp = (initialValue, forceExclusive) => {
         if (isFullscreenActive) {
             chayns.scrollToY(-1000);
             getWindowData(0);
-            tapp.style.padding = '0';
             tapp.style.width = '100vw';
             tapp.style.height = '100vh';
             interval = setInterval(() => {
