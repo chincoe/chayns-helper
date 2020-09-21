@@ -16,7 +16,11 @@ import chaynsDialog from './functions/chaynsDialogs';
 import copyToClipboard from './functions/copy';
 import defaultErrorHandler from './functions/defaultErrorHandler';
 import generateUUID from './functions/generateUid';
-import request from './functions/httpRequest';
+import request from './functions/httpRequest/httpRequest';
+import HttpMethod from './functions/httpRequest/HttpMethod';
+import RequestError from './functions/httpRequest/RequestError';
+import ResponseType from './functions/httpRequest/ResponseType';
+import LogLevel from './functions/httpRequest/LogLevel';
 import types from './functions/types';
 import showWaitCursor from './functions/waitCursor';
 import useTimeoutState from './hooks/uniques/useTimeoutState';
@@ -62,6 +66,10 @@ export {
     defaultErrorHandler,
     generateUUID,
     request,
+    ResponseType,
+    RequestError,
+    HttpMethod,
+    LogLevel,
     time,
     fnsFormat,
     roundDate,

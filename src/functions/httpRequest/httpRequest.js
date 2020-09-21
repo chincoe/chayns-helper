@@ -1,39 +1,15 @@
 import logger from 'chayns-logger';
-import colorLog from '../_internal/colorLog';
-import localStorage from '../other/localStorageHelper';
-import defaultErrorHandler from './defaultErrorHandler';
-import generateUUID from './generateUid';
-import types from './types';
-import showWaitCursor from './waitCursor';
-import stringToRegex from '../_internal/stringToRegex';
-
-/**
- * @type {{Delete: string, Post: string, Get: string, Patch: string, Put: string}}
- */
-export const HttpMethod = Object.freeze({
-    Get: 'GET',
-    Post: 'POST',
-    Put: 'PUT',
-    Patch: 'PATCH',
-    Delete: 'DELETE',
-});
-
-/**
- * Custom error for error statusCodes or other errors during a httpRequest
- * @public
- * @class
- */
-export class RequestError extends Error {
-    /**
-     * @param {string} message - Error message
-     * @param {number} statusCode - Response status code
-     */
-    constructor(message, statusCode) {
-        super(message);
-        this.name = `HttpRequestError${statusCode}`;
-        this.statusCode = statusCode;
-    }
-}
+import colorLog from '../../_internal/colorLog';
+import localStorage from '../../other/localStorageHelper';
+import defaultErrorHandler from '../defaultErrorHandler';
+import generateUUID from '../generateUid';
+import types from '../types';
+import showWaitCursor from '../waitCursor';
+import stringToRegex from '../../_internal/stringToRegex';
+import HttpMethod from './HttpMethod';
+import RequestError from './RequestError';
+import ResponseType from './ResponseType';
+import LogLevel from './LogLevel';
 
 /**
  * @callback requestErrorHandler
@@ -190,43 +166,6 @@ export function handleRequest(
         }
     );
 }
-
-/**
- * httpRequest response type. Default: json
- * @type {Object}
- * @property {string} Response - Get the Response Object
- * @property {string} Blob - Get response.blob()
- * @property {string} Json - Get response.json()
- * @property {string} Object - Get status and json as Object {status: number, data: Object}
- * @property {string} Text - Get response.text()
- * @property {string} None - Get null
- */
-export const ResponseType = Object.freeze({
-    Json: 'json',
-    Blob: 'blob',
-    Response: 'response',
-    Object: 'object',
-    Text: 'text',
-    None: 'none'
-});
-
-/**
- * @typedef objectResponse
- * @property {number} status,
- * @property {Object} data
- */
-
-/**
- * Log Level
- * @type {{critical: string, warning: string, none: string, error: string, info: string}}
- */
-export const LogLevel = Object.freeze({
-    info: 'info',
-    warning: 'warning',
-    error: 'error',
-    critical: 'critical',
-    none: 'none'
-});
 
 /**
  * @param response
