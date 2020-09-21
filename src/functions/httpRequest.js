@@ -590,7 +590,8 @@ export function httpRequest(
                                         headers: {
                                             ...requestHeaders,
                                             Authorization: undefined
-                                        }
+                                        },
+                                        processName
                                     },
                                     section: 'httpRequest.js'
                                 }, ex);
@@ -627,7 +628,8 @@ export function httpRequest(
                         headers: {
                             ...requestHeaders,
                             Authorization: undefined
-                        }
+                        },
+                        processName
                     },
                     section: 'httpRequest.js'
                 }, err);
@@ -705,7 +707,8 @@ export function httpRequest(
                     },
                     status,
                     sessionUid,
-                    responseBody
+                    responseBody,
+                    processName
                 },
                 section: 'httpRequest.js',
                 sessionUid
