@@ -33,7 +33,7 @@ This helper works with the following presumptions:
 This behavior makes it necessary to wrap a request into `try/catch` or define a `.catch` on the promise.
 `request.handle()` is the preferred try/catch-wrapper to handle these errors.
 
-`request.handle()` will still reject the Promise on error, thus code after the request may not be executed.
+`request.handle()` will still reject the Promise on error by default, thus code after the request may not be executed.
 
 
 #### Examples
@@ -182,8 +182,11 @@ const result = await request.handle(
 |Object | `'object'` | `{ status: response.status, data: await response.json() }` |
 |Text | `'text'` | body string |
 |None | `'none'` | `undefined`|
+|Error | `'error'` | RequestError |
 
 ### request.logLevel - enum
+> Exported as `LogLevel` and `request.logLevel`
+
 | Property | Value |
 |----------|-------|
 | info | `'info'`|
@@ -214,3 +217,128 @@ const HttpMethod = {
 |---------------|---------------|
 |name | `'HttpRequestError${statusCode}'`|
 |statusCode | `statusCode` |
+
+### request.presets
+A collection of presets for request.defaults()
+
+| Name | Description |
+|----------|-------|
+| default | the default config |
+| extended | An extended and suggested config, including noCache, JsonObject response type and Status 204 handling |
+| strict | Any status not explicitly handled is treated as an error |
+| noErrors | Don't throw any errors, only log them and return the response |
+
+Details:
+
+```javascript
+const requestPresets = {
+    // the default config
+    default: {
+        config: {},
+        options: {
+            responseType: ResponseType.Json,
+            logConfig: {
+                '[1-3][\\d]{2}': LogLevel.info,
+                401: LogLevel.warning,
+                '[\\d]+': LogLevel.error
+            },
+            ignoreErrors: false,
+            useFetchApi: true,
+            stringifyBody: true,
+            additionalLogData: {},
+            autoRefreshToken: true,
+            statusHandlers: {},
+            onProgress: null,
+            addHashToUrl: false,
+            showDialogs: true
+        }
+    },
+    // an extended config, suggested for use
+    extended: {
+        config: {
+            cache: 'no-cache',
+            headers: {
+                CacheControl: 'no-cache',
+                Pragma: 'no-cache'
+            }
+        },
+        options: {
+            responseType: ResponseType.Object,
+            logConfig: {
+                '2[\\d]{2}': LogLevel.info,
+                '3[\\d]{2}': LogLevel.warning,
+                401: LogLevel.warning,
+                '[\\d]+': LogLevel.error,
+                '.*': LogLevel.critical
+            },
+            ignoreErrors: false,
+            useFetchApi: true,
+            stringifyBody: true,
+            additionalLogData: {},
+            autoRefreshToken: true,
+            statusHandlers: {
+                204: ResponseType.Response,
+                '3[\\d]{2}': ResponseType.Response
+            },
+            onProgress: null,
+            addHashToUrl: false,
+            showDialogs: false
+        }
+    },
+    // a strict config: Anything not explicitly expected is an error
+    strict: {
+        config: {
+            cache: 'no-cache'
+        },
+        options: {
+            responseType: ResponseType.Json,
+            logConfig: {
+                200: LogLevel.info,
+                '[\\d]+': LogLevel.error,
+                '.*': LogLevel.critical
+            },
+            statusHandlers: {
+                '(?!200)': ResponseType.Error
+            },
+            ignoreErrors: false,
+            useFetchApi: true,
+            stringifyBody: true,
+            additionalLogData: {},
+            autoRefreshToken: false,
+            onProgress: null,
+            addHashToUrl: false,
+            showDialogs: false
+        }
+    },
+    // a config that prevents throwing any errors, but not logging them
+    noErrors: {
+        config: {
+            cache: 'no-cache'
+        },
+        options: {
+            responseType: ResponseType.Object,
+            logConfig: {
+                '2[\\d]{2}': LogLevel.info,
+                '3[\\d]{2}': LogLevel.warning,
+                401: LogLevel.warning,
+                '[\\d]+': LogLevel.error,
+                '.*': LogLevel.critical
+            },
+            ignoreErrors: true,
+            useFetchApi: true,
+            stringifyBody: true,
+            additionalLogData: {},
+            autoRefreshToken: true,
+            statusHandlers: {
+                204: ResponseType.Response,
+                '2[\\d]{2}': ResponseType.Object,
+                '.*': ResponseType.Response
+            },
+            onProgress: null,
+            addHashToUrl: false,
+            showDialogs: false
+        }
+    }
+};
+```
+
