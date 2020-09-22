@@ -8,6 +8,7 @@ import showWaitCursor from '../waitCursor';
 import stringToRegex from '../../_internal/stringToRegex';
 import HttpMethod from './HttpMethod';
 import RequestError from './RequestError';
+import requestPresets from './requestPresets';
 import ResponseType from './ResponseType';
 import LogLevel from './LogLevel';
 
@@ -540,8 +541,13 @@ export function httpRequest(
                         types.isFunction(statusHandlers[status])
                         || Object.values(ResponseType).includes(statusHandlers[status])
                     )
+                    && statusHandlers[status] !== ResponseType.Error
                     && !force) {
                     return;
+                }
+                if (statusHandlers[status]
+                    && statusHandlers[status] === ResponseType.Error) {
+                    reject(err);
                 }
                 if (ignoreErrors === true) {
                     resolve(null);
@@ -831,6 +837,9 @@ export function httpRequest(
                         case ResponseType.None:
                             resolve();
                             return;
+                        case ResponseType.Error:
+                            reject(new RequestError(`Status ${status} on ${processName}`, status));
+                            return;
                         case ResponseType.Response:
                         default:
                             resolve(response);
@@ -847,6 +856,37 @@ export function httpRequest(
                         // eslint-disable-next-line no-await-in-loop
                         resolve(await statusHandlers[keys[i]](response));
                         return;
+                    }
+                    if (regExp.test(status?.toString()) && Object.values(ResponseType)
+                        .includes(statusHandlers[keys[i]])) {
+                        switch (statusHandlers[keys[i]]) {
+                            case ResponseType.Json:
+                                // eslint-disable-next-line no-await-in-loop
+                                await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                                return;
+                            case ResponseType.Blob:
+                                // eslint-disable-next-line no-await-in-loop
+                                await blobResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                                return;
+                            case ResponseType.Object:
+                                // eslint-disable-next-line no-await-in-loop
+                                await objectResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                                return;
+                            case ResponseType.Text:
+                                // eslint-disable-next-line no-await-in-loop
+                                await textResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                                return;
+                            case ResponseType.None:
+                                resolve();
+                                return;
+                            case ResponseType.Error:
+                                reject(new RequestError(`Status ${status} on ${processName}`, status));
+                                return;
+                            case ResponseType.Response:
+                            default:
+                                resolve(response);
+                                return;
+                        }
                     }
                 }
             }
@@ -966,16 +1006,31 @@ export function httpRequest(
 }
 
 /**
- * @type {{responseType: Object, logLevel: {critical: string, warning: string, none: string, error: string, info:
- *     string}, method: {Delete: string, Post: string, Get: string, Patch: string, Put: string}, fetch:
- *     (function(string, {method?: (HttpMethod|string), headers?: Object, useChaynsAuth?: boolean, body?: *, signal?:
- *     *}=, string=, {responseType?: (ResponseType|string), ignoreErrors?: (boolean|number[]), useFetchApi?: boolean,
- *     logConfig?: Object<string, LogLevel>, stringifyBody?: boolean, additionalLogData?: Object, autoRefreshToken?:
- *     boolean, statusHandlers?: statusCodeHandler, onProgress?: onProgressHandler, addHashToUrl?: boolean,
- *     getBodyOnStatus: (boolean|Array<number>|Object<string, ResponseType>)}=):
- *     Promise<Response|objectResponse|Blob|Object>), handle: (function(Promise<*>, requestErrorHandler=,
- *     {finallyHandler?: Function, waitCursor?: {text?: string, textTimeout?: number, timeout?: number}, cache?: {key:
- *     string, duration?: number, cacheResolver?: cacheResolverCallback}}=): Promise<*>), error: RequestError}}
+ * @type {{responseType: Object, presets: {default: {options: {logConfig: {'401': string, '[\\d]+': string,
+ *     '[1-3][\\d]{2}': string}, responseType: string, additionalLogData: {}, statusHandlers: {}, onProgress: null,
+ *     stringifyBody: boolean, autoRefreshToken: boolean, showDialogs: boolean, useFetchApi: boolean, addHashToUrl:
+ *     boolean, ignoreErrors: boolean}, config: {}}, noErrors: {options: {logConfig: {'401': *, '2[\\d]{2}': *,
+ *     '3[\\d]{2}': *, '[\\d]+': *, '.*': *}, responseType: *, additionalLogData: {}, statusHandlers: {'204': *,
+ *     '2[\\d]{2}': *, '.*': *}, onProgress: null, stringifyBody: boolean, autoRefreshToken: boolean, showDialogs:
+ *     boolean, useFetchApi: boolean, addHashToUrl: boolean, ignoreErrors: boolean}, config: {cache: string}}, strict:
+ *     {options: {logConfig: {'200': *, '[\\d]+': *, '.*': *}, responseType: *, statusHandlers: {'(?!200)': *},
+ *     additionalLogData: {}, onProgress: null, stringifyBody: boolean, autoRefreshToken: boolean, showDialogs:
+ *     boolean, useFetchApi: boolean, addHashToUrl: boolean, ignoreErrors: boolean}, config: {cache: string}},
+ *     extended: {options: {logConfig: {'401': *, '2[\\d]{2}': *, '3[\\d]{2}': *, '[\\d]+': *, '.*': *}, responseType:
+ *     string, additionalLogData: {}, statusHandlers: {'204': *, '3[\\d]{2}': *}, onProgress: null, stringifyBody:
+ *     boolean, autoRefreshToken: boolean, showDialogs: boolean, useFetchApi: boolean, addHashToUrl: boolean,
+ *     ignoreErrors: boolean}, config: {headers: {CacheControl: string, Pragma: string}, cache: string}}}, logLevel:
+ *     {critical: string, warning: string, none: string, error: string, info: string}, method: {Delete: string, Post:
+ *     string, Get: string, Patch: string, Put: string}, defaults: setRequestDefaults, fetch: (function(string,
+ *     {method?: (HttpMethod|string), headers?: Object, useChaynsAuth?: boolean, body?: *, cache?: string, referrer?:
+ *     string, referrerPolicy?: string, mode?: string, redirect?: string, integrity?: string, keepalive?: boolean,
+ *     window?: Window, signal?: *}=, string=, {responseType?: (ResponseType|string), ignoreErrors?:
+ *     (boolean|number[]), useFetchApi?: boolean, logConfig?: Object<string, LogLevel>, stringifyBody?: boolean,
+ *     additionalLogData?: Object, autoRefreshToken?: boolean, statusHandlers?: Object, onProgress?: onProgressHandler,
+ *     addHashToUrl?: boolean, showDialogs?: boolean}=): Promise<Response|objectResponse|Blob|Object>), handle:
+ *     (function(Promise<*>, requestErrorHandler=, {finallyHandler?: Function, waitCursor?: {text?: string,
+ *     textTimeout?: number, timeout?: number}, cache?: {key: string, duration?: number, cacheResolver?:
+ *     cacheResolverCallback}, noReject?: boolean}=): Promise<*>), error: RequestError}}
  */
 const request = {
     fetch: httpRequest,
@@ -984,6 +1039,7 @@ const request = {
     responseType: ResponseType,
     logLevel: LogLevel,
     method: HttpMethod,
+    presets: requestPresets,
     defaults: setRequestDefaults
 };
 

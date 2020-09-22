@@ -7,6 +7,7 @@
  * @property {string} Object - Get status and json as Object {status: number, data: Object}
  * @property {string} Text - Get response.text()
  * @property {string} None - Get null
+ * @property {string} Error - Throw error
  */
 const ResponseType = Object.freeze({
     Json: 'json',
@@ -14,7 +15,8 @@ const ResponseType = Object.freeze({
     Response: 'response',
     Object: 'object',
     Text: 'text',
-    None: 'none'
+    None: 'none',
+    Error: 'error'
 });
 
 export default ResponseType;
