@@ -63,7 +63,7 @@ import LogLevel from './LogLevel';
  * @param {cacheResolverCallback} [options.cache.cacheResolver] - Function to transform the cache content before
  *     setting, e.g. reading a request body
  * @param {boolean} [options.noReject=false] - Do not reject promise on error, resolve with null instead
- *
+ * @throws {RequestError}
  * @public
  * @async
  * @return result {Promise<unknown>}
@@ -395,6 +395,7 @@ export const setRequestDefaults = (address, config, options) => {
  * @param {boolean} [options.showDialogs=true] - Show a dialog when you have no connection
  * @async
  * @public
+ * @throws {RequestError}
  * @return {Promise<Response|objectResponse|Blob|Object>} - response or response body
  */
 export function httpRequest(
@@ -1006,18 +1007,96 @@ export function httpRequest(
 }
 
 /**
+ * Combine fetch and handle request
+ * @param {string} address - Address of the request
+ * @param {Object} [config={}] - Fetch config
+ * @param {HttpMethod|string} [config.method='GET'] - HttpMethod
+ * @param {Object} [config.headers] - Additional HttpHeaders
+ * @param {boolean} [config.useChaynsAuth] - Add user token as authorization if available
+ * @param {*} [config.body] - Body of the request
+ * @param {string} [config.cache]
+ * @param {string} [config.referrer]
+ * @param {string} [config.referrerPolicy]
+ * @param {string} [config.mode]
+ * @param {string} [config.redirect]
+ * @param {string} [config.integrity]
+ * @param {boolean} [config.keepalive]
+ * @param {Window} [config.window]
+ * @param {*} [config.signal] - Signal to abort request while running, use with RTK thunks
+ * @param {string} [processName='HttpRequest'] - Name of the process in the logs
+ * @param {Object} [options={}] - Additional options for the request
+ * @param {ResponseType|string} [options.responseType=null] - type of response that is expected
+ * @param {boolean|number[]} [options.ignoreErrors=false] - Don't throw errors for this request if true or if this
+ *     array contains the response status. Return null on error instead. Errors will still be logged as usual.
+ * @param {boolean} [options.useFetchApi=true] - use fetch(), use XMLHttpRequest otherwise
+ * @param {Object.<string,LogLevel>} [options.logConfig={}] - Define the logLevel for these status codes. Can use
+ *     status code or regex string as key. Values must be info|warning|error|critical|none.
+ * @param {boolean} [options.stringifyBody=true] - Call JSON.stringify(body) for the body passed to this function
+ * @param {Object} [options.additionalLogData={}] - Additional data to be logged with this request
+ * @param {boolean} [options.autoRefreshToken=true] - Automatically try to refresh the token once if it expired
+ * @param {Object} [options.statusHandlers={}] - Handle response for specific status codes
+ * Usage: { [statusCode|regexString] : (response) => { my code }, ... }
+ *    OR: { [statusCode|regexString] : responseType }
+ *     - handler always receives entire response as parameter, not just the body
+ *     - value returned from handler is returned as result of the request
+ *     - handler can be async and will be awaited
+ *     Response handling priorities:
+ *      1. statusHandlers[status]
+ *      2. statusHandlers[regex]
+ *      3. response type
+ * @param {onProgressHandler} [options.onProgress=null] - Gets called multiple times during the download of bigger
+ *     data,
+ *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
+ *     added to read the body instead. Response types other than 'response' will work as usual.
+ * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
+ * @param {boolean} [options.showDialogs=true] - Show a dialog when you have no connection
+ * @param {requestErrorHandler} [errorHandler=undefined] - Function to handle error statusCodes. Defaults to
+ *     defaultErrorHandler.js
+ * @param {Object} [handlerOptions={}] - other options for this wrapper
+ * @param {function} [handlerOptions.finallyHandler] - Function that should always be executed after the request
+ * @param {boolean|waitCursorOptions} [handlerOptions.waitCursor] - Show chayns waitCursor. Set true to show. Set to an
+ *     object for more options
+ * @param {string} [handlerOptions.waitCursor.text=undefined] - Text to be displayed after the textTimeout
+ * @param {number} [handlerOptions.waitCursor.textTimeout=5000] - Timeout after which the text appears in the wait
+ *     cursor
+ * @param {number} [handlerOptions.waitCursor.timeout=300] - Timeout after which the waitCursor is displayed
+ * @param {string|cacheOptions} [handlerOptions.cache]  (optional) string/object: Set to a string to cache the request
+ *     in local storage. Only works if the request returns appropriate data, e.g. a string OR if a cacheResolver is
+ *     defined. Set to an object for more detailed cache control.
+ * @param {string} handlerOptions.cache.key - The name used to cache this asset in local storage
+ * @param {number} [handlerOptions.cache.duration=5] - The duration in minutes after which the cache will be refreshed
+ * @param {cacheResolverCallback} [handlerOptions.cache.cacheResolver] - Function to transform the cache content before
+ *     setting, e.g. reading a request body
+ * @param {boolean} [handlerOptions.noReject=false] - Do not reject promise on error, resolve with null instead
+ *
+ * @public
+ * @async
+ * @throws {RequestError}
+ * @return result {Promise<*>}
+ */
+function fullRequest(address, config, processName, options, errorHandler, handlerOptions) {
+    return handleRequest(httpRequest(
+        address,
+        config,
+        processName,
+        options
+    ), errorHandler, handlerOptions);
+}
+
+/**
  * @type {{responseType: Object, presets: {default: {options: {logConfig: {'401': string, '[\\d]+': string,
  *     '[1-3][\\d]{2}': string}, responseType: string, additionalLogData: {}, statusHandlers: {}, onProgress: null,
  *     stringifyBody: boolean, autoRefreshToken: boolean, showDialogs: boolean, useFetchApi: boolean, addHashToUrl:
- *     boolean, ignoreErrors: boolean}, config: {}}, noErrors: {options: {logConfig: {'401': *, '2[\\d]{2}': *,
- *     '3[\\d]{2}': *, '[\\d]+': *, '.*': *}, responseType: *, additionalLogData: {}, statusHandlers: {'204': *,
- *     '2[\\d]{2}': *, '.*': *}, onProgress: null, stringifyBody: boolean, autoRefreshToken: boolean, showDialogs:
- *     boolean, useFetchApi: boolean, addHashToUrl: boolean, ignoreErrors: boolean}, config: {cache: string}}, strict:
- *     {options: {logConfig: {'200': *, '[\\d]+': *, '.*': *}, responseType: *, statusHandlers: {'(?!200)': *},
- *     additionalLogData: {}, onProgress: null, stringifyBody: boolean, autoRefreshToken: boolean, showDialogs:
- *     boolean, useFetchApi: boolean, addHashToUrl: boolean, ignoreErrors: boolean}, config: {cache: string}},
- *     extended: {options: {logConfig: {'401': *, '2[\\d]{2}': *, '3[\\d]{2}': *, '[\\d]+': *, '.*': *}, responseType:
- *     string, additionalLogData: {}, statusHandlers: {'204': *, '3[\\d]{2}': *}, onProgress: null, stringifyBody:
+ *     boolean, ignoreErrors: boolean}, config: {}}, noErrors: {options: {logConfig: {'401': string, '2[\\d]{2}':
+ *     string, '3[\\d]{2}': string, '[\\d]+': string, '.*': string}, responseType: string, additionalLogData: {},
+ *     statusHandlers: {'204': string, '2[\\d]{2}': string, '.*': string}, onProgress: null, stringifyBody: boolean,
+ *     autoRefreshToken: boolean, showDialogs: boolean, useFetchApi: boolean, addHashToUrl: boolean, ignoreErrors:
+ *     boolean}, config: {cache: string}}, strict: {options: {logConfig: {'200': string, '[\\d]+': string, '.*':
+ *     string}, responseType: string, statusHandlers: {'(?!200)': string}, additionalLogData: {}, onProgress: null,
+ *     stringifyBody: boolean, autoRefreshToken: boolean, showDialogs: boolean, useFetchApi: boolean, addHashToUrl:
+ *     boolean, ignoreErrors: boolean}, config: {cache: string}}, extended: {options: {logConfig: {'401': string,
+ *     '2[\\d]{2}': string, '3[\\d]{2}': string, '[\\d]+': string, '.*': string}, responseType: string,
+ *     additionalLogData: {}, statusHandlers: {'204': string, '3[\\d]{2}': string}, onProgress: null, stringifyBody:
  *     boolean, autoRefreshToken: boolean, showDialogs: boolean, useFetchApi: boolean, addHashToUrl: boolean,
  *     ignoreErrors: boolean}, config: {headers: {CacheControl: string, Pragma: string}, cache: string}}}, logLevel:
  *     {critical: string, warning: string, none: string, error: string, info: string}, method: {Delete: string, Post:
@@ -1030,7 +1109,15 @@ export function httpRequest(
  *     addHashToUrl?: boolean, showDialogs?: boolean}=): Promise<Response|objectResponse|Blob|Object>), handle:
  *     (function(Promise<*>, requestErrorHandler=, {finallyHandler?: Function, waitCursor?: {text?: string,
  *     textTimeout?: number, timeout?: number}, cache?: {key: string, duration?: number, cacheResolver?:
- *     cacheResolverCallback}, noReject?: boolean}=): Promise<*>), error: RequestError}}
+ *     cacheResolverCallback}, noReject?: boolean}=): Promise<*>), error: RequestError, full: (function(string,
+ *     {method?: (HttpMethod|string), headers?: Object, useChaynsAuth?: boolean, body?: *, cache?: string, referrer?:
+ *     string, referrerPolicy?: string, mode?: string, redirect?: string, integrity?: string, keepalive?: boolean,
+ *     window?: Window, signal?: *}=, string=, {responseType?: (ResponseType|string), ignoreErrors?:
+ *     (boolean|number[]), useFetchApi?: boolean, logConfig?: Object<string, LogLevel>, stringifyBody?: boolean,
+ *     additionalLogData?: Object, autoRefreshToken?: boolean, statusHandlers?: Object, onProgress?: onProgressHandler,
+ *     addHashToUrl?: boolean, showDialogs?: boolean}=, requestErrorHandler=, {finallyHandler?: Function, waitCursor?:
+ *     {text?: string, textTimeout?: number, timeout?: number}, cache?: {key: string, duration?: number,
+ *     cacheResolver?: cacheResolverCallback}, noReject?: boolean}=): Promise<*>)}}
  */
 const request = {
     fetch: httpRequest,
@@ -1040,7 +1127,8 @@ const request = {
     logLevel: LogLevel,
     method: HttpMethod,
     presets: requestPresets,
-    defaults: setRequestDefaults
+    defaults: setRequestDefaults,
+    full: fullRequest
 };
 
 export default request;
