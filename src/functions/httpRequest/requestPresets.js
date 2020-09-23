@@ -21,7 +21,9 @@ import ResponseType from './ResponseType';
 const requestPresets = {
     // the default config
     default: {
-        config: {},
+        config: {
+            useChaynsAuth: chayns.env.user.isAuthenticated
+        },
         options: {
             responseType: ResponseType.Json,
             logConfig: {
