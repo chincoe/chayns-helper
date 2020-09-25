@@ -27,6 +27,7 @@ module.exports = function resolveAbsoluteImport(importName) {
         fnsFormat: 'functions/timeHelper/fnsFormat',
         time: 'constants/time',
         roundDate: 'functions/timeHelper/roundDate',
+        extend: 'functions/extend',
         types: 'functions/types',
         showWaitCursor: 'functions/waitCursor',
         useTimeoutState: 'hooks/uniques/useTimeoutState',
@@ -46,7 +47,10 @@ module.exports = function resolveAbsoluteImport(importName) {
         useShallowSelector: 'hooks/useShallowSelector',
         generateAxis: 'functions/recharts/generateAxis',
         useAxis: 'functions/recharts/useAxis',
-        Guid: 'functions/guid'
+        Guid: 'functions/guid',
+        stringToColor: 'functions/colors/stringToColor',
+        hexToRgb: 'functions/colors/hexToRgb',
+        toHslColor: 'functions/colors/toHslColor'
     };
 
     if (!values[importName]) {

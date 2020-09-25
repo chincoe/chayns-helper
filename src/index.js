@@ -45,6 +45,10 @@ import time from './constants/time';
 import fnsFormat from './functions/timeHelper/fnsFormat';
 import roundDate from './functions/timeHelper/roundDate';
 import Guid from './functions/guid';
+import stringToColor from './functions/colors/stringToColor';
+import hexToRgb from './functions/colors/hexToRgb';
+import extend from './functions/extend';
+import toHslColor from './functions/colors/toHslColor';
 
 export {
     initChaynsHelper,
@@ -93,5 +97,9 @@ export {
     generateAxis,
     useAxis,
     statusAnimations,
-    Guid
+    Guid,
+    stringToColor,
+    hexToRgb,
+    extend,
+    toHslColor
 };
