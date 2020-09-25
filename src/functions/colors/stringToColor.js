@@ -1,4 +1,4 @@
-import hexToRgb from './hextToRgb';
+import hexToRgb from './hexToRgb';
 
 /**
  * Convert a string to a color
