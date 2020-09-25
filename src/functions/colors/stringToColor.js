@@ -11,6 +11,7 @@ const stringToColor = (str, rgb) => {
     let hash = 0;
     for (let i = 0; i < str.length; i += 1) {
         hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        hash &= hash; // Convert to 32bit integer
     }
     let color = '#';
     for (let i = 0; i < 3; i += 1) {

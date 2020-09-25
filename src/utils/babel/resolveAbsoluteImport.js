@@ -49,7 +49,8 @@ module.exports = function resolveAbsoluteImport(importName) {
         useAxis: 'functions/recharts/useAxis',
         Guid: 'functions/guid',
         stringToColor: 'functions/colors/stringToColor',
-        hexToRgb: 'functions/colors/hexToRgb'
+        hexToRgb: 'functions/colors/hexToRgb',
+        toHslColor: 'functions/colors/toHslColor'
     };
 
     if (!values[importName]) {

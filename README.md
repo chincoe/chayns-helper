@@ -56,11 +56,14 @@ initChaynsHelper({
 | [generateUUID](/src/functions/generateUid.js)| generate a GUID | |
 | [getHookState](/src/functions/getHookState.js)| get the current state of a hook via the setState function | |
 | [Guid](/src/functions/guid.js)| a Guid class | |
+| [hexToRgb](/src/functions/colors/hexToRgb.js)| Convert a hex color to an rgb object which returns a rgba() css function when stringified | |
 | [hideCWFooter](/src/functions/chaynsCalls/chaynsCalls.js)| hide the chayns web footer | |
 | [request](/src/functions/httpRequest/httpRequest.js)| fetch helper with loads of options, constants and a try/catch wrapper | [httpRequest.md](/src/functions/httpRequest/httpRequest.md) |
 | [localStorage](/src/other/localStorageHelper.js)| helper to cache httpRequest JSON strings in local storage | |
 | [setViewMode](/src/functions/chaynsCalls/chaynsCalls.js)| toggle exclusive mode | |
 | [shallowEqual](/src/functions/shallowEqual.js)| check 2 values for equality | |
+| [stringToColor](/src/functions/colors/stringToColor.js)| Convert a string to a hex color or rgb color object which returns a rgba() css function when stringified | |
+| [toHslColor](/src/functions/colors/toHslColor.js)| Convert a string or int to an hsl color object which returns a hsl() css function when stringified | |
 | [types](/src/functions/types.js)| a collection of helpers for types in general but especially objects and arrays. Includes: mapObject, reduceObject, mapObjectToArray, forEachKey, firstOrDefault, replaceAll, type checking | |
 | [showWaitCursor](/src/functions/waitCursor.js)| helper for chayns.showWaitCursor with a timeout before displaying ||
 | [WebSocketClient](/src/other/WsClient.js)| custom alternative to tobit-websocket-service-client | |
