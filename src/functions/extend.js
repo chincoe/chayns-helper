@@ -68,7 +68,8 @@ const extend = (element, mutate = false) => {
     if (types.isPromise(element)) {
         return new extendedPrototypes.Promise(element);
     }
-    console.error('[Types] Element is not of a valid extendable type');
+    // eslint-disable-next-line no-console
+    console.warn('[Types] Element is not of a valid extendable type');
     return element;
 };
 
