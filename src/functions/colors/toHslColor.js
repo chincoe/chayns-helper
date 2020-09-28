@@ -1,4 +1,8 @@
 /* eslint-disable no-bitwise */
+/**
+ * @param {string} string
+ * @returns {number}
+ */
 const getHashCode = (string) => {
     let hash = 0;
     if (string.length === 0) return hash;
