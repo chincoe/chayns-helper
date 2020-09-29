@@ -658,7 +658,7 @@ export function httpRequest(
                     '[HttpRequest]': 'color: #aaaaaa',
                     // eslint-disable-next-line max-len
                     [`Failed to fetch on ${processName}`]: ''
-                }), 'Input: ', input, err);
+                }), err, '\nInput: ', input);
                 // with the timeout aborted requests (e.g. by reloading) won't open this dialog
                 setTimeout(() => {
                     if (showDialogs) {
@@ -784,7 +784,7 @@ export function httpRequest(
                 // eslint-disable-next-line no-console
                 console.error(...colorLog({
                     '[HttpRequest]': 'color: #aaaaaa'
-                }), 'Input:', input, error);
+                }), error, '\nInput: ', input);
                 if (!ignoreErrors && useChaynsAuth && autoRefreshToken) {
                     try {
                         const jRes = await response.json();
@@ -818,7 +818,7 @@ export function httpRequest(
                 // eslint-disable-next-line no-console
                 console.error(...colorLog({
                     '[HttpRequest]': 'color: #aaaaaa'
-                }), 'Input:', input, error);
+                }), error, '\nInput: ', input);
                 tryReject(error, status);
             }
 
@@ -942,7 +942,7 @@ export function httpRequest(
                             '[HttpRequest]': 'color: #aaaaaa',
                             // eslint-disable-next-line max-len
                             [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
-                        }), 'Input:', input, err);
+                        }), err, '\nInput: ', input);
                         if (status >= 200 && status < 300) {
                             resolve(null);
                         } else {
@@ -963,7 +963,7 @@ export function httpRequest(
                             '[HttpRequest]': 'color: #aaaaaa',
                             // eslint-disable-next-line max-len
                             [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
-                        }), 'Input:', input, err);
+                        }), err, '\nInput: ', input);
                         if (status >= 200 && status < 300) {
                             resolve(null);
                         } else {
@@ -984,7 +984,7 @@ export function httpRequest(
                             '[HttpRequest]': 'color: #aaaaaa',
                             // eslint-disable-next-line max-len
                             [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
-                        }), 'Input:', input, err);
+                        }), err, '\nInput: ', input);
                         if (status >= 200 && status < 300) {
                             resolve(null);
                         } else {
