@@ -466,6 +466,13 @@ export function httpRequest(
                 ...(defaultConfig.options || {}),
                 ...(options || {})
             };
+
+            const input = {
+                address,
+                config,
+                options
+            };
+
             // eslint-disable-next-line no-param-reassign
             if (!processName) processName = 'HttpRequest';
             if (responseType != null && !Object.values(ResponseType).includes(responseType)) {
@@ -651,7 +658,7 @@ export function httpRequest(
                     '[HttpRequest]': 'color: #aaaaaa',
                     // eslint-disable-next-line max-len
                     [`Failed to fetch on ${processName}`]: ''
-                }), err);
+                }), 'Input: ', input, err);
                 // with the timeout aborted requests (e.g. by reloading) won't open this dialog
                 setTimeout(() => {
                     if (showDialogs) {
@@ -720,6 +727,7 @@ export function httpRequest(
                 data: {
                     additionalLogData,
                     address: requestAddress,
+                    input,
                     method,
                     body,
                     headers: {
@@ -753,6 +761,13 @@ export function httpRequest(
                         // ignored
                     }
                 }
+            } else if (responseType === ResponseType.Text || statusHandlers[status] === ResponseType.Text) {
+                try {
+                    const responseClone = response.clone();
+                    logData.responseBody = responseClone.text();
+                } catch (e) {
+                    // ignored
+                }
             }
 
             if (response && status < 400) {
@@ -769,7 +784,7 @@ export function httpRequest(
                 // eslint-disable-next-line no-console
                 console.error(...colorLog({
                     '[HttpRequest]': 'color: #aaaaaa'
-                }), error);
+                }), 'Input:', input, error);
                 if (!ignoreErrors && useChaynsAuth && autoRefreshToken) {
                     try {
                         const jRes = await response.json();
@@ -803,7 +818,7 @@ export function httpRequest(
                 // eslint-disable-next-line no-console
                 console.error(...colorLog({
                     '[HttpRequest]': 'color: #aaaaaa'
-                }), error);
+                }), 'Input:', input, error);
                 tryReject(error, status);
             }
 
@@ -927,7 +942,7 @@ export function httpRequest(
                             '[HttpRequest]': 'color: #aaaaaa',
                             // eslint-disable-next-line max-len
                             [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
-                        }), err);
+                        }), 'Input:', input, err);
                         if (status >= 200 && status < 300) {
                             resolve(null);
                         } else {
@@ -948,7 +963,7 @@ export function httpRequest(
                             '[HttpRequest]': 'color: #aaaaaa',
                             // eslint-disable-next-line max-len
                             [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
-                        }), err);
+                        }), 'Input:', input, err);
                         if (status >= 200 && status < 300) {
                             resolve(null);
                         } else {
@@ -969,7 +984,7 @@ export function httpRequest(
                             '[HttpRequest]': 'color: #aaaaaa',
                             // eslint-disable-next-line max-len
                             [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
-                        }), err);
+                        }), 'Input:', input, err);
                         if (status >= 200 && status < 300) {
                             resolve(null);
                         } else {
