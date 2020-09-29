@@ -777,7 +777,7 @@ export function httpRequest(
                 });
             } else if (response && status === 401) {
                 const error = new RequestError(`Status ${status} on ${processName}`, status);
-                log.warning({
+                log({
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`,
                 }, error);
