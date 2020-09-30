@@ -330,6 +330,31 @@ export const setRequestDefaults = (address, config, options) => {
     defaultConfig.options = options || {};
 };
 
+const mergeOptions = (obj1, obj2) => {
+    const result = new Map();
+    const keys1 = Object.keys(obj1);
+    for (let i = 0; i < keys1.length; i++) {
+        result.set(keys1[i], obj1[keys1[i]]);
+    }
+    const keys2 = Object.keys(obj2);
+    for (let i = 0; i < keys2.length; i++) {
+        if (!result.get(keys2[i])) {
+            result.set(keys2[i], obj2[keys2[i]]);
+        }
+    }
+    return result;
+};
+
+const getMapKeys = (map) => {
+    const result = [];
+    const keys = map.keys();
+    for (let i = 0; i < map.size; i++) {
+        const { value } = keys.next();
+        result.push(value);
+    }
+    return result;
+};
+
 /**
  * @callback onProgressHandler
  * @param {number} percentage - Percentage of content downloaded
@@ -413,7 +438,7 @@ export function httpRequest(
                  * Defaults: status<400 : info, status=401: warning, else: error
                  * @type {Object.<string|RegExp,LogLevel|string>}
                  */
-                logConfig = {},
+                // logConfig = {},
                 // bool|number[]: don't throw errors on error status codes, return null instead
                 ignoreErrors = false,
                 // bool: use fetch(), use XMLHttpRequest otherwise
@@ -433,7 +458,7 @@ export function httpRequest(
                  * - handler can be async and will be awaited
                  * => Use this to get jsonBody on error status codes or prefen .json() on 204
                  */
-                statusHandlers = {},
+                // statusHandlers = {},
                 /* function: Enables you to monitor download progress. Receives params (percentage, loaded, total)
                  * - CAUTION: This disallows using .json() or .blob() on the body unless you use XMLHttpRequest.
                  *   A property "stringBody" is available instead. responseTypes other than "response" will still work.
@@ -444,13 +469,13 @@ export function httpRequest(
                 internalRequestGuid = generateUUID()
             } = {
                 responseType: ResponseType.Json,
-                logConfig: {},
+                // logConfig: {},
                 ignoreErrors: false,
                 useFetchApi: true,
                 stringifyBody: true,
                 additionalLogData: {},
                 autoRefreshToken: true,
-                statusHandlers: {},
+                // statusHandlers: {},
                 onProgress: null,
                 addHashToUrl: false,
                 ...(defaultConfig.options || {}),
@@ -463,9 +488,18 @@ export function httpRequest(
                 options
             };
 
+            // properly merge the status handlers and log config of options and default options. The function returns a
+            // map to have a reliable key order to ensure that all options have a higher priority than default options
+            const statusHandlers = mergeOptions(
+                (options?.statusHandlers || {}),
+                (defaultConfig?.options?.statusHandlers || {})
+            );
+            const logConfig = mergeOptions((options?.logConfig || {}), (defaultConfig?.options?.logConfig || {}));
+
             // eslint-disable-next-line no-param-reassign
             if (!processName) processName = 'HttpRequest';
-            if (responseType != null && !Object.values(ResponseType).includes(responseType)) {
+            if (responseType != null && !Object.values(ResponseType)
+                .includes(responseType)) {
                 console.error(
                     ...colorLog({
                         '[HttpRequest]': 'color: #aaaaaa',
@@ -538,20 +572,25 @@ export function httpRequest(
              * @param {?number} status
              * @param {boolean} force
              */
-            const tryReject = (err = null, status = null, force = false) => {
-                const handlerKeys = Object.keys(statusHandlers);
+            const tryReject = async (err = null, status = null, force = false) => {
+                const handlerKeys = getMapKeys(statusHandlers);
                 const statusHandlerKey = handlerKeys.find((k) => k === `${status}` || stringToRegex(k)
                     .test(`${status}`));
-                if (statusHandlerKey && statusHandlers[statusHandlerKey] !== ResponseType.Error
-                    && !force) {
-                    if (status === -1) {
-                        const handler = statusHandlers[statusHandlerKey];
+                if (statusHandlerKey && statusHandlers.get(statusHandlerKey) !== ResponseType.Error
+                    && (!force || status === 1)) {
+                    if (status === 1) {
+                        const handler = statusHandlers.get(statusHandlerKey);
                         if (types.isFunction(handler)) {
-                            resolve(handler(err));
-                        } else if (Object.values(ResponseType).includes(handler)) {
+                            resolve(await handler(err));
+                            return;
+                        }
+                        if (Object.values(ResponseType).includes(handler)) {
                             switch (handler) {
                                 case ResponseType.Object:
-                                    resolve({ status, data: null });
+                                    resolve({
+                                        status,
+                                        data: null
+                                    });
                                     return;
                                 case ResponseType.Response:
                                     resolve({ status });
@@ -564,15 +603,18 @@ export function httpRequest(
                     }
                     return;
                 }
-                if (statusHandlers[status]
-                    && statusHandlers[status] === ResponseType.Error) {
+                if (statusHandlers.has(`${status}`)
+                    && statusHandlers.get(`${status}`) === ResponseType.Error) {
                     reject(err);
                 }
                 if (ignoreErrors === true || (status && types.isArray(ignoreErrors) && ignoreErrors.includes(status))) {
                     if (chayns.utils.isNumber(status)) {
                         switch (responseType) {
                             case ResponseType.Object:
-                                resolve({ status, data: null });
+                                resolve({
+                                    status,
+                                    data: null
+                                });
                                 return;
                             case ResponseType.None:
                                 resolve();
@@ -668,11 +710,12 @@ export function httpRequest(
                 }
             } catch (err) {
                 let failedToFetchLog = logger.warning;
-                const levelKey = Object.keys(logConfig)
-                    .find((key) => (/^-?[\d]$/.test(key) && parseInt(key, 10) === -1)
-                        || stringToRegex(key).test('-1'));
-                if (levelKey && logConfig[levelKey]) {
-                    switch (logConfig[levelKey]) {
+                const levelKey = getMapKeys(logConfig)
+                    .find((key) => (/^-?[\d]$/.test(key) && parseInt(key, 10) === 1)
+                        || stringToRegex(key)
+                            .test('1'));
+                if (levelKey) {
+                    switch (logConfig.get(levelKey)) {
                         case LogLevel.info:
                             failedToFetchLog = logger.info;
                             break;
@@ -716,8 +759,8 @@ export function httpRequest(
                     // eslint-disable-next-line max-len
                     [`Failed to fetch on ${processName}`]: ''
                 }), err, '\nInput: ', input);
-                err.statusCode = -1;
-                tryReject(err, -1, true);
+                err.statusCode = 1;
+                tryReject(err, 1, true);
                 return;
             }
 
@@ -726,7 +769,8 @@ export function httpRequest(
             const log = (() => {
                 const levelKey = Object.keys(logConfig)
                     .find((key) => (/^[\d]$/.test(key) && parseInt(key, 10) === status)
-                        || stringToRegex(key).test(status));
+                        || stringToRegex(key)
+                            .test(status));
                 if (levelKey && logConfig[levelKey]) {
                     switch (logConfig[levelKey]) {
                         case LogLevel.info:
@@ -799,8 +843,8 @@ export function httpRequest(
 
             if (responseType === ResponseType.Json
                 || responseType === ResponseType.Object
-                || statusHandlers[status] === ResponseType.Json
-                || statusHandlers[status] === ResponseType.Object) {
+                || statusHandlers.get(`${status}`) === ResponseType.Json
+                || statusHandlers.get(`${status}`) === ResponseType.Object) {
                 try {
                     const responseClone = response.clone();
                     logData.responseBody = await responseClone.json();
@@ -812,7 +856,7 @@ export function httpRequest(
                         // ignored
                     }
                 }
-            } else if (responseType === ResponseType.Text || statusHandlers[status] === ResponseType.Text) {
+            } else if (responseType === ResponseType.Text || statusHandlers.get(`${status}`) === ResponseType.Text) {
                 try {
                     const responseClone = response.clone();
                     logData.responseBody = responseClone.text();
@@ -884,11 +928,11 @@ export function httpRequest(
              */
 
             // statusHandlers[status]
-            if (statusHandlers[status]) {
-                if (types.isFunction(statusHandlers[status])) {
-                    resolve(await statusHandlers[status](response));
+            if (statusHandlers.has(`${status}`)) {
+                if (types.isFunction(statusHandlers.get(`${status}`))) {
+                    resolve(await statusHandlers.get(`${status}`)(response));
                 } else {
-                    switch (statusHandlers[status]) {
+                    switch (statusHandlers.get(`${status}`)) {
                         case ResponseType.Json:
                             await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
                             return;
@@ -915,18 +959,18 @@ export function httpRequest(
                 }
             }
             // statusHandlers[regex]
-            if (!types.isNullOrEmpty(statusHandlers)) {
-                const keys = Object.keys(statusHandlers);
+            if (!statusHandlers || statusHandlers.size === 0) {
+                const keys = getMapKeys(statusHandlers);
                 for (let i = 0; i < types.length(keys); i += 1) {
                     const regExp = stringToRegex(keys[i]);
-                    if (regExp.test(status?.toString()) && types.isFunction(statusHandlers[keys[i]])) {
+                    if (regExp.test(status?.toString()) && types.isFunction(statusHandlers.get(keys[i]))) {
                         // eslint-disable-next-line no-await-in-loop
-                        resolve(await statusHandlers[keys[i]](response));
+                        resolve(await statusHandlers.get(keys[i])(response));
                         return;
                     }
                     if (regExp.test(status?.toString()) && Object.values(ResponseType)
-                        .includes(statusHandlers[keys[i]])) {
-                        switch (statusHandlers[keys[i]]) {
+                        .includes(statusHandlers.get(keys[i]))) {
+                        switch (statusHandlers.get(keys[i])) {
                             case ResponseType.Json:
                                 // eslint-disable-next-line no-await-in-loop
                                 await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
@@ -1003,7 +1047,10 @@ export function httpRequest(
                 }
                 if (responseType === ResponseType.Object) {
                     try {
-                        resolve({ status, data: JSON.parse(result) });
+                        resolve({
+                            status,
+                            data: JSON.parse(result)
+                        });
                     } catch (err) {
                         logger.warning({
                             message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,

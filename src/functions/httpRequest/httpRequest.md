@@ -1,7 +1,7 @@
 ## [Request](httpRequest.js)
 
 ### request.fetch(address, config, processName, options)
-A fetch helper function, meant to be called in a api js file (e.g. `getBoard.js`).
+A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js`).
 
 | Parameter              | Description                 | Type | Default / required |
 |------------------------|-----------------------------|------|-----------|
@@ -13,7 +13,7 @@ A fetch helper function, meant to be called in a api js file (e.g. `getBoard.js`
 |options| Options to configure the request helper | Object | `{}` |
 |options.responseType | expected response format (json/blob/Object/Response) | ResponseType/string | `'json'` |
 |options.logConfig | Configure the log level of specific status codes | Object<statusCode/regex, LogLevel> | `{"[1-3][\\d]{2}":'info', 401: 'warning', "[\\d]+": 'error'}`|
-|options.ignoreErrors | Don't throw errors on error status codes, return null instead. Response types "Object" and "Response" will return an object that includes the status. | boolean / Array<statusCode> | `false` |
+|options.ignoreErrors | Don't throw errors on error status codes, return null instead. Response types "Object" and "Response" will return an object that includes the status to make sure the status is always available. | boolean / Array<statusCode> | `false` |
 |options.useFetchApi | Use fetch(), use XMLHttpRequest otherwise  | boolean | `true` |
 |options.stringifyBody | Call JSON.stringify() on config.body before passing it to fetch() | boolean | `true` |
 |options.additionalLogData | This data will be logged with the request logs. Doesn't affect functionality at all | Object | `{}`|
@@ -21,10 +21,17 @@ A fetch helper function, meant to be called in a api js file (e.g. `getBoard.js`
 |options.statusHandlers| Handle responses for specific status codes using the codes or regex. Format: <br> 1.`{ [status/regex] : (response) => { my code }, ... }`<br> 2. `{ [status/regex] : responseType, ... }` | Object<status/regex, responseType/responseHandler> | `{}` |
 |options.onProgress| *Experimental feature*: Callback that will allow you to monitor download progress | function | `null` |
 |options.addHashToUrl | Add a random hash to the request url | boolean | `false`|
-|options.showDialogs | Show a dialog if the connection fails | boolean | `true`|
 | **@returns** | Promise of: Response specified via response type or throws an error | Promise<Json/String/Object/Blob/Response/null> | |
 
-> **Note**: A "Failed to fetch" Error will be treated as a status code `-1` regarding options.statusHandlers, options.logConfig as well as the return value if options.ignoreErrors is true 
+> **Note**: A "Failed to fetch" Error will be treated as a status code `1` regarding options.statusHandlers, options.logConfig as well as the return values if options.ignoreErrors is true 
+
+> **Note**: The priority for statusHandlers is based on object key order.
+> Exceptions:
+> * Specific options will always have a higher priority than the defaults
+> * Keys that target a single status have higher priority than a regex key
+> 
+> To keep the proper order, please make sure to specify all regex keys like `{[/myRegex/]: ...}` and **not** like `{'myRegex': ...}`.
+> The second notation might still work but will result in issues regarding priorities compared to single status code handlers or other regexes.
 
 #### Default behavior
 This helper works with the following presumptions:
@@ -47,10 +54,10 @@ const response = request.fetch(
     'getExample', 
     {
         logConfig: {
-            "3[0-9]{2}": request.LogLevel.warning,
+            [/3[0-9]{2}/]: request.LogLevel.warning,
             // computed property names using regex are viable as well
             [/4[\d]/]: request.LogLevel.error,
-            "500": request.LogLevel.critical
+            500: request.LogLevel.critical
         }
     }
 );
@@ -63,8 +70,8 @@ const response = request.fetch(
     'getExample', 
     {
         statusHandlers: {
-            "(204)|3[0-9]{2}": (response) => null,
-            "400": request.responseType.Json
+            [/(204)|3[0-9]{2}/]: (response) => null,
+            400: request.responseType.Json
         }   
     }
 );
@@ -94,10 +101,10 @@ request.defaults('https://example.server.com/MyApp/v1.0', // notice how the base
         responseType: request.responseType.Object,
         // log 2xx as info, 3xx as warning, 401 as warning and anything else as error
         logConfig: {
-            "2[\\d]{2}": 'info',
-            "3[\\d]{2}": 'warning',
+            [/2[\d]{2}/]: 'info',
+            [/3[\d]{2}/]: 'warning',
             401: 'warning',
-            "[\\d]+": 'error'
+            [/[\d]+/]: 'error'
         },
         // don't try to get json body on 204
         statusHandlers: {
@@ -242,9 +249,9 @@ const requestPresets = {
         options: {
             responseType: ResponseType.Json,
             logConfig: {
-                '[1-3][\\d]{2}': LogLevel.info,
+                [/[1-3][\d]{2}/]: LogLevel.info,
                 401: LogLevel.warning,
-                '[\\d]+': LogLevel.error
+                [/[\d]+/]: LogLevel.error
             },
             ignoreErrors: false,
             useFetchApi: true,
@@ -269,11 +276,11 @@ const requestPresets = {
         options: {
             responseType: ResponseType.Object,
             logConfig: {
-                '2[\\d]{2}': LogLevel.info,
-                '3[\\d]{2}': LogLevel.warning,
+                [/2[\d]{2}/]: LogLevel.info,
+                [/3[\d]{2}/]: LogLevel.warning,
                 401: LogLevel.warning,
-                '[\\d]+': LogLevel.error,
-                '.*': LogLevel.critical
+                [/[\d]+/]: LogLevel.error,
+                [/.*/]: LogLevel.critical
             },
             ignoreErrors: false,
             useFetchApi: true,
@@ -282,7 +289,7 @@ const requestPresets = {
             autoRefreshToken: true,
             statusHandlers: {
                 204: ResponseType.Response,
-                '3[\\d]{2}': ResponseType.Response
+                [/3[\d]{2}/]: ResponseType.Response
             },
             onProgress: null,
             addHashToUrl: false,
@@ -298,11 +305,11 @@ const requestPresets = {
             responseType: ResponseType.Json,
             logConfig: {
                 200: LogLevel.info,
-                '[\\d]+': LogLevel.error,
-                '.*': LogLevel.critical
+                [/[\d]+/]: LogLevel.error,
+                [/.*/]: LogLevel.critical
             },
             statusHandlers: {
-                '(?!200)': ResponseType.Error
+                [/(?!200)/]: ResponseType.Error
             },
             ignoreErrors: false,
             useFetchApi: true,
@@ -322,11 +329,11 @@ const requestPresets = {
         options: {
             responseType: ResponseType.Object,
             logConfig: {
-                '2[\\d]{2}': LogLevel.info,
-                '3[\\d]{2}': LogLevel.warning,
+                [/2[\d]{2}/]: LogLevel.info,
+                [/3[\d]{2}/]: LogLevel.warning,
                 401: LogLevel.warning,
-                '[\\d]+': LogLevel.error,
-                '.*': LogLevel.critical
+                [/[\d]+/]: LogLevel.error,
+                [/.*/]: LogLevel.critical
             },
             ignoreErrors: true,
             useFetchApi: true,
@@ -335,8 +342,8 @@ const requestPresets = {
             autoRefreshToken: true,
             statusHandlers: {
                 204: ResponseType.Response,
-                '2[\\d]{2}': ResponseType.Object,
-                '.*': ResponseType.Response
+                [/2[\d]{2}/]: ResponseType.Object,
+                [/.*/]: ResponseType.Response
             },
             onProgress: null,
             addHashToUrl: false,
