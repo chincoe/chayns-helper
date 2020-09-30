@@ -6,6 +6,7 @@ import postcss from 'rollup-plugin-postcss';
 import alias from '@rollup/plugin-alias';
 import external from 'rollup-plugin-peer-deps-external';
 import autoprefixer from 'autoprefixer';
+import cleaner from 'rollup-plugin-cleaner';
 
 const pkg = require('./package.json');
 
@@ -22,6 +23,12 @@ export default {
     },
     external: [...Object.keys(pkg.dependencies), ...Object.keys(pkg.peerDependencies)],
     plugins: [
+        cleaner({
+            targets: [
+                './dist/',
+                './lib/'
+            ]
+        }),
         external({
             packageJsonPath: 'src/package.json'
         }),

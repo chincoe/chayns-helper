@@ -52,16 +52,9 @@ import LogLevel from './LogLevel';
  * @param {function} [options.finallyHandler] - Function that should always be executed after the request
  * @param {boolean|waitCursorOptions} [options.waitCursor] - Show chayns waitCursor. Set true to show. Set to an object
  *     for more options
- * @param {string} [options.waitCursor.text=undefined] - Text to be displayed after the textTimeout
- * @param {number} [options.waitCursor.textTimeout=5000] - Timeout after which the text appears in the wait cursor
- * @param {number} [options.waitCursor.timeout=300] - Timeout after which the waitCursor is displayed
  * @param {string|cacheOptions} [options.cache]  (optional) string/object: Set to a string to cache the request in
  *     local storage. Only works if the request returns appropriate data, e.g. a string OR if a cacheResolver is
  *     defined. Set to an object for more detailed cache control.
- * @param {string} options.cache.key - The name used to cache this asset in local storage
- * @param {number} [options.cache.duration=5] - The duration in minutes after which the cache will be refreshed
- * @param {cacheResolverCallback} [options.cache.cacheResolver] - Function to transform the cache content before
- *     setting, e.g. reading a request body
  * @param {boolean} [options.noReject=false] - Do not reject promise on error, resolve with null instead
  * @throws {RequestError}
  * @public
