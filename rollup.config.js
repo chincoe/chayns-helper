@@ -10,17 +10,12 @@ import cleaner from 'rollup-plugin-cleaner';
 
 const pkg = require('./package.json');
 
-const env = process.env.NODE_ENV;
-
 export default {
     input: 'src/index.js',
-    output: {
-        file: {
-            es: pkg.module,
-            cjs: pkg.main,
-        }[env],
-        format: env
-    },
+    output: [
+        { file: pkg.main, format: 'cjs' },
+        { file: pkg.module, format: 'esm' },
+    ],
     external: [...Object.keys(pkg.dependencies), ...Object.keys(pkg.peerDependencies)],
     plugins: [
         cleaner({
