@@ -536,6 +536,11 @@ export function httpRequest(
                 });
             };
 
+            /**
+             * @param {Error|RequestError} err
+             * @param {?number} status
+             * @param {boolean} force
+             */
             const tryReject = (err = null, status = null, force = false) => {
                 if (statusHandlers[status]
                     && (
@@ -550,9 +555,29 @@ export function httpRequest(
                     && statusHandlers[status] === ResponseType.Error) {
                     reject(err);
                 }
-                if (ignoreErrors === true) {
-                    resolve(null);
-                } else if (status && types.isArray(ignoreErrors) && ignoreErrors.includes(status)) {
+                if (ignoreErrors === true || (status && types.isArray(ignoreErrors) && ignoreErrors.includes(status))) {
+                    if (chayns.utils.isNumber(status)) {
+                        switch (responseType) {
+                            case ResponseType.Object:
+                                resolve({ status, data: null });
+                                return;
+                            case ResponseType.None:
+                                resolve();
+                                return;
+                            case ResponseType.Error:
+                                reject(new RequestError(`Status ${status} on ${processName}`, status));
+                                return;
+                            case ResponseType.Response:
+                                resolve({ status });
+                                return;
+                            case ResponseType.Text:
+                            case ResponseType.Blob:
+                            case ResponseType.Json:
+                            default:
+                                resolve(null);
+                                return;
+                        }
+                    }
                     resolve(null);
                 } else {
                     reject(err);
@@ -629,7 +654,33 @@ export function httpRequest(
                     }))();
                 }
             } catch (err) {
-                logger.warning({
+                let failedToFetchLog = logger.warning;
+                const levelKey = Object.keys(logConfig)
+                    .find((key) => (/^-?[\d]$/.test(key) && parseInt(key, 10) === -1)
+                        || stringToRegex(key).test('-1'));
+                if (levelKey && logConfig[levelKey]) {
+                    switch (logConfig[levelKey]) {
+                        case LogLevel.info:
+                            failedToFetchLog = logger.info;
+                            break;
+                        case LogLevel.warning:
+                            failedToFetchLog = logger.warning;
+                            break;
+                        case LogLevel.error:
+                            failedToFetchLog = logger.error;
+                            break;
+                        case LogLevel.critical:
+                            failedToFetchLog = logger.critical;
+                            break;
+                        case LogLevel.none:
+                            // eslint-disable-next-line no-console
+                            failedToFetchLog = console.warn;
+                            break;
+                        default:
+                            failedToFetchLog = logger.warning;
+                    }
+                }
+                failedToFetchLog({
                     message: `[HttpRequest] Failed to fetch on ${processName}`,
                     data: {
                         address: requestAddress,

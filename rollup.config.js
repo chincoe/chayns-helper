@@ -3,7 +3,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import autoExternal from 'rollup-plugin-auto-external';
 import postcss from 'rollup-plugin-postcss';
-import alias from '@rollup/plugin-alias';
 import external from 'rollup-plugin-peer-deps-external';
 import autoprefixer from 'autoprefixer';
 

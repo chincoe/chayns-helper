@@ -1,6 +1,6 @@
 {
   "name": "chayns-helper",
-  "version": "1.2.9",
+  "version": "1.2.10",
   "description": "my personal helpers for chayns development",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
