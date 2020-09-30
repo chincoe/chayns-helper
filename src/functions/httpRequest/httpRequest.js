@@ -539,13 +539,29 @@ export function httpRequest(
              * @param {boolean} force
              */
             const tryReject = (err = null, status = null, force = false) => {
-                if (statusHandlers[status]
-                    && (
-                        types.isFunction(statusHandlers[status])
-                        || Object.values(ResponseType).includes(statusHandlers[status])
-                    )
-                    && statusHandlers[status] !== ResponseType.Error
+                const handlerKeys = Object.keys(statusHandlers);
+                const statusHandlerKey = handlerKeys.find((k) => k === `${status}` || stringToRegex(k)
+                    .test(`${status}`));
+                if (statusHandlerKey && statusHandlers[statusHandlerKey] !== ResponseType.Error
                     && !force) {
+                    if (status === -1) {
+                        const handler = statusHandlers[statusHandlerKey];
+                        if (types.isFunction(handler)) {
+                            resolve(handler(err));
+                        } else if (Object.values(ResponseType).includes(handler)) {
+                            switch (handler) {
+                                case ResponseType.Object:
+                                    resolve({ status, data: null });
+                                    return;
+                                case ResponseType.Response:
+                                    resolve({ status });
+                                    return;
+                                default:
+                                    resolve(null);
+                                    return;
+                            }
+                        }
+                    }
                     return;
                 }
                 if (statusHandlers[status]
