@@ -701,7 +701,7 @@ export function httpRequest(
                     [`Failed to fetch on ${processName}`]: ''
                 }), err, '\nInput: ', input);
                 err.statusCode = -1;
-                tryReject(err, null, true);
+                tryReject(err, -1, true);
                 return;
             }
 
