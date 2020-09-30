@@ -309,7 +309,7 @@ const requestPresets = {
                 [/.*/]: LogLevel.critical
             },
             statusHandlers: {
-                '(?!200)': ResponseType.Error
+                [/(?!200)/]: ResponseType.Error
             },
             ignoreErrors: false,
             useFetchApi: true,
