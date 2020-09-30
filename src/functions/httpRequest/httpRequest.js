@@ -322,7 +322,6 @@ export const defaultConfig = {
  *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
  *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
- * @param {boolean} [options.showDialogs=true] - Show a dialog when you have no connection
  * @public
  */
 export const setRequestDefaults = (address, config, options) => {
@@ -385,7 +384,6 @@ export const setRequestDefaults = (address, config, options) => {
  *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
  *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
- * @param {boolean} [options.showDialogs=true] - Show a dialog when you have no connection
  * @async
  * @public
  * @throws {RequestError}
@@ -443,7 +441,6 @@ export function httpRequest(
                 onProgress = null,
                 // adds a random number as url param to bypass the browser cache
                 addHashToUrl = false,
-                showDialogs = true,
                 internalRequestGuid = generateUUID()
             } = {
                 responseType: ResponseType.Json,
@@ -703,12 +700,6 @@ export function httpRequest(
                     // eslint-disable-next-line max-len
                     [`Failed to fetch on ${processName}`]: ''
                 }), err, '\nInput: ', input);
-                // with the timeout aborted requests (e.g. by reloading) won't open this dialog
-                setTimeout(() => {
-                    if (showDialogs) {
-                        chayns.dialog.alert('', 'Verbindung fehlgeschlagen. Versuche es später nochmal.');
-                    }
-                }, 300);
                 err.statusCode = -1;
                 tryReject(err, null, true);
                 return;
@@ -1108,7 +1099,6 @@ export function httpRequest(
  *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
  *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
- * @param {boolean} [options.showDialogs=true] - Show a dialog when you have no connection
  * @param {requestErrorHandler} [errorHandler=undefined] - Function to handle error statusCodes. Defaults to
  *     defaultErrorHandler.js
  * @param {Object} [handlerOptions={}] - other options for this wrapper
@@ -1142,42 +1132,6 @@ function fullRequest(address, config, processName, options, errorHandler, handle
     ), errorHandler, handlerOptions);
 }
 
-/**
- * @type {{responseType: Object, presets: {default: {options: {logConfig: {'401': string, '[\\d]+': string,
- *     '[1-3][\\d]{2}': string}, responseType: string, additionalLogData: {}, statusHandlers: {}, onProgress: null,
- *     stringifyBody: boolean, autoRefreshToken: boolean, showDialogs: boolean, useFetchApi: boolean, addHashToUrl:
- *     boolean, ignoreErrors: boolean}, config: {}}, noErrors: {options: {logConfig: {'401': string, '2[\\d]{2}':
- *     string, '3[\\d]{2}': string, '[\\d]+': string, '.*': string}, responseType: string, additionalLogData: {},
- *     statusHandlers: {'204': string, '2[\\d]{2}': string, '.*': string}, onProgress: null, stringifyBody: boolean,
- *     autoRefreshToken: boolean, showDialogs: boolean, useFetchApi: boolean, addHashToUrl: boolean, ignoreErrors:
- *     boolean}, config: {cache: string}}, strict: {options: {logConfig: {'200': string, '[\\d]+': string, '.*':
- *     string}, responseType: string, statusHandlers: {'(?!200)': string}, additionalLogData: {}, onProgress: null,
- *     stringifyBody: boolean, autoRefreshToken: boolean, showDialogs: boolean, useFetchApi: boolean, addHashToUrl:
- *     boolean, ignoreErrors: boolean}, config: {cache: string}}, extended: {options: {logConfig: {'401': string,
- *     '2[\\d]{2}': string, '3[\\d]{2}': string, '[\\d]+': string, '.*': string}, responseType: string,
- *     additionalLogData: {}, statusHandlers: {'204': string, '3[\\d]{2}': string}, onProgress: null, stringifyBody:
- *     boolean, autoRefreshToken: boolean, showDialogs: boolean, useFetchApi: boolean, addHashToUrl: boolean,
- *     ignoreErrors: boolean}, config: {headers: {CacheControl: string, Pragma: string}, cache: string}}}, logLevel:
- *     {critical: string, warning: string, none: string, error: string, info: string}, method: {Delete: string, Post:
- *     string, Get: string, Patch: string, Put: string}, defaults: setRequestDefaults, fetch: (function(string,
- *     {method?: (HttpMethod|string), headers?: Object, useChaynsAuth?: boolean, body?: *, cache?: string, referrer?:
- *     string, referrerPolicy?: string, mode?: string, redirect?: string, integrity?: string, keepalive?: boolean,
- *     window?: Window, signal?: *}=, string=, {responseType?: (ResponseType|string), ignoreErrors?:
- *     (boolean|number[]), useFetchApi?: boolean, logConfig?: Object<string, LogLevel>, stringifyBody?: boolean,
- *     additionalLogData?: Object, autoRefreshToken?: boolean, statusHandlers?: Object, onProgress?: onProgressHandler,
- *     addHashToUrl?: boolean, showDialogs?: boolean}=): Promise<Response|objectResponse|Blob|Object>), handle:
- *     (function(Promise<*>, requestErrorHandler=, {finallyHandler?: Function, waitCursor?: {text?: string,
- *     textTimeout?: number, timeout?: number}, cache?: {key: string, duration?: number, cacheResolver?:
- *     cacheResolverCallback}, noReject?: boolean}=): Promise<*>), error: RequestError, full: (function(string,
- *     {method?: (HttpMethod|string), headers?: Object, useChaynsAuth?: boolean, body?: *, cache?: string, referrer?:
- *     string, referrerPolicy?: string, mode?: string, redirect?: string, integrity?: string, keepalive?: boolean,
- *     window?: Window, signal?: *}=, string=, {responseType?: (ResponseType|string), ignoreErrors?:
- *     (boolean|number[]), useFetchApi?: boolean, logConfig?: Object<string, LogLevel>, stringifyBody?: boolean,
- *     additionalLogData?: Object, autoRefreshToken?: boolean, statusHandlers?: Object, onProgress?: onProgressHandler,
- *     addHashToUrl?: boolean, showDialogs?: boolean}=, requestErrorHandler=, {finallyHandler?: Function, waitCursor?:
- *     {text?: string, textTimeout?: number, timeout?: number}, cache?: {key: string, duration?: number,
- *     cacheResolver?: cacheResolverCallback}, noReject?: boolean}=): Promise<*>)}}
- */
 const request = {
     fetch: httpRequest,
     handle: handleRequest,
