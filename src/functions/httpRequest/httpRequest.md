@@ -1,7 +1,7 @@
 ## [Request](httpRequest.js)
 
 ### request.fetch(address, config, processName, options)
-A fetch helper function, meant to be called in a api js file (e.g. `getBoard.js`).
+A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js`).
 
 | Parameter              | Description                 | Type | Default / required |
 |------------------------|-----------------------------|------|-----------|
@@ -13,7 +13,7 @@ A fetch helper function, meant to be called in a api js file (e.g. `getBoard.js`
 |options| Options to configure the request helper | Object | `{}` |
 |options.responseType | expected response format (json/blob/Object/Response) | ResponseType/string | `'json'` |
 |options.logConfig | Configure the log level of specific status codes | Object<statusCode/regex, LogLevel> | `{"[1-3][\\d]{2}":'info', 401: 'warning', "[\\d]+": 'error'}`|
-|options.ignoreErrors | Don't throw errors on error status codes, return null instead. Response types "Object" and "Response" will return an object that includes the status. | boolean / Array<statusCode> | `false` |
+|options.ignoreErrors | Don't throw errors on error status codes, return null instead. Response types "Object" and "Response" will return an object that includes the status to make sure the status is always available. | boolean / Array<statusCode> | `false` |
 |options.useFetchApi | Use fetch(), use XMLHttpRequest otherwise  | boolean | `true` |
 |options.stringifyBody | Call JSON.stringify() on config.body before passing it to fetch() | boolean | `true` |
 |options.additionalLogData | This data will be logged with the request logs. Doesn't affect functionality at all | Object | `{}`|
@@ -23,10 +23,15 @@ A fetch helper function, meant to be called in a api js file (e.g. `getBoard.js`
 |options.addHashToUrl | Add a random hash to the request url | boolean | `false`|
 | **@returns** | Promise of: Response specified via response type or throws an error | Promise<Json/String/Object/Blob/Response/null> | |
 
-> **Note**: A "Failed to fetch" Error will be treated as a status code `1` regarding options.statusHandlers, options.logConfig as well as the return value if options.ignoreErrors is true 
+> **Note**: A "Failed to fetch" Error will be treated as a status code `1` regarding options.statusHandlers, options.logConfig as well as the return values if options.ignoreErrors is true 
 
-> **Note**: The priority for statusHandlers is based on object key order, though the specific options will always have a higher priority than the defaults.
-> To keep the proper order, please make sure to specify all regex keys like `{[/myRegex/]: ...}` and not like `{'myRegex': ...}`.
+> **Note**: The priority for statusHandlers is based on object key order.
+> Exceptions:
+> * Specific options will always have a higher priority than the defaults
+> * Keys that target a single status have higher priority than a regex key
+> 
+> To keep the proper order, please make sure to specify all regex keys like `{[/myRegex/]: ...}` and **not** like `{'myRegex': ...}`.
+> The second notation might still work but will result in issues regarding priorities compared to single status code handlers or other regexes.
 
 #### Default behavior
 This helper works with the following presumptions:
