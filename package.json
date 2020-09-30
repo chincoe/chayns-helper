@@ -1,9 +1,9 @@
 {
   "name": "chayns-helper",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "my personal helpers for chayns development",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "module": "dist/index.esm.js",
   "scripts": {
     "prepublishOnly": "npm run build",
     "build": "npm run build:sass && npm run build:es && npm run build:lib:es",
