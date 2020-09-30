@@ -1,7 +1,7 @@
 import logger from 'chayns-logger';
 import colorLog from '../../_internal/colorLog';
 import localStorage from '../../other/localStorageHelper';
-import defaultErrorHandler from '../defaultErrorHandler';
+import { helperConfig } from '../../config/chaynsHelperConfig';
 import generateUUID from '../generateUid';
 import types from '../types';
 import showWaitCursor from '../waitCursor';
@@ -52,16 +52,9 @@ import LogLevel from './LogLevel';
  * @param {function} [options.finallyHandler] - Function that should always be executed after the request
  * @param {boolean|waitCursorOptions} [options.waitCursor] - Show chayns waitCursor. Set true to show. Set to an object
  *     for more options
- * @param {string} [options.waitCursor.text=undefined] - Text to be displayed after the textTimeout
- * @param {number} [options.waitCursor.textTimeout=5000] - Timeout after which the text appears in the wait cursor
- * @param {number} [options.waitCursor.timeout=300] - Timeout after which the waitCursor is displayed
  * @param {string|cacheOptions} [options.cache]  (optional) string/object: Set to a string to cache the request in
  *     local storage. Only works if the request returns appropriate data, e.g. a string OR if a cacheResolver is
  *     defined. Set to an object for more detailed cache control.
- * @param {string} options.cache.key - The name used to cache this asset in local storage
- * @param {number} [options.cache.duration=5] - The duration in minutes after which the cache will be refreshed
- * @param {cacheResolverCallback} [options.cache.cacheResolver] - Function to transform the cache content before
- *     setting, e.g. reading a request body
  * @param {boolean} [options.noReject=false] - Do not reject promise on error, resolve with null instead
  * @throws {RequestError}
  * @public
@@ -92,7 +85,7 @@ export function handleRequest(
             } = (types.isObject(waitCursor)
                  ? waitCursor
                  : {});
-            const handleErrors = errorHandler || defaultErrorHandler;
+            const handleErrors = errorHandler || helperConfig.errorHandler;
             let hideWaitCursor = () => {};
             try {
                 if (useWaitCursor) hideWaitCursor = showWaitCursor({ text, textTimeout, timeout });
@@ -329,7 +322,6 @@ export const defaultConfig = {
  *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
  *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
- * @param {boolean} [options.showDialogs=true] - Show a dialog when you have no connection
  * @public
  */
 export const setRequestDefaults = (address, config, options) => {
@@ -392,7 +384,6 @@ export const setRequestDefaults = (address, config, options) => {
  *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
  *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
- * @param {boolean} [options.showDialogs=true] - Show a dialog when you have no connection
  * @async
  * @public
  * @throws {RequestError}
@@ -450,7 +441,6 @@ export function httpRequest(
                 onProgress = null,
                 // adds a random number as url param to bypass the browser cache
                 addHashToUrl = false,
-                showDialogs = true,
                 internalRequestGuid = generateUUID()
             } = {
                 responseType: ResponseType.Json,
@@ -543,6 +533,11 @@ export function httpRequest(
                 });
             };
 
+            /**
+             * @param {Error|RequestError} err
+             * @param {?number} status
+             * @param {boolean} force
+             */
             const tryReject = (err = null, status = null, force = false) => {
                 if (statusHandlers[status]
                     && (
@@ -557,9 +552,29 @@ export function httpRequest(
                     && statusHandlers[status] === ResponseType.Error) {
                     reject(err);
                 }
-                if (ignoreErrors === true) {
-                    resolve(null);
-                } else if (status && types.isArray(ignoreErrors) && ignoreErrors.includes(status)) {
+                if (ignoreErrors === true || (status && types.isArray(ignoreErrors) && ignoreErrors.includes(status))) {
+                    if (chayns.utils.isNumber(status)) {
+                        switch (responseType) {
+                            case ResponseType.Object:
+                                resolve({ status, data: null });
+                                return;
+                            case ResponseType.None:
+                                resolve();
+                                return;
+                            case ResponseType.Error:
+                                reject(new RequestError(`Status ${status} on ${processName}`, status));
+                                return;
+                            case ResponseType.Response:
+                                resolve({ status });
+                                return;
+                            case ResponseType.Text:
+                            case ResponseType.Blob:
+                            case ResponseType.Json:
+                            default:
+                                resolve(null);
+                                return;
+                        }
+                    }
                     resolve(null);
                 } else {
                     reject(err);
@@ -636,7 +651,33 @@ export function httpRequest(
                     }))();
                 }
             } catch (err) {
-                logger.warning({
+                let failedToFetchLog = logger.warning;
+                const levelKey = Object.keys(logConfig)
+                    .find((key) => (/^-?[\d]$/.test(key) && parseInt(key, 10) === -1)
+                        || stringToRegex(key).test('-1'));
+                if (levelKey && logConfig[levelKey]) {
+                    switch (logConfig[levelKey]) {
+                        case LogLevel.info:
+                            failedToFetchLog = logger.info;
+                            break;
+                        case LogLevel.warning:
+                            failedToFetchLog = logger.warning;
+                            break;
+                        case LogLevel.error:
+                            failedToFetchLog = logger.error;
+                            break;
+                        case LogLevel.critical:
+                            failedToFetchLog = logger.critical;
+                            break;
+                        case LogLevel.none:
+                            // eslint-disable-next-line no-console
+                            failedToFetchLog = console.warn;
+                            break;
+                        default:
+                            failedToFetchLog = logger.warning;
+                    }
+                }
+                failedToFetchLog({
                     message: `[HttpRequest] Failed to fetch on ${processName}`,
                     data: {
                         address: requestAddress,
@@ -658,13 +699,7 @@ export function httpRequest(
                     '[HttpRequest]': 'color: #aaaaaa',
                     // eslint-disable-next-line max-len
                     [`Failed to fetch on ${processName}`]: ''
-                }), 'Input: ', input, err);
-                // with the timeout aborted requests (e.g. by reloading) won't open this dialog
-                setTimeout(() => {
-                    if (showDialogs) {
-                        chayns.dialog.alert('', 'Verbindung fehlgeschlagen. Versuche es später nochmal.');
-                    }
-                }, 300);
+                }), err, '\nInput: ', input);
                 err.statusCode = -1;
                 tryReject(err, null, true);
                 return;
@@ -784,7 +819,7 @@ export function httpRequest(
                 // eslint-disable-next-line no-console
                 console.error(...colorLog({
                     '[HttpRequest]': 'color: #aaaaaa'
-                }), 'Input:', input, error);
+                }), error, '\nInput: ', input);
                 if (!ignoreErrors && useChaynsAuth && autoRefreshToken) {
                     try {
                         const jRes = await response.json();
@@ -818,7 +853,7 @@ export function httpRequest(
                 // eslint-disable-next-line no-console
                 console.error(...colorLog({
                     '[HttpRequest]': 'color: #aaaaaa'
-                }), 'Input:', input, error);
+                }), error, '\nInput: ', input);
                 tryReject(error, status);
             }
 
@@ -942,7 +977,7 @@ export function httpRequest(
                             '[HttpRequest]': 'color: #aaaaaa',
                             // eslint-disable-next-line max-len
                             [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
-                        }), 'Input:', input, err);
+                        }), err, '\nInput: ', input);
                         if (status >= 200 && status < 300) {
                             resolve(null);
                         } else {
@@ -963,7 +998,7 @@ export function httpRequest(
                             '[HttpRequest]': 'color: #aaaaaa',
                             // eslint-disable-next-line max-len
                             [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
-                        }), 'Input:', input, err);
+                        }), err, '\nInput: ', input);
                         if (status >= 200 && status < 300) {
                             resolve(null);
                         } else {
@@ -984,7 +1019,7 @@ export function httpRequest(
                             '[HttpRequest]': 'color: #aaaaaa',
                             // eslint-disable-next-line max-len
                             [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
-                        }), 'Input:', input, err);
+                        }), err, '\nInput: ', input);
                         if (status >= 200 && status < 300) {
                             resolve(null);
                         } else {
@@ -1064,7 +1099,6 @@ export function httpRequest(
  *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
  *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
- * @param {boolean} [options.showDialogs=true] - Show a dialog when you have no connection
  * @param {requestErrorHandler} [errorHandler=undefined] - Function to handle error statusCodes. Defaults to
  *     defaultErrorHandler.js
  * @param {Object} [handlerOptions={}] - other options for this wrapper
@@ -1098,42 +1132,6 @@ function fullRequest(address, config, processName, options, errorHandler, handle
     ), errorHandler, handlerOptions);
 }
 
-/**
- * @type {{responseType: Object, presets: {default: {options: {logConfig: {'401': string, '[\\d]+': string,
- *     '[1-3][\\d]{2}': string}, responseType: string, additionalLogData: {}, statusHandlers: {}, onProgress: null,
- *     stringifyBody: boolean, autoRefreshToken: boolean, showDialogs: boolean, useFetchApi: boolean, addHashToUrl:
- *     boolean, ignoreErrors: boolean}, config: {}}, noErrors: {options: {logConfig: {'401': string, '2[\\d]{2}':
- *     string, '3[\\d]{2}': string, '[\\d]+': string, '.*': string}, responseType: string, additionalLogData: {},
- *     statusHandlers: {'204': string, '2[\\d]{2}': string, '.*': string}, onProgress: null, stringifyBody: boolean,
- *     autoRefreshToken: boolean, showDialogs: boolean, useFetchApi: boolean, addHashToUrl: boolean, ignoreErrors:
- *     boolean}, config: {cache: string}}, strict: {options: {logConfig: {'200': string, '[\\d]+': string, '.*':
- *     string}, responseType: string, statusHandlers: {'(?!200)': string}, additionalLogData: {}, onProgress: null,
- *     stringifyBody: boolean, autoRefreshToken: boolean, showDialogs: boolean, useFetchApi: boolean, addHashToUrl:
- *     boolean, ignoreErrors: boolean}, config: {cache: string}}, extended: {options: {logConfig: {'401': string,
- *     '2[\\d]{2}': string, '3[\\d]{2}': string, '[\\d]+': string, '.*': string}, responseType: string,
- *     additionalLogData: {}, statusHandlers: {'204': string, '3[\\d]{2}': string}, onProgress: null, stringifyBody:
- *     boolean, autoRefreshToken: boolean, showDialogs: boolean, useFetchApi: boolean, addHashToUrl: boolean,
- *     ignoreErrors: boolean}, config: {headers: {CacheControl: string, Pragma: string}, cache: string}}}, logLevel:
- *     {critical: string, warning: string, none: string, error: string, info: string}, method: {Delete: string, Post:
- *     string, Get: string, Patch: string, Put: string}, defaults: setRequestDefaults, fetch: (function(string,
- *     {method?: (HttpMethod|string), headers?: Object, useChaynsAuth?: boolean, body?: *, cache?: string, referrer?:
- *     string, referrerPolicy?: string, mode?: string, redirect?: string, integrity?: string, keepalive?: boolean,
- *     window?: Window, signal?: *}=, string=, {responseType?: (ResponseType|string), ignoreErrors?:
- *     (boolean|number[]), useFetchApi?: boolean, logConfig?: Object<string, LogLevel>, stringifyBody?: boolean,
- *     additionalLogData?: Object, autoRefreshToken?: boolean, statusHandlers?: Object, onProgress?: onProgressHandler,
- *     addHashToUrl?: boolean, showDialogs?: boolean}=): Promise<Response|objectResponse|Blob|Object>), handle:
- *     (function(Promise<*>, requestErrorHandler=, {finallyHandler?: Function, waitCursor?: {text?: string,
- *     textTimeout?: number, timeout?: number}, cache?: {key: string, duration?: number, cacheResolver?:
- *     cacheResolverCallback}, noReject?: boolean}=): Promise<*>), error: RequestError, full: (function(string,
- *     {method?: (HttpMethod|string), headers?: Object, useChaynsAuth?: boolean, body?: *, cache?: string, referrer?:
- *     string, referrerPolicy?: string, mode?: string, redirect?: string, integrity?: string, keepalive?: boolean,
- *     window?: Window, signal?: *}=, string=, {responseType?: (ResponseType|string), ignoreErrors?:
- *     (boolean|number[]), useFetchApi?: boolean, logConfig?: Object<string, LogLevel>, stringifyBody?: boolean,
- *     additionalLogData?: Object, autoRefreshToken?: boolean, statusHandlers?: Object, onProgress?: onProgressHandler,
- *     addHashToUrl?: boolean, showDialogs?: boolean}=, requestErrorHandler=, {finallyHandler?: Function, waitCursor?:
- *     {text?: string, textTimeout?: number, timeout?: number}, cache?: {key: string, duration?: number,
- *     cacheResolver?: cacheResolverCallback}, noReject?: boolean}=): Promise<*>)}}
- */
 const request = {
     fetch: httpRequest,
     handle: handleRequest,

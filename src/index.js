@@ -14,7 +14,6 @@ import setViewMode from './functions/chaynsCalls/setViewMode';
 import hideCwFooter from './functions/chaynsCalls/hideCwFooter';
 import chaynsDialog from './functions/chaynsDialogs';
 import copyToClipboard from './functions/copy';
-import defaultErrorHandler from './functions/defaultErrorHandler';
 import generateUUID from './functions/generateUid';
 import request from './functions/httpRequest/httpRequest';
 import HttpMethod from './functions/httpRequest/HttpMethod';
@@ -67,7 +66,6 @@ export {
     chaynsCall,
     chaynsDialog,
     copyToClipboard,
-    defaultErrorHandler,
     generateUUID,
     request,
     ResponseType,
