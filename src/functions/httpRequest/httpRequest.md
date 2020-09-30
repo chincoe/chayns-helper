@@ -21,7 +21,6 @@ A fetch helper function, meant to be called in a api js file (e.g. `getBoard.js`
 |options.statusHandlers| Handle responses for specific status codes using the codes or regex. Format: <br> 1.`{ [status/regex] : (response) => { my code }, ... }`<br> 2. `{ [status/regex] : responseType, ... }` | Object<status/regex, responseType/responseHandler> | `{}` |
 |options.onProgress| *Experimental feature*: Callback that will allow you to monitor download progress | function | `null` |
 |options.addHashToUrl | Add a random hash to the request url | boolean | `false`|
-|options.showDialogs | Show a dialog if the connection fails | boolean | `true`|
 | **@returns** | Promise of: Response specified via response type or throws an error | Promise<Json/String/Object/Blob/Response/null> | |
 
 > **Note**: A "Failed to fetch" Error will be treated as a status code `1` regarding options.statusHandlers, options.logConfig as well as the return value if options.ignoreErrors is true 
@@ -245,9 +244,9 @@ const requestPresets = {
         options: {
             responseType: ResponseType.Json,
             logConfig: {
-                '[1-3][\\d]{2}': LogLevel.info,
+                [/[1-3][\d]{2}/]: LogLevel.info,
                 401: LogLevel.warning,
-                '[\\d]+': LogLevel.error
+                [/[\d]+/]: LogLevel.error
             },
             ignoreErrors: false,
             useFetchApi: true,
@@ -275,8 +274,8 @@ const requestPresets = {
                 [/2[\d]{2}/]: LogLevel.info,
                 [/3[\d]{2}/]: LogLevel.warning,
                 401: LogLevel.warning,
-                '[\\d]+': LogLevel.error,
-                '.*': LogLevel.critical
+                [/[\d]+/]: LogLevel.error,
+                [/.*/]: LogLevel.critical
             },
             ignoreErrors: false,
             useFetchApi: true,
@@ -301,8 +300,8 @@ const requestPresets = {
             responseType: ResponseType.Json,
             logConfig: {
                 200: LogLevel.info,
-                '[\\d]+': LogLevel.error,
-                '.*': LogLevel.critical
+                [/[\d]+/]: LogLevel.error,
+                [/.*/]: LogLevel.critical
             },
             statusHandlers: {
                 '(?!200)': ResponseType.Error
@@ -328,8 +327,8 @@ const requestPresets = {
                 [/2[\d]{2}/]: LogLevel.info,
                 [/3[\d]{2}/]: LogLevel.warning,
                 401: LogLevel.warning,
-                '[\\d]+': LogLevel.error,
-                '.*': LogLevel.critical
+                [/[\d]+/]: LogLevel.error,
+                [/.*/]: LogLevel.critical
             },
             ignoreErrors: true,
             useFetchApi: true,
@@ -339,7 +338,7 @@ const requestPresets = {
             statusHandlers: {
                 204: ResponseType.Response,
                 [/2[\d]{2}/]: ResponseType.Object,
-                '.*': ResponseType.Response
+                [/.*/]: ResponseType.Response
             },
             onProgress: null,
             addHashToUrl: false,

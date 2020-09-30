@@ -488,7 +488,8 @@ export function httpRequest(
                 options
             };
 
-            // properly merge
+            // properly merge the status handlers and log config of options and default options. The function returns a
+            // map to have a reliable key order to ensure that all options have a higher priority than default options
             const statusHandlers = mergeOptions(
                 (options?.statusHandlers || {}),
                 (defaultConfig?.options?.statusHandlers || {})
