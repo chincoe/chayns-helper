@@ -1,7 +1,7 @@
 import logger from 'chayns-logger';
 import colorLog from '../../_internal/colorLog';
 import localStorage from '../../other/localStorageHelper';
-import defaultErrorHandler from '../defaultErrorHandler';
+import { helperConfig } from '../../config/chaynsHelperConfig';
 import generateUUID from '../generateUid';
 import types from '../types';
 import showWaitCursor from '../waitCursor';
@@ -85,7 +85,7 @@ export function handleRequest(
             } = (types.isObject(waitCursor)
                  ? waitCursor
                  : {});
-            const handleErrors = errorHandler || defaultErrorHandler;
+            const handleErrors = errorHandler || helperConfig.errorHandler;
             let hideWaitCursor = () => {};
             try {
                 if (useWaitCursor) hideWaitCursor = showWaitCursor({ text, textTimeout, timeout });
