@@ -82,7 +82,7 @@ export function handleRequest(
                 text = undefined,
                 textTimeout = 5000,
                 timeout = 300
-            } = (types.isObject(waitCursor)
+            } = (chayns.utils.isObject(waitCursor)
                  ? waitCursor
                  : {});
             const handleErrors = errorHandler || helperConfig.errorHandler;
@@ -90,8 +90,8 @@ export function handleRequest(
             try {
                 if (useWaitCursor) hideWaitCursor = showWaitCursor({ text, textTimeout, timeout });
                 if (cache) {
-                    const cacheKey = types.isObject(cache) ? `${cache?.key}` : `${cache}`;
-                    const duration = types.isObject(cache) ? (cache?.duration ?? 5) : 5;
+                    const cacheKey = chayns.utils.isObject(cache) ? `${cache?.key}` : `${cache}`;
+                    const duration = chayns.utils.isObject(cache) ? (cache?.duration ?? 5) : 5;
                     if (localStorage.keys[cacheKey]) {
                         if (localStorage.get(cacheKey)) resolve(localStorage.get(cacheKey));
                     } else {
@@ -101,8 +101,8 @@ export function handleRequest(
                 request
                     .then((result) => {
                         if (cache) {
-                            const cacheKey = types.isObject(cache) ? `${cache?.key}` : `${cache}`;
-                            const cacheResolver = (types.isObject(
+                            const cacheKey = chayns.utils.isObject(cache) ? `${cache?.key}` : `${cache}`;
+                            const cacheResolver = (chayns.utils.isObject(
                                 cache
                             ) ? cache?.cacheResolver : null) || ((v) => v);
                             localStorage.set(cacheKey, cacheResolver(result));
@@ -580,7 +580,7 @@ export function httpRequest(
                     && (!force || status === 1)) {
                     if (status === 1) {
                         const handler = statusHandlers.get(statusHandlerKey);
-                        if (types.isFunction(handler)) {
+                        if (chayns.utils.isFunction(handler)) {
                             resolve(await handler(err));
                             return;
                         }
@@ -607,7 +607,7 @@ export function httpRequest(
                     && statusHandlers.get(`${status}`) === ResponseType.Error) {
                     reject(err);
                 }
-                if (ignoreErrors === true || (status && types.isArray(ignoreErrors) && ignoreErrors.includes(status))) {
+                if (ignoreErrors === true || (status && chayns.utils.isArray(ignoreErrors) && ignoreErrors.includes(status))) {
                     if (chayns.utils.isNumber(status)) {
                         switch (responseType) {
                             case ResponseType.Object:
@@ -684,7 +684,7 @@ export function httpRequest(
                                 }, ex);
                             }
                         }
-                        if (onProgress && types.isFunction(onProgress)) {
+                        if (onProgress && chayns.utils.isFunction(onProgress)) {
                             req.addEventListener('progress', (event) => {
                                 if (event.lengthComputable) {
                                     onProgress((event.loaded / event.total) * 100, event.loaded, event.total);
@@ -929,7 +929,7 @@ export function httpRequest(
 
             // statusHandlers[status]
             if (statusHandlers.has(`${status}`)) {
-                if (types.isFunction(statusHandlers.get(`${status}`))) {
+                if (chayns.utils.isFunction(statusHandlers.get(`${status}`))) {
                     resolve(await statusHandlers.get(`${status}`)(response));
                 } else {
                     switch (statusHandlers.get(`${status}`)) {
@@ -963,7 +963,7 @@ export function httpRequest(
                 const keys = getMapKeys(statusHandlers);
                 for (let i = 0; i < types.length(keys); i += 1) {
                     const regExp = stringToRegex(keys[i]);
-                    if (regExp.test(status?.toString()) && types.isFunction(statusHandlers.get(keys[i]))) {
+                    if (regExp.test(status?.toString()) && chayns.utils.isFunction(statusHandlers.get(keys[i]))) {
                         // eslint-disable-next-line no-await-in-loop
                         resolve(await statusHandlers.get(keys[i])(response));
                         return;
@@ -1003,7 +1003,7 @@ export function httpRequest(
             }
 
             // onProgress => responseType
-            if (onProgress && types.isFunction(onProgress) && useFetchApi) {
+            if (onProgress && chayns.utils.isFunction(onProgress) && useFetchApi) {
                 const responseClone = response.clone();
                 const reader = responseClone.body.getReader();
                 const contentLength = +responseClone.headers.get('Content-Length');

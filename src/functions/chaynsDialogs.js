@@ -343,10 +343,10 @@ select.type = { ...selectType };
 
 export const validateDate = (param, allowMissingValue = true) => {
     if (allowMissingValue && (param === null || param === undefined)) return param;
-    if (types.isDate(param)) {
+    if (chayns.utils.isDate(param)) {
         return param;
     }
-    if (types.isString(param)) {
+    if (chayns.utils.isString(param)) {
         try {
             return new Date(param);
         } catch (e) {
@@ -355,10 +355,10 @@ export const validateDate = (param, allowMissingValue = true) => {
             return undefined;
         }
     }
-    if (types.isFunction(param)) {
+    if (chayns.utils.isFunction(param)) {
         try {
             const date = param();
-            if (types.isDate(date)) return date;
+            if (chayns.utils.isDate(date)) return date;
             // eslint-disable-next-line no-console
             console.error('[ChaynsDialog] date parameter of type function did not return a date');
             return undefined;
@@ -368,7 +368,7 @@ export const validateDate = (param, allowMissingValue = true) => {
             return undefined;
         }
     }
-    if (types.isInteger(param) && types.isCleanNumber(param)) {
+    if (types.isInteger(param)) {
         try {
             return new Date(param);
         } catch (e) {
@@ -541,9 +541,9 @@ export function advancedDate(options, buttons) {
             minDate: validateDate(minDate),
             maxDate: validateDate(maxDate),
             minuteInterval,
-            preSelect: types.isArray(preSelect)
+            preSelect: chayns.utils.isArray(preSelect)
                        ? validateDateArray(preSelect)
-                       : types.isObject(preSelect)
+                       : chayns.utils.isObject(preSelect)
                          && preSelect?.start
                          && preSelect?.end
                          ? { start: validateDate(preSelect?.start), end: validateDate(preSelect?.end), }

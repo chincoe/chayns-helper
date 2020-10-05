@@ -1,5 +1,4 @@
 import generateUid from '../generateUid';
-import types from '../types';
 
 /**
  * @typedef chaynsCallResult
@@ -21,12 +20,12 @@ const chaynsCall = (call) => {
     const { action, value = {} } = call;
     return new Promise((resolve) => {
         window[callbackName] = (v) => {
-            if (types.isFunction(value?.callback)) {
+            if (chayns.utils.isFunction(value?.callback)) {
                 value.callback(v);
             } else if (value?.callback
-                && types.isString(value?.callback)
+                && chayns.utils.isString(value?.callback)
                 && /^window\./.test(value?.callback)
-                && types.isFunction(window[value?.callback?.replace('window.', '')])) {
+                && chayns.utils.isFunction(window[value?.callback?.replace('window.', '')])) {
                 window[value?.callback?.replace('window.', '')](v);
             }
             resolve(v);
