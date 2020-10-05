@@ -4,8 +4,8 @@ import React, {
 } from 'react';
 import isTobitEmployee from 'chayns-components/lib/utils/tobitEmployee';
 import PropTypes from 'prop-types';
+import stringToRegex, { regexRegex } from '../_internal/stringToRegex';
 import generateUUID from '../functions/generateUid';
-import types from '../functions/types';
 import useTextStrings from './useTextStrings';
 import TEXTSTRING_PREFIX from './textstringPrefix';
 
@@ -25,7 +25,7 @@ import TEXTSTRING_PREFIX from './textstringPrefix';
  * @param {string} props.fallback
  * @param {Object.<string, string|function>} [props.replacements={}]
  * @param {string|*} [props.elementName='div']
- * @param {number} [props.maxReplacements] - Max. count of replacements per replacement item to avoid being stuck in an
+ * @param {number} [props.maxReplacements=20] - Max. count of replacements per replacement item to avoid being stuck in an
  *     endless replacement loop
  * @param {boolean} [useDangerouslySetInnerHTML=false]
  * @param {string} [language='de']
@@ -39,7 +39,7 @@ const TextStringMemo = memo((
         fallback,
         replacements = {},
         elementName = 'div',
-        maxReplacements = 10,
+        maxReplacements = 20,
         useDangerouslySetInnerHTML = false,
         language = 'de',
         onClick = () => null,
@@ -55,22 +55,46 @@ const TextStringMemo = memo((
         let result = [text];
         for (let i = 0; i < vars.length; i += 1) {
             let j = 0;
-            const regex = new RegExp(vars[i]);
-            while (j < maxReplacements && result.find((m) => chayns.utils.isString(m) && regex.test(m))) {
-                const arrayIdx = result.findIndex((m) => chayns.utils.isString(m) && regex.test(m));
-                const match = result[arrayIdx].match(regex);
-                const isReplacerFunction = types.isFunction(replacements[vars[i]]);
+            const isRegexKey = regexRegex.test(vars[i]);
+            const regex = stringToRegex(vars[i]);
+            while (j < maxReplacements && result.find((m) => (chayns.utils.isString(m) && (isRegexKey
+                                                                                           ? regex.test(m)
+                                                                                           : m.includes(vars[i]))))) {
+                const arrayIdx = result.findIndex((m) => (chayns.utils.isString(m) && (isRegexKey
+                                                                                       ? regex.test(m)
+                                                                                       : m.includes(vars[i]))));
+                let matchValue;
+                let matchIndex;
+                let matchLength;
+                const isReplacerFunction = chayns.utils.isFunction(replacements[vars[i]]);
                 const ReplaceElement = replacements[vars[i]];
+                if (isRegexKey) {
+                    const match = result[arrayIdx].match(regex);
+                    [matchValue] = match;
+                    matchIndex = match.index;
+                    matchLength = match[0].length;
+                } else {
+                    matchValue = vars[i];
+                    matchLength = vars[i].length;
+                    matchIndex = result[arrayIdx].indexOf(vars[i]);
+                }
                 result = [
                     ...result.slice(0, arrayIdx),
-                    result[arrayIdx].substring(0, match.index),
-                    (isReplacerFunction ? (
-                        <ReplaceElement
-                            {...match}
-                            key={`${guid}:${i}.${j}`}
-                        />
-                    ) : replacements[vars[i]]),
-                    result[arrayIdx].substring(match.index + match[0].length),
+                    ...(isReplacerFunction
+                        ? [
+                            result[arrayIdx].substring(0, matchIndex),
+                            <ReplaceElement
+                                var={vars[i]}
+                                match={matchValue}
+                                {...(isRegexKey ? { regex } : {})}
+                                key={`${guid}:${i}.${j}`}
+                            />,
+                            result[arrayIdx].substring(matchIndex + matchLength)
+                        ] : [
+                            `${result[arrayIdx].substring(0, matchIndex)}${ReplaceElement}${result[arrayIdx].substring(
+                                matchIndex + matchLength
+                            )}`
+                        ]),
                     ...result.slice(arrayIdx + 1)
                 ];
                 j += 1;
