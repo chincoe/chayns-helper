@@ -39,7 +39,7 @@ module.exports = function resolveAbsoluteImport(importName) {
         useWebsocketService: 'hooks/useWebsocketService',
         localStorage: 'other/localStorageHelper',
         WebsocketClient: 'other/WsClient',
-        TextStringMemo: 'textstring/TextStringMemo',
+        TextStringComplex: 'textstring/TextStringMemo',
         useTextStrings: 'textstring/useTextStrings',
         getTextStrings: 'textstring/getTextStrings',
         getHookState: 'functions/getHookState',

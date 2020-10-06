@@ -2,7 +2,6 @@ import { TextString } from 'chayns-components';
 import React, {
     memo, useMemo
 } from 'react';
-import isTobitEmployee from 'chayns-components/lib/utils/tobitEmployee';
 import PropTypes from 'prop-types';
 import stringToRegex, { regexRegex } from '../_internal/stringToRegex';
 import generateUUID from '../functions/generateUid';
@@ -24,13 +23,11 @@ import TEXTSTRING_PREFIX from './textstringPrefix';
  * @param {string} props.stringName
  * @param {string} props.fallback
  * @param {Object.<string, string|function>} [props.replacements={}]
- * @param {string|*} [props.elementName='div']
- * @param {number} [props.maxReplacements=20] - Max. count of replacements per replacement item to avoid being stuck in an
- *     endless replacement loop
+ * @param {string|*} [props.children]
+ * @param {number} [props.maxReplacements=20] - Max. count of replacements per replacement item to avoid being stuck in
+ *     an endless replacement loop
  * @param {boolean} [useDangerouslySetInnerHTML=false]
  * @param {string} [language='de']
- * @param {function} [onClick]
- * @param {boolean} [useClickToEdit=true]
  * @return {*}
  */
 const TextStringMemo = memo((
@@ -38,16 +35,68 @@ const TextStringMemo = memo((
         stringName,
         fallback,
         replacements = {},
-        elementName = 'div',
+        children = null,
         maxReplacements = 20,
         useDangerouslySetInnerHTML = false,
-        language = 'de',
-        onClick = () => null,
-        useClickToEdit = true,
+        language = undefined,
         ...elementProps
     }
-) => {
-    const [text] = useTextStrings(fallback ? { [stringName]: fallback } : [stringName]);
+) => (
+    <TextString
+        stringName={`${TEXTSTRING_PREFIX.value}${stringName}`}
+        fallback={fallback}
+        useDangerouslySetInnerHTML={false}
+        language={language}
+    >
+        <TextStringReplacer
+            useDangerouslySetInnerHTML={useDangerouslySetInnerHTML}
+            maxReplacements={maxReplacements}
+            replacements={replacements}
+            textStringChildren={children}
+            stringName={stringName}
+            fallback={fallback}
+            {...elementProps}
+        />
+    </TextString>
+));
+
+TextStringMemo.propTypes = {
+    useDangerouslySetInnerHTML: PropTypes.bool,
+    language: PropTypes.string,
+    maxReplacements: PropTypes.number,
+    stringName: PropTypes.string.isRequired,
+    fallback: PropTypes.string.isRequired,
+    replacements: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.func, PropTypes.string])),
+    children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)])
+};
+
+TextStringMemo.defaultProps = {
+    useDangerouslySetInnerHTML: false,
+    language: undefined,
+    maxReplacements: 20,
+    replacements: {},
+    children: null
+};
+
+TextStringMemo.displayName = 'TextStringMemo';
+
+const TextStringReplacer = memo((props) => {
+    const {
+        children,
+        textStringChildren,
+        useDangerouslySetInnerHTML,
+        replacements,
+        maxReplacements,
+        stringName,
+        fallback,
+        ...elementProps
+    } = props;
+
+    const [calculatedString] = useTextStrings(fallback ? { [stringName]: fallback } : [stringName]);
+
+    const text = chayns.utils.isString(children)
+                 ? children
+                 : calculatedString;
 
     const content = useMemo(() => {
         const guid = generateUUID();
@@ -103,6 +152,7 @@ const TextStringMemo = memo((
         if (useDangerouslySetInnerHTML) {
             for (let i = 0; i < result.length; i += 1) {
                 if (chayns.utils.isString(result[i])) {
+                    // eslint-disable-next-line react/no-danger
                     result[i] = <span dangerouslySetInnerHTML={{ __html: result[i] }}/>;
                 }
             }
@@ -110,173 +160,30 @@ const TextStringMemo = memo((
         return result;
     }, [text, replacements]);
 
-    // copied from chayns-components textstring
-    const changeStringResult = (data, lang) => {
-        if (data.buttonType === 1 && (data.text || data.value)) {
-            TextString.changeTextString(
-                `${TEXTSTRING_PREFIX.value}${stringName}`,
-                useDangerouslySetInnerHTML ? data.value : data.text, lang.value
-            )
-                .then((result) => {
-                    if (result.ResultCode === 0) {
-                        chayns.dialog.alert(
-                            '',
-                            'Die Änderungen wurden erfolgreich gespeichert. Es kann bis zu 5 Minuten dauern, bis die Änderung sichtbar wird.'
-                        );
-                    } else {
-                        chayns.dialog.alert('', 'Es ist ein Fehler aufgetreten.');
-                    }
-                })
-                .catch(() => {
-                    chayns.dialog.alert('', 'Es ist ein Fehler aufgetreten.');
-                });
-        }
-    };
-
-    // copied from chayns-components textstring
-    const changeStringDialog = (sName, lang) => {
-        const string = TextString.getTextString(sName, TextString.languages.find((l) => l.value === lang.value).code);
-        if (string) {
-            if (useDangerouslySetInnerHTML) {
-                chayns.register({ apiDialogs: true });
-                chayns.dialog.iFrame({
-                    width: Math.min(window.innerWidth, 400),
-                    url: 'https://frontend.tobit.com/dialog-html-editor/v1.0/',
-                    input: string,
-                    title: sName,
-                    message: `Sprache: ${lang.name}`,
-                    buttons: [
-                        {
-                            text: 'Speichern',
-                            buttonType: 1,
-                        }, {
-                            text: 'Abbrechen',
-                            buttonType: -1,
-                        }
-                    ],
-                })
-                    .then((result) => {
-                        changeStringResult(result, lang);
-                    });
-            } else {
-                chayns.dialog.input({
-                    title: sName,
-                    message: `Sprache: ${lang.name}`,
-                    text: string,
-                    buttons: [
-                        {
-                            text: 'Speichern',
-                            buttonType: 1,
-                        }, {
-                            text: 'Abbrechen',
-                            buttonType: -1,
-                        }
-                    ],
-                })
-                    .then((result) => {
-                        changeStringResult(result, lang);
-                    });
-            }
-        } else {
-            chayns.dialog.alert(sName, 'Der textstring existiert nicht.');
-        }
-    };
-
-    // copied from chayns-components textstring
-    const selectTextStringLanguage = (sName) => {
-        chayns.dialog.select({
-            title: `TextString bearbeiten: ${sName}`,
-            message: `Wähle die Sprache: (angezeigt wird ${TextString.languages.find(
-                (l) => l.code === (language || TextString.language)
-            ).name})`,
-            quickfind: 0,
-            multiselect: 0,
-            list: TextString.languages,
-        })
-            .then((data) => {
-                if (data.buttonType === 1 && data.selection && data.selection.length > 0) {
-                    const lang = data.selection[0];
-                    // language is already selected
-                    if (lang.value === TextString.languages.find(
-                        (l) => l.code === (language || TextString.language)
-                    ).value) {
-                        changeStringDialog(sName, lang);
-                    } else {
-                        // Get lib
-                        let library = null;
-                        let middle = 'langRes';
-                        const globalLang = TextString.languages.find(
-                            (l) => l.code === TextString.language
-                        ).value;
-                        Object.keys(TextString.textStrings[globalLang])
-                            .forEach((lib) => {
-                                if (TextString.textStrings[globalLang][lib][sName]) {
-                                    library = lib;
-                                    // eslint-disable-next-line prefer-destructuring
-                                    middle = TextString.textStrings[globalLang][lib].middle;
-                                }
-                            });
-                        TextString.loadLibrary(
-                            library, middle,
-                            TextString.languages.find((l) => l.value === lang.value).code
-                        )
-                            .then(() => {
-                                changeStringDialog(sName, lang);
-                            });
-                    }
-                }
-            });
-    };
-
-    const Component = elementName;
-
-    return (
-        <Component
-            {...elementProps}
-            onClick={(e) => {
-                // copied from chayns-components textstring
-                if (e.ctrlKey && useClickToEdit) {
-                    isTobitEmployee()
-                        .then(() => {
-                            selectTextStringLanguage(`${TEXTSTRING_PREFIX.value}${stringName}`);
-                        })
-                        .catch((err) => {
-                            // eslint-disable-next-line no-console
-                            console.warn(err);
-                        });
-                    e.stopPropagation();
-                } else {
-                    onClick();
-                }
-            }}
-        >
-            {content}
-        </Component>
-    );
+    return React.isValidElement(textStringChildren)
+           ? React.cloneElement(textStringChildren, elementProps, content)
+           : <>{content}</>;
 });
 
-TextStringMemo.propTypes = {
-    useClickToEdit: PropTypes.bool,
-    onClick: PropTypes.func,
+TextStringReplacer.displayName = 'TextStringReplacer';
+
+TextStringReplacer.propTypes = {
     useDangerouslySetInnerHTML: PropTypes.bool,
     language: PropTypes.string,
     maxReplacements: PropTypes.number,
     stringName: PropTypes.string.isRequired,
     fallback: PropTypes.string.isRequired,
     replacements: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.func, PropTypes.string])),
-    elementName: PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
+    children: PropTypes.string.isRequired,
+    textStringChildren: PropTypes.element
 };
 
-TextStringMemo.defaultProps = {
-    useClickToEdit: true,
-    onClick: () => null,
+TextStringReplacer.defaultProps = {
     useDangerouslySetInnerHTML: false,
     language: 'de',
-    elementName: 'div',
-    maxReplacements: 10,
-    replacements: {}
+    maxReplacements: 20,
+    replacements: {},
+    textStringChildren: null
 };
 
-TextStringMemo.displayName = 'TextStringMemo';
-
-export default TextStringMemo;
+export default memo(TextStringMemo);
