@@ -3,64 +3,56 @@ import deLocale from 'date-fns/locale/de';
 import time from '../../constants/time';
 
 /**
- * datefns format function, extended by the option to use "heute"|"morgen"|"gestern"
+ * datefns format function, extended by the option to use "heute"|"morgen"|"gestern". Using "yyyy?" will only display
+ * the year if it is not the current year
  * @param {Date|string|number} date
  * @param {string} formatString
  * @param {boolean} [useToday=false] - use "heute"|"morgen"|"gestern"
  * @param {boolean} [appendYear=false] - append the year if it's not the current year
  * @return {string}
  *
- * @property {string} simpleMonth
- * @property {string} simpleMonth
- * @property {string} shortMonth
- * @property {string} longMonth
- * @property {string} day
- * @property {string} numberWeekDay
- * @property {string} shortWeekDay
- * @property {string} longWeekDay
- * @property {string} shortYear
- * @property {string} longYear
- * @property {string} hour
- * @property {string} simpleMinute
- * @property {string} minute
- *
  * @readonly
  */
 const fnsFormat = (date, formatString, useToday, appendYear) => {
+    let formatStr = formatString;
     const d = new Date(date);
-    let dateString = format(d, formatString, { locale: deLocale });
-    if (appendYear
-        && format(d, 'YYYY', { locale: deLocale })
-        !== format(new Date(), 'YYYY', { locale: deLocale })
-    ) {
-        dateString += ` ${format(new Date(date), 'YYYY', { locale: deLocale })}`;
+
+    if (/y+\?/i.test(formatStr)) {
+        if (d.getFullYear() !== new Date().getFullYear()) {
+            formatStr = formatStr.replace(/(y+)\?/i, '$1');
+        } else {
+            formatStr = formatStr.replace(/ ?(y+)\?/i, '');
+        }
     }
-    if (!useToday || Math.abs(d.getTime() - Date.now()) > time.day * 2) return dateString;
-    const tFormatString = formatString
-        .replace('H', '')
-        .replace('h', '')
-        .replace('A', '')
-        .replace('a', '')
-        .replace('s', '')
-        .replace('S', '')
-        .replace('m', '');
-    return dateString
+
+    let dateString = format(d, formatStr, { locale: deLocale });
+
+    if (!useToday || Math.abs(d.getTime() - Date.now()) > time.day * 2) {
+        if (appendYear) {
+            if (appendYear && d.getFullYear() !== new Date().getFullYear()) {
+                dateString += ` ${format(new Date(date), 'yyyy', { locale: deLocale })}`;
+            }
+        }
+        return dateString;
+    }
+
+    const formatStringRegex = /^[^a-zA-Z]*?(([a-zA-Z]+[^a-zA-Z]? *)*)[^a-zA-Z]*?$/;
+    const tFormatString = formatStr
+        .replace(/'.*?'/g, '')
+        .replace(/[EWGAaHhmsSZXx]/g, '')
+        .replace(formatStringRegex, '$1')
+        .trim();
+
+    dateString = dateString
         .replace(format(new Date(), tFormatString, { locale: deLocale }), 'Heute')
         .replace(format(new Date(Date.now() + time.day), tFormatString, { locale: deLocale }), 'Morgen')
         .replace(format(new Date(Date.now() - time.day), tFormatString, { locale: deLocale }), 'Gestern');
+    if (appendYear && !/(Heute)|(Morgen)|(Gestern)/.test(dateString)) {
+        if (appendYear && d.getFullYear() !== new Date().getFullYear()) {
+            dateString += ` ${format(new Date(date), 'yyyy', { locale: deLocale })}`;
+        }
+    }
+    return dateString;
 };
-fnsFormat.simpleMonth = 'M';
-fnsFormat.shortMonth = 'MMM';
-fnsFormat.longMonth = 'MMMM';
-fnsFormat.day = 'D';
-fnsFormat.numberWeekDay = 'd';
-fnsFormat.shortWeekDay = 'ddd';
-fnsFormat.longWeekDay = 'dddd';
-fnsFormat.shortYear = 'YY';
-fnsFormat.longYear = 'YYYY';
-fnsFormat.hour = 'H';
-fnsFormat.simpleMinute = 'm';
-fnsFormat.minute = 'mm';
-fnsFormat.second = 's';
 
 export default fnsFormat;
