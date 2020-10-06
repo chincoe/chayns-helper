@@ -1,5 +1,4 @@
-// eslint-disable-next-line max-classes-per-file
-import types from './types';
+/* eslint-disable max-classes-per-file */
 /**
  * The dialogs of this helper all have the parameters (message, buttons), (message, options, buttons) or (option,
  * buttons) The dialogs of this helper all return an object like this: { buttonType: -1|0|1, value: ... }, so all
@@ -316,7 +315,7 @@ export function select(options, buttons) {
             message,
             list,
             multiselect,
-            quickfind: quickfind === null ? types.length(list) > 5 : quickfind,
+            quickfind: quickfind === null ? (list || []).length > 5 : quickfind,
             type,
             preventCloseOnClick,
             buttons,
@@ -325,7 +324,7 @@ export function select(options, buttons) {
             .then((result) => {
                 const { buttonType: bType, selection } = result;
                 if (!multiselect && selection && selection?.length === 1) {
-                    const { name, value } = types.safeFirst(selection);
+                    const { name, value } = selection[0];
                     resolve(createDialogResult(bType, { name, value }));
                 } else if (!multiselect) {
                     resolve(createDialogResult(bType, null));
@@ -368,7 +367,7 @@ export const validateDate = (param, allowMissingValue = true) => {
             return undefined;
         }
     }
-    if (types.isInteger(param)) {
+    if (chayns.utils.isNumber(param)) {
         try {
             return new Date(param);
         } catch (e) {
@@ -573,7 +572,7 @@ export function advancedDate(options, buttons) {
                 }));
 
                 if (dialogSelectType === dateSelectType.SINGLE) {
-                    const selectedDate = types.safeFirst(validDates);
+                    const selectedDate = validDates[0] ?? null;
                     resolve(createDialogResult(type, selectedDate));
                 } else if (dialogSelectType !== dateSelectType.SINGLE) {
                     resolve(createDialogResult(type, validDates));

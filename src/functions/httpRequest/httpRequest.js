@@ -1,9 +1,9 @@
+import { isNullOrWhiteSpace } from 'chayns-components/lib/utils/is';
 import logger from 'chayns-logger';
 import colorLog from '../../_internal/colorLog';
 import localStorage from '../../other/localStorageHelper';
 import { helperConfig } from '../../config/chaynsHelperConfig';
 import generateUUID from '../generateUid';
-import types from '../types';
 import showWaitCursor from '../waitCursor';
 import stringToRegex from '../../_internal/stringToRegex';
 import HttpMethod from './HttpMethod';
@@ -541,7 +541,7 @@ export function httpRequest(
             delete remainingFetchConfig.useChaynsAuth;
 
             let requestAddress = '';
-            if (!types.isNullOrEmpty(defaultConfig.address)
+            if (!isNullOrWhiteSpace(defaultConfig.address)
                 && !/^.+?:\/\//.test(address)
                 && /^.+?:\/\//.test(defaultConfig.address)
                 && /^\//.test(address)) {
@@ -961,7 +961,7 @@ export function httpRequest(
             // statusHandlers[regex]
             if (!statusHandlers || statusHandlers.size === 0) {
                 const keys = getMapKeys(statusHandlers);
-                for (let i = 0; i < types.length(keys); i += 1) {
+                for (let i = 0; i < keys.length; i += 1) {
                     const regExp = stringToRegex(keys[i]);
                     if (regExp.test(status?.toString()) && chayns.utils.isFunction(statusHandlers.get(keys[i]))) {
                         // eslint-disable-next-line no-await-in-loop
