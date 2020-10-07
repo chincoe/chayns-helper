@@ -1,5 +1,4 @@
-// eslint-disable-next-line max-classes-per-file
-import types from './types';
+/* eslint-disable max-classes-per-file */
 /**
  * The dialogs of this helper all have the parameters (message, buttons), (message, options, buttons) or (option,
  * buttons) The dialogs of this helper all return an object like this: { buttonType: -1|0|1, value: ... }, so all
@@ -316,7 +315,7 @@ export function select(options, buttons) {
             message,
             list,
             multiselect,
-            quickfind: quickfind === null ? types.length(list) > 5 : quickfind,
+            quickfind: quickfind === null ? (list || []).length > 5 : quickfind,
             type,
             preventCloseOnClick,
             buttons,
@@ -325,7 +324,7 @@ export function select(options, buttons) {
             .then((result) => {
                 const { buttonType: bType, selection } = result;
                 if (!multiselect && selection && selection?.length === 1) {
-                    const { name, value } = types.safeFirst(selection);
+                    const { name, value } = selection[0];
                     resolve(createDialogResult(bType, { name, value }));
                 } else if (!multiselect) {
                     resolve(createDialogResult(bType, null));
@@ -343,10 +342,10 @@ select.type = { ...selectType };
 
 export const validateDate = (param, allowMissingValue = true) => {
     if (allowMissingValue && (param === null || param === undefined)) return param;
-    if (types.isDate(param)) {
+    if (chayns.utils.isDate(param)) {
         return param;
     }
-    if (types.isString(param)) {
+    if (chayns.utils.isString(param)) {
         try {
             return new Date(param);
         } catch (e) {
@@ -355,10 +354,10 @@ export const validateDate = (param, allowMissingValue = true) => {
             return undefined;
         }
     }
-    if (types.isFunction(param)) {
+    if (chayns.utils.isFunction(param)) {
         try {
             const date = param();
-            if (types.isDate(date)) return date;
+            if (chayns.utils.isDate(date)) return date;
             // eslint-disable-next-line no-console
             console.error('[ChaynsDialog] date parameter of type function did not return a date');
             return undefined;
@@ -368,7 +367,7 @@ export const validateDate = (param, allowMissingValue = true) => {
             return undefined;
         }
     }
-    if (types.isInteger(param) && types.isCleanNumber(param)) {
+    if (chayns.utils.isNumber(param)) {
         try {
             return new Date(param);
         } catch (e) {
@@ -541,9 +540,9 @@ export function advancedDate(options, buttons) {
             minDate: validateDate(minDate),
             maxDate: validateDate(maxDate),
             minuteInterval,
-            preSelect: types.isArray(preSelect)
+            preSelect: chayns.utils.isArray(preSelect)
                        ? validateDateArray(preSelect)
-                       : types.isObject(preSelect)
+                       : chayns.utils.isObject(preSelect)
                          && preSelect?.start
                          && preSelect?.end
                          ? { start: validateDate(preSelect?.start), end: validateDate(preSelect?.end), }
@@ -573,7 +572,7 @@ export function advancedDate(options, buttons) {
                 }));
 
                 if (dialogSelectType === dateSelectType.SINGLE) {
-                    const selectedDate = types.safeFirst(validDates);
+                    const selectedDate = validDates[0] ?? null;
                     resolve(createDialogResult(type, selectedDate));
                 } else if (dialogSelectType !== dateSelectType.SINGLE) {
                     resolve(createDialogResult(type, validDates));

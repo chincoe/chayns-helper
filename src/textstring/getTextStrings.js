@@ -1,6 +1,5 @@
 import { TextString } from 'chayns-components';
 import { isNullOrWhiteSpace } from 'chayns-components/lib/utils/is';
-import types from '../functions/types';
 import TEXTSTRING_PREFIX from './textstringPrefix';
 
 /**
@@ -12,7 +11,7 @@ import TEXTSTRING_PREFIX from './textstringPrefix';
  */
 const getTextStrings = (textStrings, language = 'de') => {
     const returnList = [];
-    const isSimple = !types.isObject(textStrings);
+    const isSimple = !chayns.utils.isObject(textStrings);
     const strings = isSimple ? textStrings : Object.keys(textStrings);
     for (let i = 0; i < strings.length; i += 1) {
         const current = strings[i];

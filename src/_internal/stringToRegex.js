@@ -1,4 +1,4 @@
-const regexRegex = /^\/((.[^/]+)|(\\\/))*?[^/]+\/[gmi]{0,3}$/;
+export const regexRegex = /^\/((.[^/]+)|(\\\/))*?[^/]+\/[gmi]{0,3}$/;
 const fullMatchRegex = /(^\^)|(\$$)/g;
 
 /**

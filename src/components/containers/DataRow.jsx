@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './data-row.scss';
-import types from '../../functions/types';
 
 /**
  * DataRow
@@ -35,8 +34,8 @@ const DataRow = (
             style={style}
             {...props}
         >
-            {types.isArray(children) ? types.safeFirst(children) : children}
-            {types.isArray(children)
+            {chayns.utils.isArray(children) ? children[0] || null : children}
+            {chayns.utils.isArray(children)
             && <div className="chayns__utils__container--datarow--right">{children.slice(1)}</div>}
         </Component>
     );
