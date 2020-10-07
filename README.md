@@ -48,16 +48,17 @@ initChaynsHelper({
 ### Functions
 | Function                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------|----- |
-| [chaynsDialogs](/src/functions/chaynsDialogs.js)| makes using chayns dialogs so much more comfortable | |
+| [chaynsCall](/src/functions/chaynsCalls/chaynsCalls.js)| wraps the chaynsCall callbacks behind a simple promise. Just await the chayns call to get the return value | |
+| [chaynsDialogs](/src/functions/chaynsDialogs.js)| makes using chayns dialogs much more comfortable | |
 | [copyToClipboard](/src/functions/copy.js)| copy a value to the user's clipboard | |
-| [defaultErrorHandler](/src/functions/defaultErrorHandler.js)| default request error handling with dialogs for error status codes | |
-| [fnsFormat](/src/functions/timeHelper/fnsFormat.js)| date-fns format with option to use today/tomorrow/yesterday and append the year if it's not the current year | |
+| [fnsFormat](/src/functions/timeHelper/fnsFormat.js)| date-fns format with option to use today/tomorrow/yesterday and add the year if it's not the current year | |
 | [generateAxis](/src/functions/recharts/generateAxis.js)| a function to generate a better recharts axis | |
 | [generateUUID](/src/functions/generateUid.js)| generate a GUID | |
 | [getHookState](/src/functions/getHookState.js)| get the current state of a hook via the setState function | |
 | [Guid](/src/functions/guid.js)| a Guid class | |
 | [hexToRgb](/src/functions/colors/hexToRgb.js)| Convert a hex color to an rgb object which returns a rgba() css function when stringified | |
-| [hideCWFooter](/src/functions/chaynsCalls/chaynsCalls.js)| hide the chayns web footer | |
+| [hideCWFooter](/src/functions/chaynsCalls/hideCwFooter.js)| hide the chayns web footer | |
+| [jsxReplace](/src/textstring/jsxReplace.js)| replace strings or regex matches in a string with other strings or jsx | |
 | [request](/src/functions/httpRequest/httpRequest.js)| fetch helper with loads of options, constants and a try/catch wrapper | [httpRequest.md](/src/functions/httpRequest/httpRequest.md) |
 | [localStorage](/src/other/localStorageHelper.js)| helper to cache httpRequest JSON strings in local storage | |
 | [setViewMode](/src/functions/chaynsCalls/chaynsCalls.js)| toggle exclusive mode | |

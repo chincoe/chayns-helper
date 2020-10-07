@@ -32,6 +32,7 @@ import useWebsocketService from './hooks/useWebsocketService';
 import localStorage from './other/localStorageHelper';
 import WebsocketClient from './other/WsClient';
 import TextStringComplex from './textstring/TextStringMemo';
+import jsxReplace from './textstring/jsxReplace';
 import useTextStrings from './textstring/useTextStrings';
 import getTextStrings from './textstring/getTextStrings';
 import getHookState from './functions/getHookState';
@@ -87,6 +88,7 @@ export {
     localStorage,
     WebsocketClient,
     TextStringComplex,
+    jsxReplace,
     getTextStrings,
     useTextStrings,
     getHookState,

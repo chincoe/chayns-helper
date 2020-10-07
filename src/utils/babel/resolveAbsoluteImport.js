@@ -40,6 +40,7 @@ module.exports = function resolveAbsoluteImport(importName) {
         localStorage: 'other/localStorageHelper',
         WebsocketClient: 'other/WsClient',
         TextStringComplex: 'textstring/TextStringMemo',
+        jsxReplace: 'textstring/jsxReplace',
         useTextStrings: 'textstring/useTextStrings',
         getTextStrings: 'textstring/getTextStrings',
         getHookState: 'functions/getHookState',

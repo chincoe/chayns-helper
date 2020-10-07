@@ -3,9 +3,8 @@ import React, {
     memo, useMemo
 } from 'react';
 import PropTypes from 'prop-types';
-import stringToRegex, { regexRegex } from '../_internal/stringToRegex';
 import generateUUID from '../functions/generateUid';
-import useTextStrings from './useTextStrings';
+import jsxReplace from './jsxReplace';
 import TEXTSTRING_PREFIX from './textstringPrefix';
 
 // memoized textstring component
@@ -14,6 +13,8 @@ import TEXTSTRING_PREFIX from './textstringPrefix';
 // replacements: { [regexString]: (props) => <p>JSX</p> }
 // or replacements: { [regexString]: string }
 // retains all features including ctrl-click-to-change-textstring, html and language support
+// WARNING: Nested JSX Replacements or nested replacements using setInnerHTML are not supported. Cannot replace
+// anything inside a jsx replacement or anything wrapping a jsx replacement
 /**
  * Memoized textstring Component
  * Allows replacements based on regex and inline function components.
@@ -28,6 +29,9 @@ import TEXTSTRING_PREFIX from './textstringPrefix';
  *     an endless replacement loop
  * @param {boolean} [useDangerouslySetInnerHTML=false]
  * @param {string} [language='de']
+ *
+ * @property {function} jsxReplace
+ *
  * @return {*}
  */
 const TextStringMemo = memo((
@@ -92,72 +96,25 @@ const TextStringReplacer = memo((props) => {
         ...elementProps
     } = props;
 
-    const [calculatedString] = useTextStrings(fallback ? { [stringName]: fallback } : [stringName]);
-
+    // get the string manually if it hasn't been passed by the chayns-components textstring component
+    const calculatedString = TextString.getTextString(stringName) || fallback;
     const text = chayns.utils.isString(children)
                  ? children
                  : calculatedString;
 
+    // generate a guid used for react keys
+    const guid = useMemo(() => generateUUID(), []);
+
+    // calculate the actual content with replacements. To display a mix of strings and react elements this function
+    // creates an array of strings and react elements that is split further and further the more jsx replacements occur
     const content = useMemo(() => {
-        const guid = generateUUID();
-        const vars = Object.keys(replacements);
-        let result = [text];
-        for (let i = 0; i < vars.length; i += 1) {
-            let j = 0;
-            const isRegexKey = regexRegex.test(vars[i]);
-            const regex = stringToRegex(vars[i]);
-            while (j < maxReplacements && result.find((m) => (chayns.utils.isString(m) && (isRegexKey
-                                                                                           ? regex.test(m)
-                                                                                           : m.includes(vars[i]))))) {
-                const arrayIdx = result.findIndex((m) => (chayns.utils.isString(m) && (isRegexKey
-                                                                                       ? regex.test(m)
-                                                                                       : m.includes(vars[i]))));
-                let matchValue;
-                let matchIndex;
-                let matchLength;
-                const isReplacerFunction = chayns.utils.isFunction(replacements[vars[i]]);
-                const ReplaceElement = replacements[vars[i]];
-                if (isRegexKey) {
-                    const match = result[arrayIdx].match(regex);
-                    [matchValue] = match;
-                    matchIndex = match.index;
-                    matchLength = match[0].length;
-                } else {
-                    matchValue = vars[i];
-                    matchLength = vars[i].length;
-                    matchIndex = result[arrayIdx].indexOf(vars[i]);
-                }
-                result = [
-                    ...result.slice(0, arrayIdx),
-                    ...(isReplacerFunction
-                        ? [
-                            result[arrayIdx].substring(0, matchIndex),
-                            <ReplaceElement
-                                var={vars[i]}
-                                match={matchValue}
-                                {...(isRegexKey ? { regex } : {})}
-                                key={`${guid}:${i}.${j}`}
-                            />,
-                            result[arrayIdx].substring(matchIndex + matchLength)
-                        ] : [
-                            `${result[arrayIdx].substring(0, matchIndex)}${ReplaceElement}${result[arrayIdx].substring(
-                                matchIndex + matchLength
-                            )}`
-                        ]),
-                    ...result.slice(arrayIdx + 1)
-                ];
-                j += 1;
-            }
-        }
-        if (useDangerouslySetInnerHTML) {
-            for (let i = 0; i < result.length; i += 1) {
-                if (chayns.utils.isString(result[i])) {
-                    // eslint-disable-next-line react/no-danger
-                    result[i] = <span dangerouslySetInnerHTML={{ __html: result[i] }}/>;
-                }
-            }
-        }
-        return result;
+        jsxReplace({
+            text,
+            replacements,
+            maxReplacements,
+            useDangerouslySetInnerHTML,
+            guid,
+        });
     }, [text, replacements]);
 
     return React.isValidElement(textStringChildren)
@@ -186,4 +143,6 @@ TextStringReplacer.defaultProps = {
     textStringChildren: null
 };
 
-export default memo(TextStringMemo);
+TextStringMemo.jsxReplace = jsxReplace;
+
+export default TextStringMemo;
