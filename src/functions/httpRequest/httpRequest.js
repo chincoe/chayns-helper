@@ -5,7 +5,7 @@ import localStorage from '../../other/localStorageHelper';
 import { helperConfig } from '../../config/chaynsHelperConfig';
 import generateUUID from '../generateUid';
 import showWaitCursor from '../waitCursor';
-import stringToRegex from '../../_internal/stringToRegex';
+import stringToRegex, { regexRegex } from '../../_internal/stringToRegex';
 import HttpMethod from './HttpMethod';
 import RequestError from './RequestError';
 import requestPresets from './requestPresets';
@@ -322,6 +322,7 @@ export const defaultConfig = {
  *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
  *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
+ * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  * @public
  */
 export const setRequestDefaults = (address, config, options) => {
@@ -409,6 +410,7 @@ const getMapKeys = (map) => {
  *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
  *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
+ * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  * @async
  * @public
  * @throws {RequestError}
@@ -466,7 +468,8 @@ export function httpRequest(
                 onProgress = null,
                 // adds a random number as url param to bypass the browser cache
                 addHashToUrl = false,
-                internalRequestGuid = generateUUID()
+                internalRequestGuid = generateUUID(),
+                replacements = {}
             } = {
                 responseType: ResponseType.Json,
                 // logConfig: {},
@@ -478,6 +481,13 @@ export function httpRequest(
                 // statusHandlers: {},
                 onProgress: null,
                 addHashToUrl: false,
+                replacements: {
+                    [/##locationId##/g]: chayns.env.site.locationId,
+                    [/##siteId##/g]: chayns.env.site.id,
+                    [/##tappId##/g]: chayns.env.site.tapp.id,
+                    [/##userId##/g]: chayns.env.user.id,
+                    [/##personId##/g]: chayns.env.user.personId
+                },
                 ...(defaultConfig.options || {}),
                 ...(options || {})
             };
@@ -549,6 +559,20 @@ export function httpRequest(
             } else {
                 requestAddress = address;
             }
+            if (replacements && chayns.utils.isObject(replacements)) {
+                const replacementKeys = Object.keys(replacements);
+                for (let i = 0; i < replacementKeys.length; i++) {
+                    if (regexRegex.test(replacementKeys[i])) {
+                        const regex = stringToRegex(replacementKeys[i]);
+                        requestAddress = requestAddress.replace(regex, replacements[replacementKeys[i]]);
+                    } else {
+                        requestAddress = requestAddress.replaceAll(
+                            replacementKeys[i],
+                            replacements[replacementKeys[i]]
+                        );
+                    }
+                }
+            }
             if (addHashToUrl) {
                 requestAddress += `${/\?.+$/.test(address) ? '&' : '?'}${generateUUID()
                     .toString()
@@ -607,7 +631,10 @@ export function httpRequest(
                     && statusHandlers.get(`${status}`) === ResponseType.Error) {
                     reject(err);
                 }
-                if (ignoreErrors === true || (status && chayns.utils.isArray(ignoreErrors) && ignoreErrors.includes(status))) {
+                if (ignoreErrors === true
+                    || (status && chayns.utils.isArray(ignoreErrors)
+                        && ignoreErrors.includes(status))
+                ) {
                     if (chayns.utils.isNumber(status)) {
                         switch (responseType) {
                             case ResponseType.Object:
@@ -1162,6 +1189,8 @@ export function httpRequest(
  *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
  *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
+ * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
+ *
  * @param {requestErrorHandler} [errorHandler=undefined] - Function to handle error statusCodes. Defaults to
  *     defaultErrorHandler.js
  * @param {Object} [handlerOptions={}] - other options for this wrapper
