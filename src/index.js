@@ -52,6 +52,7 @@ import toHslColor from './functions/colors/toHslColor';
 import usePrevState from './hooks/usePrevState';
 import usePrevious from './hooks/usePrevious';
 import usePreviousEffect from './hooks/usePreviousEffect';
+import getJsonSettings from './functions/getJsonSettings';
 
 export {
     initChaynsHelper,
@@ -107,5 +108,6 @@ export {
     toHslColor,
     usePrevious,
     usePreviousEffect,
-    usePrevState
+    usePrevState,
+    getJsonSettings
 };

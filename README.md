@@ -58,6 +58,7 @@ initChaynsHelper({
 | [generateAxis](/src/functions/recharts/generateAxis.js)| a function to generate a better recharts axis | |
 | [generateUUID](/src/functions/generateUid.js)| generate a GUID | |
 | [getHookState](/src/functions/getHookState.js)| get the current state of a hook via the setState function | |
+| [getJsonSettings](/src/functions/getJsonSettings.js)| pass as second param to JSON.stringify to modify the serialization | |
 | [Guid](/src/functions/guid.js)| a Guid class | |
 | [hexToRgb](/src/functions/colors/hexToRgb.js)| Convert a hex color to an rgb object which returns a rgba() css function when stringified | |
 | [hideCWFooter](/src/functions/chaynsCalls/hideCwFooter.js)| hide the chayns web footer | |
