@@ -51,7 +51,10 @@ module.exports = function resolveAbsoluteImport(importName) {
         Guid: 'functions/guid',
         stringToColor: 'functions/colors/stringToColor',
         hexToRgb: 'functions/colors/hexToRgb',
-        toHslColor: 'functions/colors/toHslColor'
+        toHslColor: 'functions/colors/toHslColor',
+        usePrevState: 'hooks/usePrevState',
+        usePrevious: 'hooks/usePrevious',
+        usePreviousEffect: 'hooks/usePreviousEffect',
     };
 
     if (!values[importName]) {

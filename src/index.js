@@ -49,6 +49,9 @@ import stringToColor from './functions/colors/stringToColor';
 import hexToRgb from './functions/colors/hexToRgb';
 import extend from './functions/extend';
 import toHslColor from './functions/colors/toHslColor';
+import usePrevState from './hooks/usePrevState';
+import usePrevious from './hooks/usePrevious';
+import usePreviousEffect from './hooks/usePreviousEffect';
 
 export {
     initChaynsHelper,
@@ -101,5 +104,8 @@ export {
     stringToColor,
     hexToRgb,
     extend,
-    toHslColor
+    toHslColor,
+    usePrevious,
+    usePreviousEffect,
+    usePrevState
 };
