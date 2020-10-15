@@ -21,6 +21,7 @@ A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js
 |options.statusHandlers| Handle responses for specific status codes using the codes or regex. Format: <br> 1.`{ [status/regex] : (response) => { my code }, ... }`<br> 2. `{ [status/regex] : responseType, ... }` | Object<status/regex, responseType/responseHandler> | `{}` |
 |options.onProgress| *Experimental feature*: Callback that will allow you to monitor download progress | function | `null` |
 |options.addHashToUrl | Add a random hash to the request url | boolean | `false`|
+|options.replacements | Replacements for the request url | Object<string/regex, string/function> | Object with replacements for `##locationId##`, `##siteId##`, `##tappId##`, `##userId##` and `##personId##`  |
 | **@returns** | Promise of: Response specified via response type or throws an error | Promise<Json/String/Object/Blob/Response/null> | |
 
 > **Note**: A "Failed to fetch" Error will be treated as a status code `1` regarding options.statusHandlers, options.logConfig as well as the return values if options.ignoreErrors is true 
@@ -32,6 +33,10 @@ A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js
 > 
 > To keep the proper order, please make sure to specify all regex keys like `{[/myRegex/]: ...}` and **not** like `{'myRegex': ...}`.
 > The second notation might still work but will result in issues regarding priorities compared to single status code handlers or other regexes.
+
+> **Note**: `options.replacements` defaults will always be overwritten entirely if you pass it, so passing an empty object disables it. 
+> request.defaults has the same behavior here. 
+> If you use regexes as key you should pass teh "g" flag to replace all occurrences.
 
 #### Default behavior
 This helper works with the following presumptions:

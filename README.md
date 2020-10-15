@@ -36,6 +36,9 @@ initChaynsHelper({
 |----------------------------------------------------------------------|-------------------------------| --------|
 | [useAxis](/src/functions/recharts/useAxis.js)| a hook to generate a better recharts axis |
 | [useFullscreenTapp](/src/hooks/useFullscreenTapp.js)| Hook to create a fullscreen tapp without scrolling | [useFullscreenTapp.md](/src/hooks/useFullscreenTapp.md) |
+| [usePrevious](/src/hooks/usePrevious.js)| access a value from a previous render |
+| [usePreviousEffect](/src/hooks/usePreviousEffect.js)| useEffect hook that can access the previous values of its dependencies |
+| [usePrevState](/src/hooks/usePrevState.js)| useState hook that can access its value from a previous render |
 | [useTextStrings](/src/textstring/TextStringMemo.jsx)| get memoized TextStrings from a list of string names |
 | [useTimeoutState](/src/hooks/uniques/useTimeoutState.js)| useState that calls an onChange method if the value hasn't change for a certain time | [useTimeoutState.md](/src/hooks/uniques/useTimeoutState.md) |
 | [useUniqueEventListener](/src/hooks/uniques/useUniqueEventListener.js)| removes an old eventListener when a new one is set |
@@ -55,6 +58,7 @@ initChaynsHelper({
 | [generateAxis](/src/functions/recharts/generateAxis.js)| a function to generate a better recharts axis | |
 | [generateUUID](/src/functions/generateUid.js)| generate a GUID | |
 | [getHookState](/src/functions/getHookState.js)| get the current state of a hook via the setState function | |
+| [getJsonSettings](/src/functions/getJsonSettings.js)| pass as second param to JSON.stringify to modify the serialization | |
 | [Guid](/src/functions/guid.js)| a Guid class | |
 | [hexToRgb](/src/functions/colors/hexToRgb.js)| Convert a hex color to an rgb object which returns a rgba() css function when stringified | |
 | [hideCWFooter](/src/functions/chaynsCalls/hideCwFooter.js)| hide the chayns web footer | |
