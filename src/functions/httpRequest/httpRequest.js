@@ -774,6 +774,7 @@ export function httpRequest(
                             ...requestHeaders,
                             Authorization: undefined
                         },
+                        online: `${navigator?.onLine}, ${navigator?.connection?.effectiveType}`,
                         processName,
                         requestDuration: `${Date.now() - fetchStartTime} ms`,
                         requestTime: new Date(fetchStartTime).toISOString(),
@@ -860,6 +861,7 @@ export function httpRequest(
                     sessionUid,
                     responseBody,
                     processName,
+                    online: `${navigator?.onLine}, ${navigator?.connection?.effectiveType}`,
                     requestDuration: `${Date.now() - fetchStartTime} ms`,
                     requestTime: new Date(fetchStartTime).toISOString(),
                     internalRequestGuid
