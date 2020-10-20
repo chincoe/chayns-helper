@@ -42,6 +42,7 @@ initChaynsHelper({
 | [useUniqueEventListener](/src/hooks/uniques/useUniqueEventListener.js)| removes an old eventListener when a new one is set |
 | [useUniqueInterval](/src/hooks/uniques/useUniqueInterval.js)| clears a previous interval when a new one is set |
 | [useUniqueTimeout](/src/hooks/uniques/useUniqueTimeout.js)| clears a previous timeout when a new one is set |
+| [useUpdateEffect](/src/hooks/useUpdateEffect.js)| useEffect() hook that won't run on the first render |
 | [useUser](/src/hooks/useUser.js)| chayns.getUser() hook |
 | [useWebsocketService](/src/hooks/useWebsocketService.js)| configure a tobit-websocket-service-client | [useWebsocketService.md](/src/hooks/useWebsocketService.md) |
 | [useShallowSelector](/src/hooks/useShallowSelector.js)| a useSelector Hook with shallowEqual |

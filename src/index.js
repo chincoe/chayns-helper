@@ -53,6 +53,7 @@ import usePrevState from './hooks/usePrevState';
 import usePrevious from './hooks/usePrevious';
 import usePreviousEffect from './hooks/usePreviousEffect';
 import getJsonSettings from './functions/getJsonSettings';
+import useUpdateEffect from './hooks/useUpdateEffect';
 
 export {
     initChaynsHelper,
@@ -109,5 +110,6 @@ export {
     usePrevious,
     usePreviousEffect,
     usePrevState,
-    getJsonSettings
+    getJsonSettings,
+    useUpdateEffect
 };
