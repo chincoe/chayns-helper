@@ -7,9 +7,7 @@ Initialize the helper in your index.js to make sure that every feature actually 
 ```javascript
 initChaynsHelper({
     textStringPrefix: 'txt_chayns_myapp_', // necessary to use all textString helpers
-    requestErrorHandler: myRequestErrorHandler, // default is defaultErrorHandler, used only by handleRequest
-    logger: chaynsLogger, // access the chayns logger as it cannot be a dependency for this public package
-    useSelector // react-redux useSelector hook, required to use useShallowSelector
+    requestErrorHandler: myRequestErrorHandler // used only by handleRequest
 });
 ```
 

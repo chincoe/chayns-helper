@@ -1,5 +1,46 @@
 ## [Request](httpRequest.js)
 
+### Suggested setup and quick documentation
+If you've never used this helper before and just want a basic fetch helper, I suggest the following setup:
+```javascript
+// index.js
+async function init() {
+    // chayns ready, logger init, ...
+    request.defaults("BASE_URL",
+    { 
+        // your default fetch config, e.g. header
+    }, {
+        ignoreErrors: true,
+        responseType: ResponseType.Object
+    })
+    // render, ...
+}
+
+// postStuff.js
+export default async function postStuff(body) {
+    const result = await request.fetch(
+        "/my/url/##locationId##/##tappId##/##siteId##", // route, has to start with a "/" to use the base url from index.js
+        {   // fetch config, almost identical to the 2nd param of the built-in fetch() function
+            method: HttpMethod.Post, // default "GET"
+            body: body,
+            useChaynsAuth: false // adds user token as Auth header if user is logged in by default
+        },
+        "postStuff", // for your request logs
+        {
+            // only worry about these options if you want to:
+            // * customize the helper's behavior 
+            // * use something other than json
+            // * adjust the logLevel for request logs depending on status code
+            // * get the response body from requests without success status code
+        }
+    );
+    // data is the response.json() (if available), status the the response statusCode. Failed to fetch is status 1.
+    const { data, status } = result;
+}
+```
+
+
+
 ### request.fetch(address, config, processName, options)
 A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js`).
 

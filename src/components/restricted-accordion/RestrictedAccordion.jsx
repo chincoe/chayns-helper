@@ -1,7 +1,7 @@
 import React from 'react';
 import { Accordion, Icon } from 'chayns-components';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import './restricted-accordion.scss';
 
 /**
@@ -29,7 +29,7 @@ const RestrictedAccordion = (
     <Accordion
         right={!(useAdminStyle === false) ? (<Icon icon="fas fa-lock"/>) : null}
         {...props}
-        className={classNames(
+        className={clsx(
             { 'accordion--restricted': !(useAdminStyle === false) },
             { 'accordion--restricted-search': onSearch || onSearchEnter },
             className

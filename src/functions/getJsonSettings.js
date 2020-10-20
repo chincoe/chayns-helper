@@ -1,7 +1,7 @@
 /**
  * @param {Object} options
  * @param {boolean} [options.ignoreNullValues]
- * @param {boolean} [options.includeUndefined]
+ * @param {boolean|string|number|null|Object} [options.includeUndefined]
  * @param {boolean} [options.includeNotSerializable]
  * @param {string[]} [options.excludeKeys]
  *
@@ -22,7 +22,9 @@ export default function getJsonSettings(options) {
             return undefined;
         }
         if (includeUndefined && value === undefined) {
-            return null;
+            return chayns.utils.isBoolean(includeUndefined)
+                   ? null
+                   : includeUndefined;
         }
         if (chayns.utils.isArray(value)) {
             return value.map((v) => replacer(key, v));

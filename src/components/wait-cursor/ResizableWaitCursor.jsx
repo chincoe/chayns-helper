@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './resizable-wait-cursor.scss';
 import { SmallWaitCursor } from 'chayns-components';
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 /**
  * ResizableWaitCursor
@@ -34,7 +34,7 @@ const ResizableWaitCursor = (
     }, [size]);
     return (
         <SmallWaitCursor
-            className={classNames('resizable-wait-cursor', className)}
+            className={clsx('resizable-wait-cursor', className)}
             style={{
                 ...style,
                 height: size,

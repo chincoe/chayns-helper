@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import './data-row.scss';
 
 /**
@@ -26,7 +26,7 @@ const DataRow = (
     const Component = elementType;
     return (
         <Component
-            className={classNames(
+            className={clsx(
                 'chayns__utils__container',
                 'chayns__utils__container--datarow',
                 className

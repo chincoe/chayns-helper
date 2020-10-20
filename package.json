@@ -1,6 +1,6 @@
 {
   "name": "chayns-helper",
-  "version": "1.2.15",
+  "version": "1.2.16",
   "description": "my personal helpers for chayns development",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -74,7 +74,7 @@
   },
   "dependencies": {
     "chayns-components": "^4.18.10",
-    "classnames": "^2.2.6",
+    "clsx": "^1.1.1",
     "date-fns": "^2.16.1"
   },
   "peerDependencies": {

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import './centered-container.scss';
 
 /**
@@ -29,7 +29,7 @@ const CenteredContainer = (
     return (
         <Component
             {...props}
-            className={classNames(
+            className={clsx(
                 'chayns__utils__container',
                 'chayns__utils__container--centered',
                 'chayns__utils__container--centered-container',

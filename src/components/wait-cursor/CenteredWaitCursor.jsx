@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { SmallWaitCursor } from 'chayns-components';
 import './centered-wait-cursor.scss';
 
@@ -31,7 +31,7 @@ const CenteredWaitCursor = (
     return (
         <Component
             {...elementProps}
-            className={classNames(
+            className={clsx(
                 'chayns__utils__container',
                 'chayns__utils__container--centered',
                 'chayns__utils__container--centered-wait-cursor',
