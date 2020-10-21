@@ -1,13 +1,12 @@
 {
   "name": "chayns-helper",
-  "version": "1.2.16",
+  "version": "1.2.27",
   "description": "my personal helpers for chayns development",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
-  "jsnext:main": "lib_esnext/index.js",
   "scripts": {
     "prepublishOnly": "npm run build",
-    "build": "npm run build:sass && npm run build:es && npm run build:cjs && npm run build:lib:es",
+    "build": "rollup -c && npm run build:sass && npm run build:lib:es",
     "build:es": "cross-env NODE_ENV=es rollup -c",
     "build:cjs": "cross-env NODE_ENV=cjs rollup -c",
     "build:lib:es": "cross-env BABEL_ENV=es babel src -d lib",
@@ -73,6 +72,7 @@
     "style-loader": "^1.2.1"
   },
   "dependencies": {
+    "@babel/runtime": "^7.12.1",
     "chayns-components": "^4.18.10",
     "clsx": "^1.1.1",
     "date-fns": "^2.16.1"

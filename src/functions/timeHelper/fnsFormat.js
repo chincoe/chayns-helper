@@ -1,5 +1,5 @@
-import { format } from 'date-fns';
-import deLocale from 'date-fns/locale/de';
+import { format } from 'date-fns/esm';
+import deLocale from 'date-fns/esm/locale/de';
 import time from '../../constants/time';
 
 /**
