@@ -184,8 +184,8 @@ const jsonResolve = async (response, processName, resolve, useFetchApi, internal
         console.warn(...colorLog({
             '[HttpRequest]': 'color: #aaaaaa',
             // eslint-disable-next-line max-len
-            [`Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`]: ''
-        }), { [status]: ResponseType.None }, '\n', err);
+            [`Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
+        }), { statusHandlers: { [status]: ResponseType.None } }, '\n', err);
         resolve(null);
     }
 };
@@ -213,8 +213,8 @@ const blobResolve = async (response, processName, resolve, useFetchApi, internal
         console.warn(...colorLog({
             '[HttpRequest]': 'color: #aaaaaa',
             // eslint-disable-next-line max-len
-            [`Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`]: ''
-        }), { [status]: ResponseType.None }, '\n', err);
+            [`Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
+        }), { statusHandlers: { [status]: ResponseType.None } }, '\n', err);
         resolve(null);
     }
 };
@@ -240,8 +240,8 @@ const textResolve = async (response, processName, resolve, useFetchApi, internal
         console.warn(...colorLog({
             '[HttpRequest]': 'color: #aaaaaa',
             // eslint-disable-next-line max-len
-            [`Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`]: ''
-        }), { [status]: ResponseType.None }, '\n', err);
+            [`Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
+        }), { statusHandlers: { [status]: ResponseType.None } }, '\n', err);
         resolve(null);
     }
 };
@@ -267,8 +267,8 @@ const objectResolve = async (response, processName, resolve, useFetchApi, intern
         console.warn(...colorLog({
             '[HttpRequest]': 'color: #aaaaaa',
             // eslint-disable-next-line max-len
-            [`Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`]: ''
-        }), { [status]: ResponseType.None }, '\n', err);
+            [`Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
+        }), { statusHandlers: { [status]: ResponseType.None } }, '\n', err);
         resolve({ status, data: null });
     }
 };
