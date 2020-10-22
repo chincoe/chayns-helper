@@ -33,6 +33,7 @@ initChaynsHelper({
 | Hook                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------| --------|
 | [useAxis](/src/functions/recharts/useAxis.js)| a hook to generate a better recharts axis |
+| [useAxis](/src/hooks/useClampLines.js)| a hook to restrict a text to a maxHeight |
 | [useFullscreenTapp](/src/hooks/useFullscreenTapp.js)| Hook to create a fullscreen tapp without scrolling | [useFullscreenTapp.md](/src/hooks/useFullscreenTapp.md) |
 | [usePrevious](/src/hooks/usePrevious.js)| access a value from a previous render |
 | [usePreviousEffect](/src/hooks/usePreviousEffect.js)| useEffect hook that can access the previous values of its dependencies |
