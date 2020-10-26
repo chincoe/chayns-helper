@@ -57,7 +57,8 @@ module.exports = function resolveAbsoluteImport(importName) {
         usePreviousEffect: 'hooks/usePreviousEffect',
         getJsonSettings: 'functions/getJsonSettings',
         useUpdateEffect: 'hooks/useUpdateEffect',
-        useClampLines: 'hooks/useClampLines'
+        useClampLines: 'hooks/useClampLines',
+        useInlineSelector: 'hooks/useInlineSelector',
     };
 
     if (!values[importName]) {
