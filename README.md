@@ -32,8 +32,9 @@ initChaynsHelper({
 ### Hooks
 | Hook                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------| --------|
+| [useAsyncState](/src/hooks/useAsyncState.js)| useState hook that can resolve Promises and accepts async setter functions |
 | [useAxis](/src/functions/recharts/useAxis.js)| a hook to generate a better recharts axis |
-| [useAxis](/src/hooks/useClampLines.js)| a hook to restrict a text to a maxHeight |
+| [useClampLines](/src/hooks/useClampLines.js)| a hook to restrict a text to a maxHeight |
 | [useFullscreenTapp](/src/hooks/useFullscreenTapp.js)| Hook to create a fullscreen tapp without scrolling | [useFullscreenTapp.md](/src/hooks/useFullscreenTapp.md) |
 | [useInlineSelector](/src/hooks/useInlineSelector.js)| useSelector that doesn't use a constant selector without performance issues |
 | [usePrevious](/src/hooks/usePrevious.js)| access a value from a previous render |

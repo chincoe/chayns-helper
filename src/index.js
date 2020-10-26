@@ -56,3 +56,4 @@ export { default as getJsonSettings } from './functions/getJsonSettings';
 export { default as useUpdateEffect } from './hooks/useUpdateEffect';
 export { default as useClampLines } from './hooks/useClampLines';
 export { default as useInlineSelector } from './hooks/useInlineSelector';
+export { default as useAsyncState } from './hooks/useAsyncState';

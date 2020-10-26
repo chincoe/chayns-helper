@@ -12,8 +12,10 @@ import useShallowSelector from './useShallowSelector';
  *  - Make sure that you specify a default value and add dependencies to update the selector
  *  - If the selected instance from store may be deleted, make sure that you handle null values after the point that
  * uses props. E.g. do not use (state) => state.instance[props.id].name, use (state) => state.instance[props.id]?.name
- * instead (or const { name } = useInlineSelector(state => state.instance[props.id], {}, [props.id]) to take advantage of the default value). Even if deleting the specific value in the store will unmount the component calling this selector, the
- * selector might still run before unmounting and throw an error as result if you do not follow this advice.
+ * instead (or const { name } = useInlineSelector(state => state.instance[props.id], {}, [props.id]) to take advantage
+ * of the default value). Even if deleting the specific value in the store will unmount the component calling this
+ * selector, the selector might still run before unmounting and throw an error as result if you do not follow this
+ * advice.
  *
  * @template T
  * @param {function(*) : T} selector - the selector function

@@ -59,6 +59,7 @@ module.exports = function resolveAbsoluteImport(importName) {
         useUpdateEffect: 'hooks/useUpdateEffect',
         useClampLines: 'hooks/useClampLines',
         useInlineSelector: 'hooks/useInlineSelector',
+        useAsyncState: 'hooks/useAsyncState',
     };
 
     if (!values[importName]) {
