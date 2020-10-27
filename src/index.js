@@ -59,3 +59,4 @@ export { default as useInlineSelector } from './hooks/useInlineSelector';
 export { default as useAsyncState } from './hooks/useAsyncState';
 export { default as getChaynsErrorCode } from './functions/httpRequest/getChaynsErrorCode';
 export { default as isChaynsError } from './functions/httpRequest/isChaynsError';
+export { default as ChaynsError } from './functions/httpRequest/ChaynsError';

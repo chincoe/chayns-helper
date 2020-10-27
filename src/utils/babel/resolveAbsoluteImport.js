@@ -62,6 +62,7 @@ module.exports = function resolveAbsoluteImport(importName) {
         useAsyncState: 'hooks/useAsyncState',
         getChaynsErrorCode: 'functions/httpRequest/getChaynsErrorCode',
         isChaynsError: 'functions/httpRequest/isChaynsError',
+        ChaynsError: 'functions/httpRequest/ChaynsError',
     };
 
     if (!values[importName]) {

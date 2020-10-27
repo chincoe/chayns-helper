@@ -26,7 +26,6 @@ export const defaultConfig = {
  * @param {ResponseType|string} [options.responseType=null] - type of response that is expected
  * @param {boolean|number[]} [options.ignoreErrors=false] - Don't throw errors for this request if true or if this
  *     array contains the response status. Return null on error instead. Errors will still be logged as usual.
- * @param {boolean} [options.useFetchApi=true] - use fetch(), use XMLHttpRequest otherwise
  * @param {Object.<string,LogLevel>} [options.logConfig={}] - Define the logLevel for these status codes. Can use
  *     status code or regex string as key. Values must be info|warning|error|critical|none.
  * @param {boolean} [options.stringifyBody=true] - Call JSON.stringify(body) for the body passed to this function
@@ -44,7 +43,6 @@ export const defaultConfig = {
  *      3. response type
  * @param {Object.<string|RegExp, ResponseType|statusCodeHandler|function(Response)>} [options.errorHandlers={}] -
  *     chayns error handler for specific ChaynsErrors
- * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
  * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  * @public
  */

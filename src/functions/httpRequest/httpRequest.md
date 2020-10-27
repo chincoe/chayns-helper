@@ -55,13 +55,11 @@ A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js
 |options.responseType | expected response format (json/blob/Object/Response) | ResponseType/string | `'json'` |
 |options.logConfig | Configure the log level of specific status codes | Object<statusCode/regex, LogLevel> | `{"[1-3][\\d]{2}":'info', 401: 'warning', "[\\d]+": 'error'}`|
 |options.ignoreErrors | Don't throw errors on error status codes, return null instead. Response types "Object" and "Response" will return an object that includes the status to make sure the status is always available. | boolean / Array<statusCode> | `false` |
-|options.useFetchApi | Use fetch(), use XMLHttpRequest otherwise  | boolean | `true` |
 |options.stringifyBody | Call JSON.stringify() on config.body before passing it to fetch() | boolean | `true` |
 |options.additionalLogData | This data will be logged with the request logs. Doesn't affect functionality at all | Object | `{}`|
 |options.autoRefreshToken | Automatically repeat a request with config.useChaynsAuth if it fails due to expired access token after refreshing said access token | boolean | `true` |
 |options.statusHandlers| Handle responses for specific status codes using the codes or regex. Format: <br> 1.`{ [status/regex] : (response) => { my code }, ... }`<br> 2. `{ [status/regex] : responseType, ... }` | Object<status/regex, responseType/responseHandler> | `{}` |
-|options.onProgress| *Experimental feature*: Callback that will allow you to monitor download progress | function | `null` |
-|options.addHashToUrl | Add a random hash to the request url | boolean | `false`|
+|options.errorHandlers| Handle responses for specific ChaynsErrors using the errorCodes or regex. Format: <br> 1.`{ [code/regex] : (response) => { my code }, ... }`<br> 2. `{ [code/regex] : responseType, ... }` | Object<errorCode/regex, responseType/responseHandler> | `{}` |
 |options.replacements | Replacements for the request url | Object<string/regex, string/function> | Object with replacements for `##locationId##`, `##siteId##`, `##tappId##`, `##userId##` and `##personId##`  |
 | **@returns** | Promise of: Response specified via response type or throws an error | Promise<Json/String/Object/Blob/Response/null> | |
 
@@ -237,7 +235,7 @@ const result = await request.handle(
 |Object | `'object'` | `{ status: response.status, data: await response.json() }` |
 |Text | `'text'` | body string |
 |None | `'none'` | `undefined`|
-|Error | `'error'` | RequestError |
+|Error | `'error'` | RequestError/ChaynsError |
 
 ### request.logLevel - enum
 > Exported as `LogLevel` and `request.logLevel`
@@ -272,132 +270,6 @@ const HttpMethod = {
 |---------------|---------------|
 |name | `'HttpRequestError${statusCode}'`|
 |statusCode | `statusCode` |
-
-### request.presets
-A collection of presets for request.defaults()
-
-| Name | Description |
-|----------|-------|
-| default | the default config |
-| extended | An extended and suggested config, including noCache, JsonObject response type and Status 204 handling |
-| strict | Any status not explicitly handled is treated as an error |
-| noErrors | Don't throw any errors, only log them and return the response |
-
-Details:
-
-```javascript
-const requestPresets = {
-    // the default config
-    default: {
-        config: {
-            useChaynsAuth: chayns.env.user.isAuthenticated
-        },
-        options: {
-            responseType: ResponseType.Json,
-            logConfig: {
-                [/[1-3][\d]{2}/]: LogLevel.info,
-                401: LogLevel.warning,
-                [/[\d]+/]: LogLevel.error
-            },
-            ignoreErrors: false,
-            useFetchApi: true,
-            stringifyBody: true,
-            additionalLogData: {},
-            autoRefreshToken: true,
-            statusHandlers: {},
-            onProgress: null,
-            addHashToUrl: false,
-            showDialogs: true
-        }
-    },
-    // an extended config, suggested for use
-    extended: {
-        config: {
-            cache: 'no-cache',
-            headers: {
-                CacheControl: 'no-cache',
-                Pragma: 'no-cache'
-            }
-        },
-        options: {
-            responseType: ResponseType.Object,
-            logConfig: {
-                [/2[\d]{2}/]: LogLevel.info,
-                [/3[\d]{2}/]: LogLevel.warning,
-                401: LogLevel.warning,
-                [/[\d]+/]: LogLevel.error,
-                [/.*/]: LogLevel.critical
-            },
-            ignoreErrors: false,
-            useFetchApi: true,
-            stringifyBody: true,
-            additionalLogData: {},
-            autoRefreshToken: true,
-            statusHandlers: {
-                204: ResponseType.Response,
-                [/3[\d]{2}/]: ResponseType.Response
-            },
-            onProgress: null,
-            addHashToUrl: false,
-            showDialogs: false
-        }
-    },
-    // a strict config: Anything not explicitly expected is an error
-    strict: {
-        config: {
-            cache: 'no-cache'
-        },
-        options: {
-            responseType: ResponseType.Json,
-            logConfig: {
-                200: LogLevel.info,
-                [/[\d]+/]: LogLevel.error,
-                [/.*/]: LogLevel.critical
-            },
-            statusHandlers: {
-                [/(?!200)/]: ResponseType.Error
-            },
-            ignoreErrors: false,
-            useFetchApi: true,
-            stringifyBody: true,
-            additionalLogData: {},
-            autoRefreshToken: false,
-            onProgress: null,
-            addHashToUrl: false,
-            showDialogs: false
-        }
-    },
-    // a config that prevents throwing any errors, but not logging them
-    noErrors: {
-        config: {
-            cache: 'no-cache'
-        },
-        options: {
-            responseType: ResponseType.Object,
-            logConfig: {
-                [/2[\d]{2}/]: LogLevel.info,
-                [/3[\d]{2}/]: LogLevel.warning,
-                401: LogLevel.warning,
-                [/[\d]+/]: LogLevel.error,
-                [/.*/]: LogLevel.critical
-            },
-            ignoreErrors: true,
-            useFetchApi: true,
-            stringifyBody: true,
-            additionalLogData: {},
-            autoRefreshToken: true,
-            statusHandlers: {
-                204: ResponseType.Response,
-                [/2[\d]{2}/]: ResponseType.Object,
-                [/.*/]: ResponseType.Response
-            },
-            onProgress: null,
-            addHashToUrl: false,
-            showDialogs: false
-        }
-    }
-};
-```
 
 ### request.full(address, config, processName, options, errorHandler, handlerOptions)
 A combined function of request.handle() and request.fetch()

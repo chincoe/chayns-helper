@@ -1,6 +1,7 @@
 import logger from 'chayns-logger';
 import colorLog from '../../_internal/colorLog';
 import stringToRegex, { regexRegex } from '../../_internal/stringToRegex';
+import ChaynsError from './ChaynsError';
 import getChaynsErrorCode from './getChaynsErrorCode';
 import { chaynsErrorCodeRegex } from './isChaynsError';
 import LogLevel from './LogLevel';
@@ -90,14 +91,13 @@ export function getStatusHandlerByStatusRegex(status, statusHandlers) {
  * @param response
  * @param processName
  * @param resolve
- * @param useFetchApi
  * @param internalRequestGuid
  * @returns {Promise<void>}
  */
-export const jsonResolve = async (response, processName, resolve, useFetchApi, internalRequestGuid = null) => {
+export const jsonResolve = async (response, processName, resolve, internalRequestGuid = null) => {
     const { status } = response;
     try {
-        resolve(useFetchApi ? await response.json() : JSON.parse(response.response));
+        resolve(await response.json());
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
@@ -119,14 +119,13 @@ export const jsonResolve = async (response, processName, resolve, useFetchApi, i
  * @param response
  * @param processName
  * @param resolve
- * @param useFetchApi
  * @param internalRequestGuid
  * @returns {Promise<void>}
  */
-export const blobResolve = async (response, processName, resolve, useFetchApi, internalRequestGuid = null) => {
+export const blobResolve = async (response, processName, resolve, internalRequestGuid = null) => {
     const { status } = response;
     try {
-        resolve(useFetchApi ? await response.blob() : new Blob(response.response));
+        resolve(await response.blob());
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
@@ -148,14 +147,13 @@ export const blobResolve = async (response, processName, resolve, useFetchApi, i
  * @param response
  * @param processName
  * @param resolve
- * @param useFetchApi
  * @param internalRequestGuid
  * @returns {Promise<void>}
  */
-export const textResolve = async (response, processName, resolve, useFetchApi, internalRequestGuid = null) => {
+export const textResolve = async (response, processName, resolve, internalRequestGuid = null) => {
     const { status } = response;
     try {
-        resolve(useFetchApi ? await response.text() : response.response);
+        resolve(await response.text());
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting text body failed on Status ${status} on ${processName}`,
@@ -175,14 +173,13 @@ export const textResolve = async (response, processName, resolve, useFetchApi, i
  * @param response
  * @param processName
  * @param resolve
- * @param useFetchApi
  * @param internalRequestGuid
  * @returns {Promise<void>}
  */
-export const objectResolve = async (response, processName, resolve, useFetchApi, internalRequestGuid = null) => {
+export const objectResolve = async (response, processName, resolve, internalRequestGuid = null) => {
     const { status } = response;
     try {
-        resolve({ status, data: useFetchApi ? await response.json() : JSON.parse(response.response) });
+        resolve({ status, data: await response.json() });
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`,
@@ -205,8 +202,8 @@ export const objectResolve = async (response, processName, resolve, useFetchApi,
  * @param {string} processName
  * @param {function} resolve
  * @param {function} reject
- * @param {boolean} useFetchApi
  * @param {string} internalRequestGuid
+ * @param {chaynsErrorObject} [chaynsErrorObject=null]
  * @returns {Promise<boolean>}
  */
 export async function resolveWithHandler(
@@ -216,37 +213,39 @@ export async function resolveWithHandler(
     processName,
     resolve,
     reject,
-    useFetchApi,
-    internalRequestGuid
+    internalRequestGuid,
+    chaynsErrorObject = null
 ) {
     if (chayns.utils.isFunction(handler)) {
         // eslint-disable-next-line no-await-in-loop
-        resolve(await handler(response));
+        resolve(await handler(chaynsErrorObject ?? response));
         return true;
     }
     if (Object.values(ResponseType).includes(handler)) {
         switch (handler) {
             case ResponseType.Json:
                 // eslint-disable-next-line no-await-in-loop
-                await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                await jsonResolve(response, processName, resolve, internalRequestGuid);
                 return true;
             case ResponseType.Blob:
                 // eslint-disable-next-line no-await-in-loop
-                await blobResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                await blobResolve(response, processName, resolve, internalRequestGuid);
                 return true;
             case ResponseType.Object:
                 // eslint-disable-next-line no-await-in-loop
-                await objectResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                await objectResolve(response, processName, resolve, internalRequestGuid);
                 return true;
             case ResponseType.Text:
                 // eslint-disable-next-line no-await-in-loop
-                await textResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                await textResolve(response, processName, resolve, internalRequestGuid);
                 return true;
             case ResponseType.None:
                 resolve();
                 return true;
             case ResponseType.Error:
-                reject(new RequestError(`Status ${status} on ${processName}`, status));
+                reject(chaynsErrorObject
+                       ? new ChaynsError(chaynsErrorObject, processName, status)
+                       : new RequestError(`Status ${status} on ${processName}`, status));
                 return true;
             case ResponseType.Response:
             default:

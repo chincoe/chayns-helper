@@ -17,7 +17,6 @@ import {
 } from './httpRequestUtils';
 import { chaynsErrorCodeRegex } from './isChaynsError';
 import RequestError from './RequestError';
-import requestPresets from './requestPresets';
 import ResponseType from './ResponseType';
 import LogLevel from './LogLevel';
 import handleRequest from './handleRequest';
@@ -44,13 +43,12 @@ import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
  * @param {string} [config.integrity]
  * @param {boolean} [config.keepalive]
  * @param {Window} [config.window]
- * @param {*} [config.signal] - Signal to abort request while running, use with RTK thunks
+ * @param {AbortSignal} [config.signal] - Signal to abort request while running, use with RTK thunks
  * @param {string} [processName='HttpRequest'] - Name of the process in the logs
  * @param {Object} [options={}] - Additional options for the request
  * @param {ResponseType|string} [options.responseType=null] - type of response that is expected
  * @param {boolean|number[]} [options.ignoreErrors=false] - Don't throw errors for this request if true or if this
  *     array contains the response status. Return null on error instead. Errors will still be logged as usual.
- * @param {boolean} [options.useFetchApi=true] - use fetch(), use XMLHttpRequest otherwise
  * @param {Object.<string,LogLevel>} [options.logConfig={}] - Define the logLevel for these status codes. Can use
  *     status code or regex string as key. Values must be info|warning|error|critical|none.
  * @param {boolean} [options.stringifyBody=true] - Call JSON.stringify(body) for the body passed to this function
@@ -68,7 +66,6 @@ import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
  *      3. response type
  * @param {Object.<string|RegExp, ResponseType|statusCodeHandler|function(Response)>} [options.errorHandlers={}] -
  *     chayns error handler for specific ChaynsErrors
- * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
  * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  * @async
  * @public
@@ -102,8 +99,6 @@ export function httpRequest(
                 // logConfig = {},
                 // bool|number[]: don't throw errors on error status codes, return null instead
                 ignoreErrors = false,
-                // bool: use fetch(), use XMLHttpRequest otherwise
-                useFetchApi = true,
                 // bool: call JSON.stringify() on the body passed to this function
                 stringifyBody = true,
                 // object: additional data to be logged
@@ -117,23 +112,19 @@ export function httpRequest(
                  * - handler always receives entire response as parameter, not just the body
                  * - value returned from handler is returned as result of the request
                  * - handler can be async and will be awaited
-                 * => Use this to get jsonBody on error status codes or prefen .json() on 204
+                 * => Use this to get jsonBody on error status codes or .json() on 204
                  */
                 // statusHandlers = {},
-                // adds a random number as url param to bypass the browser cache
-                addHashToUrl = false,
                 internalRequestGuid = generateUUID(),
                 replacements = {}
             } = {
                 responseType: ResponseType.Json,
                 // logConfig: {},
                 ignoreErrors: false,
-                useFetchApi: true,
                 stringifyBody: true,
                 additionalLogData: {},
                 autoRefreshToken: true,
                 // statusHandlers: {},
-                addHashToUrl: false,
                 replacements: {
                     [/##locationId##/g]: chayns.env.site.locationId,
                     [/##siteId##/g]: chayns.env.site.id,
@@ -229,12 +220,6 @@ export function httpRequest(
                         );
                     }
                 }
-            }
-            if (addHashToUrl) {
-                requestAddress += `${/\?.+$/.test(address) ? '&' : '?'}${generateUUID()
-                    .toString()
-                    .split('-')
-                    .join('')}`;
             }
 
             const resolve = (value) => {
@@ -352,56 +337,12 @@ export function httpRequest(
             /** REQUEST */
             let response;
             try {
-                if (useFetchApi) {
-                    response = await fetch(requestAddress, {
-                        ...remainingFetchConfig,
-                        method,
-                        headers: new Headers(requestHeaders),
-                        body: stringifyBody ? jsonBody : body
-                    });
-                } else {
-                    response = await (() => new Promise((res, rej) => {
-                        const req = new XMLHttpRequest();
-                        const headerKeys = Object.keys(requestHeaders);
-                        for (let i = 0; i < headerKeys.length; i += 1) {
-                            try {
-                                req.setRequestHeader(headerKeys[i], requestHeaders[headerKeys[i]]);
-                            } catch (ex) {
-                                // eslint-disable-next-line no-console
-                                console.warn(
-                                    ...colorLog({
-                                        '[HttpRequest]': 'color: #aaaaaa',
-                                        // eslint-disable-next-line max-len
-                                        [`Could not set header ${headerKeys[i]} on ${processName} to ${requestHeaders[headerKeys[i]]}`]: ''
-                                    })
-                                );
-                                logger.warning({
-                                    message: `[HttpRequest] Could not set header ${headerKeys[i]} on ${processName}`,
-                                    data: {
-                                        address,
-                                        method,
-                                        body,
-                                        headers: {
-                                            ...requestHeaders,
-                                            Authorization: undefined
-                                        },
-                                        processName,
-                                        internalRequestGuid
-                                    },
-                                    section: 'httpRequest.js'
-                                }, ex);
-                            }
-                        }
-                        req.addEventListener('load', (evt) => {
-                            res(req);
-                        });
-                        req.addEventListener('error', (err) => {
-                            rej(err);
-                        });
-                        req.open(method, address);
-                        req.send(stringifyBody ? jsonBody : body);
-                    }))();
-                }
+                response = await fetch(requestAddress, {
+                    ...remainingFetchConfig,
+                    method,
+                    headers: new Headers(requestHeaders),
+                    body: stringifyBody ? jsonBody : body
+                });
                 if (!response) {
                     throw new RequestError(
                         `[HttpRequest] Failed to fetch on ${processName}: Response is not defined`,
@@ -442,11 +383,8 @@ export function httpRequest(
             const { status } = response;
 
             /** LOGS */
-            const sessionUid = useFetchApi
-                               ? response.headers && response.headers.get('X-Request-Id')
-                                 ? response.headers.get('X-Request-Id') : undefined
-                               : response.getAllResponseHeaders && response.getResponseHeader('X-Request-Id')
-                                 ? response.getResponseHeader('X-Request-Id') : undefined;
+            const sessionUid = response.getAllResponseHeaders && response.getResponseHeader('X-Request-Id')
+                               ? response.getResponseHeader('X-Request-Id') : undefined;
 
             let responseBody = null;
             try {
@@ -462,23 +400,31 @@ export function httpRequest(
 
             const logData = {
                 data: {
-                    additionalLogData,
-                    address: requestAddress,
-                    input,
-                    method,
-                    body,
-                    headers: {
-                        ...requestHeaders,
-                        Authorization: undefined
-                    },
-                    status,
-                    sessionUid,
-                    responseBody,
                     processName,
+                    request: {
+                        address: requestAddress,
+                        method,
+                        body,
+                        headers: {
+                            ...requestHeaders,
+                            Authorization: requestHeaders?.Authorization
+                                           && chayns.utils.isJwt(requestHeaders?.Authorization)
+                                           ? `Payload: ${requestHeaders.Authorization.split('.')[1]}`
+                                           : undefined
+                        },
+                    },
+                    response: {
+                        status,
+                        sessionUid,
+                        body: responseBody,
+
+                    },
+                    input,
                     online: `${navigator?.onLine}, ${navigator?.connection?.effectiveType}`,
                     requestDuration: `${Date.now() - fetchStartTime} ms`,
                     requestTime: new Date(fetchStartTime).toISOString(),
-                    internalRequestGuid
+                    internalRequestGuid,
+                    additionalLogData
                 },
                 section: 'httpRequest.js',
                 sessionUid
@@ -516,12 +462,11 @@ export function httpRequest(
                                 responseType,
                                 logConfig,
                                 ignoreErrors,
-                                useFetchApi,
                                 stringifyBody,
                                 additionalLogData,
                                 autoRefreshToken: false,
                                 statusHandlers,
-                                addHashToUrl,
+                                errorHandlers,
                                 internalRequestGuid
                             }));
                         } else {
@@ -572,8 +517,8 @@ export function httpRequest(
                         processName,
                         resolve,
                         reject,
-                        useFetchApi,
-                        internalRequestGuid
+                        internalRequestGuid,
+                        chaynsErrorObject
                     );
                     if (result) return;
                 }
@@ -593,8 +538,8 @@ export function httpRequest(
                             processName,
                             resolve,
                             reject,
-                            useFetchApi,
-                            internalRequestGuid
+                            internalRequestGuid,
+                            chaynsErrorObject
                         );
                         if (result) return;
                     }
@@ -611,7 +556,6 @@ export function httpRequest(
                     processName,
                     resolve,
                     reject,
-                    useFetchApi,
                     internalRequestGuid
                 );
                 if (result) return;
@@ -627,7 +571,6 @@ export function httpRequest(
                         processName,
                         resolve,
                         reject,
-                        useFetchApi,
                         internalRequestGuid
                     );
                     if (result) return;
@@ -636,13 +579,13 @@ export function httpRequest(
 
             // 3. responseType
             if (responseType === null || responseType === ResponseType.Json) {
-                await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                await jsonResolve(response, processName, resolve, internalRequestGuid);
             } else if (responseType === ResponseType.Blob) {
-                await blobResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                await blobResolve(response, processName, resolve, internalRequestGuid);
             } else if (responseType === ResponseType.Object) {
-                await objectResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                await objectResolve(response, processName, resolve, internalRequestGuid);
             } else if (responseType === ResponseType.Text) {
-                await textResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                await textResolve(response, processName, resolve, internalRequestGuid);
             } else if (responseType === ResponseType.None) {
                 resolve(null);
             } else if (responseType === ResponseType.Response) {
@@ -677,7 +620,6 @@ export function httpRequest(
  * @param {ResponseType|string} [options.responseType=null] - type of response that is expected
  * @param {boolean|number[]} [options.ignoreErrors=false] - Don't throw errors for this request if true or if this
  *     array contains the response status. Return null on error instead. Errors will still be logged as usual.
- * @param {boolean} [options.useFetchApi=true] - use fetch(), use XMLHttpRequest otherwise
  * @param {Object.<string,LogLevel>} [options.logConfig={}] - Define the logLevel for these status codes. Can use
  *     status code or regex string as key. Values must be info|warning|error|critical|none.
  * @param {boolean} [options.stringifyBody=true] - Call JSON.stringify(body) for the body passed to this function
@@ -695,7 +637,6 @@ export function httpRequest(
  *      3. response type
  * @param {Object.<string|RegExp, ResponseType|statusCodeHandler|function(Response)>} [options.errorHandlers={}] -
  *     chayns error handler for specific ChaynsErrors
- * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
  * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  *
  * @param {requestErrorHandler} [errorHandler=undefined] - Function to handle error statusCodes. Defaults to
@@ -738,7 +679,6 @@ const request = {
     responseType: ResponseType,
     logLevel: LogLevel,
     method: HttpMethod,
-    presets: requestPresets,
     defaults: setRequestDefaults,
     full: fullRequest
 };

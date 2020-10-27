@@ -41,11 +41,7 @@ export default class ChaynsError extends RequestError {
     }
 
     /**
-     * @param {Object} error
-     * @param {string} error.displayMessage
-     * @param {string} error.errorCode
-     * @param {Object} error.parameters
-     * @param {string} error.requestId
+     * @param {chaynsErrorObject} error
      * @param {string} processName
      * @param {number} status
      */
