@@ -224,7 +224,7 @@ const result = await request.handle(
 );
 ```
 
-### request.responseType - enum
+### ResponseType | request.responseType - enum
 > Exported as `ResponseType` and `request.responseType`
 
 | Property | Value | Response |
@@ -237,7 +237,7 @@ const result = await request.handle(
 |None | `'none'` | `undefined`|
 |Error | `'error'` | RequestError/ChaynsError |
 
-### request.logLevel - enum
+### LogLevel | request.logLevel - enum
 > Exported as `LogLevel` and `request.logLevel`
 
 | Property | Value |
@@ -248,7 +248,7 @@ const result = await request.handle(
 |critical| `'critical'`|
 |none |`'none'`|
 
-### request.method - enum
+### HttpMethod | request.method - enum
 > Exported as `HttpMethod` and `request.method`
 
 ```javascript
@@ -261,15 +261,27 @@ const HttpMethod = {
 };
 ```
 
-### request.error extends Error
+### RequestError | request.error extends Error
 > Exported as `RequestError` and `request.error`
 
 `constructor(message, statusCode)`
 
-| Manual Property | value |
+| Class member | value |
 |---------------|---------------|
 |name | `'HttpRequestError${statusCode}'`|
 |statusCode | `statusCode` |
+
+### ChaynsError extends RequestError
+`constructor({ displayMessage, errorCode, parameters, requestId }, processName, status)`
+
+| Class member | value |
+|---------------|---------------|
+|name | `'ChaynsError/{errorCode}'`|
+|statusCode | `{status}` |
+|displayMessage | `displayMessage` |
+|errorCode | `errorCode` |
+|parameters | `parameters` |
+|requestId | `requestId` |
 
 ### request.full(address, config, processName, options, errorHandler, handlerOptions)
 A combined function of request.handle() and request.fetch()
