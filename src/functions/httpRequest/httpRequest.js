@@ -10,7 +10,9 @@ import {
     objectResolve,
     textResolve,
     mergeOptions,
-    getMapKeys, getLogFunctionByStatus
+    getMapKeys,
+    getLogFunctionByStatus,
+    getStatusHandlerByStatusRegex
 } from './httpRequestUtils';
 import RequestError from './RequestError';
 import requestPresets from './requestPresets';
@@ -18,13 +20,6 @@ import ResponseType from './ResponseType';
 import LogLevel from './LogLevel';
 import handleRequest from './handleRequest';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
-
-/**
- * @callback onProgressHandler
- * @param {number} percentage - Percentage of content downloaded
- * @param {number} loaded - Data already loaded
- * @param {number} total - Total data to load
- */
 
 /**
  * @callback statusCodeHandler
@@ -69,9 +64,6 @@ import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
  *      1. statusHandlers[status]
  *      2. statusHandlers[regex]
  *      3. response type
- * @param {onProgressHandler} [options.onProgress=null] - Gets called multiple times during the download of bigger data,
- *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
- *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
  * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  * @async
@@ -124,11 +116,6 @@ export function httpRequest(
                  * => Use this to get jsonBody on error status codes or prefen .json() on 204
                  */
                 // statusHandlers = {},
-                /* function: Enables you to monitor download progress. Receives params (percentage, loaded, total)
-                 * - CAUTION: This disallows using .json() or .blob() on the body unless you use XMLHttpRequest.
-                 *   A property "stringBody" is available instead. responseTypes other than "response" will still work.
-                 */
-                onProgress = null,
                 // adds a random number as url param to bypass the browser cache
                 addHashToUrl = false,
                 internalRequestGuid = generateUUID(),
@@ -142,7 +129,6 @@ export function httpRequest(
                 additionalLogData: {},
                 autoRefreshToken: true,
                 // statusHandlers: {},
-                onProgress: null,
                 addHashToUrl: false,
                 replacements: {
                     [/##locationId##/g]: chayns.env.site.locationId,
@@ -374,20 +360,6 @@ export function httpRequest(
                                 }, ex);
                             }
                         }
-                        if (onProgress && chayns.utils.isFunction(onProgress)) {
-                            req.addEventListener('progress', (event) => {
-                                if (event.lengthComputable) {
-                                    onProgress((event.loaded / event.total) * 100, event.loaded, event.total);
-                                } else {
-                                    // eslint-disable-next-line no-console
-                                    console.warn(...colorLog({
-                                        '[HttpRequest]': 'color: #aaaaaa',
-                                        // eslint-disable-next-line max-len
-                                        'Can\'t monitor progress: length not computable': ''
-                                    }));
-                                }
-                            });
-                        }
                         req.addEventListener('load', (evt) => {
                             res(req);
                         });
@@ -515,7 +487,6 @@ export function httpRequest(
                                 additionalLogData,
                                 autoRefreshToken: false,
                                 statusHandlers,
-                                onProgress,
                                 addHashToUrl,
                                 internalRequestGuid
                             }));
@@ -545,8 +516,6 @@ export function httpRequest(
              * 1. statusHandlers[status]
              * 2. statusHandlers[regex]
              * 3. response type
-             *    3.1. if onProgress: onProgress => response Type
-             *    3.2. responseType
              */
 
             // statusHandlers[status]
@@ -582,17 +551,15 @@ export function httpRequest(
             }
             // statusHandlers[regex]
             if (!statusHandlers || statusHandlers.size === 0) {
-                const keys = getMapKeys(statusHandlers);
-                for (let i = 0; i < keys.length; i += 1) {
-                    const regExp = stringToRegex(keys[i]);
-                    if (regExp.test(status?.toString()) && chayns.utils.isFunction(statusHandlers.get(keys[i]))) {
+                const handler = getStatusHandlerByStatusRegex(status, statusHandlers);
+                if (handler) {
+                    if (chayns.utils.isFunction(handler)) {
                         // eslint-disable-next-line no-await-in-loop
-                        resolve(await statusHandlers.get(keys[i])(response));
+                        resolve(await handler(response));
                         return;
                     }
-                    if (regExp.test(status?.toString()) && Object.values(ResponseType)
-                        .includes(statusHandlers.get(keys[i]))) {
-                        switch (statusHandlers.get(keys[i])) {
+                    if (Object.values(ResponseType).includes(handler)) {
+                        switch (handler) {
                             case ResponseType.Json:
                                 // eslint-disable-next-line no-await-in-loop
                                 await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
@@ -624,118 +591,21 @@ export function httpRequest(
                 }
             }
 
-            // onProgress => responseType
-            if (onProgress && chayns.utils.isFunction(onProgress) && useFetchApi) {
-                const responseClone = response.clone();
-                const reader = responseClone.body.getReader();
-                const contentLength = +responseClone.headers.get('Content-Length');
-                let receivedLength = 0; // received that many bytes at the moment
-                const chunks = []; // array of received binary chunks (comprises the body)
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    chunks.push(value);
-                    receivedLength += value.length;
-                    onProgress((receivedLength / contentLength) * 100, receivedLength, contentLength);
-                }
-                if (responseType === ResponseType.Blob) resolve(new Blob(chunks));
-                const chunksAll = new Uint8Array(receivedLength);
-                let position = 0;
-                for (const chunk of chunks) {
-                    chunksAll.set(chunk, position);
-                    position += chunk.length;
-                }
-                const result = new TextDecoder('utf-8').decode(chunksAll);
-                if (responseType === ResponseType.Json || responseType === null) {
-                    try {
-                        resolve(JSON.parse(result));
-                    } catch (err) {
-                        logger.warning({
-                            message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,
-                            data: { internalRequestGuid }
-                        }, err);
-                        // eslint-disable-next-line no-console
-                        console.error(...colorLog({
-                            '[HttpRequest]': 'color: #aaaaaa',
-                            // eslint-disable-next-line max-len
-                            [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
-                        }), err, '\nInput: ', input);
-                        if (status >= 200 && status < 300) {
-                            resolve(null);
-                        } else {
-                            tryReject(null, status);
-                        }
-                    }
-                }
-                if (responseType === ResponseType.Object) {
-                    try {
-                        resolve({
-                            status,
-                            data: JSON.parse(result)
-                        });
-                    } catch (err) {
-                        logger.warning({
-                            message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,
-                            data: { internalRequestGuid }
-                        }, err);
-                        // eslint-disable-next-line no-console
-                        console.error(...colorLog({
-                            '[HttpRequest]': 'color: #aaaaaa',
-                            // eslint-disable-next-line max-len
-                            [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
-                        }), err, '\nInput: ', input);
-                        if (status >= 200 && status < 300) {
-                            resolve(null);
-                        } else {
-                            tryReject(null, status);
-                        }
-                    }
-                }
-                if (responseType === ResponseType.Text) {
-                    try {
-                        resolve(result);
-                    } catch (err) {
-                        logger.warning({
-                            message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,
-                            data: { internalRequestGuid }
-                        }, err);
-                        // eslint-disable-next-line no-console
-                        console.error(...colorLog({
-                            '[HttpRequest]': 'color: #aaaaaa',
-                            // eslint-disable-next-line max-len
-                            [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
-                        }), err, '\nInput: ', input);
-                        if (status >= 200 && status < 300) {
-                            resolve(null);
-                        } else {
-                            tryReject(null, status);
-                        }
-                    }
-                }
-                if (responseType === ResponseType.None) {
-                    resolve();
-                }
-                if (responseType === ResponseType.Response) {
-                    response.bodyString = result;
-                    resolve(response);
-                }
+            // responseType
+            if (responseType === null || responseType === ResponseType.Json) {
+                await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+            } else if (responseType === ResponseType.Blob) {
+                await blobResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+            } else if (responseType === ResponseType.Object) {
+                await objectResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+            } else if (responseType === ResponseType.Text) {
+                await textResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+            } else if (responseType === ResponseType.None) {
+                resolve(null);
+            } else if (responseType === ResponseType.Response) {
+                resolve(response);
             } else {
-                // responseType
-                if (responseType === null || responseType === ResponseType.Json) {
-                    await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                } else if (responseType === ResponseType.Blob) {
-                    await blobResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                } else if (responseType === ResponseType.Object) {
-                    await objectResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                } else if (responseType === ResponseType.Text) {
-                    await textResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                } else if (responseType === ResponseType.None) {
-                    resolve(null);
-                } else if (responseType === ResponseType.Response) {
-                    resolve(response);
-                } else {
-                    resolve(response);
-                }
+                resolve(response);
             }
         })();
     });
@@ -779,10 +649,6 @@ export function httpRequest(
  *      1. statusHandlers[status]
  *      2. statusHandlers[regex]
  *      3. response type
- * @param {onProgressHandler} [options.onProgress=null] - Gets called multiple times during the download of bigger
- *     data,
- *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
- *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
  * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  *

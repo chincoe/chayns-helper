@@ -42,10 +42,6 @@ export const defaultConfig = {
  *      1. statusHandlers[status]
  *      2. statusHandlers[regex]
  *      3. response type
- * @param {onProgressHandler} [options.onProgress=null] - Gets called multiple times during the download of bigger
- *     data,
- *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
- *     added to read the body instead. Response types other than 'response' will work as usual.
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
  * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  * @public

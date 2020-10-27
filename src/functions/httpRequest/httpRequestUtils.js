@@ -2,6 +2,7 @@ import logger from 'chayns-logger';
 import colorLog from '../../_internal/colorLog';
 import stringToRegex from '../../_internal/stringToRegex';
 import LogLevel from './LogLevel';
+import RequestError from './RequestError';
 import ResponseType from './ResponseType';
 
 export const getMapKeys = (map) => {
@@ -41,6 +42,25 @@ export function getLogFunctionByStatus(status, logConfig, defaultFunction) {
         }
     }
     return defaultFunction;
+}
+
+/**
+ * @param status
+ * @param statusHandlers
+ * @returns {function(*=)|ResponseType|null}
+ */
+export function getStatusHandlerByStatusRegex(status, statusHandlers) {
+    const keys = getMapKeys(statusHandlers);
+    for (let i = 0; i < keys.length; i += 1) {
+        const regExp = stringToRegex(keys[i]);
+        if (regExp.test(status?.toString())
+            && (chayns.utils.isFunction(statusHandlers.get(keys[i]))
+                || Object.values(ResponseType).includes(statusHandlers.get(keys[i])))
+        ) {
+            return statusHandlers.get(keys[i]);
+        }
+    }
+    return null;
 }
 
 /**
