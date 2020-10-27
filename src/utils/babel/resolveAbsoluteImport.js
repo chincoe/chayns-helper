@@ -57,6 +57,11 @@ module.exports = function resolveAbsoluteImport(importName) {
         usePreviousEffect: 'hooks/usePreviousEffect',
         getJsonSettings: 'functions/getJsonSettings',
         useUpdateEffect: 'hooks/useUpdateEffect',
+        useClampLines: 'hooks/useClampLines',
+        useInlineSelector: 'hooks/useInlineSelector',
+        useAsyncState: 'hooks/useAsyncState',
+        getChaynsErrorCode: 'functions/httpRequest/getChaynsErrorCode',
+        isChaynsError: 'functions/httpRequest/isChaynsError',
     };
 
     if (!values[importName]) {

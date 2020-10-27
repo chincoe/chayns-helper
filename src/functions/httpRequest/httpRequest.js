@@ -735,6 +735,12 @@ export function httpRequest(
                         req.send(stringifyBody ? jsonBody : body);
                     }))();
                 }
+                if (!response) {
+                    throw new RequestError(
+                        `[HttpRequest] Failed to fetch on ${processName}: Response is not defined`,
+                        1
+                    );
+                }
             } catch (err) {
                 let failedToFetchLog = logger.warning;
                 const levelKey = getMapKeys(logConfig)
