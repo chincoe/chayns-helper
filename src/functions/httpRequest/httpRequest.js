@@ -3,6 +3,7 @@ import logger from 'chayns-logger';
 import colorLog from '../../_internal/colorLog';
 import generateUUID from '../generateUid';
 import stringToRegex, { regexRegex } from '../../_internal/stringToRegex';
+import ChaynsError from './ChaynsError';
 import HttpMethod from './HttpMethod';
 import {
     blobResolve,
@@ -12,8 +13,9 @@ import {
     mergeOptions,
     getMapKeys,
     getLogFunctionByStatus,
-    getStatusHandlerByStatusRegex
+    getStatusHandlerByStatusRegex, resolveWithHandler
 } from './httpRequestUtils';
+import { chaynsErrorCodeRegex } from './isChaynsError';
 import RequestError from './RequestError';
 import requestPresets from './requestPresets';
 import ResponseType from './ResponseType';
@@ -64,6 +66,8 @@ import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
  *      1. statusHandlers[status]
  *      2. statusHandlers[regex]
  *      3. response type
+ * @param {Object.<string|RegExp, ResponseType|statusCodeHandler|function(Response)>} [options.errorHandlers={}] -
+ *     chayns error handler for specific ChaynsErrors
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
  * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  * @async
@@ -153,6 +157,10 @@ export function httpRequest(
                 (options?.statusHandlers || {}),
                 (defaultConfig?.options?.statusHandlers || {})
             );
+            const errorHandlers = mergeOptions(
+                (options?.errorHandlers || {}),
+                (defaultConfig?.options?.errorHandlers || {})
+            );
             const logConfig = mergeOptions((options?.logConfig || {}), (defaultConfig?.options?.logConfig || {}));
 
             // eslint-disable-next-line no-param-reassign
@@ -241,21 +249,43 @@ export function httpRequest(
             };
 
             /**
-             * @param {Error|RequestError} err
+             * @param {Error|RequestError|ChaynsError} err
              * @param {?number} status
              * @param {boolean} force
+             *
+             * @returns {boolean}
              */
-            const tryReject = async (err = null, status = null, force = false) => {
+            const tryReject = async (
+                err = null,
+                status = null,
+                force = false
+            ) => {
                 const handlerKeys = getMapKeys(statusHandlers);
                 const statusHandlerKey = handlerKeys.find((k) => k === `${status}` || stringToRegex(k)
                     .test(`${status}`));
+                const errorKeys = getMapKeys(errorHandlers);
+
+                // handle chaynsErrorHandler
+                const isChayns = err instanceof ChaynsError;
+                const chaynsErrorCode = isChayns ? err?.errorCode : null;
+                const errorHandlerKey = errorKeys.find((k) => (isChayns
+                    && (k === chaynsErrorCode || stringToRegex(k).test(chaynsErrorCode))));
+                if (isChayns && errorHandlerKey) {
+                    const handler = errorHandlers.get(errorHandlerKey);
+                    if (handler === ResponseType.Error) {
+                        reject(err);
+                    }
+                    if (!force) return false;
+                }
+
+                // handle statusCode handler
                 if (statusHandlerKey && statusHandlers.get(statusHandlerKey) !== ResponseType.Error
                     && (!force || status === 1)) {
                     if (status === 1) {
                         const handler = statusHandlers.get(statusHandlerKey);
                         if (chayns.utils.isFunction(handler)) {
                             resolve(await handler(err));
-                            return;
+                            return true;
                         }
                         if (Object.values(ResponseType).includes(handler)) {
                             switch (handler) {
@@ -264,21 +294,22 @@ export function httpRequest(
                                         status,
                                         data: null
                                     });
-                                    return;
+                                    return true;
                                 case ResponseType.Response:
                                     resolve({ status });
-                                    return;
+                                    return true;
                                 default:
                                     resolve(null);
-                                    return;
+                                    return true;
                             }
                         }
                     }
-                    return;
+                    return false;
                 }
                 if (statusHandlers.has(`${status}`)
                     && statusHandlers.get(`${status}`) === ResponseType.Error) {
                     reject(err);
+                    return true;
                 }
                 if (ignoreErrors === true
                     || (status && chayns.utils.isArray(ignoreErrors)
@@ -291,28 +322,29 @@ export function httpRequest(
                                     status,
                                     data: null
                                 });
-                                return;
+                                return true;
                             case ResponseType.None:
                                 resolve();
-                                return;
+                                return true;
                             case ResponseType.Error:
                                 reject(new RequestError(`Status ${status} on ${processName}`, status));
-                                return;
+                                return true;
                             case ResponseType.Response:
                                 resolve({ status });
-                                return;
+                                return true;
                             case ResponseType.Text:
                             case ResponseType.Blob:
                             case ResponseType.Json:
                             default:
                                 resolve(null);
-                                return;
+                                return true;
                         }
                     }
                     resolve(null);
-                } else {
-                    reject(err);
+                    return true;
                 }
+                reject(err);
+                return true;
             };
 
             const fetchStartTime = Date.now();
@@ -377,7 +409,7 @@ export function httpRequest(
                     );
                 }
             } catch (err) {
-                const failedToFetchLog = getLogFunctionByStatus(1, logConfig, logger.warning);
+                const failedToFetchLog = await getLogFunctionByStatus(1, logConfig, logger.warning);
                 failedToFetchLog({
                     message: `[HttpRequest] Failed to fetch on ${processName}`,
                     data: {
@@ -408,13 +440,6 @@ export function httpRequest(
             }
 
             const { status } = response;
-
-            const log = (() => {
-                let defaultLog = logger.error;
-                if (status < 400) defaultLog = logger.info;
-                if (status === 401) defaultLog = logger.warning;
-                return getLogFunctionByStatus(status, logConfig, defaultLog);
-            })();
 
             /** LOGS */
             const sessionUid = useFetchApi
@@ -459,13 +484,22 @@ export function httpRequest(
                 sessionUid
             };
 
+            let defaultLog = logger.error;
+            if (status < 400) defaultLog = logger.info;
+            if (status === 401) defaultLog = logger.warning;
+            const log = await getLogFunctionByStatus(status, logConfig, defaultLog, responseBody);
+
+            const chaynsErrorObject = await ChaynsError.getChaynsErrorObject(responseBody);
+
             if (response && status < 400) {
                 log({
                     ...logData,
                     message: `[HttpRequest] http request finished: Status ${status} on ${processName}`
                 });
             } else if (response && status === 401) {
-                const error = new RequestError(`Status ${status} on ${processName}`, status);
+                const error = chaynsErrorObject
+                              ? new ChaynsError(chaynsErrorObject, processName, status)
+                              : new RequestError(`Status ${status} on ${processName}`, status);
                 log({
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`,
@@ -491,14 +525,16 @@ export function httpRequest(
                                 internalRequestGuid
                             }));
                         } else {
-                            tryReject(error, status);
+                            tryReject(error, status, false);
                         }
-                    } catch (err) { tryReject(error, status); }
+                    } catch (err) { tryReject(error, status, false); }
                 } else {
-                    tryReject(error, status);
+                    tryReject(error, status, false);
                 }
             } else {
-                const error = new RequestError(`Status ${status} on ${processName}`, status);
+                const error = chaynsErrorObject
+                              ? new ChaynsError(chaynsErrorObject, processName, status)
+                              : new RequestError(`Status ${status} on ${processName}`, status);
                 log({
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`
@@ -507,91 +543,98 @@ export function httpRequest(
                 console.error(...colorLog({
                     '[HttpRequest]': 'color: #aaaaaa'
                 }), error, '\nInput: ', input);
-                tryReject(error, status);
+                tryReject(error, status, false);
             }
 
             /** RESPONSE HANDLING */
             /*
              * Response handling priorities:
-             * 1. statusHandlers[status]
-             * 2. statusHandlers[regex]
+             * 1. errorHandlers
+             *     1.1 errorHandlers[chaynsErrorCode]
+             *     1.2 errorHandlers[chaynsErrorRegex]
+             * 2. statusHandlers
+             *     2.1 statusHandlers[status]
+             *     2.2 statusHandlers[regex]
              * 3. response type
+             * 4. default: Response
              */
 
-            // statusHandlers[status]
-            if (statusHandlers.has(`${status}`)) {
-                if (chayns.utils.isFunction(statusHandlers.get(`${status}`))) {
-                    resolve(await statusHandlers.get(`${status}`)(response));
-                } else {
-                    switch (statusHandlers.get(`${status}`)) {
-                        case ResponseType.Json:
-                            await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                            return;
-                        case ResponseType.Blob:
-                            await blobResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                            return;
-                        case ResponseType.Object:
-                            await objectResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                            return;
-                        case ResponseType.Text:
-                            await textResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                            return;
-                        case ResponseType.None:
-                            resolve();
-                            return;
-                        case ResponseType.Error:
-                            reject(new RequestError(`Status ${status} on ${processName}`, status));
-                            return;
-                        case ResponseType.Response:
-                        default:
-                            resolve(response);
-                            return;
-                    }
+            const errorCode = chaynsErrorObject?.errorCode;
+            // 1. error handlers
+            if (errorCode) {
+                // 1.1 errorHandlers[chaynsErrorCode]
+                if (errorHandlers.has(errorCode)) {
+                    const handler = errorHandlers.get(errorCode);
+                    const result = await resolveWithHandler(
+                        handler,
+                        response,
+                        status,
+                        processName,
+                        resolve,
+                        reject,
+                        useFetchApi,
+                        internalRequestGuid
+                    );
+                    if (result) return;
                 }
-            }
-            // statusHandlers[regex]
-            if (!statusHandlers || statusHandlers.size === 0) {
-                const handler = getStatusHandlerByStatusRegex(status, statusHandlers);
-                if (handler) {
-                    if (chayns.utils.isFunction(handler)) {
-                        // eslint-disable-next-line no-await-in-loop
-                        resolve(await handler(response));
-                        return;
-                    }
-                    if (Object.values(ResponseType).includes(handler)) {
-                        switch (handler) {
-                            case ResponseType.Json:
-                                // eslint-disable-next-line no-await-in-loop
-                                await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                                return;
-                            case ResponseType.Blob:
-                                // eslint-disable-next-line no-await-in-loop
-                                await blobResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                                return;
-                            case ResponseType.Object:
-                                // eslint-disable-next-line no-await-in-loop
-                                await objectResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                                return;
-                            case ResponseType.Text:
-                                // eslint-disable-next-line no-await-in-loop
-                                await textResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                                return;
-                            case ResponseType.None:
-                                resolve();
-                                return;
-                            case ResponseType.Error:
-                                reject(new RequestError(`Status ${status} on ${processName}`, status));
-                                return;
-                            case ResponseType.Response:
-                            default:
-                                resolve(response);
-                                return;
-                        }
+                // 1.2 errorHandlers[chaynsErrorRegex]
+                if (errorHandlers && errorHandlers.size > 0) {
+                    const errorKeys = getMapKeys(errorHandlers);
+                    const key = errorKeys.find((k) => (
+                        chaynsErrorCodeRegex.test(k)
+                        && stringToRegex(key).test(errorCode)
+                    ));
+                    const handler = errorHandlers.get(key);
+                    if (handler) {
+                        const result = await resolveWithHandler(
+                            handler,
+                            response,
+                            status,
+                            processName,
+                            resolve,
+                            reject,
+                            useFetchApi,
+                            internalRequestGuid
+                        );
+                        if (result) return;
                     }
                 }
             }
 
-            // responseType
+            // 2.1 statusHandlers[status]
+            if (statusHandlers && statusHandlers.has(`${status}`)) {
+                const handler = statusHandlers.get(`${status}`);
+                const result = await resolveWithHandler(
+                    handler,
+                    response,
+                    status,
+                    processName,
+                    resolve,
+                    reject,
+                    useFetchApi,
+                    internalRequestGuid
+                );
+                if (result) return;
+            }
+            // 2.2 statusHandlers[regex]
+            if (statusHandlers && statusHandlers.size > 0) {
+                const handler = getStatusHandlerByStatusRegex(status, statusHandlers);
+                if (handler) {
+                    const result = await resolveWithHandler(
+                        handler,
+                        response,
+                        status,
+                        processName,
+                        resolve,
+                        reject,
+                        useFetchApi,
+                        internalRequestGuid
+                    );
+                    if (result) return;
+                }
+            }
+
+            // 3. responseType
             if (responseType === null || responseType === ResponseType.Json) {
                 await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
             } else if (responseType === ResponseType.Blob) {
@@ -605,6 +648,7 @@ export function httpRequest(
             } else if (responseType === ResponseType.Response) {
                 resolve(response);
             } else {
+                // 4. default
                 resolve(response);
             }
         })();
@@ -649,6 +693,8 @@ export function httpRequest(
  *      1. statusHandlers[status]
  *      2. statusHandlers[regex]
  *      3. response type
+ * @param {Object.<string|RegExp, ResponseType|statusCodeHandler|function(Response)>} [options.errorHandlers={}] -
+ *     chayns error handler for specific ChaynsErrors
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
  * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  *

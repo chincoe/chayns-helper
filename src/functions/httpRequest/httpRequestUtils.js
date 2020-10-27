@@ -1,6 +1,8 @@
 import logger from 'chayns-logger';
 import colorLog from '../../_internal/colorLog';
-import stringToRegex from '../../_internal/stringToRegex';
+import stringToRegex, { regexRegex } from '../../_internal/stringToRegex';
+import getChaynsErrorCode from './getChaynsErrorCode';
+import { chaynsErrorCodeRegex } from './isChaynsError';
 import LogLevel from './LogLevel';
 import RequestError from './RequestError';
 import ResponseType from './ResponseType';
@@ -15,10 +17,31 @@ export const getMapKeys = (map) => {
     return result;
 };
 
-export function getLogFunctionByStatus(status, logConfig, defaultFunction) {
-    const levelKey = getMapKeys(logConfig)
-        .find((key) => (/^-?[\d]$/.test(key) && parseInt(key, 10) === status)
-            || stringToRegex(key).test(status));
+/**
+ * @param {number} status
+ * @param {Object.<string|RegExp|number, function|LogLevel>} logConfig
+ * @param {function} defaultFunction
+ * @param {Response|Promise|Object} [chaynsErrorObject]
+ * @returns {Promise<function(Object)>}
+ */
+export async function getLogFunctionByStatus(status, logConfig, defaultFunction, chaynsErrorObject) {
+    const logKeys = [];
+    const mapKeys = getMapKeys(logConfig);
+    logKeys.push(...mapKeys.filter((k) => !/^[0-9]+$/.test(k) && !regexRegex.test(k) && chaynsErrorCodeRegex.test(k)));
+    logKeys.push(...mapKeys.filter((k) => !logKeys.find(k)));
+
+    let chaynsErrorCode = null;
+    if (chaynsErrorObject) {
+        chaynsErrorCode = await getChaynsErrorCode(chaynsErrorObject);
+    }
+
+    const levelKey = logKeys
+        .find((key) => (
+            (/^[\d]$/.test(key) && parseInt(key, 10) === status)
+            || stringToRegex(key).test(`${status}`)
+            || (chaynsErrorCode && key === chaynsErrorCode)
+            || (chaynsErrorCode && stringToRegex(key).test(chaynsErrorCode))
+        ));
     if (levelKey && logConfig.get(levelKey)) {
         switch (logConfig.get(levelKey)) {
             case LogLevel.info:
@@ -174,6 +197,74 @@ export const objectResolve = async (response, processName, resolve, useFetchApi,
         resolve({ status, data: null });
     }
 };
+
+/**
+ * @param {ResponseType|function} handler
+ * @param {Response} response
+ * @param {number} status
+ * @param {string} processName
+ * @param {function} resolve
+ * @param {function} reject
+ * @param {boolean} useFetchApi
+ * @param {string} internalRequestGuid
+ * @returns {Promise<boolean>}
+ */
+export async function resolveWithHandler(
+    handler,
+    response,
+    status,
+    processName,
+    resolve,
+    reject,
+    useFetchApi,
+    internalRequestGuid
+) {
+    if (chayns.utils.isFunction(handler)) {
+        // eslint-disable-next-line no-await-in-loop
+        resolve(await handler(response));
+        return true;
+    }
+    if (Object.values(ResponseType).includes(handler)) {
+        switch (handler) {
+            case ResponseType.Json:
+                // eslint-disable-next-line no-await-in-loop
+                await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                return true;
+            case ResponseType.Blob:
+                // eslint-disable-next-line no-await-in-loop
+                await blobResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                return true;
+            case ResponseType.Object:
+                // eslint-disable-next-line no-await-in-loop
+                await objectResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                return true;
+            case ResponseType.Text:
+                // eslint-disable-next-line no-await-in-loop
+                await textResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
+                return true;
+            case ResponseType.None:
+                resolve();
+                return true;
+            case ResponseType.Error:
+                reject(new RequestError(`Status ${status} on ${processName}`, status));
+                return true;
+            case ResponseType.Response:
+            default:
+                resolve(response);
+                return true;
+        }
+    }
+    logger.warning({
+        message: `[HttpRequest] Invalid handler '${handler}' on status ${status} on ${processName}`,
+        data: {
+            handler,
+            status,
+            internalRequestGuid,
+            processName
+        }
+    });
+    return false;
+}
 
 export const mergeOptions = (obj1, obj2) => {
     const result = new Map();

@@ -1,5 +1,7 @@
 import logger from 'chayns-logger';
 
+export const chaynsErrorCodeRegex = /^[a-zA-Z0-9/_]+$/;
+
 /**
  * @param {Object} obj
  * @returns {boolean}
@@ -13,7 +15,7 @@ export function isChaynsErrorObject(obj) {
         && Object.hasOwnProperty.call(obj, 'requestId')
         && chayns.utils.isString(obj?.errorCode)
         && chayns.utils.isString(obj?.displayMessage)
-        && /^[a-zA-Z0-9/_]+$/.test(obj.errorCode);
+        && chaynsErrorCodeRegex.test(obj.errorCode);
 }
 
 /**

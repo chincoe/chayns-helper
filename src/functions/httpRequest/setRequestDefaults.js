@@ -42,6 +42,8 @@ export const defaultConfig = {
  *      1. statusHandlers[status]
  *      2. statusHandlers[regex]
  *      3. response type
+ * @param {Object.<string|RegExp, ResponseType|statusCodeHandler|function(Response)>} [options.errorHandlers={}] -
+ *     chayns error handler for specific ChaynsErrors
  * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
  * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  * @public
@@ -50,4 +52,4 @@ export default function setRequestDefaults(address, config, options) {
     defaultConfig.address = address || '';
     defaultConfig.config = config || {};
     defaultConfig.options = options || {};
-};
+}

@@ -4,6 +4,8 @@
  * @class
  */
 export default class RequestError extends Error {
+    statusCode = 0;
+
     /**
      * @param {string} message - Error message
      * @param {number} statusCode - Response status code
