@@ -57,3 +57,5 @@ export { default as useUpdateEffect } from './hooks/useUpdateEffect';
 export { default as useClampLines } from './hooks/useClampLines';
 export { default as useInlineSelector } from './hooks/useInlineSelector';
 export { default as useAsyncState } from './hooks/useAsyncState';
+export { default as getChaynsErrorCode } from './functions/httpRequest/getChaynsErrorCode';
+export { default as isChaynsError } from './functions/httpRequest/isChaynsError';

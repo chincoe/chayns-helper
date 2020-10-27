@@ -60,6 +60,8 @@ module.exports = function resolveAbsoluteImport(importName) {
         useClampLines: 'hooks/useClampLines',
         useInlineSelector: 'hooks/useInlineSelector',
         useAsyncState: 'hooks/useAsyncState',
+        getChaynsErrorCode: 'functions/httpRequest/getChaynsErrorCode',
+        isChaynsError: 'functions/httpRequest/isChaynsError',
     };
 
     if (!values[importName]) {
