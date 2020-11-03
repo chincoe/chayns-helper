@@ -63,6 +63,7 @@ module.exports = function resolveAbsoluteImport(importName) {
         getChaynsErrorCode: 'functions/httpRequest/getChaynsErrorCode',
         isChaynsError: 'functions/httpRequest/isChaynsError',
         ChaynsError: 'functions/httpRequest/ChaynsError',
+        rerender: 'components/other/rerender',
     };
 
     if (!values[importName]) {

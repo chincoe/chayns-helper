@@ -23,6 +23,7 @@ initChaynsHelper({
 | [ErrorBoundary](/src/components/error-boundary/ErrorBoundary.jsx)| Customizable ErrorBoundary to catch errors during render |
 | [refresh](/src/components/other/refresh.jsx)| HOC to rerender a Component in an interval |
 | [Refresh](/src/components/other/RefreshComponent.jsx)| Component to rerender its children in an interval |
+| [rerender](/src/components/other/rerender.jsx)| HOC that passes a rerenderSelf function to a component |
 | [ResizableWaitCursor](/src/components/wait-cursor/ResizableWaitCursor.jsx)| chayns SmallWaitCursor but resizable |
 | [RestrictedAccordion](/src/components/restricted-accordion/RestrictedAccordion.jsx)| Accordion with lock-icon for admins |
 | [SuspenseWaitCursor](/src/components/wait-cursor/SuspenseWaitCursor.jsx)| Suspense-Component that provides a fallback for React lazy loading |
