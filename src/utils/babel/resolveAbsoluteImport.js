@@ -64,6 +64,7 @@ module.exports = function resolveAbsoluteImport(importName) {
         isChaynsError: 'functions/httpRequest/isChaynsError',
         ChaynsError: 'functions/httpRequest/ChaynsError',
         rerender: 'components/other/rerender',
+        useExtendedState: 'hooks/useExtendedState',
     };
 
     if (!values[importName]) {

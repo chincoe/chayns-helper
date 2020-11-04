@@ -3,7 +3,7 @@ import generateUUID from 'chayns-logger/lib/core/generate-uid';
 
 /**
  * @param {function(*): JSXElement|null} WrappedComponent
- * @returns {function(*): *}
+ * @returns {function(*): JSXElement|null}
  */
 export default function rerender(WrappedComponent) {
     return (props) => {

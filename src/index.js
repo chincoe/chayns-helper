@@ -61,3 +61,4 @@ export { default as getChaynsErrorCode } from './functions/httpRequest/getChayns
 export { default as isChaynsError } from './functions/httpRequest/isChaynsError';
 export { default as ChaynsError } from './functions/httpRequest/ChaynsError';
 export { default as rerender } from './components/other/rerender';
+export { default as useExtendedState } from './hooks/useExtendedState';
