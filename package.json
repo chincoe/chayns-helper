@@ -73,6 +73,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.12.1",
+    "abortcontroller-polyfill": "^1.5.0",
     "chayns-components": "^4.18.10",
     "clsx": "^1.1.1",
     "date-fns": "^2.16.1"

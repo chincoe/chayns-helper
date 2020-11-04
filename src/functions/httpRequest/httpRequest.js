@@ -1,5 +1,6 @@
 import { isNullOrWhiteSpace } from 'chayns-components/lib/utils/is';
 import logger from 'chayns-logger';
+import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import colorLog from '../../_internal/colorLog';
 import generateUUID from '../generateUid';
 import stringToRegex, { regexRegex } from '../../_internal/stringToRegex';
