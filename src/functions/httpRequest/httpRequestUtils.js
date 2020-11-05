@@ -245,9 +245,14 @@ export async function resolveWithHandler(
                 resolve();
                 return true;
             case ResponseType.Error:
-                reject(chaynsErrorObject
-                       ? new ChaynsError(chaynsErrorObject, processName, status)
-                       : new RequestError(`Status ${status} on ${processName}`, status));
+                const error = chaynsErrorObject
+                              ? new ChaynsError(chaynsErrorObject, processName, status)
+                              : new RequestError(`Status ${status} on ${processName}`, status);
+                console.error(...colorLog({
+                    '[HttpRequest]': 'color: #aaaaaa',
+                    [`Status ${status} on ${processName} with ResponseType 'error':`]: ''
+                }), error);
+                reject(error);
                 return true;
             case ResponseType.Response:
             default:
