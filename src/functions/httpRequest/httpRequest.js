@@ -296,7 +296,7 @@ export function httpRequest(
                     && statusHandlers.get(`${status}`) === ResponseType.Error) {
                     console.error(...colorLog({
                         '[HttpRequest]': 'color: #aaaaaa',
-                        [`Status ${status} on ${processName} with ResponseType 'error':`]: ''
+                        'ResponseType \'error\':': ''
                     }), err, '\nInput: ', input);
                     reject(err);
                     return true;
@@ -320,7 +320,7 @@ export function httpRequest(
                                 const error = new RequestError(`Status ${status} on ${processName}`, status);
                                 console.error(...colorLog({
                                     '[HttpRequest]': 'color: #aaaaaa',
-                                    [`Status ${status} on ${processName} with ResponseType 'error':`]: ''
+                                    'ResponseType \'error\':': ''
                                 }), error, '\nInput: ', input);
                                 reject(error);
                                 return true;

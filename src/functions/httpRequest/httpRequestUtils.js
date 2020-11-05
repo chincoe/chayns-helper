@@ -250,7 +250,7 @@ export async function resolveWithHandler(
                               : new RequestError(`Status ${status} on ${processName}`, status);
                 console.error(...colorLog({
                     '[HttpRequest]': 'color: #aaaaaa',
-                    [`Status ${status} on ${processName} with ResponseType 'error':`]: ''
+                    'ResponseType \'error\':': ''
                 }), error);
                 reject(error);
                 return true;
