@@ -313,7 +313,12 @@ export function httpRequest(
                                 resolve();
                                 return true;
                             case ResponseType.Error:
-                                reject(new RequestError(`Status ${status} on ${processName}`, status));
+                                const error = new RequestError(`Status ${status} on ${processName}`, status);
+                                console.error(...colorLog({
+                                    '[HttpRequest]': 'color: #aaaaaa',
+                                    [`Status ${status} on ${processName} due to ResponseType 'error':`]: ''
+                                }), error, '\nInput: ', input);
+                                reject(error);
                                 return true;
                             case ResponseType.Response:
                                 resolve({ status });
@@ -374,7 +379,7 @@ export function httpRequest(
                 console.error(...colorLog({
                     '[HttpRequest]': 'color: #aaaaaa',
                     // eslint-disable-next-line max-len
-                    [`Failed to fetch on ${processName}`]: ''
+                    [`(${processName}) Failed to fetch: `]: '',
                 }), err, '\nInput: ', input);
                 err.statusCode = 1;
                 tryReject(err, 1, true);
@@ -453,7 +458,8 @@ export function httpRequest(
                 }, error);
                 // eslint-disable-next-line no-console
                 console.error(...colorLog({
-                    '[HttpRequest]': 'color: #aaaaaa'
+                    '[HttpRequest]': 'color: #aaaaaa',
+                    [`(${processName})`]: ''
                 }), error, '\nInput: ', input);
                 if (!ignoreErrors && useChaynsAuth && autoRefreshToken) {
                     try {
@@ -483,7 +489,8 @@ export function httpRequest(
                 }, error);
                 // eslint-disable-next-line no-console
                 console.error(...colorLog({
-                    '[HttpRequest]': 'color: #aaaaaa'
+                    '[HttpRequest]': 'color: #aaaaaa',
+                    [`(${processName})`]: '',
                 }), error, '\nInput: ', input);
                 tryReject(error, status, false);
             }
