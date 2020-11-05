@@ -470,13 +470,9 @@ export function httpRequest(
                                 errorHandlers,
                                 internalRequestGuid
                             }));
-                        } else {
-                            tryReject(error, status, false);
-                        }
+                        } else { tryReject(error, status, false); }
                     } catch (err) { tryReject(error, status, false); }
-                } else {
-                    tryReject(error, status, false);
-                }
+                } else { tryReject(error, status, false); }
             } else {
                 const error = chaynsErrorObject
                               ? new ChaynsError(chaynsErrorObject, processName, status)
