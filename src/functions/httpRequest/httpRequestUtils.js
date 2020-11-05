@@ -28,8 +28,10 @@ export const getMapKeys = (map) => {
 export async function getLogFunctionByStatus(status, logConfig, defaultFunction, chaynsErrorObject) {
     const logKeys = [];
     const mapKeys = getMapKeys(logConfig);
-    logKeys.push(...mapKeys.filter((k) => !/^[0-9]+$/.test(k) && !regexRegex.test(k) && chaynsErrorCodeRegex.test(k)));
-    logKeys.push(...mapKeys.filter((k) => !logKeys.find(k)));
+    logKeys.push(...(mapKeys.filter((k) => !/^[0-9]+$/.test(k)
+        && !regexRegex.test(k)
+        && chaynsErrorCodeRegex.test(k))));
+    logKeys.push(...(mapKeys.filter((k) => logKeys.find((l) => l !== k))));
 
     let chaynsErrorCode = null;
     if (chaynsErrorObject) {
