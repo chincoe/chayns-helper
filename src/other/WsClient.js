@@ -89,6 +89,12 @@ class WebSocketClient {
      */
     onClose = (event) => {
         clearInterval(this.checkConnectionInterval);
+        if (this.socket) {
+            this.socket.onopen = () => {};
+            this.socket.onerror = () => {};
+            this.socket.onclose = () => {};
+            this.socket.onmessage = () => {};
+        }
         this.socket = null;
         clearTimeout(this.reconnectTimeout);
         this.reconnectTimeout = setTimeout(this.createConnection, this.reconnectTimeoutTime);

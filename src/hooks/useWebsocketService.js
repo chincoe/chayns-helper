@@ -65,7 +65,7 @@ const useWebsocketService = (config, dependencies) => {
         events,
         clientGroup = '',
         waitForDefinedConditions = true,
-        disconnectOnUnmount = false,
+        disconnectOnUnmount = true,
         forceOwnConnection = chayns.env.site.tapp.id === 250357
     } = config || {};
     // events pattern: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
@@ -155,8 +155,11 @@ const useWebsocketService = (config, dependencies) => {
             if (webSocketClient) {
                 webSocketClient.closeConnection();
             }
+            if (!ownConnection) {
+                delete websocketClients[`${serviceName}_${group}`];
+            }
         } : () => {};
-    }, [...Object.values(conditions)]);
+    }, [ownConnection ? null : !!websocketClients[`${serviceName}_${group}`], ...Object.values(conditions)]);
 
     // register custom events
     useEffect(() => {

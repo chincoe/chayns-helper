@@ -1,367 +1,27 @@
 import { isNullOrWhiteSpace } from 'chayns-components/lib/utils/is';
 import logger from 'chayns-logger';
+import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import colorLog from '../../_internal/colorLog';
-import localStorage from '../../other/localStorageHelper';
-import { helperConfig } from '../../config/chaynsHelperConfig';
 import generateUUID from '../generateUid';
-import showWaitCursor from '../waitCursor';
 import stringToRegex, { regexRegex } from '../../_internal/stringToRegex';
+import ChaynsError from './ChaynsError';
 import HttpMethod from './HttpMethod';
+import {
+    blobResolve,
+    jsonResolve,
+    objectResolve,
+    textResolve,
+    mergeOptions,
+    getMapKeys,
+    getLogFunctionByStatus,
+    getStatusHandlerByStatusRegex, resolveWithHandler
+} from './httpRequestUtils';
+import { chaynsErrorCodeRegex } from './isChaynsError';
 import RequestError from './RequestError';
-import requestPresets from './requestPresets';
 import ResponseType from './ResponseType';
 import LogLevel from './LogLevel';
-
-/**
- * @callback requestErrorHandler
- * @param {Error|RequestError} error
- * @param {?number} statusCode
- * @param {function(*)} resolve
- * @param {function(*)} reject
- */
-/**
- * @typedef {Object} waitCursorOptions
- * @property {string} [text=undefined] - Text that should be displayed after the {@link textTimeout}
- * @property {number} [textTimeout=5000] - Timeout in ms after which {@link text} should be displayed
- * @property {number} [timeout=300] - timeout in ms after which the chayns waitCursor should be displayed
- */
-/**
- * @callback cacheResolverCallback
- * @param {*} value - Value that the callback should serialize so it can be cached
- * @async
- * @return {Promise<*>|*}
- */
-
-/**
- * @typedef {Object} cacheOptions
- * @property {string} key - The name used to cache this asset in local storage
- * @property {number} [duration=5] - The duration in minutes after which the cache will be refreshed
- * @property {cacheResolverCallback} [cacheResolver] - callback that transforms e.g. a promise to a serialized value,
- *     e.g. a string
- */
-/**
- * handleRequest()
- * try/catch/finally wrapper for requests.
- * Pass an error handler and/or define a default with initChaynsHelper()
- * Usage: await handleRequest(fetch(whatever), console.error, {})
- *
- * @param {Promise<*>} request - Promise of the un-awaited request
- * @param {requestErrorHandler} [errorHandler=undefined] - Function to handle error statusCodes. Defaults to
- *     defaultErrorHandler.js
- * @param {Object} [options={}] - other options for this wrapper
- * @param {function} [options.finallyHandler] - Function that should always be executed after the request
- * @param {boolean|waitCursorOptions} [options.waitCursor] - Show chayns waitCursor. Set true to show. Set to an object
- *     for more options
- * @param {string|cacheOptions} [options.cache]  (optional) string/object: Set to a string to cache the request in
- *     local storage. Only works if the request returns appropriate data, e.g. a string OR if a cacheResolver is
- *     defined. Set to an object for more detailed cache control.
- * @param {boolean} [options.noReject=false] - Do not reject promise on error, resolve with null instead
- * @throws {RequestError}
- * @public
- * @async
- * @return result {Promise<unknown>}
- */
-export function handleRequest(
-    // promise: The un-awaited request.
-    request,
-    // function: An error handler. Defaults to defaultErrorHandler.js in this folder
-    errorHandler,
-    // object: other options for this handler
-    options
-) {
-    return new Promise(
-        (resolve, reject) => {
-            const {
-                finallyHandler = () => null, // function: is always executed
-                waitCursor = false, // bool/object: true or { text, textTimeout, timeout }
-                cache = null, // string/object: cacheKey or { key, duration, cacheResolver }
-                noReject = false
-            } = options || {};
-            const useWaitCursor = !!waitCursor;
-            const {
-                text = undefined,
-                textTimeout = 5000,
-                timeout = 300
-            } = (chayns.utils.isObject(waitCursor)
-                 ? waitCursor
-                 : {});
-            const handleErrors = errorHandler || helperConfig.errorHandler;
-            let hideWaitCursor = () => {};
-            try {
-                if (useWaitCursor) hideWaitCursor = showWaitCursor({ text, textTimeout, timeout });
-                if (cache) {
-                    const cacheKey = chayns.utils.isObject(cache) ? `${cache?.key}` : `${cache}`;
-                    const duration = chayns.utils.isObject(cache) ? (cache?.duration ?? 5) : 5;
-                    if (localStorage.keys[cacheKey]) {
-                        if (localStorage.get(cacheKey)) resolve(localStorage.get(cacheKey));
-                    } else {
-                        localStorage.add(cacheKey, duration);
-                    }
-                }
-                request
-                    .then((result) => {
-                        if (cache) {
-                            const cacheKey = chayns.utils.isObject(cache) ? `${cache?.key}` : `${cache}`;
-                            const cacheResolver = (chayns.utils.isObject(
-                                cache
-                            ) ? cache?.cacheResolver : null) || ((v) => v);
-                            localStorage.set(cacheKey, cacheResolver(result));
-                        }
-                        resolve(result);
-                    })
-                    .finally(() => { hideWaitCursor(); })
-                    .catch((err) => {
-                        hideWaitCursor();
-                        // eslint-disable-next-line no-console
-                        if (!(err instanceof RequestError)) {
-                            console.error(...colorLog({
-                                '[HandleRequest]': 'color: #aaaaaa'
-                            }), err);
-                        }
-                        let errorResult;
-                        try {
-                            errorResult = handleErrors(err, err?.statusCode, resolve, reject);
-                        } catch (e) {
-                            console.error(...colorLog({
-                                '[HandleRequest]': 'color: #aaaaaa',
-                                'Error in error handler:': ''
-                            }), e);
-                        }
-                        if (!noReject) {
-                            reject(errorResult || err);
-                        } else {
-                            resolve(errorResult || null);
-                        }
-                    })
-                    .then(finallyHandler, finallyHandler);
-            } catch (err) {
-                hideWaitCursor();
-                // eslint-disable-next-line no-console
-                if (!(err instanceof RequestError)) {
-                    console.error(...colorLog({
-                        '[HandleRequest]': 'color: #aaaaaa'
-                    }), err);
-                }
-                let errorResult;
-                try {
-                    errorResult = handleErrors(err, err?.statusCode, resolve, reject);
-                } catch (e) {
-                    console.error(...colorLog({
-                        '[HandleRequest]': 'color: #aaaaaa',
-                        'Error in error handler:': ''
-                    }), e);
-                }
-                if (!noReject) {
-                    reject(errorResult || err);
-                } else {
-                    resolve(errorResult || null);
-                }
-            }
-        }
-    );
-}
-
-/**
- * @param response
- * @param processName
- * @param resolve
- * @param useFetchApi
- * @param internalRequestGuid
- * @returns {Promise<void>}
- */
-const jsonResolve = async (response, processName, resolve, useFetchApi, internalRequestGuid = null) => {
-    const { status } = response;
-    try {
-        resolve(useFetchApi ? await response.json() : JSON.parse(response.response));
-    } catch (err) {
-        logger.warning({
-            message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
-            data: {
-                internalRequestGuid
-            }
-        }, err);
-        // eslint-disable-next-line no-console
-        console.warn(...colorLog({
-            '[HttpRequest]': 'color: #aaaaaa',
-            // eslint-disable-next-line max-len
-            [`Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`]: ''
-        }), { [status]: ResponseType.None }, '\n', err);
-        resolve(null);
-    }
-};
-
-/**
- * @param response
- * @param processName
- * @param resolve
- * @param useFetchApi
- * @param internalRequestGuid
- * @returns {Promise<void>}
- */
-const blobResolve = async (response, processName, resolve, useFetchApi, internalRequestGuid = null) => {
-    const { status } = response;
-    try {
-        resolve(useFetchApi ? await response.blob() : new Blob(response.response));
-    } catch (err) {
-        logger.warning({
-            message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
-            data: {
-                internalRequestGuid
-            }
-        }, err);
-        // eslint-disable-next-line no-console
-        console.warn(...colorLog({
-            '[HttpRequest]': 'color: #aaaaaa',
-            // eslint-disable-next-line max-len
-            [`Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`]: ''
-        }), { [status]: ResponseType.None }, '\n', err);
-        resolve(null);
-    }
-};
-
-/**
- * @param response
- * @param processName
- * @param resolve
- * @param useFetchApi
- * @param internalRequestGuid
- * @returns {Promise<void>}
- */
-const textResolve = async (response, processName, resolve, useFetchApi, internalRequestGuid = null) => {
-    const { status } = response;
-    try {
-        resolve(useFetchApi ? await response.text() : response.response);
-    } catch (err) {
-        logger.warning({
-            message: `[HttpRequest] Getting text body failed on Status ${status} on ${processName}`,
-            data: { internalRequestGuid }
-        }, err);
-        // eslint-disable-next-line no-console
-        console.warn(...colorLog({
-            '[HttpRequest]': 'color: #aaaaaa',
-            // eslint-disable-next-line max-len
-            [`Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`]: ''
-        }), { [status]: ResponseType.None }, '\n', err);
-        resolve(null);
-    }
-};
-
-/**
- * @param response
- * @param processName
- * @param resolve
- * @param useFetchApi
- * @param internalRequestGuid
- * @returns {Promise<void>}
- */
-const objectResolve = async (response, processName, resolve, useFetchApi, internalRequestGuid = null) => {
-    const { status } = response;
-    try {
-        resolve({ status, data: useFetchApi ? await response.json() : JSON.parse(response.response) });
-    } catch (err) {
-        logger.warning({
-            message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`,
-            data: { internalRequestGuid }
-        }, err);
-        // eslint-disable-next-line no-console
-        console.warn(...colorLog({
-            '[HttpRequest]': 'color: #aaaaaa',
-            // eslint-disable-next-line max-len
-            [`Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler for this case:`]: ''
-        }), { [status]: ResponseType.None }, '\n', err);
-        resolve({ status, data: null });
-    }
-};
-
-export const defaultConfig = {
-    options: {},
-    address: '',
-    config: {}
-};
-
-/**
- * Set defaults for httpRequest
- * @param {string} [address=''] - Address of the request. Address will be appended to this default if it doesn't start
- *     with a protocol but starts with a '/'.
- * @param {Object} [config={}] - Fetch config
- * @param {HttpMethod|string} [config.method='GET'] - HttpMethod
- * @param {Object} [config.headers] - Additional HttpHeaders
- * @param {boolean} [config.useChaynsAuth] - Add user token as authorization if available
- * @param {*} [config.body] - Body of the request
- * @param {*} [config.signal] - Signal to abort request while running, use with RTK thunks
- * @param {string} [config.cache]
- * @param {string} [config.referrer]
- * @param {string} [config.referrerPolicy]
- * @param {string} [config.mode]
- * @param {string} [config.redirect]
- * @param {string} [config.integrity]
- * @param {boolean} [config.keepalive]
- * @param {Window} [config.window]
- * @param {Object} [options={}] - Additional options for the request
- * @param {ResponseType|string} [options.responseType=null] - type of response that is expected
- * @param {boolean|number[]} [options.ignoreErrors=false] - Don't throw errors for this request if true or if this
- *     array contains the response status. Return null on error instead. Errors will still be logged as usual.
- * @param {boolean} [options.useFetchApi=true] - use fetch(), use XMLHttpRequest otherwise
- * @param {Object.<string,LogLevel>} [options.logConfig={}] - Define the logLevel for these status codes. Can use
- *     status code or regex string as key. Values must be info|warning|error|critical|none.
- * @param {boolean} [options.stringifyBody=true] - Call JSON.stringify(body) for the body passed to this function
- * @param {Object} [options.additionalLogData={}] - Additional data to be logged with this request
- * @param {boolean} [options.autoRefreshToken=true] - Automatically try to refresh the token once if it expired
- * @param {Object} [options.statusHandlers={}] - Handle response for specific status codes
- * Usage: { [statusCode|regexString] : (response) => { my code }, ... }
- *    OR: { [statusCode|regexString] : responseType }
- *     - handler always receives entire response as parameter, not just the body
- *     - value returned from handler is returned as result of the request
- *     - handler can be async and will be awaited
- *     Response handling priorities:
- *      1. statusHandlers[status]
- *      2. statusHandlers[regex]
- *      3. response type
- * @param {onProgressHandler} [options.onProgress=null] - Gets called multiple times during the download of bigger
- *     data,
- *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
- *     added to read the body instead. Response types other than 'response' will work as usual.
- * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
- * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
- * @public
- */
-export const setRequestDefaults = (address, config, options) => {
-    defaultConfig.address = address || '';
-    defaultConfig.config = config || {};
-    defaultConfig.options = options || {};
-};
-
-const mergeOptions = (obj1, obj2) => {
-    const result = new Map();
-    const keys1 = Object.keys(obj1);
-    for (let i = 0; i < keys1.length; i++) {
-        result.set(keys1[i], obj1[keys1[i]]);
-    }
-    const keys2 = Object.keys(obj2);
-    for (let i = 0; i < keys2.length; i++) {
-        if (!result.get(keys2[i])) {
-            result.set(keys2[i], obj2[keys2[i]]);
-        }
-    }
-    return result;
-};
-
-const getMapKeys = (map) => {
-    const result = [];
-    const keys = map.keys();
-    for (let i = 0; i < map.size; i++) {
-        const { value } = keys.next();
-        result.push(value);
-    }
-    return result;
-};
-
-/**
- * @callback onProgressHandler
- * @param {number} percentage - Percentage of content downloaded
- * @param {number} loaded - Data already loaded
- * @param {number} total - Total data to load
- */
+import handleRequest from './handleRequest';
+import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
 
 /**
  * @callback statusCodeHandler
@@ -384,13 +44,12 @@ const getMapKeys = (map) => {
  * @param {string} [config.integrity]
  * @param {boolean} [config.keepalive]
  * @param {Window} [config.window]
- * @param {*} [config.signal] - Signal to abort request while running, use with RTK thunks
+ * @param {AbortSignal} [config.signal] - Signal to abort request while running, use with RTK thunks
  * @param {string} [processName='HttpRequest'] - Name of the process in the logs
  * @param {Object} [options={}] - Additional options for the request
  * @param {ResponseType|string} [options.responseType=null] - type of response that is expected
  * @param {boolean|number[]} [options.ignoreErrors=false] - Don't throw errors for this request if true or if this
  *     array contains the response status. Return null on error instead. Errors will still be logged as usual.
- * @param {boolean} [options.useFetchApi=true] - use fetch(), use XMLHttpRequest otherwise
  * @param {Object.<string,LogLevel>} [options.logConfig={}] - Define the logLevel for these status codes. Can use
  *     status code or regex string as key. Values must be info|warning|error|critical|none.
  * @param {boolean} [options.stringifyBody=true] - Call JSON.stringify(body) for the body passed to this function
@@ -406,10 +65,8 @@ const getMapKeys = (map) => {
  *      1. statusHandlers[status]
  *      2. statusHandlers[regex]
  *      3. response type
- * @param {onProgressHandler} [options.onProgress=null] - Gets called multiple times during the download of bigger data,
- *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
- *     added to read the body instead. Response types other than 'response' will work as usual.
- * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
+ * @param {Object.<string|RegExp, ResponseType|statusCodeHandler|function(Response)>} [options.errorHandlers={}] -
+ *     chayns error handler for specific ChaynsErrors
  * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  * @async
  * @public
@@ -443,8 +100,6 @@ export function httpRequest(
                 // logConfig = {},
                 // bool|number[]: don't throw errors on error status codes, return null instead
                 ignoreErrors = false,
-                // bool: use fetch(), use XMLHttpRequest otherwise
-                useFetchApi = true,
                 // bool: call JSON.stringify() on the body passed to this function
                 stringifyBody = true,
                 // object: additional data to be logged
@@ -458,29 +113,19 @@ export function httpRequest(
                  * - handler always receives entire response as parameter, not just the body
                  * - value returned from handler is returned as result of the request
                  * - handler can be async and will be awaited
-                 * => Use this to get jsonBody on error status codes or prefen .json() on 204
+                 * => Use this to get jsonBody on error status codes or .json() on 204
                  */
                 // statusHandlers = {},
-                /* function: Enables you to monitor download progress. Receives params (percentage, loaded, total)
-                 * - CAUTION: This disallows using .json() or .blob() on the body unless you use XMLHttpRequest.
-                 *   A property "stringBody" is available instead. responseTypes other than "response" will still work.
-                 */
-                onProgress = null,
-                // adds a random number as url param to bypass the browser cache
-                addHashToUrl = false,
                 internalRequestGuid = generateUUID(),
                 replacements = {}
             } = {
                 responseType: ResponseType.Json,
                 // logConfig: {},
                 ignoreErrors: false,
-                useFetchApi: true,
                 stringifyBody: true,
                 additionalLogData: {},
                 autoRefreshToken: true,
                 // statusHandlers: {},
-                onProgress: null,
-                addHashToUrl: false,
                 replacements: {
                     [/##locationId##/g]: chayns.env.site.locationId,
                     [/##siteId##/g]: chayns.env.site.id,
@@ -503,6 +148,10 @@ export function httpRequest(
             const statusHandlers = mergeOptions(
                 (options?.statusHandlers || {}),
                 (defaultConfig?.options?.statusHandlers || {})
+            );
+            const errorHandlers = mergeOptions(
+                (options?.errorHandlers || {}),
+                (defaultConfig?.options?.errorHandlers || {})
             );
             const logConfig = mergeOptions((options?.logConfig || {}), (defaultConfig?.options?.logConfig || {}));
 
@@ -573,12 +222,6 @@ export function httpRequest(
                     }
                 }
             }
-            if (addHashToUrl) {
-                requestAddress += `${/\?.+$/.test(address) ? '&' : '?'}${generateUUID()
-                    .toString()
-                    .split('-')
-                    .join('')}`;
-            }
 
             const resolve = (value) => {
                 globalResolve(value);
@@ -592,21 +235,43 @@ export function httpRequest(
             };
 
             /**
-             * @param {Error|RequestError} err
+             * @param {Error|RequestError|ChaynsError} err
              * @param {?number} status
              * @param {boolean} force
+             *
+             * @returns {boolean}
              */
-            const tryReject = async (err = null, status = null, force = false) => {
+            const tryReject = async (
+                err = null,
+                status = null,
+                force = false
+            ) => {
                 const handlerKeys = getMapKeys(statusHandlers);
                 const statusHandlerKey = handlerKeys.find((k) => k === `${status}` || stringToRegex(k)
                     .test(`${status}`));
+                const errorKeys = getMapKeys(errorHandlers);
+
+                // handle chaynsErrorHandler
+                const isChayns = err instanceof ChaynsError;
+                const chaynsErrorCode = isChayns ? err?.errorCode : null;
+                const errorHandlerKey = errorKeys.find((k) => (isChayns
+                    && (k === chaynsErrorCode || stringToRegex(k).test(chaynsErrorCode))));
+                if (isChayns && errorHandlerKey) {
+                    const handler = errorHandlers.get(errorHandlerKey);
+                    if (handler === ResponseType.Error) {
+                        reject(err);
+                    }
+                    if (!force) return false;
+                }
+
+                // handle statusCode handler
                 if (statusHandlerKey && statusHandlers.get(statusHandlerKey) !== ResponseType.Error
                     && (!force || status === 1)) {
                     if (status === 1) {
                         const handler = statusHandlers.get(statusHandlerKey);
                         if (chayns.utils.isFunction(handler)) {
                             resolve(await handler(err));
-                            return;
+                            return true;
                         }
                         if (Object.values(ResponseType).includes(handler)) {
                             switch (handler) {
@@ -615,21 +280,26 @@ export function httpRequest(
                                         status,
                                         data: null
                                     });
-                                    return;
+                                    return true;
                                 case ResponseType.Response:
                                     resolve({ status });
-                                    return;
+                                    return true;
                                 default:
                                     resolve(null);
-                                    return;
+                                    return true;
                             }
                         }
                     }
-                    return;
+                    return false;
                 }
                 if (statusHandlers.has(`${status}`)
                     && statusHandlers.get(`${status}`) === ResponseType.Error) {
+                    console.error(...colorLog({
+                        '[HttpRequest]': 'color: #aaaaaa',
+                        'ResponseType \'error\':': ''
+                    }), err, '\nInput: ', input);
                     reject(err);
+                    return true;
                 }
                 if (ignoreErrors === true
                     || (status && chayns.utils.isArray(ignoreErrors)
@@ -642,28 +312,34 @@ export function httpRequest(
                                     status,
                                     data: null
                                 });
-                                return;
+                                return true;
                             case ResponseType.None:
                                 resolve();
-                                return;
+                                return true;
                             case ResponseType.Error:
-                                reject(new RequestError(`Status ${status} on ${processName}`, status));
-                                return;
+                                const error = new RequestError(`Status ${status} on ${processName}`, status);
+                                console.error(...colorLog({
+                                    '[HttpRequest]': 'color: #aaaaaa',
+                                    'ResponseType \'error\':': ''
+                                }), error, '\nInput: ', input);
+                                reject(error);
+                                return true;
                             case ResponseType.Response:
                                 resolve({ status });
-                                return;
+                                return true;
                             case ResponseType.Text:
                             case ResponseType.Blob:
                             case ResponseType.Json:
                             default:
                                 resolve(null);
-                                return;
+                                return true;
                         }
                     }
                     resolve(null);
-                } else {
-                    reject(err);
+                    return true;
                 }
+                reject(err);
+                return true;
             };
 
             const fetchStartTime = Date.now();
@@ -671,98 +347,20 @@ export function httpRequest(
             /** REQUEST */
             let response;
             try {
-                if (useFetchApi) {
-                    response = await fetch(requestAddress, {
-                        ...remainingFetchConfig,
-                        method,
-                        headers: new Headers(requestHeaders),
-                        body: stringifyBody ? jsonBody : body
-                    });
-                } else {
-                    response = await (() => new Promise((res, rej) => {
-                        const req = new XMLHttpRequest();
-                        const headerKeys = Object.keys(requestHeaders);
-                        for (let i = 0; i < headerKeys.length; i += 1) {
-                            try {
-                                req.setRequestHeader(headerKeys[i], requestHeaders[headerKeys[i]]);
-                            } catch (ex) {
-                                // eslint-disable-next-line no-console
-                                console.warn(
-                                    ...colorLog({
-                                        '[HttpRequest]': 'color: #aaaaaa',
-                                        // eslint-disable-next-line max-len
-                                        [`Could not set header ${headerKeys[i]} on ${processName} to ${requestHeaders[headerKeys[i]]}`]: ''
-                                    })
-                                );
-                                logger.warning({
-                                    message: `[HttpRequest] Could not set header ${headerKeys[i]} on ${processName}`,
-                                    data: {
-                                        address,
-                                        method,
-                                        body,
-                                        headers: {
-                                            ...requestHeaders,
-                                            Authorization: undefined
-                                        },
-                                        processName,
-                                        internalRequestGuid
-                                    },
-                                    section: 'httpRequest.js'
-                                }, ex);
-                            }
-                        }
-                        if (onProgress && chayns.utils.isFunction(onProgress)) {
-                            req.addEventListener('progress', (event) => {
-                                if (event.lengthComputable) {
-                                    onProgress((event.loaded / event.total) * 100, event.loaded, event.total);
-                                } else {
-                                    // eslint-disable-next-line no-console
-                                    console.warn(...colorLog({
-                                        '[HttpRequest]': 'color: #aaaaaa',
-                                        // eslint-disable-next-line max-len
-                                        'Can\'t monitor progress: length not computable': ''
-                                    }));
-                                }
-                            });
-                        }
-                        req.addEventListener('load', (evt) => {
-                            res(req);
-                        });
-                        req.addEventListener('error', (err) => {
-                            rej(err);
-                        });
-                        req.open(method, address);
-                        req.send(stringifyBody ? jsonBody : body);
-                    }))();
+                response = await fetch(requestAddress, {
+                    ...remainingFetchConfig,
+                    method,
+                    headers: new Headers(requestHeaders),
+                    body: stringifyBody ? jsonBody : body
+                });
+                if (!response) {
+                    throw new RequestError(
+                        `[HttpRequest] Failed to fetch on ${processName}: Response is not defined`,
+                        1
+                    );
                 }
             } catch (err) {
-                let failedToFetchLog = logger.warning;
-                const levelKey = getMapKeys(logConfig)
-                    .find((key) => (/^-?[\d]$/.test(key) && parseInt(key, 10) === 1)
-                        || stringToRegex(key)
-                            .test('1'));
-                if (levelKey) {
-                    switch (logConfig.get(levelKey)) {
-                        case LogLevel.info:
-                            failedToFetchLog = logger.info;
-                            break;
-                        case LogLevel.warning:
-                            failedToFetchLog = logger.warning;
-                            break;
-                        case LogLevel.error:
-                            failedToFetchLog = logger.error;
-                            break;
-                        case LogLevel.critical:
-                            failedToFetchLog = logger.critical;
-                            break;
-                        case LogLevel.none:
-                            // eslint-disable-next-line no-console
-                            failedToFetchLog = console.warn;
-                            break;
-                        default:
-                            failedToFetchLog = logger.warning;
-                    }
-                }
+                const failedToFetchLog = await getLogFunctionByStatus(1, logConfig, logger.warning);
                 failedToFetchLog({
                     message: `[HttpRequest] Failed to fetch on ${processName}`,
                     data: {
@@ -785,7 +383,7 @@ export function httpRequest(
                 console.error(...colorLog({
                     '[HttpRequest]': 'color: #aaaaaa',
                     // eslint-disable-next-line max-len
-                    [`Failed to fetch on ${processName}`]: ''
+                    [`(${processName}) Failed to fetch: `]: '',
                 }), err, '\nInput: ', input);
                 err.statusCode = 1;
                 tryReject(err, 1, true);
@@ -794,45 +392,9 @@ export function httpRequest(
 
             const { status } = response;
 
-            const log = (() => {
-                const levelKey = Object.keys(logConfig)
-                    .find((key) => (/^[\d]$/.test(key) && parseInt(key, 10) === status)
-                        || stringToRegex(key)
-                            .test(status));
-                if (levelKey && logConfig[levelKey]) {
-                    switch (logConfig[levelKey]) {
-                        case LogLevel.info:
-                            return logger.info;
-                        case LogLevel.warning:
-                            return logger.warning;
-                        case LogLevel.error:
-                            return logger.error;
-                        case LogLevel.critical:
-                            return logger.critical;
-                        case LogLevel.none:
-                            // eslint-disable-next-line no-console
-                            return console.warn;
-                        default:
-                            console.error(...colorLog({
-                                '[HttpRequest]': 'color: #aaaaaa',
-                                // eslint-disable-next-line max-len
-                                [`LogLevel ${logConfig[levelKey]} for ${levelKey} is not valid.Please use a valid log level.`]: ''
-                            }));
-                            return logger.warning;
-                    }
-                } else {
-                    if (status < 400) return logger.info;
-                    if (status === 401) return logger.warning;
-                    return logger.error;
-                }
-            })();
-
             /** LOGS */
-            const sessionUid = useFetchApi
-                               ? response.headers && response.headers.get('X-Request-Id')
-                                 ? response.headers.get('X-Request-Id') : undefined
-                               : response.getAllResponseHeaders && response.getResponseHeader('X-Request-Id')
-                                 ? response.getResponseHeader('X-Request-Id') : undefined;
+            const sessionUid = response.getAllResponseHeaders && response.getResponseHeader('X-Request-Id')
+                               ? response.getResponseHeader('X-Request-Id') : undefined;
 
             let responseBody = null;
             try {
@@ -848,51 +410,42 @@ export function httpRequest(
 
             const logData = {
                 data: {
-                    additionalLogData,
-                    address: requestAddress,
-                    input,
-                    method,
-                    body,
-                    headers: {
-                        ...requestHeaders,
-                        Authorization: undefined
-                    },
-                    status,
-                    sessionUid,
-                    responseBody,
                     processName,
+                    request: {
+                        address: requestAddress,
+                        method,
+                        body,
+                        headers: {
+                            ...requestHeaders,
+                            Authorization: requestHeaders?.Authorization
+                                           && chayns.utils.isJwt(requestHeaders?.Authorization)
+                                           ? `Payload: ${requestHeaders.Authorization.split('.')[1]}`
+                                           : undefined
+                        },
+                    },
+                    response: {
+                        status,
+                        sessionUid,
+                        body: responseBody,
+
+                    },
+                    input,
                     online: `${navigator?.onLine}, ${navigator?.connection?.effectiveType}`,
                     requestDuration: `${Date.now() - fetchStartTime} ms`,
                     requestTime: new Date(fetchStartTime).toISOString(),
-                    internalRequestGuid
+                    internalRequestGuid,
+                    additionalLogData
                 },
                 section: 'httpRequest.js',
                 sessionUid
             };
 
-            if (responseType === ResponseType.Json
-                || responseType === ResponseType.Object
-                || statusHandlers.get(`${status}`) === ResponseType.Json
-                || statusHandlers.get(`${status}`) === ResponseType.Object) {
-                try {
-                    const responseClone = response.clone();
-                    logData.responseBody = await responseClone.json();
-                } catch (e1) {
-                    try {
-                        const responseClone = response.clone();
-                        logData.responseBody = responseClone.text();
-                    } catch (e2) {
-                        // ignored
-                    }
-                }
-            } else if (responseType === ResponseType.Text || statusHandlers.get(`${status}`) === ResponseType.Text) {
-                try {
-                    const responseClone = response.clone();
-                    logData.responseBody = responseClone.text();
-                } catch (e) {
-                    // ignored
-                }
-            }
+            let defaultLog = logger.error;
+            if (status < 400) defaultLog = logger.info;
+            if (status === 401) defaultLog = logger.warning;
+            const log = await getLogFunctionByStatus(status, logConfig, defaultLog, responseBody);
+
+            const chaynsErrorObject = await ChaynsError.getChaynsErrorObject(responseBody);
 
             if (response && status < 400) {
                 log({
@@ -900,14 +453,17 @@ export function httpRequest(
                     message: `[HttpRequest] http request finished: Status ${status} on ${processName}`
                 });
             } else if (response && status === 401) {
-                const error = new RequestError(`Status ${status} on ${processName}`, status);
+                const error = chaynsErrorObject
+                              ? new ChaynsError(chaynsErrorObject, processName, status)
+                              : new RequestError(`Status ${status} on ${processName}`, status);
                 log({
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`,
                 }, error);
                 // eslint-disable-next-line no-console
                 console.error(...colorLog({
-                    '[HttpRequest]': 'color: #aaaaaa'
+                    '[HttpRequest]': 'color: #aaaaaa',
+                    [`(${processName})`]: ''
                 }), error, '\nInput: ', input);
                 if (!ignoreErrors && useChaynsAuth && autoRefreshToken) {
                     try {
@@ -917,232 +473,134 @@ export function httpRequest(
                                 responseType,
                                 logConfig,
                                 ignoreErrors,
-                                useFetchApi,
                                 stringifyBody,
                                 additionalLogData,
                                 autoRefreshToken: false,
                                 statusHandlers,
-                                onProgress,
-                                addHashToUrl,
+                                errorHandlers,
                                 internalRequestGuid
                             }));
-                        } else {
-                            tryReject(error, status);
-                        }
-                    } catch (err) { tryReject(error, status); }
-                } else {
-                    tryReject(error, status);
-                }
+                        } else { tryReject(error, status, false); }
+                    } catch (err) { tryReject(error, status, false); }
+                } else { tryReject(error, status, false); }
             } else {
-                const error = new RequestError(`Status ${status} on ${processName}`, status);
+                const error = chaynsErrorObject
+                              ? new ChaynsError(chaynsErrorObject, processName, status)
+                              : new RequestError(`Status ${status} on ${processName}`, status);
                 log({
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`
                 }, error);
                 // eslint-disable-next-line no-console
                 console.error(...colorLog({
-                    '[HttpRequest]': 'color: #aaaaaa'
+                    '[HttpRequest]': 'color: #aaaaaa',
+                    [`(${processName})`]: '',
                 }), error, '\nInput: ', input);
-                tryReject(error, status);
+                tryReject(error, status, false);
             }
 
             /** RESPONSE HANDLING */
             /*
              * Response handling priorities:
-             * 1. statusHandlers[status]
-             * 2. statusHandlers[regex]
+             * 1. errorHandlers
+             *     1.1 errorHandlers[chaynsErrorCode]
+             *     1.2 errorHandlers[chaynsErrorRegex]
+             * 2. statusHandlers
+             *     2.1 statusHandlers[status]
+             *     2.2 statusHandlers[regex]
              * 3. response type
-             *    3.1. if onProgress: onProgress => response Type
-             *    3.2. responseType
+             * 4. default: Response
              */
 
-            // statusHandlers[status]
-            if (statusHandlers.has(`${status}`)) {
-                if (chayns.utils.isFunction(statusHandlers.get(`${status}`))) {
-                    resolve(await statusHandlers.get(`${status}`)(response));
-                } else {
-                    switch (statusHandlers.get(`${status}`)) {
-                        case ResponseType.Json:
-                            await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                            return;
-                        case ResponseType.Blob:
-                            await blobResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                            return;
-                        case ResponseType.Object:
-                            await objectResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                            return;
-                        case ResponseType.Text:
-                            await textResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                            return;
-                        case ResponseType.None:
-                            resolve();
-                            return;
-                        case ResponseType.Error:
-                            reject(new RequestError(`Status ${status} on ${processName}`, status));
-                            return;
-                        case ResponseType.Response:
-                        default:
-                            resolve(response);
-                            return;
-                    }
+            const errorCode = chaynsErrorObject?.errorCode;
+            // 1. error handlers
+            if (errorCode) {
+                // 1.1 errorHandlers[chaynsErrorCode]
+                if (errorHandlers.has(errorCode)) {
+                    const handler = errorHandlers.get(errorCode);
+                    const result = await resolveWithHandler(
+                        handler,
+                        response,
+                        status,
+                        processName,
+                        resolve,
+                        reject,
+                        internalRequestGuid,
+                        chaynsErrorObject
+                    );
+                    if (result) return;
                 }
-            }
-            // statusHandlers[regex]
-            if (!statusHandlers || statusHandlers.size === 0) {
-                const keys = getMapKeys(statusHandlers);
-                for (let i = 0; i < keys.length; i += 1) {
-                    const regExp = stringToRegex(keys[i]);
-                    if (regExp.test(status?.toString()) && chayns.utils.isFunction(statusHandlers.get(keys[i]))) {
-                        // eslint-disable-next-line no-await-in-loop
-                        resolve(await statusHandlers.get(keys[i])(response));
-                        return;
-                    }
-                    if (regExp.test(status?.toString()) && Object.values(ResponseType)
-                        .includes(statusHandlers.get(keys[i]))) {
-                        switch (statusHandlers.get(keys[i])) {
-                            case ResponseType.Json:
-                                // eslint-disable-next-line no-await-in-loop
-                                await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                                return;
-                            case ResponseType.Blob:
-                                // eslint-disable-next-line no-await-in-loop
-                                await blobResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                                return;
-                            case ResponseType.Object:
-                                // eslint-disable-next-line no-await-in-loop
-                                await objectResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                                return;
-                            case ResponseType.Text:
-                                // eslint-disable-next-line no-await-in-loop
-                                await textResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                                return;
-                            case ResponseType.None:
-                                resolve();
-                                return;
-                            case ResponseType.Error:
-                                reject(new RequestError(`Status ${status} on ${processName}`, status));
-                                return;
-                            case ResponseType.Response:
-                            default:
-                                resolve(response);
-                                return;
-                        }
+                // 1.2 errorHandlers[chaynsErrorRegex]
+                if (errorHandlers && errorHandlers.size > 0) {
+                    const errorKeys = getMapKeys(errorHandlers);
+                    const key = errorKeys.find((k) => (
+                        chaynsErrorCodeRegex.test(k)
+                        && stringToRegex(key).test(errorCode)
+                    ));
+                    const handler = errorHandlers.get(key);
+                    if (handler) {
+                        const result = await resolveWithHandler(
+                            handler,
+                            response,
+                            status,
+                            processName,
+                            resolve,
+                            reject,
+                            internalRequestGuid,
+                            chaynsErrorObject
+                        );
+                        if (result) return;
                     }
                 }
             }
 
-            // onProgress => responseType
-            if (onProgress && chayns.utils.isFunction(onProgress) && useFetchApi) {
-                const responseClone = response.clone();
-                const reader = responseClone.body.getReader();
-                const contentLength = +responseClone.headers.get('Content-Length');
-                let receivedLength = 0; // received that many bytes at the moment
-                const chunks = []; // array of received binary chunks (comprises the body)
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    chunks.push(value);
-                    receivedLength += value.length;
-                    onProgress((receivedLength / contentLength) * 100, receivedLength, contentLength);
+            // 2.1 statusHandlers[status]
+            if (statusHandlers && statusHandlers.has(`${status}`)) {
+                const handler = statusHandlers.get(`${status}`);
+                const result = await resolveWithHandler(
+                    handler,
+                    response,
+                    status,
+                    processName,
+                    resolve,
+                    reject,
+                    internalRequestGuid
+                );
+                if (result) return;
+            }
+            // 2.2 statusHandlers[regex]
+            if (statusHandlers && statusHandlers.size > 0) {
+                const handler = getStatusHandlerByStatusRegex(status, statusHandlers);
+                if (handler) {
+                    const result = await resolveWithHandler(
+                        handler,
+                        response,
+                        status,
+                        processName,
+                        resolve,
+                        reject,
+                        internalRequestGuid
+                    );
+                    if (result) return;
                 }
-                if (responseType === ResponseType.Blob) resolve(new Blob(chunks));
-                const chunksAll = new Uint8Array(receivedLength);
-                let position = 0;
-                for (const chunk of chunks) {
-                    chunksAll.set(chunk, position);
-                    position += chunk.length;
-                }
-                const result = new TextDecoder('utf-8').decode(chunksAll);
-                if (responseType === ResponseType.Json || responseType === null) {
-                    try {
-                        resolve(JSON.parse(result));
-                    } catch (err) {
-                        logger.warning({
-                            message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,
-                            data: { internalRequestGuid }
-                        }, err);
-                        // eslint-disable-next-line no-console
-                        console.error(...colorLog({
-                            '[HttpRequest]': 'color: #aaaaaa',
-                            // eslint-disable-next-line max-len
-                            [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
-                        }), err, '\nInput: ', input);
-                        if (status >= 200 && status < 300) {
-                            resolve(null);
-                        } else {
-                            tryReject(null, status);
-                        }
-                    }
-                }
-                if (responseType === ResponseType.Object) {
-                    try {
-                        resolve({
-                            status,
-                            data: JSON.parse(result)
-                        });
-                    } catch (err) {
-                        logger.warning({
-                            message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,
-                            data: { internalRequestGuid }
-                        }, err);
-                        // eslint-disable-next-line no-console
-                        console.error(...colorLog({
-                            '[HttpRequest]': 'color: #aaaaaa',
-                            // eslint-disable-next-line max-len
-                            [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
-                        }), err, '\nInput: ', input);
-                        if (status >= 200 && status < 300) {
-                            resolve(null);
-                        } else {
-                            tryReject(null, status);
-                        }
-                    }
-                }
-                if (responseType === ResponseType.Text) {
-                    try {
-                        resolve(result);
-                    } catch (err) {
-                        logger.warning({
-                            message: `[HttpRequest] Parsing JSON body failed on Status ${status} on ${processName}`,
-                            data: { internalRequestGuid }
-                        }, err);
-                        // eslint-disable-next-line no-console
-                        console.error(...colorLog({
-                            '[HttpRequest]': 'color: #aaaaaa',
-                            // eslint-disable-next-line max-len
-                            [`Parsing JSON body failed on Status ${status} on ${processName}`]: ''
-                        }), err, '\nInput: ', input);
-                        if (status >= 200 && status < 300) {
-                            resolve(null);
-                        } else {
-                            tryReject(null, status);
-                        }
-                    }
-                }
-                if (responseType === ResponseType.None) {
-                    resolve();
-                }
-                if (responseType === ResponseType.Response) {
-                    response.bodyString = result;
-                    resolve(response);
-                }
+            }
+
+            // 3. responseType
+            if (responseType === null || responseType === ResponseType.Json) {
+                await jsonResolve(response, processName, resolve, internalRequestGuid);
+            } else if (responseType === ResponseType.Blob) {
+                await blobResolve(response, processName, resolve, internalRequestGuid);
+            } else if (responseType === ResponseType.Object) {
+                await objectResolve(response, processName, resolve, internalRequestGuid);
+            } else if (responseType === ResponseType.Text) {
+                await textResolve(response, processName, resolve, internalRequestGuid);
+            } else if (responseType === ResponseType.None) {
+                resolve(null);
+            } else if (responseType === ResponseType.Response) {
+                resolve(response);
             } else {
-                // responseType
-                if (responseType === null || responseType === ResponseType.Json) {
-                    await jsonResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                } else if (responseType === ResponseType.Blob) {
-                    await blobResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                } else if (responseType === ResponseType.Object) {
-                    await objectResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                } else if (responseType === ResponseType.Text) {
-                    await textResolve(response, processName, resolve, useFetchApi, internalRequestGuid);
-                } else if (responseType === ResponseType.None) {
-                    resolve(null);
-                } else if (responseType === ResponseType.Response) {
-                    resolve(response);
-                } else {
-                    resolve(response);
-                }
+                // 4. default
+                resolve(response);
             }
         })();
     });
@@ -1170,7 +628,6 @@ export function httpRequest(
  * @param {ResponseType|string} [options.responseType=null] - type of response that is expected
  * @param {boolean|number[]} [options.ignoreErrors=false] - Don't throw errors for this request if true or if this
  *     array contains the response status. Return null on error instead. Errors will still be logged as usual.
- * @param {boolean} [options.useFetchApi=true] - use fetch(), use XMLHttpRequest otherwise
  * @param {Object.<string,LogLevel>} [options.logConfig={}] - Define the logLevel for these status codes. Can use
  *     status code or regex string as key. Values must be info|warning|error|critical|none.
  * @param {boolean} [options.stringifyBody=true] - Call JSON.stringify(body) for the body passed to this function
@@ -1186,11 +643,8 @@ export function httpRequest(
  *      1. statusHandlers[status]
  *      2. statusHandlers[regex]
  *      3. response type
- * @param {onProgressHandler} [options.onProgress=null] - Gets called multiple times during the download of bigger
- *     data,
- *     e.g. for progress bars. Prevents the use of .json() and .blob() if useFetchApi is true. A param "stringBody" is
- *     added to read the body instead. Response types other than 'response' will work as usual.
- * @param {boolean} [options.addHashToUrl=false] - Add a random hash as URL param to bypass the browser cache
+ * @param {Object.<string|RegExp, ResponseType|statusCodeHandler|function(Response)>} [options.errorHandlers={}] -
+ *     chayns error handler for specific ChaynsErrors
  * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  *
  * @param {requestErrorHandler} [errorHandler=undefined] - Function to handle error statusCodes. Defaults to
@@ -1233,7 +687,6 @@ const request = {
     responseType: ResponseType,
     logLevel: LogLevel,
     method: HttpMethod,
-    presets: requestPresets,
     defaults: setRequestDefaults,
     full: fullRequest
 };
