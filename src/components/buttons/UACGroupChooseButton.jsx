@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { SelectButton } from 'chayns-components';
 import { httpRequest } from '../../functions/httpRequest/httpRequest';
+import LogLevel from '../../functions/httpRequest/LogLevel';
+import ResponseType from '../../functions/httpRequest/ResponseType';
 import ResizableWaitCursor from '../wait-cursor/ResizableWaitCursor';
 
 /**
@@ -28,7 +30,14 @@ const UACGroupChooseButton = (
         httpRequest(
             `https://sub50.tobit.com/backend/${chayns.env.site.locationId}/UserGroup`,
             {},
-            'getUacGroups'
+            'getUacGroups',
+            {
+                ignoreErrors: true,
+                responseType: ResponseType.Json,
+                logConfig: {
+                    [/.*/]: LogLevel.info
+                }
+            }
         )
             .then((res) => setUacGroups(res));
     }, []);
