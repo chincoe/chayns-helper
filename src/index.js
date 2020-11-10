@@ -27,7 +27,7 @@ export { default as useUniqueEventListener } from './hooks/uniques/useUniqueEven
 export { default as useUniqueInterval } from './hooks/uniques/useUniqueInterval';
 export { default as useUniqueTimeout } from './hooks/uniques/useUniqueTimeout';
 export { default as useFullscreenTapp } from './hooks/useFullscreenTapp';
-export { default as userUser } from './hooks/useUser';
+export { default as useUser } from './hooks/useUser';
 export { default as useWebsocketService } from './hooks/useWebsocketService';
 export { default as localStorage } from './other/localStorageHelper';
 export { default as WebsocketClient } from './other/WsClient';

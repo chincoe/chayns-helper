@@ -7,11 +7,6 @@
   "scripts": {
     "prepublishOnly": "npm run build",
     "build": "gulp build",
-    "build:es": "cross-env NODE_ENV=es rollup -c",
-    "build:cjs": "cross-env NODE_ENV=cjs rollup -c",
-    "build:lib:es": "cross-env BABEL_ENV=es babel src -d lib",
-    "build:sass": "node-sass src/ -o ./src && node-sass src/ -o ./lib",
-    "build:dev": "webpack -p --env=development",
     "install:all": "npm i",
     "createLink": "npm link",
     "removeLink": "npm unlink",
