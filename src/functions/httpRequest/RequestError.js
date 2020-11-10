@@ -14,5 +14,6 @@ export default class RequestError extends Error {
         super(message);
         this.name = `HttpRequestError${statusCode}`;
         this.statusCode = statusCode;
+        this.stack = `${this.name}: ${this.message}`;
     }
 }

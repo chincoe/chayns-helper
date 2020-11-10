@@ -12,7 +12,16 @@ export { default as RestrictedAccordion } from './components/restricted-accordio
 export { default as chaynsCall } from './functions/chaynsCalls/chaynsCalls';
 export { default as setViewMode } from './functions/chaynsCalls/setViewMode';
 export { default as hideCwFooter } from './functions/chaynsCalls/hideCwFooter';
-export { default as chaynsDialog } from './functions/chaynsDialogs';
+export {
+    default as chaynsDialog,
+    alert as alertDialog,
+    confirm as confirmDialog,
+    input as inputDialog,
+    advancedDate as advancedDateDialog,
+    mediaSelect as mediaSelectDialog,
+    fileSelect as fileSelectDialog,
+    iFrame as iFrameDialog
+} from './functions/chaynsDialogs';
 export { default as copyToClipboard } from './functions/copy';
 export { default as generateUUID } from './functions/generateUid';
 export { default as request } from './functions/httpRequest/httpRequest';
@@ -28,7 +37,7 @@ export { default as useUniqueInterval } from './hooks/uniques/useUniqueInterval'
 export { default as useUniqueTimeout } from './hooks/uniques/useUniqueTimeout';
 export { default as useFullscreenTapp } from './hooks/useFullscreenTapp';
 export { default as useUser } from './hooks/useUser';
-export { default as useWebsocketService } from './hooks/useWebsocketService';
+export { default as useWebsocketService, wssLoggerIgnoreMiddleware } from './hooks/useWebsocketService';
 export { default as localStorage } from './other/localStorageHelper';
 export { default as WebsocketClient } from './other/WsClient';
 export { default as TextStringComplex } from './textstring/TextStringMemo';
