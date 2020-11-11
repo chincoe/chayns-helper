@@ -25,6 +25,7 @@ export {
 export { default as copyToClipboard } from './functions/copy';
 export { default as generateUUID } from './functions/generateUid';
 export { default as request } from './functions/httpRequest/httpRequest';
+export { default as HttpStatusCode } from './functions/httpRequest/HttpStatusCodes';
 export { default as HttpMethod } from './functions/httpRequest/HttpMethod';
 export { default as RequestError } from './functions/httpRequest/RequestError';
 export { default as ResponseType } from './functions/httpRequest/ResponseType';
