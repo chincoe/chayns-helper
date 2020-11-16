@@ -52,5 +52,6 @@ export default class ChaynsError extends RequestError {
         this.parameters = error.parameters;
         this.requestId = error.requestId;
         this.name = `ChaynsError/${error.errorCode}`;
+        this.stack = `${this.name}: ${this.message}`;
     }
 }

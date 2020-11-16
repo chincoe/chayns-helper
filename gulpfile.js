@@ -6,7 +6,6 @@ const concatCss = require('gulp-concat-css');
 const path = require('path');
 const shell = require('gulp-shell');
 const pkg = require('./package.json');
-// const generateImportTransformer = require('./scripts/generate-import-transformer/generateImportTransformer');
 // const generateDocs = require('./scripts/generate-docs/generateDocs');
 
 const jsSource = [
@@ -41,26 +40,6 @@ gulp.task('transpile-esm', () => gulp
 gulp.task('compile-scss-esm', () => gulp.src(cssSource).pipe(sass()).pipe(gulp.dest(esmDestination)));
 
 gulp.task('build-esm', gulp.parallel('transpile-esm', 'compile-scss-esm'));
-
-/** ======================
- ====== ESM TO lib/ ======
- ====================== */
-
-gulp.task('transpile-esm-to-lib', () => gulp
-    .src(jsSource)
-    .pipe(
-        babel({
-            presets: [['./babelPreset.js', { cssImports: 'rename' }]],
-        })
-    )
-    .pipe(gulp.dest('lib/')));
-
-gulp.task('compile-scss-esm-to-lib', () => gulp.src(cssSource).pipe(sass()).pipe(gulp.dest('lib/')));
-
-gulp.task(
-    'build-esm-to-lib',
-    gulp.parallel('transpile-esm-to-lib', 'compile-scss-esm-to-lib')
-);
 
 /** ======================
  ========== CJS ==========
@@ -122,12 +101,6 @@ gulp.task(
 // gulp.task('generate-docs', generateDocs);
 
 /** ======================
- = resolveAbsoluteImport =
- ====================== */
-
-// gulp.task('compile-resolve-import', generateImportTransformer);
-
-/** ======================
  ========= BUILD =========
  ====================== */
 
@@ -136,8 +109,7 @@ gulp.task(
     gulp.series(
         'clean',
         gulp.parallel(
-            /* gulp.series( */'build-esm'/* , 'compile-resolve-import' ) */,
-            'build-esm-to-lib',
+            'build-esm',
             'build-cjs',
             'build-cjs-split-css',
             // 'build-umd',

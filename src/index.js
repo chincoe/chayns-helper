@@ -12,10 +12,20 @@ export { default as RestrictedAccordion } from './components/restricted-accordio
 export { default as chaynsCall } from './functions/chaynsCalls/chaynsCalls';
 export { default as setViewMode } from './functions/chaynsCalls/setViewMode';
 export { default as hideCwFooter } from './functions/chaynsCalls/hideCwFooter';
-export { default as chaynsDialog } from './functions/chaynsDialogs';
+export {
+    default as chaynsDialog,
+    alert as alertDialog,
+    confirm as confirmDialog,
+    input as inputDialog,
+    advancedDate as advancedDateDialog,
+    mediaSelect as mediaSelectDialog,
+    fileSelect as fileSelectDialog,
+    iFrame as iFrameDialog
+} from './functions/chaynsDialogs';
 export { default as copyToClipboard } from './functions/copy';
 export { default as generateUUID } from './functions/generateUid';
 export { default as request } from './functions/httpRequest/httpRequest';
+export { default as HttpStatusCode } from './functions/httpRequest/HttpStatusCodes';
 export { default as HttpMethod } from './functions/httpRequest/HttpMethod';
 export { default as RequestError } from './functions/httpRequest/RequestError';
 export { default as ResponseType } from './functions/httpRequest/ResponseType';
@@ -27,8 +37,8 @@ export { default as useUniqueEventListener } from './hooks/uniques/useUniqueEven
 export { default as useUniqueInterval } from './hooks/uniques/useUniqueInterval';
 export { default as useUniqueTimeout } from './hooks/uniques/useUniqueTimeout';
 export { default as useFullscreenTapp } from './hooks/useFullscreenTapp';
-export { default as userUser } from './hooks/useUser';
-export { default as useWebsocketService } from './hooks/useWebsocketService';
+export { default as useUser } from './hooks/useUser';
+export { default as useWebsocketService, wssLoggerIgnoreMiddleware } from './hooks/useWebsocketService';
 export { default as localStorage } from './other/localStorageHelper';
 export { default as WebsocketClient } from './other/WsClient';
 export { default as TextStringComplex } from './textstring/TextStringMemo';
@@ -38,8 +48,7 @@ export { default as getTextStrings } from './textstring/getTextStrings';
 export { default as getHookState } from './functions/getHookState';
 export { default as shallowEqual } from './functions/shallowEqual';
 export { default as useShallowSelector } from './hooks/useShallowSelector';
-export { default as generateAxis } from './functions/recharts/generateAxis';
-export { default as useAxis } from './functions/recharts/useAxis';
+export { default as useRechartsAxis, generateRechartsAxis } from './functions/recharts/useRechartsAxis';
 export { default as statusAnimations } from './constants/statusAnimations';
 export { default as time } from './constants/time';
 export { default as fnsFormat } from './functions/timeHelper/fnsFormat';

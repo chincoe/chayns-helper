@@ -14,7 +14,8 @@ import {
     mergeOptions,
     getMapKeys,
     getLogFunctionByStatus,
-    getStatusHandlerByStatusRegex, resolveWithHandler
+    getStatusHandlerByStatusRegex,
+    resolveWithHandler
 } from './httpRequestUtils';
 import { chaynsErrorCodeRegex } from './isChaynsError';
 import RequestError from './RequestError';

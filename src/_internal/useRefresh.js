@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 /**
  * Hook to keep refreshing a component in an interval by using the refreshId as id somewhere

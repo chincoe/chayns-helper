@@ -11,7 +11,7 @@ initChaynsHelper({
 });
 ```
 
-> **_NOTE:_** This package may lack markdown documentations and examples but features JsDoc comments instead. If you would like me to add examples and a readme to a feature, let me know and I'll add them.
+> **_NOTE:_** This package may lack markdown documentations and examples but features JsDoc comments instead. If you would like me to add examples and a readme to a feature, let me know, and I'll add them.
 
 ## Contents
 ### Components
@@ -34,7 +34,7 @@ initChaynsHelper({
 | Hook                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------| --------|
 | [useAsyncState](/src/hooks/useAsyncState.js)| useState hook that can resolve Promises and accepts async setter functions |
-| [useAxis](/src/functions/recharts/useAxis.js)| a hook to generate a better recharts axis |
+| [useRechartsAxis](/src/functions/recharts/useRechartsAxis.js)| a hook to generate a better recharts axis |
 | [useClampLines](/src/hooks/useClampLines.js)| a hook to restrict a text to a maxHeight |
 | [useExtendedState](/src/hooks/useExtendedState.js)| useState hook with async getter and prevState |
 | [useFullscreenTapp](/src/hooks/useFullscreenTapp.js)| Hook to create a fullscreen tapp without scrolling | [useFullscreenTapp.md](/src/hooks/useFullscreenTapp.md) |
@@ -59,7 +59,7 @@ initChaynsHelper({
 | [chaynsDialogs](/src/functions/chaynsDialogs.js)| makes using chayns dialogs much more comfortable | |
 | [copyToClipboard](/src/functions/copy.js)| copy a value to the user's clipboard | |
 | [fnsFormat](/src/functions/timeHelper/fnsFormat.js)| date-fns format with option to use today/tomorrow/yesterday and add the year if it's not the current year | |
-| [generateAxis](/src/functions/recharts/generateAxis.js)| a function to generate a better recharts axis | |
+| [generateRechartsAxis](/src/functions/recharts/useRechartsAxis.js)| a function to generate a better recharts axis | |
 | [generateUUID](/src/functions/generateUid.js)| generate a GUID | |
 | [getChaynsErrorCode](/src/functions/httpRequest/getChaynsErrorCode.js)| get the error code of a chayns error response. Can deal with Response, Promise and Object | |
 | [getHookState](/src/functions/getHookState.js)| get the current state of a hook via the setState function | |

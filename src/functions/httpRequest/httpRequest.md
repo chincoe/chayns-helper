@@ -286,3 +286,6 @@ const HttpMethod = {
 ### request.full(address, config, processName, options, errorHandler, handlerOptions)
 A combined function of request.handle() and request.fetch()
 
+### HttpStatusCode
+An enum of HTTP Status Codes
+
