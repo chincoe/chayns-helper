@@ -394,8 +394,8 @@ export function httpRequest(
             const { status } = response;
 
             /** LOGS */
-            const sessionUid = response.getAllResponseHeaders && response.getResponseHeader('X-Request-Id')
-                               ? response.getResponseHeader('X-Request-Id') : undefined;
+            const requestUid = response.headers && response.headers.get('X-Request-Id')
+                               ? response.headers.get('X-Request-Id') : undefined;
 
             let responseBody = null;
             try {
@@ -426,19 +426,18 @@ export function httpRequest(
                     },
                     response: {
                         status,
-                        sessionUid,
+                        requestUid,
                         body: responseBody,
-
                     },
                     input,
                     online: `${navigator?.onLine}, ${navigator?.connection?.effectiveType}`,
                     requestDuration: `${Date.now() - fetchStartTime} ms`,
                     requestTime: new Date(fetchStartTime).toISOString(),
                     internalRequestGuid,
-                    additionalLogData
+                    additionalLogData: additionalLogData === {} ? undefined : additionalLogData
                 },
                 section: 'httpRequest.js',
-                sessionUid
+                req_guid: requestUid
             };
 
             let defaultLog = logger.error;
