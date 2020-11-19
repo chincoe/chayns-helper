@@ -1,5 +1,5 @@
-import { useSelector } from 'react-redux';
 import shallowEqual from '../functions/shallowEqual';
+import useSelector from '../utils/requireUseSelector';
 
 /**
  * useSelector mit shallowEqual

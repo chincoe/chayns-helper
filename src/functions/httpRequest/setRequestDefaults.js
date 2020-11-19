@@ -1,5 +1,3 @@
-import HttpStatusCode from './HttpStatusCodes';
-
 export const defaultConfig = {
     options: {},
     address: '',
