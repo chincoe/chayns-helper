@@ -1,5 +1,5 @@
 import React from 'react';
-import stringToRegex, { regexRegex } from '../_internal/stringToRegex';
+import stringToRegex, { regexRegex } from '../utils/stringToRegex';
 import generateUUID from '../functions/generateUid';
 
 /**

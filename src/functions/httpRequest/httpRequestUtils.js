@@ -1,6 +1,6 @@
 import logger from 'chayns-logger';
-import colorLog from '../../_internal/colorLog';
-import stringToRegex, { regexRegex } from '../../_internal/stringToRegex';
+import colorLog from '../../utils/colorLog';
+import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
 import ChaynsError from './ChaynsError';
 import getChaynsErrorCode from './getChaynsErrorCode';
 import { chaynsErrorCodeRegex } from './isChaynsError';

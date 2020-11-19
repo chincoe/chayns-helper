@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import useShallowSelector from './useShallowSelector';
+import shallowEqual from '../functions/shallowEqual';
+import useSelector from '../utils/requireUseSelector';
 
 /**
  * useSelector for inline selectors.
@@ -26,5 +27,5 @@ import useShallowSelector from './useShallowSelector';
  */
 export default function useInlineSelector(selector, defaultValue, deps) {
     const memo = useCallback(selector, (deps || []));
-    return useShallowSelector(memo) ?? defaultValue;
+    return useSelector(memo, shallowEqual) ?? defaultValue;
 }

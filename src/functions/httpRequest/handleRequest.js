@@ -2,7 +2,7 @@ import { helperConfig } from '../../config/chaynsHelperConfig';
 import localStorage from '../../other/localStorageHelper';
 import showWaitCursor from '../waitCursor';
 import RequestError from './RequestError';
-import colorLog from '../../_internal/colorLog';
+import colorLog from '../../utils/colorLog';
 
 /**
  * @callback requestErrorHandler

@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import PropTypes from 'prop-types';
-import useRefresh from '../../_internal/useRefresh';
+import useRefresh from '../../utils/useRefresh';
 
 /**
  * Refresh
