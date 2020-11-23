@@ -68,6 +68,7 @@ import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
  *      3. response type
  * @param {Object.<string|RegExp, ResponseType|statusCodeHandler|function(Response)>} [options.errorHandlers={}] -
  *     chayns error handler for specific ChaynsErrors
+ * @param {string[]} [options.errorDialogs={}] - configure which chayns errors should display a dialog
  * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  * @async
  * @public
@@ -118,6 +119,7 @@ export function httpRequest(
                  */
                 // statusHandlers = {},
                 internalRequestGuid = generateUUID(),
+                errorDialogs = [],
                 replacements = {}
             } = {
                 responseType: ResponseType.Json,
@@ -134,6 +136,7 @@ export function httpRequest(
                     [/##userId##/g]: chayns.env.user.id,
                     [/##personId##/g]: chayns.env.user.personId
                 },
+                errorDialogs: [],
                 ...(defaultConfig.options || {}),
                 ...(options || {})
             };
@@ -256,7 +259,8 @@ export function httpRequest(
                 const isChayns = err instanceof ChaynsError;
                 const chaynsErrorCode = isChayns ? err?.errorCode : null;
                 const errorHandlerKey = errorKeys.find((k) => (isChayns
-                    && (k === chaynsErrorCode || stringToRegex(k).test(chaynsErrorCode))));
+                    && (k === chaynsErrorCode || stringToRegex(k)
+                        .test(chaynsErrorCode))));
                 if (isChayns && errorHandlerKey) {
                     const handler = errorHandlers.get(errorHandlerKey);
                     if (handler === ResponseType.Error) {
@@ -274,7 +278,8 @@ export function httpRequest(
                             resolve(await handler(err));
                             return true;
                         }
-                        if (Object.values(ResponseType).includes(handler)) {
+                        if (Object.values(ResponseType)
+                            .includes(handler)) {
                             switch (handler) {
                                 case ResponseType.Object:
                                     resolve({
@@ -382,7 +387,7 @@ export function httpRequest(
                     section: 'httpRequest.js'
                 }, err);
                 console.error(...colorLog({
-                    '[HttpRequest]': 'color: #aaaaaa',
+                    [`[HttpRequest(${processName})]`]: 'color: #aaaaaa',
                     // eslint-disable-next-line max-len
                     [`(${processName}) Failed to fetch: `]: '',
                 }), err, '\nInput: ', input);
@@ -446,6 +451,16 @@ export function httpRequest(
             const log = await getLogFunctionByStatus(status, logConfig, defaultLog, responseBody);
 
             const chaynsErrorObject = await ChaynsError.getChaynsErrorObject(responseBody);
+            if (chaynsErrorObject) {
+                chaynsErrorObject.showDialog = !!errorDialogs
+                    .find((e) => (e === chaynsErrorObject.errorCode)
+                        || (Object.prototype.toString.call(e) === '[object RegExp]'
+                            && e.test(chaynsErrorObject.errorCode)
+                        ));
+            }
+            if (chaynsErrorObject && chaynsErrorObject?.showDialog) {
+                chayns.dialog.alert('', chaynsErrorObject.displayMessage);
+            }
 
             if (response && status < 400) {
                 log({
@@ -462,8 +477,7 @@ export function httpRequest(
                 }, error);
                 // eslint-disable-next-line no-console
                 console.error(...colorLog({
-                    '[HttpRequest]': 'color: #aaaaaa',
-                    [`(${processName})`]: ''
+                    [`[HttpRequest(${processName})]`]: 'color: #aaaaaa',
                 }), error, '\nInput: ', input);
                 if (!ignoreErrors && useChaynsAuth && autoRefreshToken) {
                     try {
@@ -493,8 +507,7 @@ export function httpRequest(
                 }, error);
                 // eslint-disable-next-line no-console
                 console.error(...colorLog({
-                    '[HttpRequest]': 'color: #aaaaaa',
-                    [`(${processName})`]: '',
+                    [`[HttpRequest(${processName})]`]: 'color: #aaaaaa',
                 }), error, '\nInput: ', input);
                 tryReject(error, status, false);
             }
@@ -535,7 +548,8 @@ export function httpRequest(
                     const errorKeys = getMapKeys(errorHandlers);
                     const key = errorKeys.find((k) => (
                         chaynsErrorCodeRegex.test(k)
-                        && stringToRegex(key).test(errorCode)
+                        && stringToRegex(key)
+                            .test(errorCode)
                     ));
                     const handler = errorHandlers.get(key);
                     if (handler) {
@@ -645,6 +659,7 @@ export function httpRequest(
  *      3. response type
  * @param {Object.<string|RegExp, ResponseType|statusCodeHandler|function(Response)>} [options.errorHandlers={}] -
  *     chayns error handler for specific ChaynsErrors
+ * @param {string[]} [options.errorDialogs={}] - configure which chayns errors should display a dialog
  * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  *
  * @param {requestErrorHandler} [errorHandler=undefined] - Function to handle error statusCodes. Defaults to

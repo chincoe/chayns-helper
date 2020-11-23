@@ -41,9 +41,11 @@ export async function getLogFunctionByStatus(status, logConfig, defaultFunction,
     const levelKey = logKeys
         .find((key) => (
             (/^[\d]$/.test(key) && parseInt(key, 10) === status)
-            || stringToRegex(key).test(`${status}`)
+            || stringToRegex(key)
+                .test(`${status}`)
             || (chaynsErrorCode && key === chaynsErrorCode)
-            || (chaynsErrorCode && stringToRegex(key).test(chaynsErrorCode))
+            || (chaynsErrorCode && stringToRegex(key)
+                .test(chaynsErrorCode))
         ));
     if (levelKey && logConfig.get(levelKey)) {
         switch (logConfig.get(levelKey)) {
@@ -81,7 +83,8 @@ export function getStatusHandlerByStatusRegex(status, statusHandlers) {
         const regExp = stringToRegex(keys[i]);
         if (regExp.test(status?.toString())
             && (chayns.utils.isFunction(statusHandlers.get(keys[i]))
-                || Object.values(ResponseType).includes(statusHandlers.get(keys[i])))
+                || Object.values(ResponseType)
+                    .includes(statusHandlers.get(keys[i])))
         ) {
             return statusHandlers.get(keys[i]);
         }
@@ -181,7 +184,10 @@ export const textResolve = async (response, processName, resolve, internalReques
 export const objectResolve = async (response, processName, resolve, internalRequestGuid = null) => {
     const { status } = response;
     try {
-        resolve({ status, data: await response.json() });
+        resolve({
+            status,
+            data: await response.json()
+        });
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`,
@@ -193,7 +199,10 @@ export const objectResolve = async (response, processName, resolve, internalRequ
             // eslint-disable-next-line max-len
             [`Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
         }), { statusHandlers: { [status]: ResponseType.None } }, '\n', err);
-        resolve({ status, data: null });
+        resolve({
+            status,
+            data: null
+        });
     }
 };
 
@@ -216,14 +225,15 @@ export async function resolveWithHandler(
     resolve,
     reject,
     internalRequestGuid,
-    chaynsErrorObject = null
+    chaynsErrorObject = null,
 ) {
     if (chayns.utils.isFunction(handler)) {
         // eslint-disable-next-line no-await-in-loop
         resolve(await handler(chaynsErrorObject ?? response));
         return true;
     }
-    if (Object.values(ResponseType).includes(handler)) {
+    if (Object.values(ResponseType)
+        .includes(handler)) {
         switch (handler) {
             case ResponseType.Json:
                 // eslint-disable-next-line no-await-in-loop
