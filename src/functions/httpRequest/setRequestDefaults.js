@@ -43,6 +43,7 @@ export const defaultConfig = {
  *      3. response type
  * @param {Object.<string|RegExp, ResponseType|statusCodeHandler|function(Response)>} [options.errorHandlers={}] -
  *     chayns error handler for specific ChaynsErrors
+ * @param {string[]} [options.errorDialogs={}] - configure which chayns errors should display a dialog
  * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  * @public
  */

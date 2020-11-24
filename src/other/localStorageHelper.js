@@ -10,7 +10,7 @@ export const storageKeys = {};
  * Disables cache in DEV and/or if the URL parameter "nocache" is present
  * @return {boolean}
  */
-export const isStorageActive = () => !(__DEV__ || Object.prototype.hasOwnProperty.call(
+export const isStorageActive = () => !(process.env.NODE_ENV === 'development' || Object.prototype.hasOwnProperty.call(
     chayns.env.parameters,
     'nocache'
 ));

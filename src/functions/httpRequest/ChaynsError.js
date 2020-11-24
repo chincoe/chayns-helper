@@ -46,7 +46,7 @@ export default class ChaynsError extends RequestError {
      * @param {number} status
      */
     constructor(error, processName, status) {
-        super(`[ChaynsError] Status ${status} with error '${error?.errorCode}' on ${processName}`, status);
+        super(`Status ${status} with ChaynsError '${error?.errorCode}' on ${processName}`, status);
         this.displayMessage = error.displayMessage;
         this.errorCode = error.errorCode;
         this.parameters = error.parameters;
