@@ -12,16 +12,15 @@ export { default as RestrictedAccordion } from './components/restricted-accordio
 export { default as chaynsCall } from './functions/chaynsCalls/chaynsCalls';
 export { default as setViewMode } from './functions/chaynsCalls/setViewMode';
 export { default as hideCwFooter } from './functions/chaynsCalls/hideCwFooter';
-export {
-    default as chaynsDialog,
-    alert as alertDialog,
-    confirm as confirmDialog,
-    input as inputDialog,
-    advancedDate as advancedDateDialog,
-    mediaSelect as mediaSelectDialog,
-    fileSelect as fileSelectDialog,
-    iFrame as iFrameDialog
-} from './functions/chaynsDialogs';
+export { default as chaynsDialog } from './functions/chaynsDialogs/chaynsDialogs';
+export { default as alertDialog } from './functions/chaynsDialogs/dialogs/alert';
+export { default as confirmDialog } from './functions/chaynsDialogs/dialogs/confirm';
+export { default as inputDialog } from './functions/chaynsDialogs/dialogs/input';
+export { default as selectDialog } from './functions/chaynsDialogs/dialogs/select';
+export { default as advancedDateDialog } from './functions/chaynsDialogs/dialogs/advancedDate';
+export { default as mediaSelectDialog } from './functions/chaynsDialogs/dialogs/mediaSelect';
+export { default as fileSelectDialog } from './functions/chaynsDialogs/dialogs/fileSelect';
+export { default as iFrameDialog } from './functions/chaynsDialogs/dialogs/iFrame';
 export { default as copyToClipboard } from './functions/copy';
 export { default as generateUUID } from './functions/generateUid';
 export { default as request } from './functions/httpRequest/httpRequest';

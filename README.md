@@ -56,7 +56,7 @@ initChaynsHelper({
 | Function                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------|----- |
 | [chaynsCall](/src/functions/chaynsCalls/chaynsCalls.js)| wraps the chaynsCall callbacks behind a simple promise. Just await the chayns call to get the return value | |
-| [chaynsDialogs](/src/functions/chaynsDialogs.js)| makes using chayns dialogs much more comfortable | |
+| [chaynsDialogs](/src/functions/chaynsDialogs/chaynsDialogs.js)| makes using chayns dialogs much more comfortable | |
 | [copyToClipboard](/src/functions/copy.js)| copy a value to the user's clipboard | |
 | [fnsFormat](/src/functions/timeHelper/fnsFormat.js)| date-fns format with option to use today/tomorrow/yesterday and add the year if it's not the current year | |
 | [generateRechartsAxis](/src/functions/recharts/useRechartsAxis.js)| a function to generate a better recharts axis | |
