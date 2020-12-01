@@ -2,6 +2,12 @@ chayns-helper
 ===================
 This package contains a variety of useful helpers for [chayns](https://github.com/TobitSoftware) development.
 Read the comments in the source code for a more detailed description and further information to each asset.
+
+## Installation
+```shell script
+npm install chayns-helper
+```
+
 ## Initialization
 Initialize the helper in your index.js to make sure that every feature actually works:
 ```javascript
