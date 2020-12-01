@@ -5,7 +5,7 @@
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "scripts": {
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm install && npm run build",
     "build": "gulp build",
     "install:all": "npm i",
     "createLink": "npm link",
