@@ -1,15 +1,24 @@
-chayns-helper
-===================
+<div align="center">
+<h1>chayns-helper</h1>
+<div style="border-bottom: 2px solid gray; padding-bottom: 8px; margin-bottom: 10px">
+    <img src="https://img.shields.io/npm/dm/chayns-helper.svg?style=for-the-badge" alt="" />
+    <img src="https://img.shields.io/npm/v/chayns-helper?style=for-the-badge" alt="" />
+    <img src="https://img.shields.io/github/license/chincoe/chayns-helper?style=for-the-badge" alt="" />
+    <!--<img src="https://img.shields.io/github/contributors/chincoe/chayns-helper?style=for-the-badge" alt="" /> -->
+</div>
+</div>
 This package contains a variety of useful helpers for [chayns](https://github.com/TobitSoftware) development.
 Read the comments in the source code for a more detailed description and further information to each asset.
 
 ## Installation
+
 ```shell script
 npm install chayns-helper
 ```
-
 ## Initialization
+
 Initialize the helper in your index.js to make sure that every feature actually works:
+
 ```javascript
 initChaynsHelper({
     textStringPrefix: 'txt_chayns_myapp_', // necessary to use all textString helpers
@@ -20,7 +29,9 @@ initChaynsHelper({
 > **_NOTE:_** This package may lack markdown documentations and examples but features JsDoc comments instead. If you would like me to add examples and a readme to a feature, let me know, and I'll add them.
 
 ## Contents
+
 ### Components
+
 | Component                                                                | Description                 |
 |--------------------------------------------------------------------------|-----------------------------|
 | [CenteredContainer](/src/components/containers/CenteredContainer.jsx)| Centered container |
@@ -37,6 +48,7 @@ initChaynsHelper({
 | [UACGroupChooseButton](/src/components/buttons/UACGroupChooseButton.jsx)| ChooseButton for UAC groups |
 
 ### Hooks
+
 | Hook                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------| --------|
 | [useAsyncState](/src/hooks/useAsyncState.js)| useState hook that can resolve Promises and accepts async setter functions |
@@ -59,6 +71,7 @@ initChaynsHelper({
 | [useShallowSelector](/src/hooks/useShallowSelector.js)| a useSelector Hook with shallowEqual |
 
 ### Functions
+
 | Function                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------|----- |
 | [chaynsCall](/src/functions/chaynsCalls/chaynsCalls.js)| wraps the chaynsCall callbacks behind a simple promise. Just await the chayns call to get the return value | |
@@ -86,12 +99,14 @@ initChaynsHelper({
 | [WebSocketClient](/src/other/WsClient.js)| custom alternative to tobit-websocket-service-client | |
 
 ### Constants
+
 | Constant                                                     | Description                   | Readme |
 |--------------------------------------------------------------|-------------------------------|----- |
 | [statusAnimations](/src/constants/statusAnimations.js) | success and failure animation html string for dialogs | |
 | [time](/src/constants/time.js)| constant for times based on ms | |
 
 ### Other
+
 | Asset                                                     | Description                   | Readme |
 |--------------------------------------------------------------|-------------------------------|----- |
 | [chaynsDoc](/src/other/chaynsDoc.js) | A JsDoc documentation of the global chayns Object that enables auto completion in WebStorm | |
