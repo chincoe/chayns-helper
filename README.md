@@ -35,7 +35,7 @@ initChaynsHelper({
 |----------------------------------------------------------------------|-------------------------------| --------|
 | [useAsyncState](/src/hooks/useAsyncState.js)| useState hook that can resolve Promises and accepts async setter functions |
 | [useRechartsAxis](/src/functions/recharts/useRechartsAxis.js)| a hook to generate a better recharts axis |
-| [useClampLines](/src/hooks/useClampLines.js)| a hook to restrict a text to a maxHeight |
+| [useClampLines](/src/hooks/useClampLines.js)| a hook to restrict a text to a maxHeight or max lines | [useClampLines.md](src/hooks/useClampLines.js) |
 | [useExtendedState](/src/hooks/useExtendedState.js)| useState hook with async getter and prevState |
 | [useFullscreenTapp](/src/hooks/useFullscreenTapp.js)| Hook to create a fullscreen tapp without scrolling | [useFullscreenTapp.md](/src/hooks/useFullscreenTapp.md) |
 | [useInlineSelector](/src/hooks/useInlineSelector.js)| useSelector that doesn't use a constant selector without performance issues |
