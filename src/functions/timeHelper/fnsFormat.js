@@ -7,13 +7,20 @@ import time from '../../constants/time';
  * the year if it is not the current year
  * @param {Date|string|number} date
  * @param {string} formatString
- * @param {boolean} [useToday=false] - use "heute"|"morgen"|"gestern"
- * @param {boolean} [appendYear=false] - append the year if it's not the current year
+ * @param {Object} [options]
+ * @param {boolean} [options.useToday=false] - use "heute"|"morgen"|"gestern"
+ * @param {boolean} [options.appendYear=false] - append the year if it's not the current year
+ * @param {Locale} [options.locale=deLocale] - date-fns locale
  * @return {string}
  *
  * @readonly
  */
-const fnsFormat = (date, formatString, useToday, appendYear) => {
+const fnsFormat = (date, formatString, options) => {
+    const {
+        useToday,
+        appendYear,
+        locale
+    } = (options || {});
     let formatStr = formatString;
     const d = new Date(date);
 
@@ -25,12 +32,12 @@ const fnsFormat = (date, formatString, useToday, appendYear) => {
         }
     }
 
-    let dateString = format(d, formatStr, { locale: deLocale });
+    let dateString = format(d, formatStr, { locale: (locale || deLocale) });
 
     if (!useToday || Math.abs(d.getTime() - Date.now()) > time.day * 2) {
         if (appendYear) {
             if (appendYear && d.getFullYear() !== new Date().getFullYear()) {
-                dateString += ` ${format(new Date(date), 'yyyy', { locale: deLocale })}`;
+                dateString += ` ${format(new Date(date), 'yyyy', { locale: (locale || deLocale) })}`;
             }
         }
         return dateString;
@@ -44,12 +51,12 @@ const fnsFormat = (date, formatString, useToday, appendYear) => {
         .trim();
 
     dateString = dateString
-        .replace(format(new Date(), tFormatString, { locale: deLocale }), 'Heute')
-        .replace(format(new Date(Date.now() + time.day), tFormatString, { locale: deLocale }), 'Morgen')
-        .replace(format(new Date(Date.now() - time.day), tFormatString, { locale: deLocale }), 'Gestern');
+        .replace(format(new Date(), tFormatString, { locale: (locale || deLocale) }), 'Heute')
+        .replace(format(new Date(Date.now() + time.day), tFormatString, { locale: (locale || deLocale) }), 'Morgen')
+        .replace(format(new Date(Date.now() - time.day), tFormatString, { locale: (locale || deLocale) }), 'Gestern');
     if (appendYear && !/(Heute)|(Morgen)|(Gestern)/.test(dateString)) {
         if (appendYear && d.getFullYear() !== new Date().getFullYear()) {
-            dateString += ` ${format(new Date(date), 'yyyy', { locale: deLocale })}`;
+            dateString += ` ${format(new Date(date), 'yyyy', { locale: (locale || deLocale) })}`;
         }
     }
     return dateString;

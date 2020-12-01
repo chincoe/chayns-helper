@@ -1,4 +1,6 @@
+// general
 export { default as initChaynsHelper } from './config/chaynsHelperConfig';
+// components
 export { default as UACGroupChooseButton } from './components/buttons/UACGroupChooseButton';
 export { default as CenteredContainer } from './components/containers/CenteredContainer';
 export { default as CenteredWaitCursor } from './components/wait-cursor/CenteredWaitCursor';
@@ -9,9 +11,12 @@ export { default as Refresh } from './components/other/RefreshComponent';
 export { default as ResizableWaitCursor } from './components/wait-cursor/ResizableWaitCursor';
 export { default as SuspenseWaitCursor } from './components/wait-cursor/SuspenseWaitCursor';
 export { default as RestrictedAccordion } from './components/restricted-accordion/RestrictedAccordion';
+export { default as rerender } from './components/other/rerender';
+// chaynsCall
 export { default as chaynsCall } from './functions/chaynsCalls/chaynsCalls';
 export { default as setViewMode } from './functions/chaynsCalls/setViewMode';
 export { default as hideCwFooter } from './functions/chaynsCalls/hideCwFooter';
+// chaynsDialogs
 export { default as chaynsDialog } from './functions/chaynsDialogs/chaynsDialogs';
 export { default as alertDialog } from './functions/chaynsDialogs/dialogs/alert';
 export { default as confirmDialog } from './functions/chaynsDialogs/dialogs/confirm';
@@ -21,35 +26,14 @@ export { default as advancedDateDialog } from './functions/chaynsDialogs/dialogs
 export { default as mediaSelectDialog } from './functions/chaynsDialogs/dialogs/mediaSelect';
 export { default as fileSelectDialog } from './functions/chaynsDialogs/dialogs/fileSelect';
 export { default as iFrameDialog } from './functions/chaynsDialogs/dialogs/iFrame';
+// general functions
 export { default as copyToClipboard } from './functions/copy';
-export { default as generateUUID } from './functions/generateUid';
-export { default as request } from './functions/httpRequest/httpRequest';
-export { default as HttpStatusCode } from './functions/httpRequest/HttpStatusCodes';
-export { default as HttpMethod } from './functions/httpRequest/HttpMethod';
-export { default as RequestError } from './functions/httpRequest/RequestError';
-export { default as ResponseType } from './functions/httpRequest/ResponseType';
-export { default as LogLevel } from './functions/httpRequest/LogLevel';
 export { default as types } from './functions/types';
 export { default as showWaitCursor } from './functions/waitCursor';
-export { default as useTimeoutState } from './hooks/uniques/useTimeoutState';
-export { default as useUniqueEventListener } from './hooks/uniques/useUniqueEventListener';
-export { default as useUniqueInterval } from './hooks/uniques/useUniqueInterval';
-export { default as useUniqueTimeout } from './hooks/uniques/useUniqueTimeout';
-export { default as useFullscreenTapp } from './hooks/useFullscreenTapp';
-export { default as useUser } from './hooks/useUser';
-export { default as useWebsocketService, wssLoggerIgnoreMiddleware } from './hooks/useWebsocketService';
+export { default as generateUUID } from './functions/generateUid';
 export { default as localStorage } from './other/localStorageHelper';
-export { default as WebsocketClient } from './other/WsClient';
-export { default as TextStringComplex } from './textstring/TextStringMemo';
-export { default as jsxReplace } from './textstring/jsxReplace';
-export { default as useTextStrings } from './textstring/useTextStrings';
-export { default as getTextStrings } from './textstring/getTextStrings';
 export { default as getHookState } from './functions/getHookState';
 export { default as shallowEqual } from './functions/shallowEqual';
-export { default as useShallowSelector } from './hooks/useShallowSelector';
-export { default as useRechartsAxis, generateRechartsAxis } from './functions/recharts/useRechartsAxis';
-export { default as statusAnimations } from './constants/statusAnimations';
-export { default as time } from './constants/time';
 export { default as fnsFormat } from './functions/timeHelper/fnsFormat';
 export { default as roundDate } from './functions/timeHelper/roundDate';
 export { default as Guid } from './functions/guid';
@@ -57,16 +41,42 @@ export { default as stringToColor } from './functions/colors/stringToColor';
 export { default as hexToRgb } from './functions/colors/hexToRgb';
 export { default as extend } from './functions/extend';
 export { default as toHslColor } from './functions/colors/toHslColor';
-export { default as usePrevState } from './hooks/usePrevState';
-export { default as usePrevious } from './hooks/usePrevious';
-export { default as usePreviousEffect } from './hooks/usePreviousEffect';
 export { default as getJsonSettings } from './functions/getJsonSettings';
-export { default as useUpdateEffect } from './hooks/useUpdateEffect';
-export { default as useClampLines } from './hooks/useClampLines';
-export { default as useInlineSelector } from './hooks/useInlineSelector';
-export { default as useAsyncState } from './hooks/useAsyncState';
+// functions with deps
+export { default as useShallowSelector } from './hooks/useShallowSelector';
+export { default as useRechartsAxis, generateRechartsAxis } from './functions/recharts/useRechartsAxis';
+// httpRequest
+export { default as request } from './functions/httpRequest/httpRequest';
+export { default as HttpStatusCode } from './functions/httpRequest/HttpStatusCodes';
+export { default as HttpMethod } from './functions/httpRequest/HttpMethod';
+export { default as RequestError } from './functions/httpRequest/RequestError';
+export { default as ResponseType } from './functions/httpRequest/ResponseType';
+export { default as LogLevel } from './functions/httpRequest/LogLevel';
 export { default as getChaynsErrorCode } from './functions/httpRequest/getChaynsErrorCode';
 export { default as isChaynsError } from './functions/httpRequest/isChaynsError';
 export { default as ChaynsError } from './functions/httpRequest/ChaynsError';
-export { default as rerender } from './components/other/rerender';
+// hooks
+export { default as useTimeoutState } from './hooks/uniques/useTimeoutState';
+export { default as useUniqueEventListener } from './hooks/uniques/useUniqueEventListener';
+export { default as useUniqueInterval } from './hooks/uniques/useUniqueInterval';
+export { default as useUniqueTimeout } from './hooks/uniques/useUniqueTimeout';
+export { default as useFullscreenTapp } from './hooks/useFullscreenTapp';
+export { default as useUser } from './hooks/useUser';
+export { default as useWebsocketService, wssLoggerIgnoreMiddleware } from './hooks/useWebsocketService';
+export { default as usePrevState } from './hooks/usePrevState';
+export { default as usePrevious } from './hooks/usePrevious';
+export { default as usePreviousEffect } from './hooks/usePreviousEffect';
+export { default as useUpdateEffect } from './hooks/useUpdateEffect';
+export { default as useClampLines, lineClampType } from './hooks/useClampLines';
+export { default as useInlineSelector } from './hooks/useInlineSelector';
+export { default as useAsyncState } from './hooks/useAsyncState';
 export { default as useExtendedState } from './hooks/useExtendedState';
+// textString
+export { default as TextStringComplex } from './textstring/TextStringMemo';
+export { default as jsxReplace } from './textstring/jsxReplace';
+export { default as useTextStrings } from './textstring/useTextStrings';
+export { default as getTextStrings } from './textstring/getTextStrings';
+// other
+export { default as WebsocketClient } from './other/WsClient';
+export { default as statusAnimations } from './constants/statusAnimations';
+export { default as time } from './constants/time';

@@ -1,25 +1,40 @@
 import { useState, useEffect } from 'react';
 
-// complete all tags with
+// capture group 1: tag name (e.g. "p")
+const unclosedHtmlTagRegex = /<([a-zA-Z]{0,10}|(?:h[0-9]))(?: (?:(?: ?[a-zA-Z-]+=".*?")*))?>(?!.*?<\/\1>)/g;
+const htmlOpeningTagRegexWithStyles = /<([a-zA-Z]{0,10}|(?:h[0-9]))(?: (?:(?: ?[a-zA-Z-]+=".*?")*))?>/;
+
+// complete all opening tags with their respective closing tag while leaving styles intact
 export const completeOpenTags = (str) => {
-    const matches = str.match(/<([a-zA-Z]{0,10}|(h[0-9]))>(?!<\1>)/);
-    return matches ? `${str}${matches.reverse()
+    const matches = str.match(unclosedHtmlTagRegex);
+    return matches ? `${str}${matches
+        .reverse()
+        .filter((m) => htmlOpeningTagRegexWithStyles.test(m))
+        .map((m) => m.replace(htmlOpeningTagRegexWithStyles, '</$1>'))
         .join('')}` : str;
 };
 
+// this regex is so long because it needs to consider the tag being split anywhere, even in the middle of its attributes
+// eslint-disable-next-line max-len
+const splitHtmlTagRegex = /<\/?(?:(?:[a-zA-Z]{0,10}|(?:h[0-9]))(?:\s(?:\s*[a-zA-Z-]+(?:=(?:["'](?:[^"']+(?:["'])?)?)?)?)*)?\/?>?)?$/;
 // removes html tags at the end of a html string section that were split to the point that they can no longer be
 // interpreted as html
 export const removeSplitTags = (stringPart) => {
-    if (/<([a-zA-Z]{0,10}|(h[0-9])>?)?$/.test(stringPart)) {
-        return stringPart.replace(/<([a-zA-Z]{0,10}|(h[0-9])>?)?$/, '');
+    if (splitHtmlTagRegex.test(stringPart)) {
+        return stringPart.replace(splitHtmlTagRegex, '');
     }
     return stringPart;
 };
 
+// capture group 1: styles; capture group 2: content
+const leadingParagraphTagRegex = /^<p((?: ?[a-zA-Z-]+=".*?")*)>((?:a|[^a])*)<\/p>/;
+const paragraphTagRegex = /<p((?: ?[a-zA-Z-]+=".*?")*)>((?:a|[^a])*)<\/p>/g;
 // replace <p>-tags with <br>-tags so the tag completion will not push the ellipsis ("mehr anzeigen") into the next line
-export const removeParagraphTags = (str) => str
-    .replace(/^<p>((a|[^a])*)<\/p>/, '$1')
-    .replace(/<p>((a|[^a])*)<\/p>/g, '<br/>$1');
+// the <span>-tags are only there to retain all styles set on the <p>-tags
+export const replaceParagraphTags = (str) => str
+    .replace(leadingParagraphTagRegex, '<span$1>$2</span>')
+    .replace(paragraphTagRegex, '<br/><span$1>$2</span>')
+    .replace('<br>', '<br/>');
 
 // combine completeOpenTags and removeSplitTags and add the ellipsis for testing purposes
 export function formatShortString(str, ellipsisLiteral = '') {
@@ -33,10 +48,10 @@ export const lineClampType = {
 };
 
 /**
- * Restricts text to a specific height and ends it with a certain ellipsis.
- * If you want to use a specific line count, use the react-clamp-lines package.
+ * Restrict the text to a specific height or line count, calculating and by default adding an ellipsis like "..." at
+ * the end. Supports HTML-strings, but modifies those slightly to make the line breaks easier to line clamp.
  *
- * @param {string} originalText
+ * @param {string} input
  * @param {Object} [options]
  * @param {string} [options.ellipsis] - the string used to cut
  * @param {boolean} [options.appendEllipsis=true] - whether the ellipsis should be added to the text or just factored
@@ -44,10 +59,11 @@ export const lineClampType = {
  * @param {number} [options.limit] - limit type depends on options.type, either height in px or max lines goes here
  * @param {boolean} [options.type='lines'] - height or lines
  * @param {boolean} [options.html=false] - use html strings with innerHTML
- * @param {function(string) : string} [options.replacer]
+ * @param {function(string) : string} [options.replacer] - a function that receives the result string and returns a
+ *     potentially modified result
  * @returns {[string, function(*), number]}
  */
-const useClampLines = (originalText, options) => {
+const useClampLines = (input, options) => {
     const {
         ellipsis = '...',
         appendEllipsis = true,
@@ -62,6 +78,7 @@ const useClampLines = (originalText, options) => {
 
     useEffect(() => {
         if (element) {
+            const originalText = html ? replaceParagraphTags(input) : input;
             const prevHtml = element.innerHTML;
             let maxHeight = limit;
             element.innerHTML = '_';
@@ -106,7 +123,7 @@ const useClampLines = (originalText, options) => {
             element.innerHTML = prevHtml;
             setText(t);
         }
-    }, [element, originalText, limit, type, replacer]);
+    }, [element, input, limit, type, replacer]);
 
     return [text, setElement];
 };
