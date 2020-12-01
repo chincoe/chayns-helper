@@ -62,7 +62,7 @@ export { default as usePrevious } from './hooks/usePrevious';
 export { default as usePreviousEffect } from './hooks/usePreviousEffect';
 export { default as getJsonSettings } from './functions/getJsonSettings';
 export { default as useUpdateEffect } from './hooks/useUpdateEffect';
-export { default as useClampLines } from './hooks/useClampLines';
+export { default as useClampLines, lineClampType } from './hooks/useClampLines';
 export { default as useInlineSelector } from './hooks/useInlineSelector';
 export { default as useAsyncState } from './hooks/useAsyncState';
 export { default as getChaynsErrorCode } from './functions/httpRequest/getChaynsErrorCode';
