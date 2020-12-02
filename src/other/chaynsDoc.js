@@ -1724,10 +1724,11 @@ const chayns = {
         admin: {
             branch: {
                 /**
-                 * @param {string} field
-                 * @param {string} value
+                 * @param {Object} options
+                 * @param {string} options.field
+                 * @param {string} options.value
                  */
-                updateText({ field, value }) {}
+                updateText(options) {}
             },
             accounting() {},
             article() {},
