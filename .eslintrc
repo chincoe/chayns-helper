@@ -19,7 +19,8 @@
     "react-hooks",
     "react",
     "jsx-a11y",
-    "import"
+    "import",
+    "jsdoc"
   ],
   "rules": {
     "import/no-unresolved": [
