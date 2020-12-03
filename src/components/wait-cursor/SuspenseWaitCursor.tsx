@@ -1,5 +1,4 @@
-import React, { Suspense, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, {FunctionComponent, Suspense, useEffect} from 'react';
 import showWaitCursor from '../../functions/waitCursor';
 import CenteredWaitCursor from './CenteredWaitCursor';
 
@@ -13,26 +12,21 @@ import CenteredWaitCursor from './CenteredWaitCursor';
  * @return {*}
  * @constructor
  */
-const SuspenseWaitCursor = ({ children, inline = false }) => (
+const SuspenseWaitCursor: FunctionComponent<{
+    inline?: boolean
+}> = ({children, inline = false}) => (
     <Suspense fallback={(<SuspenseWaitCursorFallback inline={inline}/>)}>
         {children}
     </Suspense>
 );
 
-SuspenseWaitCursor.propTypes = {
-    children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]).isRequired,
-    inline: PropTypes.bool
-};
-
-SuspenseWaitCursor.defaultProps = {
-    inline: false
-};
-
 SuspenseWaitCursor.displayName = 'SuspenseWaitCursor';
 
 export default SuspenseWaitCursor;
 
-const SuspenseWaitCursorFallback = ({ inline = false }) => {
+const SuspenseWaitCursorFallback: FunctionComponent<{
+    inline?: boolean
+}> = ({inline = false}) => {
     useEffect(() => {
         if (!inline) {
             return showWaitCursor();
@@ -44,11 +38,3 @@ const SuspenseWaitCursorFallback = ({ inline = false }) => {
 };
 
 SuspenseWaitCursorFallback.displayName = 'SuspenseWaitCursorFallback';
-
-SuspenseWaitCursorFallback.propTypes = {
-    inline: PropTypes.bool
-};
-
-SuspenseWaitCursorFallback.defaultProps = {
-    inline: false
-};

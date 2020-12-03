@@ -1,24 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {FunctionComponent, JSXElementConstructor, ReactChildren} from 'react';
 import clsx from 'clsx';
 import './data-row.scss';
 
-/**
- * DataRow
- * Contains several elements and positions the first as label on the left and everything else on the right
- * @param {Object} props
- * @param {*|*[]} children
- * @param {Object} [style={}]
- * @param {string} [className='']
- * @param {string} [elementType='div'] - Html element type of the container
- * @return {*}
- * @constructor
- */
-const DataRow = (
+export interface DataRow {
+    className?: string,
+    style?: object,
+    children?: ReactChildren,
+    elementType?: string|JSXElementConstructor<any>
+}
+
+const DataRow: FunctionComponent<DataRow> = (
     {
-        className,
-        style,
-        children,
+        className = '',
+        style = {},
+        children = null,
         elementType = 'div',
         ...props
     }
@@ -34,23 +29,13 @@ const DataRow = (
             style={style}
             {...props}
         >
+            {/* @ts-ignore */}
             {chayns.utils.isArray(children) ? children[0] || null : children}
             {chayns.utils.isArray(children)
+                // @ts-ignore
             && <div className="chayns__utils__container--datarow--right">{children.slice(1)}</div>}
         </Component>
     );
-};
-DataRow.propTypes = {
-    style: PropTypes.objectOf(PropTypes.any),
-    children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]),
-    className: PropTypes.string,
-    elementType: PropTypes.elementType
-};
-DataRow.defaultProps = {
-    style: {},
-    children: null,
-    className: '',
-    elementType: 'div'
 };
 
 DataRow.displayName = 'DataRow';

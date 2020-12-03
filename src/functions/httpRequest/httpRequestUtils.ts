@@ -1,18 +1,19 @@
+// @ts-ignore
 import logger from 'chayns-logger';
 import colorLog from '../../utils/colorLog';
-import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
-import ChaynsError from './ChaynsError';
+import stringToRegex, {regexRegex} from '../../utils/stringToRegex';
+import ChaynsError, {ChaynsErrorObject} from './ChaynsError';
 import getChaynsErrorCode from './getChaynsErrorCode';
-import { chaynsErrorCodeRegex } from './isChaynsError';
+import {chaynsErrorCodeRegex} from './isChaynsError';
 import LogLevel from './LogLevel';
 import RequestError from './RequestError';
 import ResponseType from './ResponseType';
 
-export const getMapKeys = (map) => {
+export const getMapKeys = (map: Map<string, any>) => {
     const result = [];
     const keys = map.keys();
     for (let i = 0; i < map.size; i++) {
-        const { value } = keys.next();
+        const {value} = keys.next();
         result.push(value);
     }
     return result;
@@ -25,15 +26,20 @@ export const getMapKeys = (map) => {
  * @param {Response|Promise|Object} [chaynsErrorObject]
  * @returns {Promise<function(Object)>}
  */
-export async function getLogFunctionByStatus(status, logConfig, defaultFunction, chaynsErrorObject) {
-    const logKeys = [];
+export async function getLogFunctionByStatus(
+    status: number,
+    logConfig: Map<string, LogLevel>,
+    defaultFunction: (data: object) => any,
+    chaynsErrorObject?: ChaynsErrorObject
+): Promise<(data: object, error?: Error) => any> {
+    const logKeys: string[] = [];
     const mapKeys = getMapKeys(logConfig);
     logKeys.push(...(mapKeys.filter((k) => !/^[0-9]+$/.test(k)
         && !regexRegex.test(k)
         && chaynsErrorCodeRegex.test(k))));
     logKeys.push(...(mapKeys.filter((k) => !logKeys.includes(k))));
 
-    let chaynsErrorCode = null;
+    let chaynsErrorCode: string | null = null;
     if (chaynsErrorObject) {
         chaynsErrorCode = await getChaynsErrorCode(chaynsErrorObject);
     }
@@ -77,14 +83,14 @@ export async function getLogFunctionByStatus(status, logConfig, defaultFunction,
  * @param statusHandlers
  * @returns {function(*=)|ResponseType|null}
  */
-export function getStatusHandlerByStatusRegex(status, statusHandlers) {
+export function getStatusHandlerByStatusRegex(status: number, statusHandlers: Map<string, (response: Response) => any>): ((value?: any) => any)|ResponseType|null|undefined {
     const keys = getMapKeys(statusHandlers);
     for (let i = 0; i < keys.length; i += 1) {
         const regExp = stringToRegex(keys[i]);
         if (regExp.test(status?.toString())
             && (chayns.utils.isFunction(statusHandlers.get(keys[i]))
-                || Object.values(ResponseType)
-                    .includes(statusHandlers.get(keys[i])))
+                // @ts-ignore
+                || Object.values(ResponseType).includes(statusHandlers.get(keys[i])))
         ) {
             return statusHandlers.get(keys[i]);
         }
@@ -92,15 +98,8 @@ export function getStatusHandlerByStatusRegex(status, statusHandlers) {
     return null;
 }
 
-/**
- * @param response
- * @param processName
- * @param resolve
- * @param internalRequestGuid
- * @returns {Promise<void>}
- */
-export const jsonResolve = async (response, processName, resolve, internalRequestGuid = null) => {
-    const { status } = response;
+export const jsonResolve = async (response: Response, processName: string, resolve: (value: any) => void, internalRequestGuid: string | null = null) : Promise<void> => {
+    const {status} = response;
     try {
         resolve(await response.json());
     } catch (err) {
@@ -115,20 +114,13 @@ export const jsonResolve = async (response, processName, resolve, internalReques
             '[HttpRequest]': 'color: #aaaaaa',
             // eslint-disable-next-line max-len
             [`Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
-        }), { statusHandlers: { [status]: ResponseType.None } }, '\n', err);
+        }), {statusHandlers: {[status]: ResponseType.None}}, '\n', err);
         resolve(null);
     }
 };
 
-/**
- * @param response
- * @param processName
- * @param resolve
- * @param internalRequestGuid
- * @returns {Promise<void>}
- */
-export const blobResolve = async (response, processName, resolve, internalRequestGuid = null) => {
-    const { status } = response;
+export const blobResolve = async (response: Response, processName: string, resolve: (value: any) => void, internalRequestGuid: string | null = null) : Promise<void> => {
+    const {status} = response;
     try {
         resolve(await response.blob());
     } catch (err) {
@@ -143,46 +135,32 @@ export const blobResolve = async (response, processName, resolve, internalReques
             '[HttpRequest]': 'color: #aaaaaa',
             // eslint-disable-next-line max-len
             [`Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
-        }), { statusHandlers: { [status]: ResponseType.None } }, '\n', err);
+        }), {statusHandlers: {[status]: ResponseType.None}}, '\n', err);
         resolve(null);
     }
 };
 
-/**
- * @param response
- * @param processName
- * @param resolve
- * @param internalRequestGuid
- * @returns {Promise<void>}
- */
-export const textResolve = async (response, processName, resolve, internalRequestGuid = null) => {
-    const { status } = response;
+export const textResolve = async (response: Response, processName: string, resolve: (value: any) => void, internalRequestGuid: string | null = null) : Promise<void> => {
+    const {status} = response;
     try {
         resolve(await response.text());
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting text body failed on Status ${status} on ${processName}`,
-            data: { internalRequestGuid }
+            data: {internalRequestGuid}
         }, err);
         // eslint-disable-next-line no-console
         console.warn(...colorLog({
             '[HttpRequest]': 'color: #aaaaaa',
             // eslint-disable-next-line max-len
             [`Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
-        }), { statusHandlers: { [status]: ResponseType.None } }, '\n', err);
+        }), {statusHandlers: {[status]: ResponseType.None}}, '\n', err);
         resolve(null);
     }
 };
 
-/**
- * @param response
- * @param processName
- * @param resolve
- * @param internalRequestGuid
- * @returns {Promise<void>}
- */
-export const objectResolve = async (response, processName, resolve, internalRequestGuid = null) => {
-    const { status } = response;
+export const objectResolve = async (response: Response, processName: string, resolve: (value: any) => void, internalRequestGuid: string | null = null) : Promise<void> => {
+    const {status} = response;
     try {
         resolve({
             status,
@@ -191,14 +169,14 @@ export const objectResolve = async (response, processName, resolve, internalRequ
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`,
-            data: { internalRequestGuid }
+            data: {internalRequestGuid}
         }, err);
         // eslint-disable-next-line no-console
         console.warn(...colorLog({
             '[HttpRequest]': 'color: #aaaaaa',
             // eslint-disable-next-line max-len
             [`Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
-        }), { statusHandlers: { [status]: ResponseType.None } }, '\n', err);
+        }), {statusHandlers: {[status]: ResponseType.None}}, '\n', err);
         resolve({
             status,
             data: null
@@ -206,34 +184,24 @@ export const objectResolve = async (response, processName, resolve, internalRequ
     }
 };
 
-/**
- * @param {ResponseType|function} handler
- * @param {Response} response
- * @param {number} status
- * @param {string} processName
- * @param {function} resolve
- * @param {function} reject
- * @param {string} internalRequestGuid
- * @param {chaynsErrorObject} [chaynsErrorObject=null]
- * @returns {Promise<boolean>}
- */
 export async function resolveWithHandler(
-    handler,
-    response,
-    status,
-    processName,
-    resolve,
-    reject,
-    internalRequestGuid,
-    chaynsErrorObject = null,
-) {
+    handler: ResponseType | ((response: Response) => any),
+    response: Response,
+    status: number,
+    processName: string,
+    resolve: (value?: any) => any,
+    reject: (value?: any) => any,
+    internalRequestGuid: string,
+    chaynsErrorObject: ChaynsErrorObject | null = null,
+): Promise<boolean> {
     if (chayns.utils.isFunction(handler)) {
         // eslint-disable-next-line no-await-in-loop
+        // @ts-ignore
         resolve(await handler(chaynsErrorObject ?? response));
         return true;
     }
-    if (Object.values(ResponseType)
-        .includes(handler)) {
+    // @ts-ignore
+    if (Object.values(ResponseType).includes(handler)) {
         switch (handler) {
             case ResponseType.Json:
                 // eslint-disable-next-line no-await-in-loop
@@ -256,8 +224,8 @@ export async function resolveWithHandler(
                 return true;
             case ResponseType.Error:
                 const error = chaynsErrorObject
-                              ? new ChaynsError(chaynsErrorObject, processName, status)
-                              : new RequestError(`Status ${status} on ${processName}`, status);
+                    ? new ChaynsError(chaynsErrorObject, processName, status)
+                    : new RequestError(`Status ${status} on ${processName}`, status);
                 console.error(...colorLog({
                     '[HttpRequest]': 'color: #aaaaaa',
                     'ResponseType \'error\':': ''
@@ -282,11 +250,13 @@ export async function resolveWithHandler(
     return false;
 }
 
-export const mergeOptions = (obj1, obj2) => {
-    const result = new Map();
-    const keys1 = Object.keys(obj1);
-    for (let i = 0; i < keys1.length; i++) {
-        result.set(keys1[i], obj1[keys1[i]]);
+export const mergeOptions = (obj1: { [key: string]: any } | Map<string, any>, obj2: { [key: string]: any }): Map<string, any> => {
+    const result: Map<string, any> = obj1 instanceof Map ? obj1 : new Map();
+    if (!(obj1 instanceof Map)) {
+        const keys1 = Object.keys(obj1);
+        for (let i = 0; i < keys1.length; i++) {
+            result.set(keys1[i], obj1[keys1[i]]);
+        }
     }
     const keys2 = Object.keys(obj2);
     for (let i = 0; i < keys2.length; i++) {

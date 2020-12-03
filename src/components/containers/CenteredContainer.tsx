@@ -1,25 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {FunctionComponent, JSXElementConstructor} from 'react';
 import clsx from 'clsx';
 import './centered-container.scss';
 
-/**
- * CenteredContainer
- * Contains and centers one or more children
- * @param {Object} props
- * @param {*|*[]} children
- * @param {Object} [style={}]
- * @param {string} [className='']
- * @param {string} [elementType='div'] - Html element type of the container
- * @param {boolean} [gap=false] - Leave a gap between each child element
- * @return {*}
- * @constructor
- */
-const CenteredContainer = (
+export interface CenteredContainer {
+    className?: string,
+    style?: object,
+    gap?: boolean,
+    elementType?: string|JSXElementConstructor<any>
+}
+
+const CenteredContainer: FunctionComponent<CenteredContainer> = (
     {
-        className,
-        style,
-        children,
+        className = '',
+        style = {},
+        children = null,
         gap = false,
         elementType = 'div',
         ...props
@@ -43,20 +37,6 @@ const CenteredContainer = (
             {children}
         </Component>
     );
-};
-CenteredContainer.propTypes = {
-    style: PropTypes.objectOf(PropTypes.any),
-    children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]),
-    className: PropTypes.string,
-    elementType: PropTypes.elementType,
-    gap: PropTypes.bool,
-};
-CenteredContainer.defaultProps = {
-    style: {},
-    children: null,
-    className: '',
-    elementType: 'div',
-    gap: false
 };
 
 CenteredContainer.displayName = 'CenteredContainer';

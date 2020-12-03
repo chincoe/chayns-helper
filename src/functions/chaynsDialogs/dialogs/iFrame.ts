@@ -1,26 +1,18 @@
 import IframeDialogPromise from '../IFrameDialogPromise';
-import { createDialogResult } from '../utils';
+import {createDialogResult, DialogButton} from '../utils';
 
-/**
- * IFrame Dialog
- * Possible Usage:
- * const { buttonType } = await chaynsDialog.iFrame({ url, ...config }, buttons)
- *      .data(dialogDataListener)
- *      .result(dialogResultListener)
- *      .positive(positiveButtonTypeListener)
- * @param {Object} options
- * @param {string} options.url
- * @param {?Object|*} [options.input=null]
- * @param {boolean} [options.seamless=true]
- * @param {boolean} [options.transparent=false]
- * @param {boolean} [options.waitCursor=true]
- * @param {?string} [options.maxHeight=null]
- * @param {?number} [options.width=null]
- * @param {?number} [options.customTransitionTimeout=null]
- * @param {?button[]} [buttons=[]]
- * @returns {IframeDialogPromise<dialogResult>}
- */
-export default function iFrame(options, buttons) {
+export interface IFrameDialogConfig {
+    url: string;
+    input?: object|any;
+    seamless?: boolean;
+    transparent?: boolean;
+    waitCursor?: boolean;
+    maxHeight?: string;
+    width?: number;
+    customTransitionTimeout?: number;
+}
+
+export default function iFrame(options: IFrameDialogConfig, buttons?: DialogButton[]): IframeDialogPromise {
     return new IframeDialogPromise((resolve) => {
         const {
             url,
@@ -28,9 +20,9 @@ export default function iFrame(options, buttons) {
             seamless = true,
             transparent = false,
             waitCursor = true,
-            maxHeight = null,
-            width = null,
-            customTransitionTimeout = null
+            maxHeight = undefined,
+            width = undefined,
+            customTransitionTimeout = undefined
         } = options || {};
         chayns.dialog.iFrame({
             url,

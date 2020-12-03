@@ -1,11 +1,11 @@
 /* eslint-disable max-classes-per-file */
-import { buttonType } from './utils';
-import advancedDate, { textBlockPosition, dateType, dateSelectType } from './dialogs/advancedDate';
+import {buttonType} from './utils';
+import advancedDate, {textBlockPosition, dateType, dateSelectType} from './dialogs/advancedDate';
 import confirm from './dialogs/confirm';
-import input, { inputType } from './dialogs/input';
+import input, {inputType} from './dialogs/input';
 import iFrame from './dialogs/iFrame';
-import select, { selectType } from './dialogs/select';
-import fileSelect, { fileType } from './dialogs/fileSelect';
+import select, {selectType} from './dialogs/select';
+import fileSelect, {fileType} from './dialogs/fileSelect';
 import mediaSelect from './dialogs/mediaSelect';
 
 /**

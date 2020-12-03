@@ -1,4 +1,5 @@
 import React, {useState, useEffect, FunctionComponent} from 'react';
+// @ts-ignore
 import {SelectButton} from 'chayns-components';
 import {httpRequest} from '../../functions/httpRequest/httpRequest';
 import LogLevel from '../../functions/httpRequest/LogLevel';
@@ -21,7 +22,7 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = (
         ...props
     }
 ) => {
-    const [uacGroups, setUacGroups] = useState<object[]>();
+    const [uacGroups, setUacGroups] = useState<{ id: number, showName: string }[]>();
     useEffect(() => {
         httpRequest(
             `https://sub50.tobit.com/backend/${chayns.env.site.locationId}/UserGroup`,

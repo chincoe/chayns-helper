@@ -1,5 +1,5 @@
 import DialogPromise from '../DialogPromise';
-import { createDialogResult } from '../utils';
+import {createDialogResult, DialogButton} from '../utils';
 
 /**
  * fileTypes
@@ -37,10 +37,20 @@ export const fileType = {
  * @param {boolean} [options.directory]
  * @param {button[]} [buttons]
  */
+
+export interface FileSelectDialogConfig {
+    title?: string;
+    message?: string;
+    multiselect?: boolean;
+    contentType?: string[];
+    exclude?: string[];
+    directory?: boolean;
+}
+
 export default function fileSelect(
-    options, buttons = undefined
-) {
-    return new DialogPromise((resolve) => {
+    options?: FileSelectDialogConfig, buttons?: DialogButton[]
+): DialogPromise<any|File> {
+    return new DialogPromise<any|File>((resolve) => {
         const {
             title = '',
             message = '',
@@ -59,6 +69,7 @@ export default function fileSelect(
             directory
         })
             .then((result) => {
+                // @ts-ignore
                 resolve(createDialogResult(result?.buttonType, result?.selection));
             });
     });

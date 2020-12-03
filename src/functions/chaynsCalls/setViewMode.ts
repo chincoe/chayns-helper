@@ -1,10 +1,4 @@
-/**
- * Set the viewMode of a tapp (normal, exclusive, wide)
- * @param {boolean} exclusive
- * @param {boolean} [tryFullBrowserWidth=false]
- * @return {*}
- */
-const setViewMode = (exclusive, tryFullBrowserWidth) => {
+const setViewMode = (exclusive: boolean, tryFullBrowserWidth?: boolean): Promise<void> => {
     let viewMode = (tryFullBrowserWidth ?? false) ? 4 : (exclusive ? 2 : 0);
     if ((tryFullBrowserWidth ?? false) && !chayns.env.site.disposition.contentWide) {
         // eslint-disable-next-line no-console

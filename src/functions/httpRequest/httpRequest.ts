@@ -1,9 +1,11 @@
-import { isNullOrWhiteSpace } from 'chayns-components/lib/utils/is';
+// @ts-ignore
+import {isNullOrWhiteSpace} from 'chayns-components/lib/utils/is';
+// @ts-ignore
 import logger from 'chayns-logger';
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import colorLog from '../../utils/colorLog';
 import generateUUID from '../generateUid';
-import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
+import stringToRegex, {regexRegex} from '../../utils/stringToRegex';
 import ChaynsError from './ChaynsError';
 import HttpMethod from './HttpMethod';
 import {
@@ -17,78 +19,25 @@ import {
     getStatusHandlerByStatusRegex,
     resolveWithHandler
 } from './httpRequestUtils';
-import { chaynsErrorCodeRegex } from './isChaynsError';
+import {chaynsErrorCodeRegex} from './isChaynsError';
 import RequestError from './RequestError';
 import ResponseType from './ResponseType';
 import LogLevel, {ObjectResponse} from './LogLevel';
-import handleRequest from './handleRequest';
-import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
+import handleRequest, {HandleRequestOptions} from './handleRequest';
+import setRequestDefaults, {defaultConfig} from './setRequestDefaults';
 import HttpStatusCode from "./HttpStatusCodes";
-
-/**
- * @callback statusCodeHandler
- * @param {Response} response - The response of the request
- * @returns {*} result
- */
-
-/**
- * Helper to send httpRequests. Works best if wrapped with handleRequest()
- * @param {string} address - Address of the request
- * @param {Object} [config={}] - Fetch config
- * @param {HttpMethod|string} [config.method='GET'] - HttpMethod
- * @param {Object} [config.headers] - Additional HttpHeaders
- * @param {boolean} [config.useChaynsAuth] - Add user token as authorization if available
- * @param {*} [config.body] - Body of the request
- * @param {string} [config.cache]
- * @param {string} [config.referrer]
- * @param {string} [config.referrerPolicy]
- * @param {string} [config.mode]
- * @param {string} [config.redirect]
- * @param {string} [config.integrity]
- * @param {boolean} [config.keepalive]
- * @param {Window} [config.window]
- * @param {AbortSignal} [config.signal] - Signal to abort request while running, use with RTK thunks
- * @param {string} [processName='HttpRequest'] - Name of the process in the logs
- * @param {Object} [options={}] - Additional options for the request
- * @param {ResponseType|string} [options.responseType=null] - type of response that is expected
- * @param {boolean|number[]} [options.ignoreErrors=false] - Don't throw errors for this request if true or if this
- *     array contains the response status. Return null on error instead. Errors will still be logged as usual.
- * @param {Object.<string,LogLevel>} [options.logConfig={}] - Define the logLevel for these status codes. Can use
- *     status code or regex string as key. Values must be info|warning|error|critical|none.
- * @param {boolean} [options.stringifyBody=true] - Call JSON.stringify(body) for the body passed to this function
- * @param {Object} [options.additionalLogData={}] - Additional data to be logged with this request
- * @param {boolean} [options.autoRefreshToken=true] - Automatically try to refresh the token once if it expired
- * @param {Object} [options.statusHandlers={}] - Handle response for specific status codes
- * Usage: { [statusCode|regexString] : (response) => { my code }, ... }
- *    OR: { [statusCode|regexString] : responseType }
- *     - handler always receives entire response as parameter, not just the body
- *     - value returned from handler is returned as result of the request
- *     - handler can be async and will be awaited
- *     Response handling priorities:
- *      1. statusHandlers[status]
- *      2. statusHandlers[regex]
- *      3. response type
- * @param {Object.<string|RegExp, ResponseType|statusCodeHandler|function(Response)>} [options.errorHandlers={}] -
- *     chayns error handler for specific ChaynsErrors
- * @param {string[]} [options.errorDialogs={}] - configure which chayns errors should display a dialog
- * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
- * @async
- * @public
- * @throws {RequestError}
- * @return {Promise<Response|objectResponse|Blob|Object>} - response or response body
- */
 
 /**
  * The fetch config
  */
 export interface HttpRequestConfig {
-    method?: 'GET'|'POST'|'PATCH'|'DELETE'|'PUT'|string;
+    method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT' | string;
     /**
      * add user token as authorization
      */
     useChaynsAuth?: boolean;
     headers?: object;
-    body?: object|string|FormData|any,
+    body?: object | string | FormData | any,
     cache?: string;
     referrer?: string;
     referrerPolicy?: string;
@@ -104,16 +53,17 @@ export interface HttpRequestConfig {
  * Additional request options
  */
 export interface HttpRequestOptions {
-    responseType?: ResponseType;
-    ignoreErrors?: boolean|HttpStatusCode[];
-    logConfig?: { [key: string]: LogLevel },
+    responseType?: ResponseType | null;
+    ignoreErrors?: boolean | HttpStatusCode[];
+    logConfig?: { [key: string]: LogLevel } | Map<string, LogLevel>,
     stringifyBody?: boolean;
     additionalLogData?: object;
-    autoRefreshToken?: true;
-    statusHandlers?: { [key: string]: ResponseType|((response: Response) => any) },
-    errorHandlers?: { [key: string]: ResponseType|((response: Response) => any) };
-    errorDialogs?: Array<string>;
-    replacements?: { [key: string]: string|((value: string|RegExpMatchArray) => string)};
+    autoRefreshToken?: boolean;
+    statusHandlers?: { [key: string]: ResponseType | ((response: Response) => any) } | Map<string, ResponseType | ((response: Response) => any)>;
+    errorHandlers?: { [key: string]: ResponseType | ((response: Response) => any) } | Map<string, ResponseType | ((response: Response) => any)>;
+    errorDialogs?: Array<string|RegExp>;
+    replacements?: { [key: string]: string | ((substring: string, ...args: any[]) => string) };
+    internalRequestGuid?: string
 }
 
 export function httpRequest(
@@ -125,7 +75,7 @@ export function httpRequest(
     processName: string = 'httpRequest',
     // options for this helper
     options: HttpRequestOptions = {},
-): Promise<Response|ObjectResponse|Blob|Object|string|RequestError|ChaynsError|any> {
+): Promise<Response | ObjectResponse | Blob | Object | string | RequestError | ChaynsError | any> {
     return new Promise((globalResolve, reject) => {
         (async () => {
             /** INPUT HANDLING */
@@ -171,11 +121,11 @@ export function httpRequest(
                 autoRefreshToken: true,
                 // statusHandlers: {},
                 replacements: {
-                    [/##locationId##/g.toString()]: chayns.env.site.locationId,
-                    [/##siteId##/g.toString()]: chayns.env.site.id,
-                    [/##tappId##/g.toString()]: chayns.env.site.tapp.id,
-                    [/##userId##/g.toString()]: chayns.env.user.id,
-                    [/##personId##/g.toString()]: chayns.env.user.personId
+                    [/##locationId##/g.toString()]: `${chayns.env.site.locationId}`,
+                    [/##siteId##/g.toString()]: `${chayns.env.site.id}`,
+                    [/##tappId##/g.toString()]: `${chayns.env.site.tapp.id}`,
+                    [/##userId##/g.toString()]: `${chayns.env.user.id}`,
+                    [/##personId##/g.toString()]: `${chayns.env.user.personId}`
                 },
                 errorDialogs: [],
                 ...(defaultConfig.options || {}),
@@ -216,7 +166,7 @@ export function httpRequest(
             }
 
             // read config object
-            const fetchConfig = {
+            const fetchConfig: HttpRequestConfig = {
                 method: HttpMethod.Get,
                 useChaynsAuth: chayns.env.user.isAuthenticated,
                 ...(defaultConfig.config || {}),
@@ -229,10 +179,10 @@ export function httpRequest(
                 headers
             } = fetchConfig;
 
-            const jsonBody : string|null = body && stringifyBody ? JSON.stringify(body) : null;
+            const jsonBody: string | null = body && stringifyBody ? JSON.stringify(body) : null;
 
             // create request headers
-            let requestHeaders : HeadersInit = stringifyBody ? { 'Content-Type': 'application/json' } : {};
+            let requestHeaders: HeadersInit = stringifyBody ? {'Content-Type': 'application/json'} : {};
             if (useChaynsAuth) requestHeaders.Authorization = `Bearer ${chayns.env.user.tobitAccessToken}`;
             requestHeaders = {
                 ...requestHeaders,
@@ -241,10 +191,12 @@ export function httpRequest(
             };
 
             // this way other config elements like "credentials", "mode", "cache" or "signal" can be passed to fetch()
-            const remainingFetchConfig = { ...fetchConfig };
+            // @ts-ignore
+            const remainingFetchConfig: RequestInit = {...fetchConfig};
+            // @ts-ignore
             delete remainingFetchConfig.useChaynsAuth;
 
-            let requestAddress = '';
+            let requestAddress: string = '';
             if (!isNullOrWhiteSpace(defaultConfig.address)
                 && !/^.+?:\/\//.test(address)
                 && /^.+?:\/\//.test(defaultConfig.address)
@@ -254,21 +206,23 @@ export function httpRequest(
                 requestAddress = address;
             }
             if (replacements && chayns.utils.isObject(replacements)) {
-                const replacementKeys = Object.keys(replacements);
+                const replacementKeys: Array<string> = Object.keys(replacements);
                 for (let i = 0; i < replacementKeys.length; i++) {
                     if (regexRegex.test(replacementKeys[i])) {
                         const regex = stringToRegex(replacementKeys[i]);
+                        // @ts-ignore
                         requestAddress = requestAddress.replace(regex, replacements[replacementKeys[i]]);
                     } else {
                         requestAddress = requestAddress.replaceAll(
                             replacementKeys[i],
+                            // @ts-ignore
                             replacements[replacementKeys[i]]
                         );
                     }
                 }
             }
 
-            const resolve = (value: any) => {
+            const resolve = (value?: any) => {
                 globalResolve(value);
                 logger.info({
                     message: `[HttpRequest] ${processName} resolved`,
@@ -287,8 +241,8 @@ export function httpRequest(
              * @returns {boolean}
              */
             const tryReject = async (
-                err: Error|RequestError|ChaynsError|null = null,
-                status = null,
+                err: Error | RequestError | ChaynsError | null = null,
+                status: number|null = null,
                 force = false
             ) => {
                 const handlerKeys = getMapKeys(statusHandlers);
@@ -298,6 +252,7 @@ export function httpRequest(
 
                 // handle chaynsErrorHandler
                 const isChayns: boolean = err instanceof ChaynsError;
+                // @ts-ignore
                 const chaynsErrorCode: string = isChayns ? err?.errorCode : null;
                 const errorHandlerKey = errorKeys.find((k) => (isChayns
                     && (k === chaynsErrorCode || stringToRegex(k)
@@ -329,7 +284,7 @@ export function httpRequest(
                                     });
                                     return true;
                                 case ResponseType.Response:
-                                    resolve({ status });
+                                    resolve({status});
                                     return true;
                                 default:
                                     resolve(null);
@@ -349,8 +304,8 @@ export function httpRequest(
                     return true;
                 }
                 if (ignoreErrors === true
-                    || (status && chayns.utils.isArray(ignoreErrors)
-                        && ignoreErrors.includes(status))
+                    // @ts-ignore
+                    || (status && chayns.utils.isArray(ignoreErrors) && ignoreErrors.includes(status))
                 ) {
                     if (chayns.utils.isNumber(status)) {
                         switch (responseType) {
@@ -372,7 +327,7 @@ export function httpRequest(
                                 reject(error);
                                 return true;
                             case ResponseType.Response:
-                                resolve({ status });
+                                resolve({status});
                                 return true;
                             case ResponseType.Text:
                             case ResponseType.Blob:
@@ -419,6 +374,7 @@ export function httpRequest(
                             ...requestHeaders,
                             Authorization: undefined
                         },
+                        // @ts-ignore
                         online: `${navigator?.onLine}, ${navigator?.connection?.effectiveType}`,
                         processName,
                         requestDuration: `${Date.now() - fetchStartTime} ms`,
@@ -437,11 +393,11 @@ export function httpRequest(
                 return;
             }
 
-            const { status } = response;
+            const {status} = response;
 
             /** LOGS */
             const requestUid = response.headers && response.headers.get('X-Request-Id')
-                               ? response.headers.get('X-Request-Id') : undefined;
+                ? response.headers.get('X-Request-Id') : undefined;
 
             let responseBody = null;
             try {
@@ -465,9 +421,9 @@ export function httpRequest(
                         headers: {
                             ...requestHeaders,
                             Authorization: requestHeaders?.Authorization
-                                           && chayns.utils.isJwt(requestHeaders?.Authorization)
-                                           ? `Payload: ${requestHeaders.Authorization.split('.')[1]}`
-                                           : undefined
+                            && chayns.utils.isJwt(requestHeaders?.Authorization)
+                                ? `Payload: ${requestHeaders.Authorization.split('.')[1]}`
+                                : undefined
                         },
                     },
                     response: {
@@ -476,6 +432,7 @@ export function httpRequest(
                         body: responseBody,
                     },
                     input,
+                    // @ts-ignore
                     online: `${navigator?.onLine}, ${navigator?.connection?.effectiveType}`,
                     requestDuration: `${Date.now() - fetchStartTime} ms`,
                     requestTime: new Date(fetchStartTime).toISOString(),
@@ -496,6 +453,7 @@ export function httpRequest(
                 chaynsErrorObject.showDialog = !!errorDialogs
                     .find((e) => (e === chaynsErrorObject.errorCode)
                         || (Object.prototype.toString.call(e) === '[object RegExp]'
+                            // @ts-ignore
                             && e.test(chaynsErrorObject.errorCode)
                         ));
             }
@@ -510,8 +468,8 @@ export function httpRequest(
                 });
             } else if (response && status === 401) {
                 const error = chaynsErrorObject
-                              ? new ChaynsError(chaynsErrorObject, processName, status)
-                              : new RequestError(`Status ${status} on ${processName}`, status);
+                    ? new ChaynsError(chaynsErrorObject, processName, status)
+                    : new RequestError(`Status ${status} on ${processName}`, status);
                 log({
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`,
@@ -535,13 +493,19 @@ export function httpRequest(
                                 errorHandlers,
                                 internalRequestGuid
                             }));
-                        } else { tryReject(error, status, false); }
-                    } catch (err) { tryReject(error, status, false); }
-                } else { tryReject(error, status, false); }
+                        } else {
+                            tryReject(error, status, false);
+                        }
+                    } catch (err) {
+                        tryReject(error, status, false);
+                    }
+                } else {
+                    tryReject(error, status, false);
+                }
             } else {
                 const error = chaynsErrorObject
-                              ? new ChaynsError(chaynsErrorObject, processName, status)
-                              : new RequestError(`Status ${status} on ${processName}`, status);
+                    ? new ChaynsError(chaynsErrorObject, processName, status)
+                    : new RequestError(`Status ${status} on ${processName}`, status);
                 log({
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`
@@ -587,7 +551,7 @@ export function httpRequest(
                 // 1.2 errorHandlers[chaynsErrorRegex]
                 if (errorHandlers && errorHandlers.size > 0) {
                     const errorKeys = getMapKeys(errorHandlers);
-                    const key = errorKeys.find((k) => (
+                    const key: string = errorKeys.find((k) => (
                         chaynsErrorCodeRegex.test(k)
                         && stringToRegex(key)
                             .test(errorCode)
@@ -661,73 +625,14 @@ export function httpRequest(
     });
 }
 
-/**
- * Combine fetch and handle request
- * @param {string} address - Address of the request
- * @param {Object} [config={}] - Fetch config
- * @param {HttpMethod|string} [config.method='GET'] - HttpMethod
- * @param {Object} [config.headers] - Additional HttpHeaders
- * @param {boolean} [config.useChaynsAuth] - Add user token as authorization if available
- * @param {*} [config.body] - Body of the request
- * @param {string} [config.cache]
- * @param {string} [config.referrer]
- * @param {string} [config.referrerPolicy]
- * @param {string} [config.mode]
- * @param {string} [config.redirect]
- * @param {string} [config.integrity]
- * @param {boolean} [config.keepalive]
- * @param {Window} [config.window]
- * @param {*} [config.signal] - Signal to abort request while running, use with RTK thunks
- * @param {string} [processName='HttpRequest'] - Name of the process in the logs
- * @param {Object} [options={}] - Additional options for the request
- * @param {ResponseType|string} [options.responseType=null] - type of response that is expected
- * @param {boolean|number[]} [options.ignoreErrors=false] - Don't throw errors for this request if true or if this
- *     array contains the response status. Return null on error instead. Errors will still be logged as usual.
- * @param {Object.<string,LogLevel>} [options.logConfig={}] - Define the logLevel for these status codes. Can use
- *     status code or regex string as key. Values must be info|warning|error|critical|none.
- * @param {boolean} [options.stringifyBody=true] - Call JSON.stringify(body) for the body passed to this function
- * @param {Object} [options.additionalLogData={}] - Additional data to be logged with this request
- * @param {boolean} [options.autoRefreshToken=true] - Automatically try to refresh the token once if it expired
- * @param {Object} [options.statusHandlers={}] - Handle response for specific status codes
- * Usage: { [statusCode|regexString] : (response) => { my code }, ... }
- *    OR: { [statusCode|regexString] : responseType }
- *     - handler always receives entire response as parameter, not just the body
- *     - value returned from handler is returned as result of the request
- *     - handler can be async and will be awaited
- *     Response handling priorities:
- *      1. statusHandlers[status]
- *      2. statusHandlers[regex]
- *      3. response type
- * @param {Object.<string|RegExp, ResponseType|statusCodeHandler|function(Response)>} [options.errorHandlers={}] -
- *     chayns error handler for specific ChaynsErrors
- * @param {string[]} [options.errorDialogs={}] - configure which chayns errors should display a dialog
- * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
- *
- * @param {requestErrorHandler} [errorHandler=undefined] - Function to handle error statusCodes. Defaults to
- *     defaultErrorHandler.js
- * @param {Object} [handlerOptions={}] - other options for this wrapper
- * @param {function} [handlerOptions.finallyHandler] - Function that should always be executed after the request
- * @param {boolean|waitCursorOptions} [handlerOptions.waitCursor] - Show chayns waitCursor. Set true to show. Set to an
- *     object for more options
- * @param {string} [handlerOptions.waitCursor.text=undefined] - Text to be displayed after the textTimeout
- * @param {number} [handlerOptions.waitCursor.textTimeout=5000] - Timeout after which the text appears in the wait
- *     cursor
- * @param {number} [handlerOptions.waitCursor.timeout=300] - Timeout after which the waitCursor is displayed
- * @param {string|cacheOptions} [handlerOptions.cache]  (optional) string/object: Set to a string to cache the request
- *     in local storage. Only works if the request returns appropriate data, e.g. a string OR if a cacheResolver is
- *     defined. Set to an object for more detailed cache control.
- * @param {string} handlerOptions.cache.key - The name used to cache this asset in local storage
- * @param {number} [handlerOptions.cache.duration=5] - The duration in minutes after which the cache will be refreshed
- * @param {cacheResolverCallback} [handlerOptions.cache.cacheResolver] - Function to transform the cache content before
- *     setting, e.g. reading a request body
- * @param {boolean} [handlerOptions.noReject=false] - Do not reject promise on error, resolve with null instead
- *
- * @public
- * @async
- * @throws {RequestError}
- * @return result {Promise<*>}
- */
-function fullRequest(address, config, processName, options, errorHandler, handlerOptions) {
+function fullRequest(
+    address: string,
+    config?: HttpRequestConfig,
+    processName?: string,
+    options?: HttpRequestOptions,
+    errorHandler?: (err: Error|RequestError|ChaynsError, statusCode?: number, resolve?: (value?: any) => any, reject?: (value?: any) => any) => any,
+    handlerOptions?: HandleRequestOptions
+) {
     return handleRequest(httpRequest(
         address,
         config,

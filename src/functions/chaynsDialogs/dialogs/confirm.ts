@@ -1,15 +1,7 @@
 import DialogPromise from '../DialogPromise';
-import { createDialogResult } from '../utils';
+import {createDialogResult, DialogButton} from '../utils';
 
-/**
- * Confirm dialog
- * @param {string} [message='']
- * @param {button[]} [buttons=undefined]
- * @param {Object} [options={}]
- * @param {string} [options.title='']
- * @return {DialogPromise<dialogResult>}
- */
-const confirm = (message, options, buttons) => new DialogPromise((resolve) => {
+const confirm = (message: string, options?: { title?: string }, buttons?: DialogButton[]): DialogPromise<undefined> => new DialogPromise<undefined>((resolve: (value?: any) => any) => {
     chayns.dialog.confirm(options?.title || '', message ?? '', buttons)
         .then((type) => {
             resolve(createDialogResult(type));

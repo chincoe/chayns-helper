@@ -1,41 +1,44 @@
 import generateUid from '../generateUid';
 
-/**
- * @typedef chaynsCallResult
- * @property {Object} addJSONParam
- * @property {string} callback
- * @property {Object} retval
- */
-/**
- * chaynsCall
- * @param {Object} call
- * @param {number} call.action
- * @param {Object} [call.value=]
- * @param {string|function} [call.value.callback=]
- * @param {string} [call.value.addJSONParam=]
- * @returns {Promise<chaynsCallResult>}
- */
-const chaynsCall = (call) => {
-    const callbackName = `chaynsCallback_${generateUid().split('-').join('')}`;
-    const { action, value = {} } = call;
+export interface ChaynsCall {
+    action: number;
+    value?: {
+        callback?: string | ((param?: any) => any);
+        addJSONParam?: string
+    }
+}
+
+const chaynsCall = (call: ChaynsCall): Promise<{
+    addJSONParam: object;
+    callback: string;
+    retval: object
+}> => {
+    const callbackName: string = `chaynsCallback_${generateUid().split('-').join('')}`;
+    const {action, value = {}} = call;
     return new Promise((resolve) => {
-        window[callbackName] = (v) => {
+        // @ts-ignore
+        window[callbackName] = (v: any) => {
             if (chayns.utils.isFunction(value?.callback)) {
+                // @ts-ignore
                 value.callback(v);
             } else if (value?.callback
                 && chayns.utils.isString(value?.callback)
+                // @ts-ignore
                 && /^window\./.test(value?.callback)
+                // @ts-ignore
                 && chayns.utils.isFunction(window[value?.callback?.replace('window.', '')])) {
+                // @ts-ignore
                 window[value?.callback?.replace('window.', '')](v);
             }
             resolve(v);
+            // @ts-ignore
             if (!value?.callback) delete window[callbackName];
         };
         const config = {
             ...value,
             callback: `window.${callbackName}`
         };
-        chayns.invokeCall(JSON.stringify({ action, value: config, }));
+        chayns.invokeCall(JSON.stringify({action, value: config,}));
     });
 };
 

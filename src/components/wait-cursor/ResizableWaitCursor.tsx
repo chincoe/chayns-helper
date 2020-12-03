@@ -1,20 +1,14 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, {FunctionComponent, useEffect} from 'react';
 import './resizable-wait-cursor.scss';
+// @ts-ignore
 import { SmallWaitCursor } from 'chayns-components';
 import clsx from 'clsx';
 
-/**
- * ResizableWaitCursor
- * The chayns <SmallWaitCursor/> but resizable
- * @param {Object} props
- * @param {number} [props.size=32]
- * @param {string} [props.className='']
- * @param {Object} [props.style={}]
- * @return {*}
- * @constructor
- */
-const ResizableWaitCursor = (
+const ResizableWaitCursor: FunctionComponent<{
+    size?: number;
+    className?: string;
+    style?: object
+}> = (
     {
         size = 32,
         className = '',
@@ -44,17 +38,6 @@ const ResizableWaitCursor = (
             {...elementProps}
         />
     );
-};
-
-ResizableWaitCursor.propTypes = {
-    size: PropTypes.number.isRequired,
-    className: PropTypes.string,
-    style: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
-};
-
-ResizableWaitCursor.defaultProps = {
-    className: '',
-    style: {}
 };
 
 ResizableWaitCursor.displayName = 'ResizableWaitCursor';

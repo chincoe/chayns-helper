@@ -6,6 +6,7 @@ export interface ChaynsErrorObject {
     errorCode: string;
     parameters: { [key: string]: any };
     requestId: string;
+    showDialog?: boolean;
 }
 
 /**

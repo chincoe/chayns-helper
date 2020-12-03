@@ -1,65 +1,47 @@
 import DialogPromise from '../DialogPromise';
-import { createDialogResult } from '../utils';
+import {createDialogResult, DialogButton} from '../utils';
 
-/**
- * select dialog type
- * @type {{ICON: number, DEFAULT: number}}
- * @enum
- */
-export const selectType = {
-    DEFAULT: chayns.dialog.selectType.DEFAULT,
-    ICON: chayns.dialog.selectType.ICON
-};
-/**
- * @typedef selectListItem
- * @property {string} name
- * @property {string|number|Object} value
- * @property {string} backgroundColor
- * @property {string} className - fontawesome icon classname for ICON type
- * @property {string} url - iconUrl for ICON type
- * @property {boolean} isSelected - is selected by default
- */
-/**
- * @typedef selectDialogResultItem
- * @property {string} name
- * @property {string|number|Object} value
- */
+export enum selectType {
+    DEFAULT = chayns.dialog.selectType.DEFAULT,
+    ICON = chayns.dialog.selectType.ICON
+}
 
-/**
- * @typedef selectDialogResult
- * @property {buttonType} buttonType
- * @property {selectDialogResultItem|selectDialogResultItem[]|null} value
- */
-/**
- * Select dialog. Returns an array of selections as value (with multiselect) or the selected object as value (without
- * multiselect)
- * @param {Object} [options]
- * @param {string} [options.message='']
- * @param {string} [options.title='']
- * @param {selectListItem[]} options.list
- * @param {boolean} [options.multiselect]
- * @param {boolean|null} [options.quickfind]
- * @param {selectType} [options.type] - one of chaynsDialog.selectType
- * @param {boolean} [options.preventCloseOnClick]
- * @param {?string} [options.selectAllButton] - add a checkbox with this prop as label that (de)selects all elements at
- *     once
- * @param {button[]} [buttons=undefined]
- *
- * @property {selectType} type
- *
- * @return {DialogPromise<dialogResult>}
- */
-export default function select(options, buttons) {
-    return new DialogPromise((resolve) => {
+export interface SelectDialogListItem {
+    name: string;
+    value: string | number | object;
+    backgroundColor?: string;
+    className?: string;
+    url?: string;
+    isSelected?: boolean;
+}
+
+export interface SelectDialogResult {
+    name: string;
+    value: string | number | object;
+}
+
+export interface SelectDialogConfig {
+    list: SelectDialogListItem[];
+    message?: string;
+    title?: string;
+    multiselect?: boolean;
+    quickfind?: boolean;
+    type?: selectType;
+    preventCloseOnClick?: boolean;
+    selectAllButton?: string;
+}
+
+export default function select(options: SelectDialogConfig, buttons?: DialogButton[]): DialogPromise<SelectDialogResult | SelectDialogResult[]> {
+    return new DialogPromise<SelectDialogResult | SelectDialogResult[]>((resolve) => {
         const {
             message = '',
             title = '',
-            list = null,
+            list,
             multiselect = false,
             quickfind = null,
             preventCloseOnClick = false,
             type = selectType.DEFAULT,
-            selectAllButton = null
+            selectAllButton = undefined
         } = options || {};
         chayns.dialog.select({
             title,
@@ -67,16 +49,17 @@ export default function select(options, buttons) {
             list,
             multiselect,
             quickfind: quickfind === null ? (list || []).length > 5 : quickfind,
+            // @ts-ignore
             type,
             preventCloseOnClick,
             buttons,
             selectAllButton
         })
             .then((result) => {
-                const { buttonType: bType, selection } = result;
+                const {buttonType: bType, selection} = result;
                 if (!multiselect && selection && selection?.length === 1) {
-                    const { name, value } = selection[0];
-                    resolve(createDialogResult(bType, { name, value }));
+                    const {name, value} = selection[0];
+                    resolve(createDialogResult(bType, {name, value}));
                 } else if (!multiselect) {
                     resolve(createDialogResult(bType, null));
                 }
@@ -89,4 +72,4 @@ export default function select(options, buttons) {
     });
 }
 
-select.type = { ...selectType };
+select.type = {...selectType};

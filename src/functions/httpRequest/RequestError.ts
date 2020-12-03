@@ -10,7 +10,7 @@ export default class RequestError extends Error {
      * @param {string} message - Error message
      * @param {number} statusCode - Response status code
      */
-    constructor(message, statusCode) {
+    constructor(message: string, statusCode: number) {
         super(message);
         this.name = `HttpRequestError${statusCode}`;
         this.statusCode = statusCode;

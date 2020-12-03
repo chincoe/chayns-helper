@@ -1,12 +1,6 @@
 import hexToRgb from './hexToRgb';
 
-/**
- * Convert a string to a color
- * @param {string} str
- * @param {?boolean} [rgb]
- * @returns {null|{r: number, g: number, b: number, a: ?number }|String}
- */
-const stringToColor = (str, rgb) => {
+const stringToColor = (str: string, rgb?: boolean): ({r: number, g: number, b: number, a: number|null}|String|null) => {
     /* eslint-disable no-bitwise */
     let hash = 0;
     for (let i = 0; i < str.length; i += 1) {
@@ -21,14 +15,15 @@ const stringToColor = (str, rgb) => {
     if (rgb) return hexToRgb(color);
     // eslint-disable-next-line no-new-wrappers
     const result = new String(color);
-    // eslint-disable-next-line no-proto
+    // @ts-ignore
     result.__proto__ = {
         /**
          * @param {number} a
          * @returns {null|{r: number, g: number, b: number, a: ?number}}
          */
-        toRgb(a) {
+        toRgb(a?: number) {
             const rgbValue = hexToRgb(this);
+            // @ts-ignore
             if (a) rgbValue.a = a;
             return rgbValue;
         },

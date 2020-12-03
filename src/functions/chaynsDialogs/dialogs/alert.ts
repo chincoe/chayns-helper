@@ -1,16 +1,10 @@
 import DialogPromise from '../DialogPromise';
 import { createDialogResult } from '../utils';
 
-/**
- * Alert dialog with only one button
- * @param {string} [message='']
- * @param {Object} [options={}]
- * @param {string} [options.title='']
- * @return {DialogPromise<dialogResult>}
- */
-const alert = (message, options) => new DialogPromise((resolve) => {
+const alert = (message: string, options?: { title?: string }): DialogPromise<undefined> => new DialogPromise<undefined>((resolve: (value?: any) => any) => {
     chayns.dialog.alert(options?.title || '', message ?? '')
         .then((type) => {
+            // @ts-ignore
             resolve(createDialogResult(type));
         });
 });

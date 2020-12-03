@@ -1,32 +1,15 @@
-/**
- * @callback fullResolveFn
- * @param {Object} result
- * @param {number} result.buttonType
- * @param {?*} result.value
- */
-
-/**
- * @callback dialogThen
- * @param {function(*): *|void} resolveFn
- * @returns {DialogPromise<dialogResult>}
- */
-
-/**
- * @callback fullDialogThen
- * @param {fullResolveFn} resolveFn
- * @returns {DialogPromise<dialogResult>}
- */
+import {DialogResult} from "./utils";
 
 /**
  * Custom extension to Promise for dialogs
  * @extends Promise
  */
-export default class DialogPromise extends Promise {
+export default class DialogPromise<T> extends Promise<DialogResult<T>> {
     isPending = true;
 
-    constructor(resolveFn) {
+    constructor(resolveFn: (resolve: (value?: any) => any, reject: (value?: any) => any) => void) {
         super((resolve, reject) => {
-            new Promise((res, rej) => {
+            new Promise<DialogResult<T>>((res, rej) => {
                 resolveFn(res, rej);
             }).then((result) => {
                 this.isPending = false;
@@ -38,11 +21,7 @@ export default class DialogPromise extends Promise {
         });
     }
 
-    /**
-     * @param {function(*): *|void} resolveFn
-     * @returns {DialogPromise<dialogResult>}
-     */
-    positive(resolveFn) {
+    positive(resolveFn: (value?: T) => any) {
         super.then((result) => {
             if (result.buttonType === 1) {
                 resolveFn(result.value);
@@ -51,11 +30,7 @@ export default class DialogPromise extends Promise {
         return this;
     }
 
-    /**
-     * @param {function(*): *|void} resolveFn
-     * @returns {DialogPromise<dialogResult>}
-     */
-    negative(resolveFn) {
+    negative(resolveFn: (value?: T) => any) {
         super.then((result) => {
             if (result.buttonType === 0) {
                 resolveFn(result.value);
@@ -64,11 +39,7 @@ export default class DialogPromise extends Promise {
         return this;
     }
 
-    /**
-     * @param {function(*): *|void} resolveFn
-     * @returns {DialogPromise<dialogResult>}
-     */
-    cancelled(resolveFn) {
+    cancelled(resolveFn: (value?: T) => any) {
         super.then((result) => {
             if (result.buttonType === -1) {
                 resolveFn(result.value);

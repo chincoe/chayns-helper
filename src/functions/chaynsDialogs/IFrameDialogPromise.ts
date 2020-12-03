@@ -4,12 +4,8 @@ import DialogPromise from './DialogPromise';
  * Custom extension to DialogPromise for the iFrame dialog
  * @extends DialogPromise
  */
-export default class IframeDialogPromise extends DialogPromise {
-    /**
-     * @param {function(*): *|void} resolveFn
-     * @returns {DialogPromise<dialogResult>}
-     */
-    result(resolveFn) {
+export default class IframeDialogPromise extends DialogPromise<any> {
+    result(resolveFn: (value?: any) => any) {
         chayns.dialog.addDialogResultListener(resolveFn);
         this.then(() => {
             chayns.dialog.removeDialogResultListener(resolveFn);
@@ -17,12 +13,7 @@ export default class IframeDialogPromise extends DialogPromise {
         return this;
     }
 
-    /**
-     * @param {function(*): *|void} resolveFn
-     * @param {boolean} getApiEvents - get sent data that has isApiEvent set
-     * @returns {DialogPromise<dialogResult>}
-     */
-    data(resolveFn, getApiEvents) {
+    data(resolveFn: (value?: any) => any, getApiEvents?: boolean) {
         chayns.dialog.addDialogDataListener(resolveFn, getApiEvents);
         this.then(() => {
             chayns.dialog.removeDialogDataListener(resolveFn, getApiEvents);

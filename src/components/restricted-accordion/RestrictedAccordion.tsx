@@ -1,22 +1,16 @@
-import React from 'react';
+import React, {FunctionComponent, ReactChildren} from 'react';
+// @ts-ignore
 import { Accordion, Icon } from 'chayns-components';
-import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import './restricted-accordion.scss';
 
-/**
- * restricted-accordion
- * A restricted accordion for certain UAC-Groups with a lock icon
- * @param {Object} props
- * @param {string} [className='']
- * @param {*|*[]} children
- * @param {function(string)} [onSearch]
- * @param {function(string)} [onSearchEnter]
- * @param {boolean} [useAdminStyle=true]
- * @return {*}
- * @constructor
- */
-const RestrictedAccordion = (
+const RestrictedAccordion: FunctionComponent<{
+    className: string,
+    children: ReactChildren,
+    onSearch?: (value: string) => any;
+    onSearchEnter?: (value: string) => any;
+    useAdminStyle?: boolean
+}> = (
     {
         className,
         children,
@@ -38,21 +32,6 @@ const RestrictedAccordion = (
         {children}
     </Accordion>
 );
-
-RestrictedAccordion.propTypes = {
-    children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]).isRequired,
-    className: PropTypes.string,
-    onSearch: PropTypes.func,
-    onSearchEnter: PropTypes.func,
-    useAdminStyle: PropTypes.bool
-};
-
-RestrictedAccordion.defaultProps = {
-    className: undefined,
-    onSearch: undefined,
-    onSearchEnter: undefined,
-    useAdminStyle: true
-};
 
 RestrictedAccordion.displayName = 'RestrictedAccordion';
 

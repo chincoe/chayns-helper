@@ -1,9 +1,6 @@
 /* eslint-disable no-bitwise */
-/**
- * @param {string} string
- * @returns {number}
- */
-const getHashCode = (string) => {
+
+const getHashCode = (string: string): number => {
     let hash = 0;
     if (string.length === 0) return hash;
     for (let i = 0; i < string.length; i += 1) {
@@ -19,9 +16,10 @@ const getHashCode = (string) => {
  * @param {number} l
  * @returns {string|{h: number, s: number, l:number}}
  */
-const toHslColor = (stringOrInt, s, l) => {
-    const number = chayns.utils.isNumber(stringOrInt) ? stringOrInt : getHashCode(stringOrInt);
-    const shortened = number % 360;
+const toHslColor = (stringOrInt: string|number, s?: number, l?: number) => {
+    // @ts-ignore
+    const number: number = chayns.utils.isNumber(stringOrInt) ? stringOrInt : getHashCode(stringOrInt);
+    const shortened: number = number % 360;
     // const result = `hsl(${shortened},${s ?? 70}%,${l ?? 40}%)`;
     return {
         h: shortened,
@@ -31,7 +29,9 @@ const toHslColor = (stringOrInt, s, l) => {
             /**
              * @returns {string}
              */
+            // @ts-ignore
             toString() {
+                // @ts-ignore
                 return `hsl(${this.h},${this.s}%,${this.l}%)`;
             }
         }

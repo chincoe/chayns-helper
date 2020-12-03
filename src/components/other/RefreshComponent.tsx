@@ -1,5 +1,4 @@
-import React, { memo } from 'react';
-import PropTypes from 'prop-types';
+import React, {FunctionComponent, JSXElementConstructor, memo, ReactChildren} from 'react';
 import useRefresh from '../../utils/useRefresh';
 
 /**
@@ -12,7 +11,11 @@ import useRefresh from '../../utils/useRefresh';
  * @return {*}
  * @constructor
  */
-const Refresh = (
+const Refresh: FunctionComponent<{
+    interval?: number,
+    children?: ReactChildren;
+    elementType?: string|JSXElementConstructor<any>
+}> = (
     {
         interval = 10000,
         children,
@@ -28,18 +31,6 @@ const Refresh = (
             {children}
         </Component>
     );
-};
-
-Refresh.propTypes = {
-    elementType: PropTypes.elementType,
-    interval: PropTypes.number,
-    children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node), PropTypes.string])
-};
-
-Refresh.defaultProps = {
-    elementType: 'div',
-    interval: 10000,
-    children: null
 };
 
 Refresh.displayName = 'RefreshComponent';

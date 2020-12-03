@@ -1,17 +1,14 @@
 import DialogPromise from '../DialogPromise';
-import { createDialogResult } from '../utils';
+import {createDialogResult, DialogButton} from '../utils';
 
-/**
- * Select an image from Pixabay
- * @param {Object} [options={}]
- * @param {string} [options.title]
- * @param {string} [options.message]
- * @param {boolean} [options.multiselect]
- * @param {button[]} [buttons]
- * @returns {DialogPromise<dialogResult>}
- */
-export default function mediaSelect(options, buttons) {
-    return new DialogPromise((resolve) => {
+export interface MediaSelectDialogConfig {
+    title?: string;
+    message?: string;
+    multiselect?: boolean;
+}
+
+export default function mediaSelect(options?: MediaSelectDialogConfig, buttons?: DialogButton[]) {
+    return new DialogPromise<File|any>((resolve) => {
         const {
             title = '',
             message = '',
@@ -24,6 +21,7 @@ export default function mediaSelect(options, buttons) {
             buttons
         })
             .then((result) => {
+                // @ts-ignore
                 resolve(createDialogResult(result?.buttonType, result?.selection));
             });
     });

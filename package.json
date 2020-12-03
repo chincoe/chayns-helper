@@ -63,7 +63,6 @@
     "@size-limit/preset-small-lib": "^4.9.1",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
-    "chayns-doc": "^1.1.2",
     "chayns-logger": "^2.8.6",
     "husky": "^4.3.0",
     "react": "^17.0.1",
@@ -79,6 +78,7 @@
     "chayns-components": "^4.20.6",
     "clsx": "^1.1.1",
     "date-fns": "^2.16.1",
-    "prop-types": "^15.7.2"
+    "prop-types": "^15.7.2",
+    "chayns-doc": "^1.1.2"
   }
 }
