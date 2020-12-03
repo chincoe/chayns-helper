@@ -1,28 +1,27 @@
-import { isChaynsErrorObject } from './isChaynsError';
+import {isChaynsErrorObject} from './isChaynsError';
 import RequestError from './RequestError';
 
-/**
- * @typedef {{displayMessage: string, errorCode: string, parameters: Object, requestId: string}} chaynsErrorObject
- */
+export interface ChaynsErrorObject {
+    displayMessage: string,
+    errorCode: string;
+    parameters: { [key: string]: any };
+    requestId: string;
+}
 
 /**
  * @public
  * @class
  */
 export default class ChaynsError extends RequestError {
-    displayMessage = '';
+    displayMessage: string = '';
 
-    errorCode = '';
+    errorCode: string = '';
 
-    parameters = {};
+    parameters: object = {};
 
-    requestId = '';
+    requestId: string = '';
 
-    /**
-     * @param {Object|Response|Promise} value
-     * @returns {Promise<chaynsErrorObject|null>}
-     */
-    static async getChaynsErrorObject(value) {
+    static async getChaynsErrorObject(value: object | Response | Promise<any>): Promise<ChaynsErrorObject | null> {
         if (value instanceof Response) {
             const response = value.clone();
             const obj = await response.json();
@@ -40,12 +39,7 @@ export default class ChaynsError extends RequestError {
         return null;
     }
 
-    /**
-     * @param {chaynsErrorObject} error
-     * @param {string} processName
-     * @param {number} status
-     */
-    constructor(error, processName, status) {
+    constructor(error: ChaynsErrorObject, processName: string, status: number) {
         super(`Status ${status} with ChaynsError '${error?.errorCode}' on ${processName}`, status);
         this.displayMessage = error.displayMessage;
         this.errorCode = error.errorCode;

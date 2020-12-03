@@ -20,15 +20,17 @@ import {
 import { chaynsErrorCodeRegex } from './isChaynsError';
 import RequestError from './RequestError';
 import ResponseType from './ResponseType';
-import LogLevel from './LogLevel';
+import LogLevel, {ObjectResponse} from './LogLevel';
 import handleRequest from './handleRequest';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
+import HttpStatusCode from "./HttpStatusCodes";
 
 /**
  * @callback statusCodeHandler
  * @param {Response} response - The response of the request
  * @returns {*} result
  */
+
 /**
  * Helper to send httpRequests. Works best if wrapped with handleRequest()
  * @param {string} address - Address of the request
@@ -75,16 +77,55 @@ import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
  * @throws {RequestError}
  * @return {Promise<Response|objectResponse|Blob|Object>} - response or response body
  */
+
+/**
+ * The fetch config
+ */
+export interface HttpRequestConfig {
+    method?: 'GET'|'POST'|'PATCH'|'DELETE'|'PUT'|string;
+    /**
+     * add user token as authorization
+     */
+    useChaynsAuth?: boolean;
+    headers?: object;
+    body?: object|string|FormData|any,
+    cache?: string;
+    referrer?: string;
+    referrerPolicy?: string;
+    mode?: string;
+    redirect?: string;
+    integrity?: string;
+    keepalive?: string;
+    window?: Window;
+    signal?: AbortSignal;
+}
+
+/**
+ * Additional request options
+ */
+export interface HttpRequestOptions {
+    responseType?: ResponseType;
+    ignoreErrors?: boolean|HttpStatusCode[];
+    logConfig?: { [key: string]: LogLevel },
+    stringifyBody?: boolean;
+    additionalLogData?: object;
+    autoRefreshToken?: true;
+    statusHandlers?: { [key: string]: ResponseType|((response: Response) => any) },
+    errorHandlers?: { [key: string]: ResponseType|((response: Response) => any) };
+    errorDialogs?: Array<string>;
+    replacements?: { [key: string]: string|((value: string|RegExpMatchArray) => string)};
+}
+
 export function httpRequest(
     // full request address. URLs should be defined as functions or constants in a separate file
-    address,
+    address: string,
     // fetch config
-    config,
+    config: HttpRequestConfig = {},
     // processName for logs
-    processName,
+    processName: string = 'httpRequest',
     // options for this helper
-    options,
-) {
+    options: HttpRequestOptions = {},
+): Promise<Response|ObjectResponse|Blob|Object|string|RequestError|ChaynsError|any> {
     return new Promise((globalResolve, reject) => {
         (async () => {
             /** INPUT HANDLING */
@@ -130,11 +171,11 @@ export function httpRequest(
                 autoRefreshToken: true,
                 // statusHandlers: {},
                 replacements: {
-                    [/##locationId##/g]: chayns.env.site.locationId,
-                    [/##siteId##/g]: chayns.env.site.id,
-                    [/##tappId##/g]: chayns.env.site.tapp.id,
-                    [/##userId##/g]: chayns.env.user.id,
-                    [/##personId##/g]: chayns.env.user.personId
+                    [/##locationId##/g.toString()]: chayns.env.site.locationId,
+                    [/##siteId##/g.toString()]: chayns.env.site.id,
+                    [/##tappId##/g.toString()]: chayns.env.site.tapp.id,
+                    [/##userId##/g.toString()]: chayns.env.user.id,
+                    [/##personId##/g.toString()]: chayns.env.user.personId
                 },
                 errorDialogs: [],
                 ...(defaultConfig.options || {}),
@@ -188,10 +229,10 @@ export function httpRequest(
                 headers
             } = fetchConfig;
 
-            const jsonBody = body && stringifyBody ? JSON.stringify(body) : null;
+            const jsonBody : string|null = body && stringifyBody ? JSON.stringify(body) : null;
 
             // create request headers
-            let requestHeaders = stringifyBody ? { 'Content-Type': 'application/json' } : {};
+            let requestHeaders : HeadersInit = stringifyBody ? { 'Content-Type': 'application/json' } : {};
             if (useChaynsAuth) requestHeaders.Authorization = `Bearer ${chayns.env.user.tobitAccessToken}`;
             requestHeaders = {
                 ...requestHeaders,
@@ -227,7 +268,7 @@ export function httpRequest(
                 }
             }
 
-            const resolve = (value) => {
+            const resolve = (value: any) => {
                 globalResolve(value);
                 logger.info({
                     message: `[HttpRequest] ${processName} resolved`,
@@ -246,7 +287,7 @@ export function httpRequest(
              * @returns {boolean}
              */
             const tryReject = async (
-                err = null,
+                err: Error|RequestError|ChaynsError|null = null,
                 status = null,
                 force = false
             ) => {
@@ -256,8 +297,8 @@ export function httpRequest(
                 const errorKeys = getMapKeys(errorHandlers);
 
                 // handle chaynsErrorHandler
-                const isChayns = err instanceof ChaynsError;
-                const chaynsErrorCode = isChayns ? err?.errorCode : null;
+                const isChayns: boolean = err instanceof ChaynsError;
+                const chaynsErrorCode: string = isChayns ? err?.errorCode : null;
                 const errorHandlerKey = errorKeys.find((k) => (isChayns
                     && (k === chaynsErrorCode || stringToRegex(k)
                         .test(chaynsErrorCode))));

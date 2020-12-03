@@ -1,4 +1,10 @@
-export const defaultConfig = {
+import {HttpRequestConfig, HttpRequestOptions} from "./httpRequest";
+
+export const defaultConfig : {
+    options: HttpRequestOptions,
+    address: string,
+    config: HttpRequestConfig
+} = {
     options: {},
     address: '',
     config: {}
@@ -47,7 +53,7 @@ export const defaultConfig = {
  * @param {Object.<string|RegExp, string|function>} [options.replacements={}] - replacements for request url
  * @public
  */
-export default function setRequestDefaults(address, config, options) {
+export default function setRequestDefaults(address: string, config: HttpRequestConfig, options: HttpRequestOptions) {
     defaultConfig.address = address || '';
     defaultConfig.config = config || {};
     defaultConfig.options = options || {};

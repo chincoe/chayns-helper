@@ -1,7 +1,8 @@
 import logger from 'chayns-logger';
 import { isChaynsErrorObject } from './isChaynsError';
+import {ChaynsErrorObject} from "./ChaynsError";
 
-function getChaynsErrorCodeFromObject(value) {
+function getChaynsErrorCodeFromObject(value: ChaynsErrorObject) {
     if (!isChaynsErrorObject(value)) return null;
     if (chayns.utils.isObject(value) && Object.hasOwnProperty.call(value, 'errorCode')) {
         return value.errorCode;

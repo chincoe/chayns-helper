@@ -1,31 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { SelectButton } from 'chayns-components';
-import { httpRequest } from '../../functions/httpRequest/httpRequest';
+import React, {useState, useEffect, FunctionComponent} from 'react';
+import {SelectButton} from 'chayns-components';
+import {httpRequest} from '../../functions/httpRequest/httpRequest';
 import LogLevel from '../../functions/httpRequest/LogLevel';
 import ResponseType from '../../functions/httpRequest/ResponseType';
 import ResizableWaitCursor from '../wait-cursor/ResizableWaitCursor';
 
-/**
- * UACGroupChooseButton
- * @param {Object} props
- * @param {number} [value=null] - id of the chosen UAC-group
- * @param {function(number)} props.onChange - receives new GroupId as parameter
- * @param {boolean} [multiselect=false]
- * @param {boolean} [disabled=false]
- * @return {*}
- * @constructor
- */
-const UACGroupChooseButton = (
+declare interface UACGroupChooseButton {
+    value: number,
+    onChange: (param: any) => any,
+    multiSelect?: boolean,
+    disabled?: boolean
+}
+
+const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = (
     {
-        value,
+        value = null,
         onChange,
         multiSelect = false,
         disabled = false,
         ...props
     }
 ) => {
-    const [uacGroups, setUacGroups] = useState();
+    const [uacGroups, setUacGroups] = useState<object[]>();
     useEffect(() => {
         httpRequest(
             `https://sub50.tobit.com/backend/${chayns.env.site.locationId}/UserGroup`,
@@ -35,7 +31,7 @@ const UACGroupChooseButton = (
                 ignoreErrors: true,
                 responseType: ResponseType.Json,
                 logConfig: {
-                    [/.*/]: LogLevel.info
+                    [/.*/.toString()]: LogLevel.info
                 }
             }
         )
@@ -59,19 +55,6 @@ const UACGroupChooseButton = (
             {...props}
         />
     ) : (<ResizableWaitCursor size={24}/>);
-};
-
-UACGroupChooseButton.propTypes = {
-    value: PropTypes.number,
-    onChange: PropTypes.func.isRequired,
-    multiSelect: PropTypes.bool,
-    disabled: PropTypes.bool
-};
-
-UACGroupChooseButton.defaultProps = {
-    value: null,
-    multiSelect: false,
-    disabled: false
 };
 
 UACGroupChooseButton.displayName = 'UACGroupChooseButton';
