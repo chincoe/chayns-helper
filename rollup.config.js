@@ -1,10 +1,10 @@
-import typescript from "rollup-plugin-typescript2";
+import typescript from '@rollup/plugin-typescript';
 import pkg from "./package.json";
 import autoExternal from 'rollup-plugin-auto-external';
 import postcss from 'rollup-plugin-postcss';
 import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs'
 
-const extensions = [".js", ".jsx", ".ts", ".tsx"];
 const input = "src/index.ts";
 
 const plugins = [
@@ -12,9 +12,8 @@ const plugins = [
     resolve({
         extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
     }),
-    typescript({
-        typescript: require("typescript"),
-    }),
+    commonjs(),
+    typescript({}),
     postcss({}),
 ];
 
@@ -22,6 +21,7 @@ export default [
     {
         input,
         output: {
+            // dir: "dist/esm",
             file: pkg.module,
             format: "esm",
             sourcemap: true,
@@ -31,6 +31,7 @@ export default [
     {
         input,
         output: {
+            // dir: "dist/cjs",
             file: pkg.main,
             format: "cjs",
             sourcemap: true,
