@@ -1,7 +1,10 @@
 {
+  "name": "chayns-helper",
+  "author": "Christian Nagel",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/chayns-helper.esm.js",
   "version": "0.1.0",
   "license": "MIT",
-  "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist",
@@ -11,13 +14,7 @@
     "node": ">=10"
   },
   "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test --passWithNoTests",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build",
-    "size": "size-limit",
-    "analyze": "size-limit --why"
+    "build": "rollup -c"
   },
   "peerDependencies": {
     "react-redux": ">=7.1.3",
@@ -35,41 +32,26 @@
       "optional": false
     }
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint"
-    }
-  },
   "prettier": {
     "printWidth": 80,
     "semi": true,
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "chayns-helper",
-  "author": "Christian Nagel",
-  "module": "dist/chayns-helper.esm.js",
-  "size-limit": [
-    {
-      "path": "dist/chayns-helper.cjs.production.min.js",
-      "limit": "10 KB"
-    },
-    {
-      "path": "dist/chayns-helper.esm.js",
-      "limit": "10 KB"
-    }
-  ],
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^4.9.1",
+    "@rollup/plugin-node-resolve": "^11.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "chayns-doc": "^1.1.2",
     "chayns-logger": "^2.8.6",
-    "husky": "^4.3.0",
+    "node-sass": "^4.11.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-redux": "^7.1.3",
-    "size-limit": "^4.9.1",
-    "tsdx": "^0.14.1",
+    "rollup": "^2.34.2",
+    "rollup-plugin-auto-external": "^2.0.0",
+    "rollup-plugin-postcss": "^3.1.4",
+    "rollup-plugin-typescript2": "^0.29.0",
     "tslib": "^2.0.3",
     "typescript": "^4.1.2"
   },
@@ -78,7 +60,6 @@
     "chayns-components": "^4.20.6",
     "clsx": "^1.1.1",
     "date-fns": "^2.16.1",
-    "prop-types": "^15.7.2",
-    "chayns-doc": "^1.1.2"
+    "prop-types": "^15.7.2"
   }
 }

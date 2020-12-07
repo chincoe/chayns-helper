@@ -1,6 +1,6 @@
 import React, {JSXElementConstructor, useCallback, useState} from 'react';
 // @ts-ignore
-import generateUUID from 'chayns-logger/lib/core/generate-uid';
+import generateUUID from "../../functions/generateUid";
 
 export default function rerender(WrappedComponent: JSXElementConstructor<any>) {
     return (props: any) => {
