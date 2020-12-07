@@ -1,13 +1,14 @@
-import { useMemo } from 'react';
+import {useMemo} from 'react';
 
-/**
- * @typedef tickFormatter
- * @param {number|*} start
- * @param {number} intervalLength
- * @param {number} i
- *
- * @returns {number|*}
- */
+
+export interface RechartsAxis<T> {
+    intervalCount: number,
+    intervalLength: number,
+    min: number|T,
+    max: number|T,
+    ticks: Array<number|T>
+}
+
 /**
  * Usage:
  * const tickInfo = useAxis(min, max, divisor, maxTicks, minTicks, formatter);
@@ -18,81 +19,52 @@ import { useMemo } from 'react';
  *      domain={[tickInfo.min, tickInfo.max]}
  *      interval="preserveStart"
  *  />
- *
- * @param {number|*} start - minimum value of data or axis start
- * @param {number|*} end - maximum value of data
- * @param {number|number[]} divisor - for all axis ticks: tick % divisor = 0
- * @param {number} maxTicks - maximum amount of ticks
- * @param {number} minTicks - minimum amount of ticks
- * @param {tickFormatter} [tickFormatter] - function to format
- * @returns {{min: *, max: *, ticks: [], intervalCount: number, intervalLength: number}}
  */
-export const generateRechartsAxis = (
-    start,
-    end,
-    divisor,
-    maxTicks,
-    minTicks,
-    tickFormatter
-) => {
-        // eslint-disable-next-line no-param-reassign
-        if (!tickFormatter) tickFormatter = (base, intervalLength, i) => (base + intervalLength * i);
+export function generateRechartsAxis<T>(
+    start: number | T,
+    end: number | T,
+    divisor: number | number[],
+    maxTicks: number,
+    minTicks: number,
+    tickFormatter?: (start: number | T, intervalLength: number, i: number) => (number | T)
+): RechartsAxis<T> {
+    // eslint-disable-next-line no-param-reassign
+    if (!tickFormatter) tickFormatter = (base, intervalLength, i) => (<number>base + intervalLength * i);
 
-        let relevantDivisor;
-        if (chayns.utils.isArray(divisor)) {
-                const divisorList = divisor.sort((a, b) => a - b);
-                for (let i = 0; i < divisorList.length; i++) {
-                        const d = divisorList[i];
-                        if (d * maxTicks > end) {
-                                relevantDivisor = d;
-                                break;
-                        }
-                }
-                if (!relevantDivisor) relevantDivisor = divisorList[divisorList.length - 1];
-        } else {
-                relevantDivisor = divisor;
+    let relevantDivisor: number|undefined = undefined;
+    if (chayns.utils.isArray(divisor) && typeof divisor !== "number") {
+        const divisorList = divisor.sort((a: number, b: number) => a - b);
+        for (let i = 0; i < divisorList.length; i++) {
+            const d = divisorList[i];
+            if (d * maxTicks > end) {
+                relevantDivisor = <number>d;
+                break;
+            }
         }
+        if (!relevantDivisor) relevantDivisor = divisorList[divisorList.length - 1];
+    } else {
+        relevantDivisor = <number>divisor;
+    }
 
-        const difference = end - start;
-        const intervalLength = Math.ceil(difference / relevantDivisor / maxTicks) * relevantDivisor;
-        const intervalCount = Math.max(Math.ceil(difference / intervalLength), minTicks);
+    const difference = <number>end - <number>start;
+    const intervalLength = Math.ceil(difference / relevantDivisor / maxTicks) * relevantDivisor;
+    const intervalCount = Math.max(Math.ceil(difference / intervalLength), minTicks);
 
-        const ticks = [];
-        for (let i = 0; i < intervalCount; i++) {
-                ticks.push(tickFormatter(start, intervalLength, i));
-        }
+    const ticks = [];
+    for (let i = 0; i < intervalCount; i++) {
+        ticks.push(tickFormatter(start, intervalLength, i));
+    }
 
-        return {
-                intervalCount,
-                intervalLength,
-                min: start,
-                max: tickFormatter(ticks[ticks.length - 1], intervalLength, 1),
-                ticks
-        };
+    return {
+        intervalCount,
+        intervalLength,
+        min: start,
+        max: tickFormatter(ticks[ticks.length - 1], intervalLength, 1),
+        ticks
+    };
 };
 
-/**
- * Usage:
- * const tickInfo = useAxis(min, max, divisor, maxTicks, minTicks, formatter);
- * ...
- *  <YAxis
- *      ticks={tickInfo.ticks}
- *      tickCount={ickInfo.intervalCount}
- *      domain={[tickInfo.min, tickInfo.max]}
- *      interval="preserveStart"
- *  />
- *
- * @param {number|*} start - minimum value of data or axis start
- * @param {number|*} end - maximum value of data
- * @param {number|number[]} divisor - for all axis ticks: tick % divisor = 0
- * @param {number} maxTicks - maximum amount of ticks
- * @param {number} minTicks - minimum amount of ticks
- * @param {tickFormatter} [tickFormatter] - function to format
- *
- * @param {*[]} deps - useMemo dependencies
- * @returns {{min: *, max: *, ticks: [], intervalCount: number, intervalLength: number}}
- */
-const useRechartsAxis = (
+const useRechartsAxis = <T>(
     {
         start,
         end,
@@ -100,7 +72,14 @@ const useRechartsAxis = (
         maxTicks,
         minTicks = 0,
         tickFormatter
-    }, deps
-) => useMemo(() => generateRechartsAxis(start, end, divisor, maxTicks, minTicks, tickFormatter), deps);
+    }: {
+        start: number|T,
+        end: number|T,
+        divisor: number|number[],
+        maxTicks: number,
+        minTicks: number,
+        tickFormatter?: (start: number | T, intervalLength: number, i: number) => (number | T)
+    }, deps: Array<any>
+): RechartsAxis<T> => useMemo(() => generateRechartsAxis(start, end, divisor, maxTicks, minTicks, tickFormatter), deps);
 
 export default useRechartsAxis;

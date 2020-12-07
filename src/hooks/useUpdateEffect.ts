@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-export default function useUpdateEffect(effect, deps) {
+export default function useUpdateEffect(effect: React.EffectCallback, deps?: any[]) {
     const [isFirstRender, setIsFirstRender] = useState(true);
     useEffect(() => {
         if (isFirstRender) {

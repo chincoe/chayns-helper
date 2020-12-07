@@ -5,7 +5,7 @@ import { useState, useCallback, useEffect } from 'react';
  * @param {number} interval
  * @return {[number, function]}
  */
-const useRefresh = (interval) => {
+const useRefresh = (interval: number): [number, () => void] => {
     const [refresh, setRefresh] = useState(0);
 
     const manualRefresh = useCallback(() => {
@@ -13,13 +13,13 @@ const useRefresh = (interval) => {
     }, []);
 
     useEffect(() => {
-        let val = 0;
+        let val: NodeJS.Timeout;
         if (interval) {
             val = setInterval(() => {
                 manualRefresh();
             }, interval);
         }
-        return () => { clearInterval(val); };
+        return () => { clearInterval(val || 0); };
     }, []);
 
     return [refresh, manualRefresh];

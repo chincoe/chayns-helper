@@ -1,5 +1,6 @@
 import {DialogResult} from "./utils";
 
+
 /**
  * Custom extension to Promise for dialogs
  * @extends Promise

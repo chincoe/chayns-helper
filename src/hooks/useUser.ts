@@ -2,44 +2,29 @@ import { useState, useEffect } from 'react';
 import shallowEqual from '../functions/shallowEqual';
 import types from '../functions/types';
 
-/**
- * @type {user[]}
- */
-const usersCache = [];
+
+export interface UseUserConfig {
+    userId?: number,
+    personId?: string
+}
+
+export interface GetUserResult {
+    Type: number,
+    PersonID: string,
+    FacebookID: number,
+    FirstName: string,
+    UserID: number,
+    LastName: string,
+    ChaynsLogin: string,
+    UserFullName: string
+}
+
+const usersCache: Array<GetUserResult> = [];
 
 /**
- * @typedef user
- * @property {string|number} FacebookID
- * @property {string} FirstName
- * @property {string} LastName
- * @property {string} PersonID
- * @property {number} Type
- * @property {string} UserFullName
- * @property {number} UserID
- * @property {Object} ChaynsLogin
- * @property {number} ChaynsLogin.ChaynsUserID
- * @property {string|number} ChaynsLogin.FacebookUserID
- * @property {string} ChaynsLogin.FirstName
- * @property {number} ChaynsLogin.Flag
- * @property {boolean} ChaynsLogin.IsAdmin
- * @property {string} ChaynsLogin.LastName
- * @property {number} ChaynsLogin.LocationID
- * @property {string} ChaynsLogin.PersonID
- * @property {string} ChaynsLogin.TobitNetID
- * @property {number} ChaynsLogin.TobitUserID
- * @property {number} ChaynsLogin.UserID
- * @property {*} ChaynsLogin.aud
- * @property {string|Date} ChaynsLogin.exp
- * @property {string|Date} ChaynsLogin.iat
- * @property {string} ChaynsLogin.exp
- * @property {string} ChaynsLogin.sub
- */
-/**
  * Wrapper for chayns.getUser to use inside a react component
- * @param {{userId:number}|{personId:string}|{accessToken:string}} userInfo
- * @return {{}|user|{Error:string}}
  */
-const useUser = (userInfo) => {
+const useUser = (userInfo: UseUserConfig) => {
     const [user, setUser] = useState({});
     const [prevUserInfo, setPrevUserInfo] = useState({});
     useEffect(() => {
@@ -52,8 +37,9 @@ const useUser = (userInfo) => {
                     setUser(cacheUser);
                 }
             }
+            // @ts-ignore
             chayns.getUser(userInfo)
-                .then((r) => {
+                .then((r: any) => {
                     setPrevUserInfo(userInfo);
                     setUser(r);
                     usersCache.push(r);

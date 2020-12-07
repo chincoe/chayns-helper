@@ -1,8 +1,7 @@
 /**
  * Use this in an onClick function to copy the passed value to clipboard
- * @param {string} value - the value to be copied
  */
-const copyOnClick = (value) => {
+const copyOnClick = (value: string): void => {
     const input = document.createElement('textarea');
     input.className = 'chayns-helper__copy-to-clipboard-element';
     input.value = value;

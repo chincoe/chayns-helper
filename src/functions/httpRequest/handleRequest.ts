@@ -4,6 +4,7 @@ import RequestError from './RequestError';
 import colorLog from '../../utils/colorLog';
 import ChaynsError from "./ChaynsError";
 
+
 export interface HandleRequestOptions {
     finallyHandler?: () => any
     waitCursor?: boolean| {

@@ -1,3 +1,4 @@
+
 // @ts-ignore
 import {isNullOrWhiteSpace} from 'chayns-components/lib/utils/is';
 // @ts-ignore
@@ -233,13 +234,6 @@ export function httpRequest(
                 });
             };
 
-            /**
-             * @param {Error|RequestError|ChaynsError} err
-             * @param {?number} status
-             * @param {boolean} force
-             *
-             * @returns {boolean}
-             */
             const tryReject = async (
                 err: Error | RequestError | ChaynsError | null = null,
                 status: number|null = null,
@@ -319,7 +313,7 @@ export function httpRequest(
                                 resolve();
                                 return true;
                             case ResponseType.Error:
-                                const error = new RequestError(`Status ${status} on ${processName}`, status);
+                                const error = new RequestError(`Status ${status} on ${processName}`, <number>status);
                                 console.error(...colorLog({
                                     '[HttpRequest]': 'color: #aaaaaa',
                                     'ResponseType \'error\':': ''

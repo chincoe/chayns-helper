@@ -39,7 +39,6 @@ export { default as roundDate } from './functions/timeHelper/roundDate';
 export { default as Guid } from './functions/guid';
 export { default as stringToColor } from './functions/colors/stringToColor';
 export { default as hexToRgb } from './functions/colors/hexToRgb';
-export { default as extend } from './functions/extend';
 export { default as toHslColor } from './functions/colors/toHslColor';
 export { default as getJsonSettings } from './functions/getJsonSettings';
 // functions with deps
@@ -57,7 +56,6 @@ export { default as isChaynsError } from './functions/httpRequest/isChaynsError'
 export { default as ChaynsError } from './functions/httpRequest/ChaynsError';
 // hooks
 export { default as useTimeoutState } from './hooks/uniques/useTimeoutState';
-export { default as useUniqueEventListener } from './hooks/uniques/useUniqueEventListener';
 export { default as useUniqueInterval } from './hooks/uniques/useUniqueInterval';
 export { default as useUniqueTimeout } from './hooks/uniques/useUniqueTimeout';
 export { default as useFullscreenTapp } from './hooks/useFullscreenTapp';

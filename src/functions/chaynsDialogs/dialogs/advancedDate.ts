@@ -1,6 +1,8 @@
 import DialogPromise from '../DialogPromise';
 import {createDialogResult, DialogButton} from '../utils';
 
+
+
 export const validateDate = (param: any | any[], allowMissingValue = true) => {
     if (allowMissingValue && (param === null || param === undefined)) return param;
     if (chayns.utils.isDate(param)) {
@@ -199,7 +201,7 @@ export default function advancedDate(
             getLocalTime,
             ...resolveDateSelectType(dialogSelectType)
         })
-            .then((result) => {
+            .then((result: any) => {
                 // result from chayns dialog
                 // single date: { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }] }
                 // multiselect : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, ...] }
@@ -207,7 +209,7 @@ export default function advancedDate(
                 // true, timestamp: ... in s }] }
                 const {buttonType: type, selectedDates} = result;
 
-                const validDates = (selectedDates || []).map((d) => ({
+                const validDates = (selectedDates || []).map((d: any) => ({
                     ...(d ?? {}),
                     // @ts-ignore
                     timestamp: d?.timestamp ? new Date(d.timestamp) * 1000 : d?.timestamp

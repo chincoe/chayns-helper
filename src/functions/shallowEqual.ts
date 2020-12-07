@@ -1,4 +1,4 @@
-function is(x, y) {
+function is(x: any, y: any): boolean {
     if (x === y) {
         return x !== 0 || y !== 0 || 1 / x === 1 / y;
     }
@@ -6,7 +6,7 @@ function is(x, y) {
     return x !== x && y !== y;
 }
 
-export default function shallowEqual(objA, objB) {
+export default function shallowEqual(objA: any, objB: any): boolean {
     if (is(objA, objB)) return true;
 
     if (

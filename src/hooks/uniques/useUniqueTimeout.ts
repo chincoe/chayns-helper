@@ -2,13 +2,11 @@ import { useState } from 'react';
 
 /**
  * Unique timeout: Setting a new timeout will clear the previous one
- * @param {number} initialValue
- * @return {function(*=): *}
  */
-const useUniqueTimeout = (initialValue = 0) => {
-    const [customTimeout, setCustomTimeout] = useState(initialValue);
+const useUniqueTimeout = (initialValue: NodeJS.Timeout = setTimeout(v => v, 0)): ((timeout: NodeJS.Timeout) => NodeJS.Timeout) => {
+    const [customTimeout, setCustomTimeout] = useState<NodeJS.Timeout>(initialValue);
 
-    const setter = (timeout) => {
+    const setter = (timeout: NodeJS.Timeout) => {
         clearTimeout(customTimeout);
         setCustomTimeout(timeout);
         return timeout;

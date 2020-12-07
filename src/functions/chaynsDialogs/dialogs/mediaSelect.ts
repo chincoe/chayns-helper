@@ -1,6 +1,7 @@
 import DialogPromise from '../DialogPromise';
 import {createDialogResult, DialogButton} from '../utils';
 
+
 export interface MediaSelectDialogConfig {
     title?: string;
     message?: string;
@@ -20,7 +21,7 @@ export default function mediaSelect(options?: MediaSelectDialogConfig, buttons?:
             multiSelect: multiselect,
             buttons
         })
-            .then((result) => {
+            .then((result: any) => {
                 // @ts-ignore
                 resolve(createDialogResult(result?.buttonType, result?.selection));
             });

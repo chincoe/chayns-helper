@@ -19,7 +19,7 @@ export default class Guid {
      * @param {?string} str
      * @constructor
      */
-    constructor(str = null) {
+    constructor(str: string = '') {
         if (str && guidRegex.test(str)) {
             this.value = str;
         } else if (str) {

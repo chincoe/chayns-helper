@@ -1,6 +1,7 @@
 // @ts-ignore
 import logger from 'chayns-logger';
 
+
 export const chaynsErrorCodeRegex = /^[a-zA-Z0-9_]+\/[a-zA-Z0-9/_]+$/;
 
 /**

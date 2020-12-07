@@ -1,13 +1,3 @@
-/**
- * simplify chayns.showWaitCursor with a timeout before showing the waitCursor
- * @param {Object} [config={}]
- * @param {string} [config.text=undefined] - Text that will be displayed after {@link textTimeout}
- * @param {number} [config.textTimeout=5000] - Time in ms after which {@link text} will be shown
- * @param {number} [config.timeout=300] = Time in ms after which the waitCursor will be shown
- * @param {Object.<number, string|null>} [additionalSteps=] - Show multiple texts after a timeout each. Format:
- * { [timeout]: "text", ... }. Text <undefined> will use chayns default, text <null> will display no text.
- * @return {function()} - hideWaitCursor function, will also clear the timeout
- */
 
 export interface WaitCursorConfig {
     text?: string,
@@ -15,7 +5,12 @@ export interface WaitCursorConfig {
     timeout?: number
 }
 
-export default function showWaitCursor(config?: WaitCursorConfig, additionalSteps?: { [key: number]: string | null }) {
+/**
+ * Format: { [timeout: number]: "text", ... }; use null for text to show no text
+ */
+export type WaitCursorSteps = { [timeout: number]: string | null }
+
+export default function showWaitCursor(config?: WaitCursorConfig, additionalSteps?: WaitCursorSteps) {
     const {
         text = undefined, textTimeout = 5000, timeout: initialTimeout = 300
     } = config || {};

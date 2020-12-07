@@ -2,10 +2,6 @@ import React, {JSXElementConstructor, useCallback, useState} from 'react';
 // @ts-ignore
 import generateUUID from 'chayns-logger/lib/core/generate-uid';
 
-/**
- * @param {function(*): JSXElement|null} WrappedComponent
- * @returns {function(*): JSXElement|null}
- */
 export default function rerender(WrappedComponent: JSXElementConstructor<any>) {
     return (props: any) => {
         const [rerenderId, setRerenderId] = useState(generateUUID);

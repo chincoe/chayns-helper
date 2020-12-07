@@ -2,6 +2,7 @@ import React, {FunctionComponent, JSXElementConstructor, ReactChildren} from 're
 import clsx from 'clsx';
 import './data-row.scss';
 
+
 export interface DataRow {
     className?: string,
     style?: object,

@@ -1,15 +1,18 @@
-import React from 'react';
+import React, {ReactElement} from 'react';
 import stringToRegex, { regexRegex } from '../utils/stringToRegex';
 import generateUUID from '../functions/generateUid';
 
-/**
- * @param {string} text
- * @param {Object.<string, string|function>} replacements
- * @param {number} [maxReplacements=20]
- * @param {string} [guid]
- * @param {boolean} [useDangerouslySetInnerHTML=false]
- * @returns {string[]|JSXElement[]|*[]}
- */
+
+export type JsxReplacements = {[stringOrRegex: string]: string|((...args: any[]) => string|ReactElement)}
+
+export interface JsxReplaceConfig {
+    text: string,
+    replacements: JsxReplacements,
+    maxReplacements?: number
+    guid?: string,
+    useDangerouslySetInnerHTML?: boolean
+}
+
 export default function jsxReplace(
     {
         text,
@@ -17,8 +20,8 @@ export default function jsxReplace(
         maxReplacements = 20,
         guid = generateUUID(),
         useDangerouslySetInnerHTML = false
-    }
-) {
+    }: JsxReplaceConfig
+): Array<ReactElement|string> {
     const vars = Object.keys(replacements);
     let result = [text];
     // for every entry in "replacements"
@@ -44,7 +47,8 @@ export default function jsxReplace(
             const isReplacerFunction = chayns.utils.isFunction(replacements[vars[i]]);
             let ReplaceElement;
             if (isRegexKey) {
-                const match = result[arrayIdx].match(regex);
+                const match = (result[arrayIdx].match(regex) as RegExpMatchArray);
+                // @ts-ignore
                 [matchValue] = match;
                 matchIndex = match.index;
                 matchLength = match[0].length;
@@ -54,6 +58,7 @@ export default function jsxReplace(
                 matchIndex = result[arrayIdx].indexOf(vars[i]);
             }
             if (isReplacerFunction) {
+                // @ts-ignore
                 ReplaceElement = replacements[vars[i]]({
                     match: matchValue,
                     ...(isRegexKey ? { regex } : {}),
@@ -61,17 +66,20 @@ export default function jsxReplace(
                 });
             }
             // declare the new result array
+            // @ts-ignore
             result = [
                 ...result.slice(0, arrayIdx),
                 ...(ReplaceElement && React.isValidElement(ReplaceElement)
                     ? [
-                        // jsx replacement
                         result[arrayIdx].substring(0, matchIndex),
                         React.cloneElement(ReplaceElement, { key: `${guid}:${i}.${j}` }),
+                        // jsx replacement
+                        // @ts-ignore
                         result[arrayIdx].substring(matchIndex + matchLength)
                     ] : [
                         // string replacement
                         `${result[arrayIdx].substring(0, matchIndex)}${ReplaceElement}${result[arrayIdx].substring(
+                            // @ts-ignore
                             matchIndex + matchLength
                         )}`
                     ]),
@@ -83,6 +91,7 @@ export default function jsxReplace(
         for (let i = 0; i < result.length; i += 1) {
             if (chayns.utils.isString(result[i])) {
                 // eslint-disable-next-line react/no-danger
+                // @ts-ignore
                 result[i] = <span dangerouslySetInnerHTML={{ __html: result[i] }}/>;
             }
         }

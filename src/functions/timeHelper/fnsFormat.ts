@@ -2,20 +2,11 @@ import { format } from 'date-fns/esm';
 import deLocale from 'date-fns/esm/locale/de';
 import time from '../../constants/time';
 
-/**
- * datefns format function, extended by the option to use "heute"|"morgen"|"gestern". Using "yyyy?" will only display
- * the year if it is not the current year
- * @param {Date|string|number} date
- * @param {string} formatString
- * @param {Object} [options]
- * @param {boolean} [options.useToday=false] - use "heute"|"morgen"|"gestern"
- * @param {boolean} [options.appendYear=false] - append the year if it's not the current year
- * @param {Locale} [options.locale=deLocale] - date-fns locale
- * @return {string}
- *
- * @readonly
- */
-const fnsFormat = (date, formatString, options) => {
+const fnsFormat = (date: Date|string|number, formatString: string, options?: {
+    useToday?: boolean,
+    appendYear?: boolean,
+    locale?: Locale
+}): string => {
     const {
         useToday,
         appendYear,

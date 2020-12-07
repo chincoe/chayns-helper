@@ -62,7 +62,6 @@ initChaynsHelper({
 | [usePrevState](/src/hooks/usePrevState.js)| useState hook that can access its value from a previous render |
 | [useTextStrings](/src/textstring/TextStringMemo.jsx)| get memoized TextStrings from a list of string names |
 | [useTimeoutState](/src/hooks/uniques/useTimeoutState.js)| useState that calls an onChange method if the value hasn't change for a certain time | [useTimeoutState.md](/src/hooks/uniques/useTimeoutState.md) |
-| [useUniqueEventListener](/src/hooks/uniques/useUniqueEventListener.js)| removes an old eventListener when a new one is set |
 | [useUniqueInterval](/src/hooks/uniques/useUniqueInterval.js)| clears a previous interval when a new one is set |
 | [useUniqueTimeout](/src/hooks/uniques/useUniqueTimeout.js)| clears a previous timeout when a new one is set |
 | [useUpdateEffect](/src/hooks/useUpdateEffect.js)| useEffect() hook that won't run on the first render |

@@ -1,8 +1,9 @@
+// @ts-ignore
 import logger from 'chayns-logger';
 import { isChaynsErrorObject } from './isChaynsError';
 import {ChaynsErrorObject} from "./ChaynsError";
 
-function getChaynsErrorCodeFromObject(value: ChaynsErrorObject) {
+function getChaynsErrorCodeFromObject(value: ChaynsErrorObject): string|null {
     if (!isChaynsErrorObject(value)) return null;
     if (chayns.utils.isObject(value) && Object.hasOwnProperty.call(value, 'errorCode')) {
         return value.errorCode;
@@ -14,7 +15,7 @@ function getChaynsErrorCodeFromObject(value: ChaynsErrorObject) {
  * @param {Response|Promise|Object} value
  * @returns {Promise<null>}
  */
-export default async function getChaynsErrorCode(value) {
+export default async function getChaynsErrorCode(value: any): Promise<string|null> {
     try {
         if (value instanceof Response) {
             const response = value.clone();

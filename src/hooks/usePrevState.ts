@@ -1,8 +1,8 @@
-import {
+import React, {
     useState,
     useRef,
     useEffect,
-    useMemo
+    useMemo, SetStateAction
 } from 'react';
 
 /**
@@ -11,9 +11,12 @@ import {
  * @param {?*[]} [deps]
  * @returns {[T, function(T), T]} - [state, setState, prevState]
  */
-export default function usePrevState(initialState, deps) {
+export default function usePrevState<T>(
+    initialState: T,
+    deps?: any[]
+): [T, React.Dispatch<SetStateAction<T>>, T | undefined] {
     const [state, setState] = useState(initialState);
-    const prevState = useRef();
+    const prevState = useRef<T>();
     useEffect(() => {
         prevState.current = state;
     }, [state, ...(deps || [])]);

@@ -1,13 +1,10 @@
-/**
- * @param {Object} options
- * @param {boolean} [options.ignoreNullValues]
- * @param {boolean|string|number|null|Object} [options.includeUndefined]
- * @param {boolean} [options.includeNotSerializable]
- * @param {string[]} [options.excludeKeys]
- *
- * @returns {function(string, *)} replacer
- */
-export default function getJsonSettings(options) {
+
+export default function getJsonSettings(options: {
+    ignoreNullValues?: boolean,
+    includeUndefined?: boolean,
+    includeNotSerializable?: boolean,
+    excludeKeys?: string[]
+}): (key: string, value: any) => any {
     const {
         ignoreNullValues = false,
         includeUndefined = false,
@@ -27,7 +24,7 @@ export default function getJsonSettings(options) {
                    : includeUndefined;
         }
         if (chayns.utils.isArray(value)) {
-            return value.map((v) => replacer(key, v));
+            return value.map((v: any) => replacer(key, v));
         }
         if (includeNotSerializable) {
             if (!chayns.utils.isNumber(value)

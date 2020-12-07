@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import React, {useState, useEffect, SetStateAction} from 'react';
 
 // capture group 1: tag name (e.g. "p")
 const unclosedHtmlTagRegex = /<([a-zA-Z]{0,10}|(?:h[0-9]))(?: (?:(?: ?[a-zA-Z-]+=".*?")*))?>(?!.*?<\/\1>)/g;
 const htmlOpeningTagRegexWithStyles = /<([a-zA-Z]{0,10}|(?:h[0-9]))(?: (?:(?: ?[a-zA-Z-]+=".*?")*))?>/;
 
 // complete all opening tags with their respective closing tag while leaving styles intact
-export const completeOpenTags = (str) => {
+export const completeOpenTags = (str: string): string => {
     const matches = str.match(unclosedHtmlTagRegex);
     return matches ? `${str}${matches
         .reverse()
@@ -19,7 +19,7 @@ export const completeOpenTags = (str) => {
 const splitHtmlTagRegex = /<\/?(?:(?:[a-zA-Z]{0,10}|(?:h[0-9]))(?:\s(?:\s*[a-zA-Z-]+(?:=(?:["'](?:[^"']+(?:["'])?)?)?)?)*)?\/?>?)?$/;
 // removes html tags at the end of a html string section that were split to the point that they can no longer be
 // interpreted as html
-export const removeSplitTags = (stringPart) => {
+export const removeSplitTags = (stringPart: string): string => {
     if (splitHtmlTagRegex.test(stringPart)) {
         return stringPart.replace(splitHtmlTagRegex, '');
     }
@@ -31,20 +31,20 @@ const leadingParagraphTagRegex = /^<p((?: ?[a-zA-Z-]+=".*?")*)>((?:a|[^a])*)<\/p
 const paragraphTagRegex = /<p((?: ?[a-zA-Z-]+=".*?")*)>((?:a|[^a])*)<\/p>/g;
 // replace <p>-tags with <br>-tags so the tag completion will not push the ellipsis ("mehr anzeigen") into the next line
 // the <span>-tags are only there to retain all styles set on the <p>-tags
-export const replaceParagraphTags = (str) => str
+export const replaceParagraphTags = (str: string): string => str
     .replace(leadingParagraphTagRegex, '<span$1>$2</span>')
     .replace(paragraphTagRegex, '<br/><span$1>$2</span>')
     .replace('<br>', '<br/>');
 
 // combine completeOpenTags and removeSplitTags and add the ellipsis for testing purposes
-export function formatShortString(str, ellipsisLiteral = '') {
+export function formatShortString(str: string, ellipsisLiteral = ''): string {
     const shortString = completeOpenTags(removeSplitTags(str));
     return `${shortString}${ellipsisLiteral}`;
 }
 
-export const lineClampType = {
-    HEIGHT: 'height',
-    LINES: 'lines'
+export enum lineClampType {
+    HEIGHT = 'height',
+    LINES = 'lines'
 };
 
 /**
@@ -63,7 +63,32 @@ export const lineClampType = {
  *     potentially modified result
  * @returns {[string, function(*), number]}
  */
-const useClampLines = (input, options) => {
+
+export interface ClampLinesConfig {
+    /**
+     * the string appended after the cut
+     */
+    ellipsis?: string,
+    /**
+     * whether the ellipsis should be added to the text or just factored  in for calculation
+     */
+    appendEllipsis?: boolean
+    /**
+     * limit type depends on options.type, either height in px or max lines goes here
+     */
+    limit?: number
+    type?: 'lines'|'height'|lineClampType,
+    /**
+     * use html strings with innerHTML
+     */
+    html?: boolean
+    /**
+     * a function that receives the result string and returns a potentially modified result
+     */
+    replacer?: (value: string) => string
+}
+
+const useClampLines = (input: string, options?: ClampLinesConfig): [string, React.Dispatch<SetStateAction<any>>] => {
     const {
         ellipsis = '...',
         appendEllipsis = true,
@@ -79,12 +104,16 @@ const useClampLines = (input, options) => {
     useEffect(() => {
         if (element) {
             const originalText = html ? replaceParagraphTags(input) : input;
+            // @ts-ignore
             const prevHtml = element.innerHTML;
             let maxHeight = limit;
+            // @ts-ignore
             element.innerHTML = '_';
             if (type === lineClampType.LINES) {
+                // @ts-ignore
                 maxHeight = element.getBoundingClientRect().height * limit;
             }
+            // @ts-ignore
             if (maxHeight === 0 || maxHeight < element.getBoundingClientRect().height * limit) {
                 setText('');
                 // eslint-disable-next-line no-console
@@ -98,16 +127,20 @@ const useClampLines = (input, options) => {
             while (start <= end) {
                 middle = Math.floor((start + end) / 2);
                 if (html) {
+                    // @ts-ignore
                     element.innerHTML = formatShortString(originalText.slice(0, middle), ellipsis);
                 } else {
+                    // @ts-ignore
                     element.innerText = originalText.slice(0, middle) + ellipsis;
                 }
+                // @ts-ignore
                 if (element?.getBoundingClientRect().height <= maxHeight
                     && middle === originalText.length + (ellipsis || '').length) {
                     setText(originalText);
                     return;
                 }
 
+                // @ts-ignore
                 if (element.getBoundingClientRect().height <= maxHeight) {
                     start = middle + 1;
                 } else {
@@ -120,6 +153,7 @@ const useClampLines = (input, options) => {
             if (replacer) {
                 t = replacer(t);
             }
+            // @ts-ignore
             element.innerHTML = prevHtml;
             setText(t);
         }

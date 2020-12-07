@@ -1,12 +1,6 @@
 import { useRef, useEffect, useMemo } from 'react';
 
-/**
- * @template T
- * @param {T} value
- * @param {?*[]} [deps]
- * @returns {T}
- */
-export default function usePrevious(value, deps) {
+export default function usePrevious<T>(value: T, deps?: any[]): T {
     const ref = useRef(value);
     useEffect(() => {
         ref.current = value;

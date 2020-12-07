@@ -1,10 +1,13 @@
+
+
+// @ts-ignore
 import { TextString } from 'chayns-components';
 import React, {
-    memo, useMemo
+    FunctionComponent,
+    memo, ReactChildren, useMemo
 } from 'react';
-import PropTypes from 'prop-types';
 import generateUUID from '../functions/generateUid';
-import jsxReplace from './jsxReplace';
+import jsxReplace, {JsxReplacements} from './jsxReplace';
 import TEXTSTRING_PREFIX from './textstringPrefix';
 
 // memoized textstring component
@@ -34,7 +37,18 @@ import TEXTSTRING_PREFIX from './textstringPrefix';
  *
  * @return {*}
  */
-const TextStringMemo = memo((
+
+export interface TextStringMemoConfig {
+    stringName: string,
+    fallback: string,
+    replacements: JsxReplacements,
+    children?: React.ReactChildren|null,
+    maxReplacements?: number,
+    useDangerouslySetInnerHTML?: boolean,
+    language?: string
+}
+
+const TextStringMemo: FunctionComponent<TextStringMemoConfig> = memo((
     {
         stringName,
         fallback,
@@ -52,7 +66,9 @@ const TextStringMemo = memo((
         useDangerouslySetInnerHTML={false}
         language={language}
     >
+        {/* @ts-ignore */}
         <TextStringReplacer
+            // @ts-ignore
             useDangerouslySetInnerHTML={useDangerouslySetInnerHTML}
             maxReplacements={maxReplacements}
             replacements={replacements}
@@ -64,27 +80,20 @@ const TextStringMemo = memo((
     </TextString>
 ));
 
-TextStringMemo.propTypes = {
-    useDangerouslySetInnerHTML: PropTypes.bool,
-    language: PropTypes.string,
-    maxReplacements: PropTypes.number,
-    stringName: PropTypes.string.isRequired,
-    fallback: PropTypes.string.isRequired,
-    replacements: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.func, PropTypes.string])),
-    children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)])
-};
-
-TextStringMemo.defaultProps = {
-    useDangerouslySetInnerHTML: false,
-    language: undefined,
-    maxReplacements: 20,
-    replacements: {},
-    children: null
-};
-
 TextStringMemo.displayName = 'TextStringMemo';
 
-const TextStringReplacer = memo((props) => {
+interface TextStringReplacerConfig {
+    children: string|ReactChildren,
+    textStringChildren?: ReactChildren|null,
+    replacements: JsxReplacements,
+    useDangerouslySetInnerHTML?: boolean,
+    maxReplacements?: number,
+    stringName: string,
+    fallback: string
+
+}
+
+const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = memo((props) => {
     const {
         children,
         textStringChildren,
@@ -118,31 +127,11 @@ const TextStringReplacer = memo((props) => {
     }, [text, replacements]);
 
     return React.isValidElement(textStringChildren)
-           ? React.cloneElement(textStringChildren, elementProps, content)
+        // @ts-ignore
+        ? React.cloneElement(textStringChildren, elementProps, content)
            : <>{content}</>;
 });
 
 TextStringReplacer.displayName = 'TextStringReplacer';
-
-TextStringReplacer.propTypes = {
-    useDangerouslySetInnerHTML: PropTypes.bool,
-    language: PropTypes.string,
-    maxReplacements: PropTypes.number,
-    stringName: PropTypes.string.isRequired,
-    fallback: PropTypes.string.isRequired,
-    replacements: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.func, PropTypes.string])),
-    children: PropTypes.string.isRequired,
-    textStringChildren: PropTypes.element
-};
-
-TextStringReplacer.defaultProps = {
-    useDangerouslySetInnerHTML: false,
-    language: 'de',
-    maxReplacements: 20,
-    replacements: {},
-    textStringChildren: null
-};
-
-TextStringMemo.jsxReplace = jsxReplace;
 
 export default TextStringMemo;

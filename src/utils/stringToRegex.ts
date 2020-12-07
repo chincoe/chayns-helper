@@ -4,11 +4,8 @@ const fullMatchRegex = /(^\^)|(\$$)/g;
 /**
  * Turn a string into a regex.
  * Will recognize a stringified regex (e.g. "/..../g")
- * @param {string} str
- * @param {boolean} [fullMatch=false]
- * @returns {RegExp}
  */
-const stringToRegex = (str, fullMatch = false) => {
+const stringToRegex = (str: string, fullMatch = false): RegExp => {
     if (!regexRegex.test(str)) {
         return new RegExp(fullMatch ? `^${str.replace(fullMatchRegex, '')}$` : str);
     }

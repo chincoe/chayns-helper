@@ -1,41 +1,38 @@
+export type WebsocketConditions = { [key: string]: string | number | boolean };
+
 /**
  * This websocket client works exactly like the tobit-websocket-service-client but had additional null value handling
- * @class
- * @type {{closeConnection: function(), createConnection: function(), updateConditions: function(Object), on:
- *     function(string, wsEventHandler), once: function(string, wsEventHandler), off: function(string)}}
- *     WebSocketClient
  */
 class WebSocketClient {
-    reconnectTimeoutTime;
+    reconnectTimeoutTime: number;
 
-    checkConnectionIntervalTime;
+    checkConnectionIntervalTime: number;
 
-    application = null;
+    application: string | null = null;
 
-    conditions = null;
+    conditions: WebsocketConditions | null = null;
 
     /**
      * @type {WebSocket|null}
      */
-    socket = null;
+    socket: WebSocket | null = null;
 
-    checkConnectionInterval = null;
+    checkConnectionInterval: NodeJS.Timeout | null = null;
 
-    reconnectTimeout = null;
+    reconnectTimeout: NodeJS.Timeout | null = null;
 
     answeredPing = false;
 
-    listener = {};
+    listener: {[event: string]: (...args: any[]) => any} = {};
 
-    /**
-     * @param {string} application - name of the application
-     * @param {Object} [conditions] - conditions for registration
-     * @param {Object} [options]
-     * @param {number} [options.reconnectTimeout=5000] - time in milliseconds after trying to reconnect on connection
-     *     termination
-     * @param {number} [options.checkConnectionInterval=2000] - time in milliseconds for connection check interval
-     */
-    constructor(application, conditions, options = {}) {
+    constructor(
+        application: string,
+        conditions: WebsocketConditions,
+        options: {
+            reconnectTimeout?: number,
+            checkConnectionInterval?: number
+        } = {}
+    ) {
         this.application = application;
         this.conditions = conditions;
 
@@ -49,7 +46,7 @@ class WebSocketClient {
      * @private
      */
     onOpen = () => {
-        clearTimeout(this.reconnectTimeout);
+        clearTimeout(<NodeJS.Timeout>this.reconnectTimeout);
 
         this.send('register', {
             application: this.application,
@@ -57,7 +54,7 @@ class WebSocketClient {
         });
 
         this.answeredPing = true;
-        clearInterval(this.checkConnectionInterval);
+        clearInterval(<NodeJS.Timeout>this.checkConnectionInterval);
         this.checkConnectionInterval = setInterval(this.checkConnection, this.checkConnectionIntervalTime);
 
         this.emit('OPEN');
@@ -66,7 +63,7 @@ class WebSocketClient {
     /**
      * @private
      */
-    onMessage = (e) => {
+    onMessage = (e: MessageEvent) => {
         const message = JSON.parse(e.data);
 
         if (message.topic === 'pong') {
@@ -80,23 +77,27 @@ class WebSocketClient {
     /**
      * @private
      */
-    onError = (err) => {
+    onError = (err?: Event) => {
         this.emit('ERROR', err, err);
     };
 
     /**
      * @private
      */
-    onClose = (event) => {
-        clearInterval(this.checkConnectionInterval);
+    onClose = (event?: CloseEvent) => {
+        clearInterval(<NodeJS.Timeout>this.checkConnectionInterval);
         if (this.socket) {
-            this.socket.onopen = () => {};
-            this.socket.onerror = () => {};
-            this.socket.onclose = () => {};
-            this.socket.onmessage = () => {};
+            this.socket.onopen = () => {
+            };
+            this.socket.onerror = () => {
+            };
+            this.socket.onclose = () => {
+            };
+            this.socket.onmessage = () => {
+            };
         }
         this.socket = null;
-        clearTimeout(this.reconnectTimeout);
+        clearTimeout(<NodeJS.Timeout>this.reconnectTimeout);
         this.reconnectTimeout = setTimeout(this.createConnection, this.reconnectTimeoutTime);
 
         this.emit('CLOSED', event, event);
@@ -112,6 +113,7 @@ class WebSocketClient {
             return;
         }
 
+        // @ts-ignore
         this.send('ping');
         this.answeredPing = false;
     };
@@ -119,11 +121,11 @@ class WebSocketClient {
     /**
      * @private
      */
-    send = (topic, data) => {
+    send = (topic: string, data: any) => {
         if (this.socket
             && this.socket?.readyState === WebSocket.OPEN
             && this.socket?.readyState !== WebSocket.CONNECTING) {
-            this.socket?.send(JSON.stringify({ topic, data }));
+            this.socket?.send(JSON.stringify({topic, data}));
         }
     };
 
@@ -142,47 +144,33 @@ class WebSocketClient {
     /**
      * @private
      */
-    emit = (event, data, wsEvent = null) => {
+    emit = (event: string, data?: any, wsEvent: Event|null = null) => {
         if (typeof this.listener[event] === 'function') {
             this.listener[event](data, wsEvent);
         }
     };
 
     /**
-     * @callback wsEventCallback
-     * @param {Object} data
-     * @param {MessageEvent} wsEvent
-     */
-
-    /**
      * Registers a new event handler for the given event name.
      * Overrides any previous event handler for this event.
-     * @param {string} event - the name of the event
-     * @param {wsEventCallback} listener - a callback that handles the event
-     * @public
      */
-    on = (event, listener) => {
+    on = (event: string, listener: (data: { [key: string]: number | string | null }, wsEvent: MessageEvent) => any) => {
         this.listener[event] = listener;
     };
 
-    /**
-     * @param {string} event - the name of the event
-     * @public
-     */
-    off = (event) => {
-        this.listener[event] = () => {};
+    off = (event: string) => {
+        this.listener[event] = () => {
+        };
     };
 
     /**
      * Registers a new event handler that is called once for the given event name.
-     * @param {string} event - the name of the event
-     * @param {wsEventCallback} listener - a callback that handles the event
-     * @public
      */
-    once = (event, listener) => {
+    once = (event: string, listener: (data: { [key: string]: number | string | null }, wsEvent: MessageEvent) => any) => {
         this.listener[event] = (data, wsEvent) => {
             listener(data, wsEvent);
-            this.listener[event] = () => {};
+            this.listener[event] = () => {
+            };
         };
     };
 
@@ -191,7 +179,7 @@ class WebSocketClient {
      * @param {Object} conditions
      * @public
      */
-    updateConditions = (conditions) => {
+    updateConditions = (conditions: WebsocketConditions) => {
         this.conditions = conditions;
         this.send('register', {
             application: this.application,

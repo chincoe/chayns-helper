@@ -1,6 +1,7 @@
 import IframeDialogPromise from '../IFrameDialogPromise';
 import {createDialogResult, DialogButton} from '../utils';
 
+
 export interface IFrameDialogConfig {
     url: string;
     input?: object|any;
@@ -34,7 +35,7 @@ export default function iFrame(options: IFrameDialogConfig, buttons?: DialogButt
             maxHeight,
             width,
             customTransitionTimeout
-        }).then((result) => {
+        }).then((result: any) => {
             resolve(createDialogResult(result.buttonType, result?.value));
         });
     });

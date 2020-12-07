@@ -1,6 +1,7 @@
 import {isChaynsErrorObject} from './isChaynsError';
 import RequestError from './RequestError';
 
+
 export interface ChaynsErrorObject {
     displayMessage: string,
     errorCode: string;

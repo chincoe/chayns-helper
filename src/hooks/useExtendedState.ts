@@ -1,30 +1,29 @@
-import {
-    useState, useCallback, useRef, useMemo, useEffect
+import React, {
+    useState, useCallback, useRef, useMemo, useEffect, SetStateAction
 } from 'react';
 
 /**
  * useState hook that includes an async getter to get the current state in e.g. eventListeners or other functions that
  * have to keep their reference as well as a way to retain a prevState from a previous render
- * @template T
- * @param {T|function():T} initialState
- * @param {*[]} [deps=[state]]
- * @returns {[T, function(T|function(T):T), function(): Promise<T>, T]} - [state, setState, getState, prevState]
  */
-export default function useExtendedState(initialState, deps) {
-    const [state, setState] = useState(initialState);
+export default function useExtendedState<T>(
+    initialState: T,
+    deps?: Array<any>
+): [T, React.Dispatch<SetStateAction<T>>, () => Promise<T>, T|undefined] {
+    const [state, setState] = useState<T>(initialState);
 
-    const getState = useCallback(async () => new Promise((resolve) => {
+    const getState = useCallback(async () => new Promise<T>((resolve) => {
         setState((prev) => {
             resolve(prev);
             return prev;
         });
     }), []);
 
-    const prevState = useRef();
+    const prevState = useRef<T>();
     useEffect(() => {
         prevState.current = state;
     }, [state, ...(deps || [])]);
-    const prev = useMemo(() => prevState.current, [state, ...(deps || [])]);
+    const prev = useMemo<T|undefined>(() => prevState.current, [state, ...(deps || [])]);
 
     return [state, setState, getState, prev];
 }

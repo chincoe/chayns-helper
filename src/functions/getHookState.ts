@@ -1,10 +1,10 @@
+import React from "react";
+
 /**
  * Gets the current state of a hook based on the setter
- * @param {function} setter
- * @returns {Promise<*>}
  */
-const getHookState = (setter) => new Promise((resolve) => {
-    setter((state) => {
+const getHookState = <T>(setter: React.Dispatch<React.SetStateAction<T>>): Promise<T> => new Promise((resolve) => {
+    setter((state: T) => {
         resolve(state);
         return state;
     });

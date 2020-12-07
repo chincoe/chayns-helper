@@ -6,6 +6,7 @@ import LogLevel from '../../functions/httpRequest/LogLevel';
 import ResponseType from '../../functions/httpRequest/ResponseType';
 import ResizableWaitCursor from '../wait-cursor/ResizableWaitCursor';
 
+
 declare interface UACGroupChooseButton {
     value: number,
     onChange: (param: any) => any,

@@ -6,6 +6,7 @@ import {Button} from 'chayns-components';
 import logger from 'chayns-logger';
 import CenteredContainer from '../containers/CenteredContainer';
 
+
 /**
  * An ErrorBoundary.
  * Wrap your application in this. If an error occurs during render that causes react to fail rendering, this component

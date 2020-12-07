@@ -1,4 +1,7 @@
+
+// @ts-ignore
 import { TextString } from 'chayns-components';
+// @ts-ignore
 import { isNullOrWhiteSpace } from 'chayns-components/lib/utils/is';
 import TEXTSTRING_PREFIX from './textstringPrefix';
 
@@ -9,13 +12,14 @@ import TEXTSTRING_PREFIX from './textstringPrefix';
  * @param {string} language
  * @return {string[]}
  */
-const getTextStrings = (textStrings, language = 'de') => {
+const getTextStrings = (textStrings: string[]|{[name: string]: string}, language = 'de') => {
     const returnList = [];
     const isSimple = !chayns.utils.isObject(textStrings);
-    const strings = isSimple ? textStrings : Object.keys(textStrings);
+    const strings: string[] = <string[]>(isSimple ? textStrings : Object.keys(textStrings));
     for (let i = 0; i < strings.length; i += 1) {
         const current = strings[i];
-        const fallback = isSimple ? current : textStrings[strings[i]];
+        // @ts-ignore
+        const fallback = (isSimple ? current : textStrings[strings[i]]);
         const text = TextString.getTextString(
             `${TEXTSTRING_PREFIX.value}${current}`,
             language,

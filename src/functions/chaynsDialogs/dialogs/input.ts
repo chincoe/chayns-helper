@@ -1,6 +1,7 @@
 import DialogPromise from '../DialogPromise';
 import {createDialogResult, DialogButton} from '../utils';
 
+
 export enum inputType {
     PASSWORD = chayns.dialog.inputType.PASSWORD,
     TEXTAREA = chayns.dialog.inputType.TEXTAREA,
@@ -36,7 +37,7 @@ export default function input(options?: InputDialogConfig, buttons?: DialogButto
             pattern: options?.pattern,
             disableButtonTypes: options?.disableButtonTypes
         })
-            .then(({ buttonType: type, text }) => {
+            .then(({ buttonType: type, text }: any) => {
                 resolve(createDialogResult(type, text));
             });
     });

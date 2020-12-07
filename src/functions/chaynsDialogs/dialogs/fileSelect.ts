@@ -1,6 +1,7 @@
 import DialogPromise from '../DialogPromise';
 import {createDialogResult, DialogButton} from '../utils';
 
+
 /**
  * fileTypes
  * @type {{IMAGE: string, VIDEO: string, DOCUMENT: string[], AUDIO: string}}
@@ -68,7 +69,7 @@ export default function fileSelect(
             exclude,
             directory
         })
-            .then((result) => {
+            .then((result: any) => {
                 // @ts-ignore
                 resolve(createDialogResult(result?.buttonType, result?.selection));
             });

@@ -1,14 +1,14 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
+
 
 /**
  * useState hook that can handle promises:
  *  - can call setState(Promise) and this hook will resolve it
  *  - can pass an async setter function to setState(), e.g. setState(async (prevState) => {....})
- * @template T
- * @param {?T|Promise<T>} [initialState]
- * @returns {[?T|Promise<T>, function(T|Promise<T>|function(T=): T|function(T=): Promise<T>) : Promise<undefined>]} - [state, setState]
  */
-export default function useAsyncState(initialState) {
+export default function useAsyncState<T>(
+    initialState?: T|Promise<T>
+): [T|Promise<T>|undefined, React.Dispatch<React.SetStateAction<T|Promise<T>>>] {
     const [state, setState] = useState(initialState);
     if (chayns.utils.isPromise(initialState)) {
         Promise.resolve(initialState).then(setState);
@@ -29,16 +29,16 @@ export default function useAsyncState(initialState) {
                 if (chayns.utils.isPromise(nextValue)) {
                     Promise.resolve(nextValue).then((res) => {
                         setState(res);
-                        r();
+                        r(undefined);
                     });
                 } else {
                     setState(nextValue);
-                    r();
+                    r(undefined);
                 }
             });
         } else {
             setState(newValue);
-            r();
+            r(undefined);
         }
     }), []);
 

@@ -1,11 +1,9 @@
+// @ts-ignore
 const isChromeBased = !!window.chrome;
+// @ts-ignore
 const isFirefox = typeof InstallTrigger !== 'undefined';
-/**
- * @param {Object.<string, string>} elements
- * @returns {string[]}
- */
 // eslint-disable-next-line no-console
-export default function colorLog(elements) {
+export default function colorLog(elements: {[message: string]: string}): string[] {
     if (!isChromeBased && !isFirefox) return [Object.keys(elements).join(' ')];
     const logs = [];
     const styles = [];

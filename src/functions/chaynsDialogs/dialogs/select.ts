@@ -1,6 +1,8 @@
 import DialogPromise from '../DialogPromise';
 import {createDialogResult, DialogButton} from '../utils';
 
+
+
 export enum selectType {
     DEFAULT = chayns.dialog.selectType.DEFAULT,
     ICON = chayns.dialog.selectType.ICON
@@ -55,7 +57,7 @@ export default function select(options: SelectDialogConfig, buttons?: DialogButt
             buttons,
             selectAllButton
         })
-            .then((result) => {
+            .then((result: any) => {
                 const {buttonType: bType, selection} = result;
                 if (!multiselect && selection && selection?.length === 1) {
                     const {name, value} = selection[0];

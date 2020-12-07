@@ -25,7 +25,12 @@ import useSelector from '../utils/requireUseSelector';
  *     change
  * @returns {T}
  */
-export default function useInlineSelector(selector, defaultValue, deps) {
+export default function useInlineSelector<T>(
+    selector: (state: any) => T,
+    defaultValue?: T,
+    deps?: Array<any>
+): T {
     const memo = useCallback(selector, (deps || []));
+    // @ts-ignore
     return useSelector(memo, shallowEqual) ?? defaultValue;
 }

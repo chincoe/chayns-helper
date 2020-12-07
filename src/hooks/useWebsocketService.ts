@@ -1,7 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import {useEffect, useMemo, useState} from 'react';
+// @ts-ignore
 import logger from 'chayns-logger';
 import shallowEqual from '../functions/shallowEqual';
-import WsClient from '../other/WsClient';
+import WsClient, {WebsocketConditions} from '../other/WsClient';
+import WebSocketClient from "../other/WsClient";
+
 
 /**
  * tobit-websocket-client has some unhandled errors. They don't affect the user but generate error logs. Using these
@@ -21,8 +24,8 @@ export const wssLoggerIgnore = [
  * Add this in your chaynsLogger.init()
  * @param payload
  */
-export const wssLoggerIgnoreMiddleware = (payload) => {
-    const { message, ex } = payload;
+export const wssLoggerIgnoreMiddleware = (payload: any) => {
+    const {message, ex} = payload;
     if ((message && wssLoggerIgnore.some((e) => (e.includes(message))))
         || (ex && ex.message && wssLoggerIgnore.some((e) => (e.includes(ex.message))))) {
         // eslint-disable-next-line no-param-reassign
@@ -33,7 +36,7 @@ export const wssLoggerIgnoreMiddleware = (payload) => {
 /**
  * @type {Object.<string, WebSocketClient>}
  */
-const websocketClients = {};
+const websocketClients: {[serviceName: string]: WebSocketClient} = {};
 
 /**
  * @callback wsEventHandler
@@ -41,24 +44,40 @@ const websocketClients = {};
  * @param {MessageEvent} wsEvent
  */
 
+export interface WebsocketServiceConfig {
+    serviceName: string
+    conditions: WebsocketConditions
+    /**
+     * Format: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
+     */
+    events: { [topic: string]: (data: any) => any }
+    /**
+     * services of the same client group share a ws connection and their conditions
+     */
+    clientGroup?: string
+    /**
+     * only init the service once all conditions are no longer undefined
+     * default: true
+     */
+    waitForDefinedConditions?: boolean
+    /**
+     * default: true
+     */
+    disconnectOnUnmount?: boolean,
+    /**
+     * don't use any existing client from other hooks. required for wallet items to work properly
+     * default: false
+     */
+    forceOwnConnection?: boolean
+}
+
 /**
  * Use a websocket client. Each service is only initialized once.
- * @param {Object} config
- * @param {string} config.serviceName - name of the WS service
- * @param {Object} config.conditions - conditions for the WS service
- * @param {Object.<string, wsEventHandler>} config.events - custom events that should be handled.
- *      Format: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
- * @param {string} [config.clientGroup='default'] - services of the same client group share a ws connection and their
- *     conditions
- * @param {boolean} [config.waitForDefinedConditions=true] - only init the service once all conditions are no longer
- *     undefined
- * @param {boolean} [config.disconnectOnUnmount=true] - disconnects the ws client once the component unmounts. Any
- *     other hook using this service will cease to work
- * @param {boolean} [config.forceOwnConnection=false] - don't use any existing client from other hooks. required for
- *     wallet items to work properly
- * @param {*[]} [dependencies=] - dependencies to set new event handlers
  */
-const useWebsocketService = (config, dependencies) => {
+const useWebsocketService = (
+    config: WebsocketServiceConfig,
+    deps?: any[]
+): WebSocketClient|undefined => {
     const {
         serviceName,
         conditions,
@@ -69,7 +88,7 @@ const useWebsocketService = (config, dependencies) => {
         forceOwnConnection = chayns.env.site.tapp.id === 250357
     } = config || {};
     // events pattern: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
-    const [ownClient, setOwnClient] = useState();
+    const [ownClient, setOwnClient] = useState<WebSocketClient>();
     const ownConnection = useMemo(() => forceOwnConnection, []);
     const group = useMemo(() => clientGroup, []);
 
@@ -84,12 +103,12 @@ const useWebsocketService = (config, dependencies) => {
                 `${serviceName}_${group}`
             );
 
-            let webSocketClient;
+            let webSocketClient: WebSocketClient;
 
             if (isInit) {
                 webSocketClient = new WsClient(
                     serviceName,
-                    { ...conditions }
+                    {...conditions}
                 );
                 if (ownConnection) {
                     setOwnClient(webSocketClient);
@@ -97,11 +116,11 @@ const useWebsocketService = (config, dependencies) => {
                     websocketClients[`${serviceName}_${group}`] = webSocketClient;
                 }
             } else {
-                webSocketClient = ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`];
+                webSocketClient = <WebSocketClient>(ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`]);
             }
 
-            if (!shallowEqual(webSocketClient.conditions, { ...webSocketClient.conditions, ...conditions })) {
-                webSocketClient.updateConditions({ ...webSocketClient.conditions, ...conditions });
+            if (!shallowEqual(webSocketClient.conditions, {...webSocketClient.conditions, ...conditions})) {
+                webSocketClient.updateConditions({...webSocketClient.conditions, ...conditions});
             }
 
             if (isInit) {
@@ -111,7 +130,7 @@ const useWebsocketService = (config, dependencies) => {
                         // eslint-disable-next-line no-console
                         console.log(
                             '[Websocket] client registered',
-                            { serviceName, conditions, clientGroup }
+                            {serviceName, conditions, clientGroup}
                         );
                     }
                     logger.info({
@@ -129,7 +148,7 @@ const useWebsocketService = (config, dependencies) => {
                 webSocketClient.on('register_error', (data) => {
                     // eslint-disable-next-line no-console
                     console.error('[Websocket] register error', data);
-                    logger.error({ message: '[Websocket] registration failed' }, data);
+                    logger.error({message: '[Websocket] registration failed'}, data);
                 });
 
                 // WS client default: WS connection closed
@@ -146,7 +165,7 @@ const useWebsocketService = (config, dependencies) => {
                 webSocketClient.on('ERROR', (error) => {
                     // eslint-disable-next-line no-console
                     console.error('[Websocket] error', error);
-                    logger.warning({ message: '[Websocket] error' }, error);
+                    logger.warning({message: '[Websocket] error'}, error);
                 });
             }
         }
@@ -158,7 +177,8 @@ const useWebsocketService = (config, dependencies) => {
             if (!ownConnection) {
                 delete websocketClients[`${serviceName}_${group}`];
             }
-        } : () => {};
+        } : () => {
+        };
     }, [ownConnection ? null : !!websocketClients[`${serviceName}_${group}`], ...Object.values(conditions)]);
 
     // register custom events
@@ -181,8 +201,9 @@ const useWebsocketService = (config, dependencies) => {
                 }
             };
         }
-        return () => {};
-    }, [...(dependencies || []), ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`]]);
+        return () => {
+        };
+    }, [...(deps || []), ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`]]);
 
     return ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`];
 };
