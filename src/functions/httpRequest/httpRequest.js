@@ -481,7 +481,10 @@ export function httpRequest(
                 }), error, '\nInput: ', input);
                 if (!ignoreErrors && useChaynsAuth && autoRefreshToken) {
                     try {
-                        const jRes = await response.json();
+                        let jRes = {};
+                        try {
+                            jRes = await response.json();
+                        } catch(e) { /* ignored */ }
                         if (jRes.message === 'token_expired') {
                             resolve(httpRequest(address, config, processName, {
                                 responseType,
