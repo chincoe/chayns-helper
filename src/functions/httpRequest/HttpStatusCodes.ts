@@ -6,6 +6,11 @@
  * @enum
  */
 export enum HttpStatusCode {
+    /**
+     * For internal use the chayns-helper request.fetch() function treats a failed fetch as a StatusCode 1 for purposes
+     * of configuration and return values
+     */
+    FailedToFetch = 1,
 
     /**
      * The server has received the request headers and the client should proceed to send the request body

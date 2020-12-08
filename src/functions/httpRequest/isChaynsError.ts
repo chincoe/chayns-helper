@@ -30,7 +30,7 @@ export default async function isChaynsError(value: any): Promise<boolean> {
     try {
         if (value instanceof Response) {
             const response = value.clone();
-            let obj = {};
+            let obj: {[key: string]: any} = {};
             try {
                 obj = await response.json();
             } catch(e) { /* ignored */ }

@@ -19,11 +19,11 @@ export default async function getChaynsErrorCode(value: any): Promise<string|nul
     try {
         if (value instanceof Response) {
             const response = value.clone();
-            let obj = {};
+            let obj: {[key: string]: any}|ChaynsErrorObject = {};
             try {
                 obj = await response.json();
             } catch(e) { /* ignored */ }
-            return getChaynsErrorCodeFromObject(obj);
+            return getChaynsErrorCodeFromObject(<ChaynsErrorObject>obj);
         }
         if (chayns.utils.isPromise(value)) {
             const result = await Promise.resolve(value);

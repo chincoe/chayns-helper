@@ -1,4 +1,4 @@
-## [Request](httpRequest.js)
+## [Request](httpRequest.ts)
 
 ### Suggested setup and quick documentation
 If you've never used this helper before and just want a basic fetch helper, I suggest the following setup:

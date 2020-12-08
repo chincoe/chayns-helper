@@ -474,7 +474,7 @@ export function httpRequest(
                 }), error, '\nInput: ', input);
                 if (!ignoreErrors && useChaynsAuth && autoRefreshToken) {
                     try {
-                        let jRes = {};
+                        let jRes: {[key: string]: any} = {};
                         try {
                             jRes = await response.json();
                         } catch(e) { /* ignored */ }
