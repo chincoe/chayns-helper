@@ -2,7 +2,6 @@
   // see https://www.typescriptlang.org/tsconfig to better understand tsconfigs
   "include": [
     "src",
-    "types",
     "node_modules/chayns-doc/dist/index.d.ts"
   ],
   "compilerOptions": {
@@ -30,5 +29,11 @@
     // error out if import and file system have a casing mismatch. Recommended by TS
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
+    // Ensure that .d.ts files are created by tsc, but not .js files
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    // Ensure that Babel can safely transpile files in the TypeScript project
+    "isolatedModules": true,
+    "outDir": "dist/types"
   }
 }
