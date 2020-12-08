@@ -33,6 +33,7 @@
     "emitDeclarationOnly": true,
     // Ensure that Babel can safely transpile files in the TypeScript project
     "isolatedModules": true,
-    "outDir": "dist/types"
+//    "outDir": "dist/types"
+    "outFile": "types.d.ts"
   }
 }
