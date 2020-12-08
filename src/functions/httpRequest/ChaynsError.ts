@@ -26,7 +26,10 @@ export default class ChaynsError extends RequestError {
     static async getChaynsErrorObject(value: object | Response | Promise<any>): Promise<ChaynsErrorObject | null> {
         if (value instanceof Response) {
             const response = value.clone();
-            const obj = await response.json();
+            let obj = {};
+            try {
+                obj = await response.json();
+            } catch(e) { /* ignored */ }
             if (isChaynsErrorObject(obj)) {
                 return obj;
             }
