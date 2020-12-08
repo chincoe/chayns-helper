@@ -8,10 +8,6 @@ const shell = require('gulp-shell');
 const pkg = require('./package.json');
 const ts = require('gulp-typescript');
 const tsProject = ts.createProject('tsconfig.json', {
-    declaration: true,
-    moduleResolution: 'node',
-    jsx: 'react',
-    module: 'umd',
     isolatedModules: false
 });
 // const generateDocs = require('./scripts/generate-docs/generateDocs');
@@ -133,7 +129,7 @@ gulp.task(
     gulp.series(
         'clean',
         gulp.parallel(
-            // 'transpile-typescript',
+            'transpile-typescript',
             'build-esm',
             'build-cjs',
             'build-cjs-split-css',
