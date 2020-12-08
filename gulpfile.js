@@ -33,7 +33,7 @@ gulp.task('clean', () => gulp
  ====================== */
 
 gulp.task('transpile-typescript', () => gulp
-    .src(['src/**/*.{ts,tsx}'])
+    .src(['src/**/*.{ts,tsx}', 'src/globals.d.ts'])
     .pipe(
         tsProject()
     )
