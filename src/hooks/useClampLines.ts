@@ -42,9 +42,14 @@ export function formatShortString(str: string, ellipsisLiteral = ''): string {
     return `${shortString}${ellipsisLiteral}`;
 }
 
-export const enum lineClampType {
+export const enum lineClampTypeEnum {
     HEIGHT = 'height',
     LINES = 'lines'
+}
+
+export const lineClampType = {
+    HEIGHT: 'height',
+    LINES: 'lines'
 }
 
 /**
@@ -77,7 +82,7 @@ export interface ClampLinesConfig {
      * limit type depends on options.type, either height in px or max lines goes here
      */
     limit?: number
-    type?: 'lines'|'height'|typeof lineClampType,
+    type?: 'lines'|'height'|typeof lineClampTypeEnum,
     /**
      * use html strings with innerHTML
      */

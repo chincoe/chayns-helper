@@ -51,28 +51,46 @@ export interface DateIntervalObject {
     end: Date;
 }
 
-export const enum textBlockPosition {
+export const enum textBlockPositionEnum {
     ABOVE_FIRST = 0,
     ABOVE_SECOND = 1,
     ABOVE_THIRD = 2
 }
 
+export const textBlockPosition = {
+    ABOVE_FIRST: 0,
+    ABOVE_SECOND: 1,
+    ABOVE_THIRD: 2
+}
+
 export interface DialogTextBlock {
     headline: string;
     text: string;
-    textBlockPosition: number | textBlockPosition
+    textBlockPosition: number | typeof textBlockPositionEnum
 }
 
-export const enum dateType {
+export const enum dateTypeEnum {
     DATE = 1,
     TIME = 2,
     DATE_TIME = 3
 }
 
-export const enum dateSelectType {
+export const dateType = {
+    DATE: 1,
+    TIME: 2,
+    DATE_TIME: 3
+}
+
+export const enum dateSelectTypeEnum {
     SINGLE = 0,
     MULTISELECT = 1,
     INTERVAL = 2
+}
+
+export const dateSelectType = {
+    SINGLE: 0,
+    MULTISELECT: 1,
+    INTERVAL: 2
 }
 
 export const resolveDateSelectType = (type?: number) => ([
@@ -107,8 +125,8 @@ export interface WeekDayIntervalItem {
 export interface AdvancedDateDialogConfig {
     message?: string;
     title?: string;
-    dateType?: typeof dateType | number;
-    selectType?: typeof dateSelectType | number;
+    dateType?: typeof dateTypeEnum | number;
+    selectType?: typeof dateSelectTypeEnum | number;
     minDate?: DateInformation;
     maxDate?: DateInformation;
     minuteInterval?: number;
@@ -224,3 +242,7 @@ export default function advancedDate(
             });
     });
 }
+
+advancedDate.type = {...dateType};
+advancedDate.selectType = {...dateSelectType};
+advancedDate.textBlockPosition = {...textBlockPosition};

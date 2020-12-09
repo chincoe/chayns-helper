@@ -1,7 +1,7 @@
 /**
  * httpRequest response type. Default: json
  */
-const enum ResponseType {
+export const enum ResponseTypeEnum {
     Json = 'json',
     Blob = 'blob',
     Response = 'response',
@@ -9,6 +9,19 @@ const enum ResponseType {
     Text = 'text',
     None = 'none',
     Error = 'error',
+}
+
+/**
+ * httpRequest response type. Default: json
+ */
+const ResponseType = {
+    Json: 'json',
+    Blob: 'blob',
+    Response: 'response',
+    Object: 'object',
+    Text: 'text',
+    None: 'none',
+    Error: 'error',
 }
 
 export default ResponseType;
