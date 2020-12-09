@@ -1,19 +1,13 @@
 {
   "name": "chayns-helper",
-  "version": "1.3.8",
+  "version": "1.3.8-beta.1",
+  "author": "Christian Nagel",
   "description": "my personal helpers for chayns development",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
-  "scripts": {
-    "prepublishOnly": "npm install && npm run build",
-    "build": "gulp build",
-    "install:all": "npm i",
-    "createLink": "npm link",
-    "removeLink": "npm unlink",
-    "pub": "npm publish"
-  },
+  "license": "MIT",
+  "types": "dist/esm/index.d.ts",
   "files": [
-    "lib/",
     "dist/",
     "split-css.js"
   ],
@@ -21,9 +15,39 @@
     "*.css",
     "*.scss"
   ],
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "prepublishOnly": "npm install && npm run build",
+    "build": "gulp build",
+    "install:all": "npm i -reg http://repo.tobit.ag:8081/repository/npm/",
+    "createLink": "npm link",
+    "removeLink": "npm unlink",
+    "pub": "npm publish"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "peerDependencies": {
+    "react-redux": ">=7.1.3",
+    "react": ">=16",
+    "chayns-logger": ">=2.8.5"
+  },
+  "peerDependenciesMeta": {
+    "react-redux": {
+      "optional": true
+    },
+    "react": {
+      "optional": false
+    },
+    "chayns-logger": {
+      "optional": false
+    }
+  },
   "devDependencies": {
-    "@babel/cli": "^7.11.6",
-    "@babel/core": "^7.12.3",
+    "@babel/cli": "^7.12.8",
+    "@babel/core": "^7.12.9",
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/plugin-proposal-decorators": "^7.8.3",
     "@babel/plugin-proposal-do-expressions": "^7.8.3",
@@ -43,32 +67,26 @@
     "@babel/polyfill": "^7.12.1",
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-react": "^7.12.1",
+    "@babel/preset-typescript": "^7.12.7",
     "@babel/register": "^7.10.3",
     "@babel/runtime-corejs2": "^7.8.4",
-    "@rollup/plugin-alias": "^3.1.1",
-    "@rollup/plugin-babel": "^5.2.1",
-    "@rollup/plugin-commonjs": "^16.0.0",
-    "@rollup/plugin-node-resolve": "^10.0.0",
-    "@rollup/plugin-replace": "^2.3.4",
+    "@types/node": "^14.14.10",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
     "autoprefixer": "^9.7.4",
     "babel-eslint": "^10.0.3",
-    "babel-loader": "^8.1.0",
     "babel-plugin-dev-expression": "^0.2.2",
     "babel-plugin-optimize-clsx": "^2.6.1",
     "babel-plugin-transform-imports": "^2.0.0",
     "babel-plugin-transform-remove-imports": "^1.4.1",
     "babel-plugin-transform-rename-import": "^2.3.0",
     "babel-regenerator-runtime": "^6.5.0",
+    "chayns-doc": "latest",
     "chayns-logger": "^2.8.6",
-    "core-js": "^3.6.5",
-    "cross-env": "^7.0.2",
-    "css-loader": "^4.3.0",
-    "cssnano": "^4.1.10",
     "eslint": "^7.6.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-jsdoc": "^30.7.8",
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.20.5",
     "eslint-plugin-react-hooks": "^4.0.4",
@@ -78,53 +96,23 @@
     "gulp-concat-css": "^3.1.0",
     "gulp-sass": "^4.1.0",
     "gulp-shell": "^0.8.0",
+    "gulp-typescript": "^6.0.0-alpha.1",
     "jsdoc": "^3.6.6",
     "node-sass": "^4.11.0",
-    "postcss-loader": "^4.0.1",
-    "postcss-preset-env": "^6.7.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "react-redux": "^7.1.3",
-    "rollup": "^2.26.11",
-    "rollup-plugin-auto-external": "^2.0.0",
-    "rollup-plugin-cleaner": "^1.0.0",
-    "rollup-plugin-cleanup": "^3.1.1",
-    "rollup-plugin-peer-deps-external": "^2.2.0",
-    "rollup-plugin-postcss": "^3.1.4",
-    "rollup-plugin-scss": "^2.6.0",
-    "rollup-plugin-terser": "^7.0.2",
-    "sass-loader": "^10.0.2",
-    "style-loader": "^1.2.1"
+    "tsc": "^1.20150623.0",
+    "tslib": "^2.0.3",
+    "typescript": "^4.1.2"
   },
   "dependencies": {
     "@babel/runtime": "^7.12.1",
     "abortcontroller-polyfill": "^1.5.0",
     "chayns-components": "^4.20.6",
     "clsx": "^1.1.1",
-    "date-fns": "^2.16.1",
-    "prop-types": "^15.7.2"
+    "date-fns": "^2.16.1"
   },
-  "peerDependencies": {
-    "react-redux": "^7.1.3",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "chayns-logger": "^2.8.5"
-  },
-  "peerDependenciesMeta": {
-    "react-redux": {
-      "optional": true
-    },
-    "react": {
-      "optional": false
-    },
-    "react-dom": {
-      "optional": false
-    },
-    "chayns-logger": {
-      "optional": false
-    }
-  },
-  "optionalDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chincoe/chayns-helper.git"
@@ -134,8 +122,6 @@
     "react",
     "hooks"
   ],
-  "author": "Christian Nagel",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/chincoe/chayns-helper/issues"
   },

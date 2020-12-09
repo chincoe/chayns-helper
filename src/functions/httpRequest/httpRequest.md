@@ -1,4 +1,4 @@
-## [Request](httpRequest.js)
+## [Request](httpRequest.ts)
 
 ### Suggested setup and quick documentation
 If you've never used this helper before and just want a basic fetch helper, I suggest the following setup:
@@ -179,10 +179,6 @@ A try/catch wrapper for a request, meant to be called e.g. in your redux thunk
 |options.waitCursor.text | text to be shown in the wait cursor after a certain time | string | chayns default |
 |options.waitCursor.textTimeout | timeout in ms after which the text will be shown | number | `5000`|
 |options.waitCursor.timeout | timeout after which the waitcursor will be shown |number | `300`|
-|options.cache| Cache the request using local storage. Use null to disable. Pass a string to configure only cache.key | null/string/Object | `null` |
-|options.cache.key | localStorage key | string | required if cache is Object |
-|options.cache.duration | duration in minutes to cache this request | number | `5` |
-|options.cache.cacheResolver | function that receives the request result and should format it into a serializable object | function(response/Object/json/blob/null) | `(v) => v` |
 |options.noReject | Do not reject on error, resolve with null instead. Ensures that code after request.handle() will always be executed | boolean | `false` |
 | **@returns** | Promise of request result | Promise<*> | |
 

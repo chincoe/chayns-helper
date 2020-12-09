@@ -5,6 +5,7 @@ module.exports = (api, options) => {
         presets: [
             ['@babel/env', { modules: cjs ? 'cjs' : false, loose: true }],
             '@babel/react',
+            '@babel/typescript'
         ],
         plugins: [
             '@babel/plugin-proposal-object-rest-spread',

@@ -19,8 +19,7 @@
     "react-hooks",
     "react",
     "jsx-a11y",
-    "import",
-    "jsdoc"
+    "import"
   ],
   "rules": {
     "import/no-unresolved": [
@@ -30,8 +29,7 @@
           "chayns-components",
           "chayns-logger",
           "react-redux",
-          "react",
-          "react-dom"
+          "react"
         ]
       }
     ],

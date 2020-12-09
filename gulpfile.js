@@ -6,10 +6,16 @@ const concatCss = require('gulp-concat-css');
 const path = require('path');
 const shell = require('gulp-shell');
 const pkg = require('./package.json');
+const ts = require('gulp-typescript');
+const tsProject = ts.createProject('tsconfig.json', {
+    isolatedModules: false
+});
 // const generateDocs = require('./scripts/generate-docs/generateDocs');
 
 const jsSource = [
     'src/**/*.{js,jsx}',
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.d.ts',
     '!src/**/*.{stories,spec,test}.{js,jsx}',
 ];
 const cssSource = 'src/**/*.{css,scss}';
@@ -19,8 +25,22 @@ const cssSource = 'src/**/*.{css,scss}';
  ====================== */
 
 gulp.task('clean', () => gulp
-    .src(['dist/', 'split-css/', 'lib/'], { allowEmpty: true })
-    .pipe(clean()));
+.src(['dist/', 'split-css/', 'lib/'], { allowEmpty: true })
+.pipe(clean()));
+
+/** ======================
+ ========== TS ==========
+ ====================== */
+
+gulp.task('transpile-typescript', () => gulp
+    .src(['src/**/*.{ts,tsx}', 'src/globals.d.ts'])
+    .pipe(
+        tsProject()
+    )
+    .pipe(
+        gulp.dest("dist/esm")
+    )
+)
 
 /** ======================
  ========== ESM ==========
@@ -29,13 +49,13 @@ gulp.task('clean', () => gulp
 const esmDestination = path.dirname(pkg.module);
 
 gulp.task('transpile-esm', () => gulp
-    .src(jsSource)
-    .pipe(
-        babel({
-            presets: [['./babelPreset.js', { cssImports: 'rename' }]],
-        })
-    )
-    .pipe(gulp.dest(esmDestination)));
+.src(jsSource)
+.pipe(
+    babel({
+        presets: [['./babelPreset.js', { cssImports: 'rename' }]],
+    })
+)
+.pipe(gulp.dest(esmDestination)));
 
 gulp.task('compile-scss-esm', () => gulp.src(cssSource).pipe(sass()).pipe(gulp.dest(esmDestination)));
 
@@ -48,15 +68,15 @@ gulp.task('build-esm', gulp.parallel('transpile-esm', 'compile-scss-esm'));
 const cjsDestination = path.dirname(pkg.main);
 
 gulp.task('transpile-cjs', () => gulp
-    .src(jsSource)
-    .pipe(
-        babel({
-            presets: [
-                ['./babelPreset.js', { cjs: true, cssImports: 'rename' }],
-            ],
-        })
-    )
-    .pipe(gulp.dest(cjsDestination)));
+.src(jsSource)
+.pipe(
+    babel({
+        presets: [
+            ['./babelPreset.js', { cjs: true, cssImports: 'rename' }],
+        ],
+    })
+)
+.pipe(gulp.dest(cjsDestination)));
 
 gulp.task('compile-scss-cjs', () => gulp.src(cssSource).pipe(sass()).pipe(gulp.dest(cjsDestination)));
 
@@ -67,21 +87,21 @@ gulp.task('build-cjs', gulp.parallel('transpile-cjs', 'compile-scss-cjs'));
  ====================== */
 
 gulp.task('transpile-cjs-split-css', () => gulp
-    .src(jsSource)
-    .pipe(
-        babel({
-            presets: [
-                ['./babelPreset.js', { cjs: true, cssImports: 'remove' }],
-            ],
-        })
-    )
-    .pipe(gulp.dest('dist/cjs-split-css/')));
+.src(jsSource)
+.pipe(
+    babel({
+        presets: [
+            ['./babelPreset.js', { cjs: true, cssImports: 'remove' }],
+        ],
+    })
+)
+.pipe(gulp.dest('dist/cjs-split-css/')));
 
 gulp.task('bundle-css', () => gulp
-    .src(cssSource)
-    .pipe(sass())
-    .pipe(concatCss('styles.css'))
-    .pipe(gulp.dest('dist/')));
+.src(cssSource)
+.pipe(sass())
+.pipe(concatCss('styles.css'))
+.pipe(gulp.dest('dist/')));
 
 gulp.task(
     'build-cjs-split-css',
@@ -114,6 +134,7 @@ gulp.task(
             'build-cjs-split-css',
             // 'build-umd',
             // 'generate-docs'
-        )
+        ),
+        'transpile-typescript'
     )
 );
