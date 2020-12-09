@@ -38,7 +38,7 @@ gulp.task('transpile-typescript', () => gulp
         tsProject()
     )
     .pipe(
-        gulp.dest("dist/types")
+        gulp.dest("dist/esm")
     )
 )
 
@@ -129,12 +129,12 @@ gulp.task(
     gulp.series(
         'clean',
         gulp.parallel(
-            'transpile-typescript',
             'build-esm',
             'build-cjs',
             'build-cjs-split-css',
             // 'build-umd',
             // 'generate-docs'
-        )
+        ),
+        'transpile-typescript'
     )
 );
