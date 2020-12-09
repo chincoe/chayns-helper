@@ -28,11 +28,16 @@ const chaynsDialog = {
     fileSelect,
     mediaSelect,
     fileType,
+    // @ts-ignore
     buttonType: ButtonType,
     inputType,
+    // @ts-ignore
     selectType,
+    // @ts-ignore
     textBlockPosition,
+    // @ts-ignore
     dateType,
+    // @ts-ignore
     dateSelectType
 };
 

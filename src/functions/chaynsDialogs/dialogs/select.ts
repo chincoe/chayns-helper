@@ -1,16 +1,9 @@
 import DialogPromise from '../DialogPromise';
 import {createDialogResult, DialogButton} from '../utils';
 
-
-
-export const enum selectTypeEnum {
+export const enum selectType {
     DEFAULT = 0,
     ICON = 1
-}
-
-export const selectType = {
-    DEFAULT: 0,
-    ICON: 1
 }
 
 export interface SelectDialogListItem {
@@ -33,7 +26,7 @@ export interface SelectDialogConfig {
     title?: string;
     multiselect?: boolean;
     quickfind?: boolean;
-    type?: selectTypeEnum|number;
+    type?: typeof selectType|number;
     preventCloseOnClick?: boolean;
     selectAllButton?: string;
 }
@@ -78,5 +71,3 @@ export default function select(options: SelectDialogConfig, buttons?: DialogButt
             });
     });
 }
-
-select.type = {...selectType};

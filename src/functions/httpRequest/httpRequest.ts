@@ -7,7 +7,7 @@ import colorLog from '../../utils/colorLog';
 import generateUUID from '../generateUid';
 import stringToRegex, {regexRegex} from '../../utils/stringToRegex';
 import ChaynsError from './ChaynsError';
-import HttpMethod, { HttpMethodEnum } from './HttpMethod';
+import HttpMethod from './HttpMethod';
 import {
     blobResolve,
     jsonResolve,
@@ -21,17 +21,17 @@ import {
 } from './httpRequestUtils';
 import {chaynsErrorCodeRegex} from './isChaynsError';
 import RequestError from './RequestError';
-import ResponseType, { ResponseTypeEnum } from './ResponseType';
-import LogLevel, { LogLevelEnum, ObjectResponse } from './LogLevel';
+import ResponseType from './ResponseType';
+import LogLevel, { ObjectResponse } from './LogLevel';
 import handleRequest, {HandleRequestOptions} from './handleRequest';
 import setRequestDefaults, {defaultConfig} from './setRequestDefaults';
-import { HttpStatusCodeEnum } from './HttpStatusCodes';
+import HttpStatusCode from './HttpStatusCodes';
 
 /**
  * The fetch config
  */
 export interface HttpRequestConfig {
-    method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT' | string | HttpMethodEnum;
+    method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT' | string | typeof HttpMethod;
     /**
      * add user token as authorization
      */
@@ -53,14 +53,14 @@ export interface HttpRequestConfig {
  * Additional request options
  */
 export interface HttpRequestOptions {
-    responseType?: ResponseTypeEnum | string | null;
-    ignoreErrors?: boolean | Array<HttpStatusCodeEnum|string|number>;
-    logConfig?: { [key: string]: LogLevelEnum|string } | Map<string, LogLevelEnum|string>,
+    responseType?: typeof ResponseType | string | null;
+    ignoreErrors?: boolean | Array<typeof HttpStatusCode|string|number>;
+    logConfig?: { [key: string]: typeof LogLevel|string } | Map<string, typeof LogLevel|string>,
     stringifyBody?: boolean;
     additionalLogData?: object;
     autoRefreshToken?: boolean;
-    statusHandlers?: { [key: string]: ResponseTypeEnum | string | ((response: Response) => any) } | Map<string, ResponseTypeEnum | string | ((response: Response) => any)>;
-    errorHandlers?: { [key: string]: ResponseTypeEnum | string | ((response: Response) => any) } | Map<string, ResponseTypeEnum | string | ((response: Response) => any)>;
+    statusHandlers?: { [key: string]: typeof ResponseType | string | ((response: Response) => any) } | Map<string, typeof ResponseType | string | ((response: Response) => any)>;
+    errorHandlers?: { [key: string]: typeof ResponseType | string | ((response: Response) => any) } | Map<string, typeof ResponseType | string | ((response: Response) => any)>;
     errorDialogs?: Array<string|RegExp>;
     replacements?: { [key: string]: string | ((substring: string, ...args: any[]) => string) };
     internalRequestGuid?: string
@@ -148,8 +148,8 @@ export function httpRequest(
 
             // eslint-disable-next-line no-param-reassign
             if (!processName) processName = 'HttpRequest';
-            if (responseType != null && !Object.values(ResponseType)
-                .includes(responseType)) {
+            // @ts-ignore
+            if (responseType != null && !Object.values(ResponseType).includes(<string>responseType)) {
                 console.error(
                     ...colorLog({
                         '[HttpRequest]': 'color: #aaaaaa',
@@ -263,6 +263,7 @@ export function httpRequest(
                             resolve(await handler(err));
                             return true;
                         }
+                        // @ts-ignore
                         if (Object.values(ResponseType)
                             .includes(handler)) {
                             switch (handler) {
@@ -340,6 +341,7 @@ export function httpRequest(
             try {
                 response = await fetch(requestAddress, {
                     ...remainingFetchConfig,
+                    // @ts-ignore
                     method,
                     headers: new Headers(requestHeaders),
                     body: stringifyBody ? jsonBody : body
@@ -637,8 +639,11 @@ const request = {
     fetch: httpRequest,
     handle: handleRequest,
     error: RequestError,
+    // @ts-ignore
     responseType: ResponseType,
+    // @ts-ignore
     logLevel: LogLevel,
+    // @ts-ignore
     method: HttpMethod,
     defaults: setRequestDefaults,
     full: fullRequest

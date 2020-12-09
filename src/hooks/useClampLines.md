@@ -19,7 +19,7 @@ The hook requires the ref of the target node to be set with its `setRef` return 
 ```javascript
 const App = () => {
     const [text, setRef] = useClampLines("My original text", {
-        type: lineClampTypeEnum.LINES,
+        type: lineClampType.LINES,
         limit: 5,
         ellipsis: '... More'
     });
