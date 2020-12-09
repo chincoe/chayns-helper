@@ -26,7 +26,7 @@ initChaynsHelper({
 });
 ```
 
-> **_NOTE:_** This package may lack markdown documentations and examples but features JsDoc comments instead. If you would like me to add examples and a readme to a feature, let me know, and I'll add them.
+> **_NOTE:_** This package may lack documentations and examples. If you would like me to add examples and a readme to a feature, let me know, and I'll add them.
 
 ## Contents
 
@@ -81,7 +81,7 @@ initChaynsHelper({
 | [generateUUID](/src/functions/generateUid.ts)| generate a GUID | |
 | [getChaynsErrorCode](/src/functions/httpRequest/getChaynsErrorCode.ts)| get the error code of a chayns error response. Can deal with Response, Promise and Object | |
 | [getHookState](/src/functions/getHookState.ts)| get the current state of a hook via the setState function | |
-| [getJsonSettings](/src/functions/getJsonSettings.ts)| pass as second param to JSON.stringify to modify the serialization | |
+| [getJsonSettings](/src/functions/getJsonSettings.ts)| pass as second param to JSON.stringify to modify the serialization | [getJsonSettings.md](/src/functions/getJsonSettings.md) |
 | [Guid](/src/functions/guid.ts)| a Guid class | |
 | [hexToRgb](/src/functions/colors/hexToRgb.ts)| Convert a hex color to an rgb object which returns a rgba() css function when stringified | |
 | [hideCWFooter](/src/functions/chaynsCalls/hideCwFooter.ts)| hide the chayns web footer | |

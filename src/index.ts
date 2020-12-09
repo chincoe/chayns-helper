@@ -40,7 +40,7 @@ export { default as Guid } from './functions/guid';
 export { default as stringToColor } from './functions/colors/stringToColor';
 export { default as hexToRgb } from './functions/colors/hexToRgb';
 export { default as toHslColor } from './functions/colors/toHslColor';
-export { default as getJsonSettings } from './functions/getJsonSettings';
+export { default as getJsonSettings, DateTimeZoneHandling } from './functions/getJsonSettings';
 // functions with deps
 export { default as useShallowSelector } from './hooks/useShallowSelector';
 export { default as useRechartsAxis, generateRechartsAxis } from './functions/recharts/useRechartsAxis';
