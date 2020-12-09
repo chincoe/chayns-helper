@@ -2,11 +2,6 @@ module.exports = (api, options) => {
     const { cjs = false, cssImports } = options;
 
     return {
-        presets: [
-            ['@babel/env', { modules: cjs ? 'cjs' : false, loose: true }],
-            '@babel/react',
-            '@babel/typescript'
-        ],
         plugins: [
             ["const-enum", { "transform": "constObject" }],
             '@babel/plugin-proposal-object-rest-spread',
@@ -21,23 +16,11 @@ module.exports = (api, options) => {
             ['@babel/plugin-proposal-pipeline-operator', { proposal: 'minimal' }],
             '@babel/plugin-proposal-throw-expressions',
             '@babel/plugin-syntax-import-meta',
-            '@babel/transform-runtime',
             'optimize-clsx',
             'dev-expression',
             '@babel/plugin-transform-react-constant-elements',
             '@babel/plugin-transform-react-inline-elements',
             ['@babel/proposal-class-properties', { loose: true }],
-            cssImports === 'remove' && [
-                'transform-remove-imports',
-                { test: '\\.(scss|css)$' },
-            ],
-            cssImports === 'rename' && [
-                'transform-rename-import',
-                {
-                    original: '^(.+)\\.scss$',
-                    replacement: '$1.css',
-                },
-            ],
         ].filter(Boolean),
     };
 };
