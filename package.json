@@ -5,6 +5,7 @@
   "description": "my personal helpers for chayns development",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
   "license": "MIT",
   "files": [
     "dist/",
@@ -80,6 +81,7 @@
     "@typescript-eslint/parser": "^4.9.1",
     "autoprefixer": "^9.7.4",
     "babel-eslint": "^10.0.3",
+    "babel-plugin-const-enum": "^1.0.1",
     "babel-plugin-dev-expression": "^0.2.2",
     "babel-plugin-optimize-clsx": "^2.6.1",
     "babel-plugin-transform-imports": "^2.0.0",

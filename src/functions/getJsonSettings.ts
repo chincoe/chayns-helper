@@ -1,6 +1,6 @@
 import time from '../constants/time';
 
-export enum DateTimeZoneHandlingEnum {
+export const enum DateTimeZoneHandlingEnum {
     Default = 'default',
     Utc = 'utc',
     LocalOffset = 'localoffset'

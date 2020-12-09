@@ -42,7 +42,7 @@ export function formatShortString(str: string, ellipsisLiteral = ''): string {
     return `${shortString}${ellipsisLiteral}`;
 }
 
-export enum lineClampTypeEnum {
+export const enum lineClampTypeEnum {
     HEIGHT = 'height',
     LINES = 'lines'
 };

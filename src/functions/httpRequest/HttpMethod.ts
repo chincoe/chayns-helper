@@ -1,4 +1,4 @@
-export enum HttpMethodEnum {
+export const enum HttpMethodEnum {
     Get = 'GET',
     Post = 'POST',
     Put = 'PUT',

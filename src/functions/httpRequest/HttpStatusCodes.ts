@@ -409,7 +409,7 @@ const HttpStatusCode = {
  *
  * @enum
  */
-export enum HttpStatusCodeEnum {
+export const enum HttpStatusCodeEnum {
     /**
      * For internal use the chayns-helper request.fetch() function treats a failed fetch as a StatusCode 1 for purposes
      * of configuration and return values

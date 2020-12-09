@@ -8,6 +8,7 @@ module.exports = (api, options) => {
             '@babel/typescript'
         ],
         plugins: [
+            ["const-enum", { "transform": "constObject" }],
             '@babel/plugin-proposal-object-rest-spread',
             ['@babel/plugin-proposal-decorators', { legacy: true }],
             '@babel/plugin-proposal-do-expressions',

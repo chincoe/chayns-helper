@@ -2,18 +2,20 @@ import DialogPromise from '../DialogPromise';
 import {createDialogResult, DialogButton} from '../utils';
 
 
-export enum inputTypeEnum {
-    PASSWORD = chayns.dialog.inputType.PASSWORD,
-    TEXTAREA = chayns.dialog.inputType.TEXTAREA,
-    INPUT = chayns.dialog.inputType.INPUT,
-    NUMBER = chayns.dialog.inputType.NUMBER
+export const enum inputTypeEnum {
+    DEFAULT = 0,
+    PASSWORD = 1,
+    TEXTAREA = 2,
+    INPUT = 3,
+    NUMBER = 4
 };
 
 export const inputType = {
-    PASSWORD: chayns.dialog.inputType.PASSWORD,
-    TEXTAREA: chayns.dialog.inputType.TEXTAREA,
-    INPUT: chayns.dialog.inputType.INPUT,
-    NUMBER: chayns.dialog.inputType.NUMBER
+    DEFAULT: 0,
+    PASSWORD: 1,
+    TEXTAREA: 2,
+    INPUT: 2,
+    NUMBER: 3
 };
 
 export interface InputDialogConfig {
@@ -22,7 +24,7 @@ export interface InputDialogConfig {
     placeholderText?: string;
     text?: string;
     textColor?: string;
-    type?: inputTypeEnum;
+    type?: inputTypeEnum|number;
     regex?: string;
     formatter?: (value: any) => any;
     pattern?: string;

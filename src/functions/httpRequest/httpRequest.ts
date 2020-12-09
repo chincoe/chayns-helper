@@ -54,13 +54,13 @@ export interface HttpRequestConfig {
  */
 export interface HttpRequestOptions {
     responseType?: ResponseTypeEnum | string | null;
-    ignoreErrors?: boolean | HttpStatusCodeEnum[];
-    logConfig?: { [key: string]: LogLevelEnum } | Map<string, LogLevelEnum>,
+    ignoreErrors?: boolean | Array<HttpStatusCodeEnum|string|number>;
+    logConfig?: { [key: string]: LogLevelEnum|string } | Map<string, LogLevelEnum|string>,
     stringifyBody?: boolean;
     additionalLogData?: object;
     autoRefreshToken?: boolean;
-    statusHandlers?: { [key: string]: ResponseTypeEnum | ((response: Response) => any) } | Map<string, ResponseTypeEnum | ((response: Response) => any)>;
-    errorHandlers?: { [key: string]: ResponseTypeEnum | ((response: Response) => any) } | Map<string, ResponseTypeEnum | ((response: Response) => any)>;
+    statusHandlers?: { [key: string]: ResponseTypeEnum | string | ((response: Response) => any) } | Map<string, ResponseTypeEnum | string | ((response: Response) => any)>;
+    errorHandlers?: { [key: string]: ResponseTypeEnum | string | ((response: Response) => any) } | Map<string, ResponseTypeEnum | string | ((response: Response) => any)>;
     errorDialogs?: Array<string|RegExp>;
     replacements?: { [key: string]: string | ((substring: string, ...args: any[]) => string) };
     internalRequestGuid?: string
