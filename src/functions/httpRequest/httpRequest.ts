@@ -214,7 +214,7 @@ export function httpRequest(
                         // @ts-ignore
                         requestAddress = requestAddress.replace(regex, replacements[replacementKeys[i]]);
                     } else {
-                        requestAddress = requestAddress.replaceAll(
+                        requestAddress = requestAddress.replace(
                             replacementKeys[i],
                             // @ts-ignore
                             replacements[replacementKeys[i]]
