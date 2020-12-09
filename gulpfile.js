@@ -38,7 +38,7 @@ gulp.task('transpile-typescript', () => gulp
         tsProject()
     )
     .pipe(
-        gulp.dest("dist/esm")
+        gulp.dest("dist/")
     )
 )
 
