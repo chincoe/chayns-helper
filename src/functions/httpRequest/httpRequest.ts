@@ -1,4 +1,3 @@
-
 // @ts-ignore
 import isNullOrWhiteSpace from '../../utils/isNullOrWhiteSpace';
 // @ts-ignore
@@ -8,7 +7,7 @@ import colorLog from '../../utils/colorLog';
 import generateUUID from '../generateUid';
 import stringToRegex, {regexRegex} from '../../utils/stringToRegex';
 import ChaynsError from './ChaynsError';
-import HttpMethod from './HttpMethod';
+import HttpMethod, { HttpMethodEnum } from './HttpMethod';
 import {
     blobResolve,
     jsonResolve,
@@ -22,17 +21,17 @@ import {
 } from './httpRequestUtils';
 import {chaynsErrorCodeRegex} from './isChaynsError';
 import RequestError from './RequestError';
-import ResponseType from './ResponseType';
-import LogLevel, {ObjectResponse} from './LogLevel';
+import ResponseType, { ResponseTypeEnum } from './ResponseType';
+import LogLevel, { LogLevelEnum, ObjectResponse } from './LogLevel';
 import handleRequest, {HandleRequestOptions} from './handleRequest';
 import setRequestDefaults, {defaultConfig} from './setRequestDefaults';
-import HttpStatusCode from "./HttpStatusCodes";
+import { HttpStatusCodeEnum } from './HttpStatusCodes';
 
 /**
  * The fetch config
  */
 export interface HttpRequestConfig {
-    method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT' | string;
+    method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT' | string | HttpMethodEnum;
     /**
      * add user token as authorization
      */
@@ -54,14 +53,14 @@ export interface HttpRequestConfig {
  * Additional request options
  */
 export interface HttpRequestOptions {
-    responseType?: ResponseType | null;
-    ignoreErrors?: boolean | HttpStatusCode[];
-    logConfig?: { [key: string]: LogLevel } | Map<string, LogLevel>,
+    responseType?: ResponseTypeEnum | string | null;
+    ignoreErrors?: boolean | HttpStatusCodeEnum[];
+    logConfig?: { [key: string]: LogLevelEnum } | Map<string, LogLevelEnum>,
     stringifyBody?: boolean;
     additionalLogData?: object;
     autoRefreshToken?: boolean;
-    statusHandlers?: { [key: string]: ResponseType | ((response: Response) => any) } | Map<string, ResponseType | ((response: Response) => any)>;
-    errorHandlers?: { [key: string]: ResponseType | ((response: Response) => any) } | Map<string, ResponseType | ((response: Response) => any)>;
+    statusHandlers?: { [key: string]: ResponseTypeEnum | ((response: Response) => any) } | Map<string, ResponseTypeEnum | ((response: Response) => any)>;
+    errorHandlers?: { [key: string]: ResponseTypeEnum | ((response: Response) => any) } | Map<string, ResponseTypeEnum | ((response: Response) => any)>;
     errorDialogs?: Array<string|RegExp>;
     replacements?: { [key: string]: string | ((substring: string, ...args: any[]) => string) };
     internalRequestGuid?: string
@@ -81,10 +80,6 @@ export function httpRequest(
         (async () => {
             /** INPUT HANDLING */
             const {
-                /**
-                 * ResponseType, Default: json
-                 * @type {ResponseType|string|null}
-                 */
                 responseType = null,
                 /**
                  * log level config of each status code

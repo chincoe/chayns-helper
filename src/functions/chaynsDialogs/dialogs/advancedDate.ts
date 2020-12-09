@@ -53,31 +53,49 @@ export interface DateIntervalObject {
     end: Date;
 }
 
-export enum textBlockPosition {
+export enum textBlockPositionEnum {
     ABOVE_FIRST = 0,
     ABOVE_SECOND = 1,
     ABOVE_THIRD = 2
+}
+
+export const textBlockPosition = {
+    ABOVE_FIRST: 0,
+    ABOVE_SECOND: 1,
+    ABOVE_THIRD: 2
 };
 
 export interface DialogTextBlock {
     headline: string;
     text: string;
-    textBlockPosition: number | textBlockPosition
+    textBlockPosition: number | textBlockPositionEnum
 }
 
-export enum dateType {
+export enum dateTypeEnum {
     DATE = chayns.dialog.dateType.DATE,
     TIME = chayns.dialog.dateType.TIME,
     DATE_TIME = chayns.dialog.dateType.DATE_TIME
-};
+}
 
-export enum dateSelectType {
+export const dateType = {
+    DATE: chayns.dialog.dateType.DATE,
+    TIME: chayns.dialog.dateType.TIME,
+    DATE_TIME: chayns.dialog.dateType.DATE_TIME
+}
+
+export enum dateSelectTypeEnum {
     SINGLE = 0,
     MULTISELECT = 1,
     INTERVAL = 2
 };
 
-export const resolveDateSelectType = (type?: dateSelectType) => ([
+export const dateSelectType = {
+    SINGLE: 0,
+    MULTISELECT: 1,
+    INTERVAL: 2
+};
+
+export const resolveDateSelectType = (type?: dateSelectTypeEnum) => ([
     {
         multiselect: false,
         interval: false,
@@ -109,8 +127,8 @@ export interface WeekDayIntervalItem {
 export interface AdvancedDateDialogConfig {
     message?: string;
     title?: string;
-    dateType?: dateType;
-    selectType?: dateSelectType;
+    dateType?: dateTypeEnum;
+    selectType?: dateSelectTypeEnum;
     minDate?: DateInformation;
     maxDate?: DateInformation;
     minuteInterval?: number;

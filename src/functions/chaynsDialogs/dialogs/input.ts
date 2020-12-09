@@ -2,11 +2,18 @@ import DialogPromise from '../DialogPromise';
 import {createDialogResult, DialogButton} from '../utils';
 
 
-export enum inputType {
+export enum inputTypeEnum {
     PASSWORD = chayns.dialog.inputType.PASSWORD,
     TEXTAREA = chayns.dialog.inputType.TEXTAREA,
     INPUT = chayns.dialog.inputType.INPUT,
     NUMBER = chayns.dialog.inputType.NUMBER
+};
+
+export const inputType = {
+    PASSWORD: chayns.dialog.inputType.PASSWORD,
+    TEXTAREA: chayns.dialog.inputType.TEXTAREA,
+    INPUT: chayns.dialog.inputType.INPUT,
+    NUMBER: chayns.dialog.inputType.NUMBER
 };
 
 export interface InputDialogConfig {
@@ -15,7 +22,7 @@ export interface InputDialogConfig {
     placeholderText?: string;
     text?: string;
     textColor?: string;
-    type?: inputType;
+    type?: inputTypeEnum;
     regex?: string;
     formatter?: (value: any) => any;
     pattern?: string;

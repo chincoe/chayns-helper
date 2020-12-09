@@ -15,10 +15,11 @@ The hook requires the ref of the target node to be set with its `setRef` return 
 | **@returns** | [lineClampedText, setRef] | [string, function(ref)] | |
 
 #### Example
+
 ```javascript
 const App = () => {
     const [text, setRef] = useClampLines("My original text", {
-        type: lineClampType.LINES,
+        type: lineClampTypeEnum.LINES,
         limit: 5,
         ellipsis: '... More'
     });

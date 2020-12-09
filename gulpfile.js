@@ -135,6 +135,6 @@ gulp.task(
             // 'build-umd',
             // 'generate-docs'
         ),
-        'transpile-typescript'
+        // 'transpile-typescript'
     )
 );

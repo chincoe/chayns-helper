@@ -5,7 +5,7 @@ import stringToRegex, {regexRegex} from '../../utils/stringToRegex';
 import ChaynsError, {ChaynsErrorObject} from './ChaynsError';
 import getChaynsErrorCode from './getChaynsErrorCode';
 import {chaynsErrorCodeRegex} from './isChaynsError';
-import LogLevel from './LogLevel';
+import LogLevel, { LogLevelEnum } from './LogLevel';
 import RequestError from './RequestError';
 import ResponseType from './ResponseType';
 
@@ -29,7 +29,7 @@ export const getMapKeys = (map: Map<string, any>) => {
  */
 export async function getLogFunctionByStatus(
     status: number,
-    logConfig: Map<string, LogLevel>,
+    logConfig: Map<string, LogLevelEnum>,
     defaultFunction: (data: object) => any,
     chaynsErrorObject?: ChaynsErrorObject
 ): Promise<(data: object, error?: Error) => any> {

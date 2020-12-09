@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import {buttonType} from './utils';
+import {ButtonType} from './utils';
 import advancedDate, {textBlockPosition, dateType, dateSelectType} from './dialogs/advancedDate';
 import confirm from './dialogs/confirm';
 import input, {inputType} from './dialogs/input';
@@ -18,26 +18,6 @@ import mediaSelect from './dialogs/mediaSelect';
  * General: chaynsDialog.dialog().then(({ buttonType, value }) => ...)
  * or: const { buttonType, value } = await chaynsDialog.dialog();
  */
-
-/**
- * Type of dialog buttons
- * @type {{POSITIVE: number, CANCEL: number, NEGATIVE: number}}
- */
-
-/**
- * @typedef dialogResult
- * @property {buttonType} buttonType
- * @property {*} value
- */
-/**
- * @typedef button
- * @property {string} text
- * @property {buttonType} buttonType
- * @property {number} collapseTime - time in seconds after which this options is selected automatically
- * @property {string} textColor
- * @property {string} backgroundColor
- */
-
 const chaynsDialog = {
     alert,
     confirm,
@@ -48,7 +28,7 @@ const chaynsDialog = {
     fileSelect,
     mediaSelect,
     fileType,
-    buttonType,
+    buttonType: ButtonType,
     inputType,
     selectType,
     textBlockPosition,
