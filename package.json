@@ -1,12 +1,11 @@
 {
   "name": "chayns-helper",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": "Christian Nagel",
   "description": "my personal helpers for chayns development",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "license": "MIT",
-  "types": "dist/esm/index.d.ts",
   "files": [
     "dist/",
     "split-css.js"

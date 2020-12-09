@@ -27,18 +27,6 @@ export const fileType = {
     ]
 };
 
-/**
- * Upload and select a file from chayns space
- * @param {Object} [options={}]
- * @param {string} [options.title]
- * @param {string} [options.message]
- * @param {boolean} [options.multiselect]
- * @param {fileType[]} [options.contentType]
- * @param {fileType[]} [options.exclude]
- * @param {boolean} [options.directory]
- * @param {button[]} [buttons]
- */
-
 export interface FileSelectDialogConfig {
     title?: string;
     message?: string;

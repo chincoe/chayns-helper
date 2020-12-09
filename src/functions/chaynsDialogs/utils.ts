@@ -1,20 +1,29 @@
-export enum buttonType {
+export enum ButtonTypeEnum {
     POSITIVE = 1,
     CANCEL = 0,
     NEGATIVE = -1
 }
 
+export const ButtonType = {
+    POSITIVE: 1,
+    CANCEL: 0,
+    NEGATIVE: -1
+};
+
 export interface DialogButton {
     text: string;
-    buttonType: buttonType;
+    buttonType: ButtonTypeEnum;
     collapseTime?: number;
     textColor?: string;
     backgroundColor?: string;
 }
 
 export interface DialogResult<T> {
-    buttonType: buttonType;
+    buttonType: ButtonTypeEnum;
     value?: T
 }
 
-export const createDialogResult = (type: buttonType, value?: any) => ({ buttonType: type, value });
+export const createDialogResult = (type: ButtonTypeEnum, value?: any) => ({
+    buttonType: type,
+    value
+});
