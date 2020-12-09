@@ -1,8 +1,7 @@
-
 // @ts-ignore
 import { TextString } from 'chayns-components';
 // @ts-ignore
-import { isNullOrWhiteSpace } from 'chayns-components/lib/utils/is';
+import isNullOrWhiteSpace from '../utils/isNullOrWhiteSpace';
 import TEXTSTRING_PREFIX from './textstringPrefix';
 
 /**
