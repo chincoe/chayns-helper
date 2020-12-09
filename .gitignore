@@ -1,7 +1,10 @@
+*.log
+.DS_Store
+node_modules
+.cache
+dist
+
 .idea/
 node_modules/
 build/
-dist/
 lib/
-
-TestAccordion/
