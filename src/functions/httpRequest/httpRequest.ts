@@ -1,6 +1,6 @@
 
 // @ts-ignore
-import {isNullOrWhiteSpace} from 'chayns-components/lib/utils/is';
+import isNullOrWhiteSpace from '../../utils/isNullOrWhiteSpace';
 // @ts-ignore
 import logger from 'chayns-logger';
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
