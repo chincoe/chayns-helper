@@ -7,7 +7,7 @@
     <!--<img src="https://img.shields.io/github/contributors/chincoe/chayns-helper?style=for-the-badge" alt="" /> -->
 </div>
 </div>
-This package contains a variety of useful helpers for [chayns](https://github.com/TobitSoftware) development.
+This package contains a variety of useful helpers for <a href="https://github.com/TobitSoftware">chayns</a> development.
 Read the comments in the source code for a more detailed description and further information to each asset.
 
 ## Installation
@@ -53,7 +53,7 @@ initChaynsHelper({
 |----------------------------------------------------------------------|-------------------------------| --------|
 | [useAsyncState](/src/hooks/useAsyncState.ts)| useState hook that can resolve Promises and accepts async setter functions |
 | [useRechartsAxis](/src/functions/recharts/useRechartsAxis.ts)| a hook to generate a better recharts axis |
-| [useClampLines](/src/hooks/useClampLines.ts)| a hook to restrict a text to a maxHeight or max lines | [useClampLines.md](src/hooks/useClampLines.ts) |
+| [useClampLines](/src/hooks/useClampLines.ts)| a hook to restrict a text to a maxHeight or max lines | [useClampLines.md](src/hooks/useClampLines.md) |
 | [useExtendedState](/src/hooks/useExtendedState.ts)| useState hook with async getter and prevState |
 | [useFullscreenTapp](/src/hooks/useFullscreenTapp.ts)| Hook to create a fullscreen tapp without scrolling | [useFullscreenTapp.md](/src/hooks/useFullscreenTapp.md) |
 | [useInlineSelector](/src/hooks/useInlineSelector.ts)| useSelector that doesn't use a constant selector without performance issues |
