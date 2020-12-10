@@ -176,10 +176,6 @@ A try/catch wrapper for a request, meant to be called e.g. in your redux thunk
 |errorHandler | A handler that receives an error with status code as well as resolve and reject to determine the result of the entire promise. Handle error responses here. Pass undefined to use default| function(RequestError/Error, statusCode, resolve, reject) | defaultErrorHandler from initChaynsHelper() |
 |options | Options to configure the request handling with | Object | `{}` |
 |options.finallyHandler | function to always be executed after the request is done | function() | `() => null`|
-|options.waitCursor| Show a waitcursor during the request. Use an object for more detailed config | bool/waitCursorObject | `false`|
-|options.waitCursor.text | text to be shown in the wait cursor after a certain time | string | chayns default |
-|options.waitCursor.textTimeout | timeout in ms after which the text will be shown | number | `5000`|
-|options.waitCursor.timeout | timeout after which the waitcursor will be shown |number | `300`|
 |options.noReject | Do not reject on error, resolve with null instead. Ensures that code after request.handle() will always be executed | boolean | `false` |
 | **@returns** | Promise of request result | Promise<*> | |
 
@@ -218,7 +214,7 @@ const result = await request.handle(
     getExample(data),
     (err, status) => {
         console.error('Request Error:', status, err)
-    }, { waitCursor: true }
+    }
 );
 ```
 
