@@ -1,15 +1,18 @@
-const autoExternal = require('rollup-plugin-auto-external');
 const postcss = require('rollup-plugin-postcss');
-const resolve = require('@rollup/plugin-node-resolve').nodeResolve;
 const autoprefixer = require('autoprefixer');
 
 module.exports = {
     rollup(config, options) {
-        config.plugins.push(postcss({
-            plugins: [
-                autoprefixer()
-            ],
-        }))
+        config.plugins.push(
+            postcss({
+                plugins: [
+                    autoprefixer()
+                ],
+                inject: false,
+                // only write out CSS for the first bundle (avoids pointless extra files):
+                extract: !!options.writeMeta,
+            })
+        );
         return config;
     }
-}
+};

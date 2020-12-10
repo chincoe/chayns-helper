@@ -1,6 +1,6 @@
 {
   "name": "chayns-helper",
-  "version": "2.0.4",
+  "version": "2.0.4-beta.0",
   "author": "Christian Nagel",
   "description": "my personal helpers for chayns development",
   "main": "dist/index.js",
