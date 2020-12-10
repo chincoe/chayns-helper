@@ -1,5 +1,4 @@
 import { helperConfig } from '../../config/chaynsHelperConfig';
-import showWaitCursor from '../waitCursor';
 import RequestError from './RequestError';
 import colorLog from '../../utils/colorLog';
 import ChaynsError from "./ChaynsError";
@@ -7,11 +6,6 @@ import ChaynsError from "./ChaynsError";
 
 export interface HandleRequestOptions {
     finallyHandler?: () => any
-    waitCursor?: boolean| {
-        text?: string,
-        textTimeout?: number,
-        timeout?: number
-    },
     noReject?: boolean
 }
 
@@ -27,25 +21,15 @@ export default function handleRequest(
         (resolve, reject) => {
             const {
                 finallyHandler = () => null, // function: is always executed
-                waitCursor = false, // bool/object: true or { text, textTimeout, timeout }
                 noReject = false
             } = options || {};
-            const useWaitCursor: boolean = !!waitCursor;
-            // @ts-ignore
-            const { text = undefined, textTimeout = 5000, timeout = 300 } = (chayns.utils.isObject(waitCursor)
-                 ? waitCursor
-                 : {});
             const handleErrors = errorHandler || helperConfig.errorHandler;
-            let hideWaitCursor = () => {};
             try {
-                if (useWaitCursor) hideWaitCursor = showWaitCursor({ text, textTimeout, timeout });
                 request
                     .then((result) => {
                         resolve(result);
                     })
-                    .finally(() => { hideWaitCursor(); })
                     .catch((err) => {
-                        hideWaitCursor();
                         // eslint-disable-next-line no-console
                         if (!(err instanceof RequestError)) {
                             console.error(...colorLog({
@@ -69,7 +53,6 @@ export default function handleRequest(
                     })
                     .then(finallyHandler, finallyHandler);
             } catch (err) {
-                hideWaitCursor();
                 // eslint-disable-next-line no-console
                 if (!(err instanceof RequestError)) {
                     console.error(...colorLog({
