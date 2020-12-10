@@ -23,6 +23,4 @@ const Refresh: FunctionComponent<{
     );
 };
 
-Refresh.displayName = 'RefreshComponent';
-
 export default memo(Refresh);

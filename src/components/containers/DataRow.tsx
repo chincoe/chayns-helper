@@ -30,15 +30,13 @@ const DataRow: FunctionComponent<DataRow> = (
             style={style}
             {...props}
         >
-            {/* @ts-ignore */}
+            {/* @ts-expect-error */}
             {chayns.utils.isArray(children) ? children[0] || null : children}
             {chayns.utils.isArray(children)
-                // @ts-ignore
+                // @ts-expect-error
             && <div className="chayns__utils__container--datarow--right">{children.slice(1)}</div>}
         </Component>
     );
 };
-
-DataRow.displayName = 'DataRow';
 
 export default DataRow;

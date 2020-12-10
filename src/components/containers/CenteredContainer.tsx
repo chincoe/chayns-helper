@@ -39,6 +39,4 @@ const CenteredContainer: FunctionComponent<CenteredContainer> = (
     );
 };
 
-CenteredContainer.displayName = 'CenteredContainer';
-
 export default CenteredContainer;

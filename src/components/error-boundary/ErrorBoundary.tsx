@@ -1,8 +1,8 @@
 import React, {ErrorInfo, JSXElementConstructor, ReactChildren} from 'react';
 import './error-boundary.scss';
-// @ts-ignore
+// @ts-expect-error
 import {Button} from 'chayns-components';
-// @ts-ignore
+// @ts-expect-error
 import logger from 'chayns-logger';
 import CenteredContainer from '../containers/CenteredContainer';
 
@@ -17,8 +17,6 @@ class ErrorBoundary extends React.Component<{
     children: ReactChildren,
     fallback?: JSXElementConstructor<any>
 }> {
-    static displayName: string = 'ErrorBoundary';
-
     constructor(props: any) {
         super(props);
         this.state = {
@@ -49,11 +47,11 @@ class ErrorBoundary extends React.Component<{
         const {state, props} = this;
         const {children, fallback} = props;
         const FallbackComponent = fallback;
-        // @ts-ignore
+        // @ts-expect-error
         if (state.hasError) {
             // You can render any custom fallback UI
             return fallback
-                // @ts-ignore
+                // @ts-expect-error
                 ? (<FallbackComponent error={state.error}/>)
                 : (
                     <div className="ErrorBoundary">
@@ -62,7 +60,7 @@ class ErrorBoundary extends React.Component<{
                             <p>Wir sind bereits davon informiert und beheben den Fehler so schnell wie möglich.</p>
                             {process.env.NODE_ENV === 'development' && (
                                 <p>
-                                    {/* @ts-ignore */}
+                                    {/* @ts-expect-error */}
                                     {`Fehler: ${state.error.toString()}`}
                                 </p>
                             )}

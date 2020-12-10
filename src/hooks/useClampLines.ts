@@ -42,7 +42,7 @@ export function formatShortString(str: string, ellipsisLiteral = ''): string {
     return `${shortString}${ellipsisLiteral}`;
 }
 
-export const enum lineClampTypeEnum {
+export enum lineClampTypeEnum {
     HEIGHT = 'height',
     LINES = 'lines'
 }
@@ -109,16 +109,16 @@ const useClampLines = (input: string, options?: ClampLinesConfig): [string, Reac
     useEffect(() => {
         if (element) {
             const originalText = html ? replaceParagraphTags(input) : input;
-            // @ts-ignore
+            // @ts-expect-error
             const prevHtml = element.innerHTML;
             let maxHeight = limit;
-            // @ts-ignore
+            // @ts-expect-error
             element.innerHTML = '_';
             if (type === lineClampType.LINES) {
-                // @ts-ignore
+                // @ts-expect-error
                 maxHeight = element.getBoundingClientRect().height * limit;
             }
-            // @ts-ignore
+            // @ts-expect-error
             if (maxHeight === 0 || maxHeight < element.getBoundingClientRect().height * limit) {
                 setText('');
                 // eslint-disable-next-line no-console
@@ -132,20 +132,20 @@ const useClampLines = (input: string, options?: ClampLinesConfig): [string, Reac
             while (start <= end) {
                 middle = Math.floor((start + end) / 2);
                 if (html) {
-                    // @ts-ignore
+                    // @ts-expect-error
                     element.innerHTML = formatShortString(originalText.slice(0, middle), ellipsis);
                 } else {
-                    // @ts-ignore
+                    // @ts-expect-error
                     element.innerText = originalText.slice(0, middle) + ellipsis;
                 }
-                // @ts-ignore
+                // @ts-expect-error
                 if (element?.getBoundingClientRect().height <= maxHeight
                     && middle === originalText.length + (ellipsis || '').length) {
                     setText(originalText);
                     return;
                 }
 
-                // @ts-ignore
+                // @ts-expect-error
                 if (element.getBoundingClientRect().height <= maxHeight) {
                     start = middle + 1;
                 } else {
@@ -158,7 +158,7 @@ const useClampLines = (input: string, options?: ClampLinesConfig): [string, Reac
             if (replacer) {
                 t = replacer(t);
             }
-            // @ts-ignore
+            // @ts-expect-error
             element.innerHTML = prevHtml;
             setText(t);
         }

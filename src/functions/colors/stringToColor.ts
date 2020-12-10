@@ -15,7 +15,7 @@ const stringToColor = (str: string, rgb?: boolean): ({r: number, g: number, b: n
     if (rgb) return hexToRgb(color);
     // eslint-disable-next-line no-new-wrappers
     const result = new String(color);
-    // @ts-ignore
+    // @ts-expect-error
     result.__proto__ = {
         /**
          * @param {number} a
@@ -23,7 +23,7 @@ const stringToColor = (str: string, rgb?: boolean): ({r: number, g: number, b: n
          */
         toRgb(a?: number) {
             const rgbValue = hexToRgb(this);
-            // @ts-ignore
+            // @ts-expect-error
             if (a) rgbValue.a = a;
             return rgbValue;
         },

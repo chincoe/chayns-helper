@@ -58,7 +58,6 @@ export default function fileSelect(
             directory
         })
             .then((result: any) => {
-                // @ts-ignore
                 resolve(createDialogResult(result?.buttonType, result?.selection));
             });
     });

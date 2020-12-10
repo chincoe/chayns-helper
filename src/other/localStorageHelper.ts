@@ -57,7 +57,7 @@ export const getStorage = (key: string): null|any => {
         && cache.data
         && cache.timestamp
         && storageSettings.find((c) => c.key === key)
-        // @ts-ignore
+        // @ts-expect-error
         && new Date().getTime() <= cache.timestamp + storageSettings.find((c) => c.key === key).duration) {
         return cache.data;
     }
@@ -71,7 +71,6 @@ export const getStorage = (key: string): null|any => {
  * @param {*} value
  */
 export const setStorage = (key: string, value: any) => {
-    // @ts-ignore
     chayns.utils.ls.set(key, {
         timestamp: new Date().getTime(),
         data: value

@@ -1,6 +1,6 @@
-// @ts-ignore
+// @ts-expect-error
 const isChromeBased = !!window.chrome;
-// @ts-ignore
+// @ts-expect-error
 const isFirefox = typeof InstallTrigger !== 'undefined';
 // eslint-disable-next-line no-console
 export default function colorLog(elements: {[message: string]: string}): string[] {

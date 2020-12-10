@@ -1,7 +1,7 @@
 import DialogPromise from '../DialogPromise';
 import {createDialogResult, DialogButton} from '../utils';
 
-export const enum selectTypeEnum {
+export enum selectTypeEnum {
     DEFAULT = 0,
     ICON = 1
 }
@@ -54,7 +54,6 @@ export default function select(options: SelectDialogConfig, buttons?: DialogButt
             list,
             multiselect,
             quickfind: quickfind === null ? (list || []).length > 5 : quickfind,
-            // @ts-ignore
             type,
             preventCloseOnClick,
             buttons,

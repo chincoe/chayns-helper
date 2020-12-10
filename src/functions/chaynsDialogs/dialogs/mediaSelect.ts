@@ -22,7 +22,6 @@ export default function mediaSelect(options?: MediaSelectDialogConfig, buttons?:
             buttons
         })
             .then((result: any) => {
-                // @ts-ignore
                 resolve(createDialogResult(result?.buttonType, result?.selection));
             });
     });

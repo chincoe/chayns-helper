@@ -1,5 +1,5 @@
 import React, {useState, useEffect, FunctionComponent} from 'react';
-// @ts-ignore
+// @ts-expect-error
 import {SelectButton} from 'chayns-components';
 import {httpRequest} from '../../functions/httpRequest/httpRequest';
 import LogLevel from '../../functions/httpRequest/LogLevel';
@@ -58,7 +58,5 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = (
         />
     ) : (<ResizableWaitCursor size={24}/>);
 };
-
-UACGroupChooseButton.displayName = 'UACGroupChooseButton';
 
 export default UACGroupChooseButton;

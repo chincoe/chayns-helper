@@ -1,5 +1,5 @@
 import React, {FunctionComponent, ReactChildren} from 'react';
-// @ts-ignore
+// @ts-expect-error
 import { Accordion, Icon } from 'chayns-components';
 import clsx from 'clsx';
 import './restricted-accordion.scss';
@@ -32,7 +32,5 @@ const RestrictedAccordion: FunctionComponent<{
         {children}
     </Accordion>
 );
-
-RestrictedAccordion.displayName = 'RestrictedAccordion';
 
 export default RestrictedAccordion;

@@ -1,6 +1,6 @@
 import React, {FunctionComponent, useEffect} from 'react';
 import './resizable-wait-cursor.scss';
-// @ts-ignore
+// @ts-expect-error
 import { SmallWaitCursor } from 'chayns-components';
 import clsx from 'clsx';
 
@@ -39,7 +39,5 @@ const ResizableWaitCursor: FunctionComponent<{
         />
     );
 };
-
-ResizableWaitCursor.displayName = 'ResizableWaitCursor';
 
 export default React.memo(ResizableWaitCursor);

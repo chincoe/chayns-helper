@@ -1,6 +1,5 @@
-// @ts-ignore
+// @ts-expect-error
 import { TextString } from 'chayns-components';
-// @ts-ignore
 import isNullOrWhiteSpace from '../utils/isNullOrWhiteSpace';
 import TEXTSTRING_PREFIX from './textstringPrefix';
 
@@ -17,7 +16,7 @@ const getTextStrings = (textStrings: string[]|{[name: string]: string}, language
     const strings: string[] = <string[]>(isSimple ? textStrings : Object.keys(textStrings));
     for (let i = 0; i < strings.length; i += 1) {
         const current = strings[i];
-        // @ts-ignore
+        // @ts-expect-error
         const fallback = (isSimple ? current : textStrings[strings[i]]);
         const text = TextString.getTextString(
             `${TEXTSTRING_PREFIX.value}${current}`,

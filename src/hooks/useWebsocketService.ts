@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useState} from 'react';
-// @ts-ignore
+// @ts-expect-error
 import logger from 'chayns-logger';
 import shallowEqual from '../functions/shallowEqual';
 import WsClient, {WebsocketConditions} from '../other/WsClient';

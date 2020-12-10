@@ -36,5 +36,3 @@ const SuspenseWaitCursorFallback: FunctionComponent<{
     return inline ? (<CenteredWaitCursor className="Suspense_placeholder"/>) : (
         <div className="Suspense_placeholder"/>);
 };
-
-SuspenseWaitCursorFallback.displayName = 'SuspenseWaitCursorFallback';

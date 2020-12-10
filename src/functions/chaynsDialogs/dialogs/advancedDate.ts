@@ -51,7 +51,7 @@ export interface DateIntervalObject {
     end: Date;
 }
 
-export const enum textBlockPositionEnum {
+export enum textBlockPositionEnum {
     ABOVE_FIRST = 0,
     ABOVE_SECOND = 1,
     ABOVE_THIRD = 2
@@ -69,7 +69,7 @@ export interface DialogTextBlock {
     textBlockPosition: number | typeof textBlockPositionEnum
 }
 
-export const enum dateTypeEnum {
+export enum dateTypeEnum {
     DATE = 1,
     TIME = 2,
     DATE_TIME = 3
@@ -81,7 +81,7 @@ export const dateType = {
     DATE_TIME: 3
 }
 
-export const enum dateSelectTypeEnum {
+export enum dateSelectTypeEnum {
     SINGLE = 0,
     MULTISELECT = 1,
     INTERVAL = 2
@@ -176,7 +176,7 @@ export default function advancedDate(
         } = options || {};
         const dialogSelectType = (
                 pSelectType !== undefined
-                // @ts-ignore
+                // @ts-expect-error
                 && Object.values(dateSelectType).includes(pSelectType) ? pSelectType : null)
             ?? (multiselect
                 ? dateSelectType.MULTISELECT
@@ -195,17 +195,17 @@ export default function advancedDate(
             maxDate: validateDate(maxDate),
             minuteInterval,
             preSelect: chayns.utils.isArray(preSelect)
-                // @ts-ignore
+                // @ts-expect-error
                 ? validateDateArray(preSelect)
                 : chayns.utils.isObject(preSelect)
-                // @ts-ignore
+                // @ts-expect-error
                 && preSelect?.start
-                // @ts-ignore
+                // @ts-expect-error
                 && preSelect?.end
-                    // @ts-ignore
+                    // @ts-expect-error
                     ? {start: validateDate(preSelect?.start), end: validateDate(preSelect?.end),}
                     : validateDate(preSelect),
-            // @ts-ignore
+            // @ts-expect-error
             disabledDates: validateDateArray(disabledDates),
             textBlocks,
             yearSelect,
@@ -213,7 +213,6 @@ export default function advancedDate(
             minInterval,
             maxInterval,
             disabledIntervals,
-            // @ts-ignore
             disabledWeekDayIntervals,
             getLocalTime,
             ...resolveDateSelectType(<number>dialogSelectType)
@@ -228,14 +227,13 @@ export default function advancedDate(
 
                 const validDates = (selectedDates || []).map((d: any) => ({
                     ...(d ?? {}),
-                    // @ts-ignore
+                    // @ts-expect-error
                     timestamp: d?.timestamp ? new Date(d.timestamp) * 1000 : d?.timestamp
                 }));
 
                 if (dialogSelectType === dateSelectType.SINGLE) {
                     const selectedDate = validDates[0] ?? null;
                     resolve(createDialogResult(type, selectedDate));
-                    // @ts-ignore
                 } else if (dialogSelectType !== dateSelectType.SINGLE) {
                     resolve(createDialogResult(type, validDates));
                 }

@@ -1,6 +1,6 @@
 
 
-// @ts-ignore
+// @ts-expect-error
 import { TextString } from 'chayns-components';
 import React, {
     FunctionComponent,
@@ -66,9 +66,8 @@ const TextStringMemo: FunctionComponent<TextStringMemoConfig> = memo((
         useDangerouslySetInnerHTML={false}
         language={language}
     >
-        {/* @ts-ignore */}
+        {/* @ts-expect-error */}
         <TextStringReplacer
-            // @ts-ignore
             useDangerouslySetInnerHTML={useDangerouslySetInnerHTML}
             maxReplacements={maxReplacements}
             replacements={replacements}
@@ -79,8 +78,6 @@ const TextStringMemo: FunctionComponent<TextStringMemoConfig> = memo((
         />
     </TextString>
 ));
-
-TextStringMemo.displayName = 'TextStringMemo';
 
 interface TextStringReplacerConfig {
     children: string|ReactChildren,
@@ -127,11 +124,9 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = memo((pr
     }, [text, replacements]);
 
     return React.isValidElement(textStringChildren)
-        // @ts-ignore
+        // @ts-expect-error
         ? React.cloneElement(textStringChildren, elementProps, content)
            : <>{content}</>;
 });
-
-TextStringReplacer.displayName = 'TextStringReplacer';
 
 export default TextStringMemo;
