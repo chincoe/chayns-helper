@@ -1,4 +1,4 @@
-## [useClampLines](useClampLines.js)
+## [useClampLines](useClampLines.ts)
 Generate a text that is restricted to a certain height or line count, ended by an ellipsis (e.g. "...").
 The hook requires the ref of the target node to be set with its `setRef` return value to calculate the string properly.
 
