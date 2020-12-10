@@ -1,11 +1,10 @@
-// @ts-ignore
 import isNullOrWhiteSpace from '../../utils/isNullOrWhiteSpace';
 // @ts-ignore
 import logger from 'chayns-logger';
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import colorLog from '../../utils/colorLog';
 import generateUUID from '../generateUid';
-import stringToRegex, {regexRegex} from '../../utils/stringToRegex';
+import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
 import ChaynsError from './ChaynsError';
 import HttpMethod, { HttpMethodEnum } from './HttpMethod';
 import {
@@ -19,13 +18,14 @@ import {
     getStatusHandlerByStatusRegex,
     resolveWithHandler
 } from './httpRequestUtils';
-import {chaynsErrorCodeRegex} from './isChaynsError';
+import { chaynsErrorCodeRegex } from './isChaynsError';
 import RequestError from './RequestError';
-import ResponseType, {ResponseTypeEnum} from './ResponseType';
+import ResponseType, { ResponseTypeEnum } from './ResponseType';
 import LogLevel, { ObjectResponse, LogLevelEnum } from './LogLevel';
-import handleRequest, {HandleRequestOptions} from './handleRequest';
-import setRequestDefaults, {defaultConfig} from './setRequestDefaults';
+import handleRequest, { HandleRequestOptions } from './handleRequest';
+import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
 import { HttpStatusCodeEnum } from './HttpStatusCodes';
+import showWaitCursor, { WaitCursorConfig } from '../waitCursor/waitCursor';
 
 /**
  * The fetch config
@@ -54,14 +54,17 @@ export interface HttpRequestConfig {
  */
 export interface HttpRequestOptions {
     responseType?: typeof ResponseTypeEnum | string | null;
-    ignoreErrors?: boolean | Array<typeof HttpStatusCodeEnum|string|number>;
-    logConfig?: { [key: string]: typeof LogLevelEnum|string } | Map<string, typeof LogLevelEnum|string>,
+    ignoreErrors?: boolean | Array<typeof HttpStatusCodeEnum | string | number>;
+    logConfig?: { [key: string]: typeof LogLevelEnum | string } | Map<string, typeof LogLevelEnum | string>,
     stringifyBody?: boolean;
     additionalLogData?: object;
     autoRefreshToken?: boolean;
+    waitCursor?: boolean
+        | { text?: string, textTimeout?: number, timeout?: number, }
+        | { timeout?: number, steps?: { [timeout: number]: string }; },
     statusHandlers?: { [key: string]: typeof ResponseTypeEnum | string | ((response: Response) => any) } | Map<string, typeof ResponseTypeEnum | string | ((response: Response) => any)>;
     errorHandlers?: { [key: string]: typeof ResponseTypeEnum | string | ((response: Response) => any) } | Map<string, typeof ResponseTypeEnum | string | ((response: Response) => any)>;
-    errorDialogs?: Array<string|RegExp>;
+    errorDialogs?: Array<string | RegExp>;
     replacements?: { [key: string]: string | ((substring: string, ...args: any[]) => string) };
     internalRequestGuid?: string
 }
@@ -76,57 +79,67 @@ export function httpRequest(
     // options for this helper
     options: HttpRequestOptions = {},
 ): Promise<Response | ObjectResponse | Blob | Object | string | RequestError | ChaynsError | any> {
-    return new Promise((globalResolve, reject) => {
+    const {
+        responseType = null,
+        /**
+         * log level config of each status code
+         * Defaults: status<400 : info, status=401: warning, else: error
+         * @type {Object.<string|RegExp,LogLevel|string>}
+         */
+        // logConfig = {},
+        // bool|number[]: don't throw errors on error status codes, return null instead
+        ignoreErrors = false,
+        // bool: call JSON.stringify() on the body passed to this function
+        stringifyBody = true,
+        // object: additional data to be logged
+        additionalLogData = {},
+        // bool: automatically try to refresh the token once if it is expired
+        autoRefreshToken = true,
+        /*
+         * Handle responses for specific status codes manually. Format:
+         * 1. { [statusCodeOrRegexString] : (response) => { my code }, ... }
+         * 2. { [statusCodeOrRegexString] : responseType, ... }
+         * - handler always receives entire response as parameter, not just the body
+         * - value returned from handler is returned as result of the request
+         * - handler can be async and will be awaited
+         * => Use this to get jsonBody on error status codes or .json() on 204
+         */
+        // statusHandlers = {},
+        waitCursor = false,
+        internalRequestGuid = generateUUID(),
+        errorDialogs = [],
+        replacements = {}
+    } = {
+        responseType: ResponseType.Json,
+        // logConfig: {},
+        ignoreErrors: false,
+        stringifyBody: true,
+        additionalLogData: {},
+        autoRefreshToken: true,
+        // statusHandlers: {},
+        replacements: {
+            [/##locationId##/g.toString()]: `${chayns.env.site.locationId}`,
+            [/##siteId##/g.toString()]: `${chayns.env.site.id}`,
+            [/##tappId##/g.toString()]: `${chayns.env.site.tapp.id}`,
+            [/##userId##/g.toString()]: `${chayns.env.user.id}`,
+            [/##personId##/g.toString()]: `${chayns.env.user.personId}`
+        },
+        errorDialogs: [],
+        ...(defaultConfig.options || {}),
+        ...(options || {})
+    };
+    let hideWaitCursor;
+
+    if (waitCursor) {
+        hideWaitCursor = showWaitCursor(
+            <WaitCursorConfig>waitCursor,
+            (<{ timeout?: number, steps?: { [timeout: number]: string }; }>waitCursor)?.steps
+        );
+    }
+    const requestPromise = new Promise((globalResolve, reject) => {
         (async () => {
             /** INPUT HANDLING */
-            const {
-                responseType = null,
-                /**
-                 * log level config of each status code
-                 * Defaults: status<400 : info, status=401: warning, else: error
-                 * @type {Object.<string|RegExp,LogLevel|string>}
-                 */
-                // logConfig = {},
-                // bool|number[]: don't throw errors on error status codes, return null instead
-                ignoreErrors = false,
-                // bool: call JSON.stringify() on the body passed to this function
-                stringifyBody = true,
-                // object: additional data to be logged
-                additionalLogData = {},
-                // bool: automatically try to refresh the token once if it is expired
-                autoRefreshToken = true,
-                /*
-                 * Handle responses for specific status codes manually. Format:
-                 * 1. { [statusCodeOrRegexString] : (response) => { my code }, ... }
-                 * 2. { [statusCodeOrRegexString] : responseType, ... }
-                 * - handler always receives entire response as parameter, not just the body
-                 * - value returned from handler is returned as result of the request
-                 * - handler can be async and will be awaited
-                 * => Use this to get jsonBody on error status codes or .json() on 204
-                 */
-                // statusHandlers = {},
-                internalRequestGuid = generateUUID(),
-                errorDialogs = [],
-                replacements = {}
-            } = {
-                responseType: ResponseType.Json,
-                // logConfig: {},
-                ignoreErrors: false,
-                stringifyBody: true,
-                additionalLogData: {},
-                autoRefreshToken: true,
-                // statusHandlers: {},
-                replacements: {
-                    [/##locationId##/g.toString()]: `${chayns.env.site.locationId}`,
-                    [/##siteId##/g.toString()]: `${chayns.env.site.id}`,
-                    [/##tappId##/g.toString()]: `${chayns.env.site.tapp.id}`,
-                    [/##userId##/g.toString()]: `${chayns.env.user.id}`,
-                    [/##personId##/g.toString()]: `${chayns.env.user.personId}`
-                },
-                errorDialogs: [],
-                ...(defaultConfig.options || {}),
-                ...(options || {})
-            };
+
 
             const input = {
                 address,
@@ -149,7 +162,8 @@ export function httpRequest(
             // eslint-disable-next-line no-param-reassign
             if (!processName) processName = 'HttpRequest';
             // @ts-ignore
-            if (responseType != null && !Object.values(ResponseType).includes(<string>responseType)) {
+            if (responseType != null && !Object.values(ResponseType)
+                .includes(<string>responseType)) {
                 console.error(
                     ...colorLog({
                         '[HttpRequest]': 'color: #aaaaaa',
@@ -178,7 +192,7 @@ export function httpRequest(
             const jsonBody: string | null = body && stringifyBody ? JSON.stringify(body) : null;
 
             // create request headers
-            let requestHeaders: HeadersInit = stringifyBody ? {'Content-Type': 'application/json'} : {};
+            let requestHeaders: HeadersInit = stringifyBody ? { 'Content-Type': 'application/json' } : {};
             if (useChaynsAuth) requestHeaders.Authorization = `Bearer ${chayns.env.user.tobitAccessToken}`;
             requestHeaders = {
                 ...requestHeaders,
@@ -188,7 +202,7 @@ export function httpRequest(
 
             // this way other config elements like "credentials", "mode", "cache" or "signal" can be passed to fetch()
             // @ts-ignore
-            const remainingFetchConfig: RequestInit = {...fetchConfig};
+            const remainingFetchConfig: RequestInit = { ...fetchConfig };
             // @ts-ignore
             delete remainingFetchConfig.useChaynsAuth;
 
@@ -231,7 +245,7 @@ export function httpRequest(
 
             const tryReject = async (
                 err: Error | RequestError | ChaynsError | null = null,
-                status: number|null = null,
+                status: number | null = null,
                 force = false
             ) => {
                 const handlerKeys = getMapKeys(statusHandlers);
@@ -274,7 +288,7 @@ export function httpRequest(
                                     });
                                     return true;
                                 case ResponseType.Response:
-                                    resolve({status});
+                                    resolve({ status });
                                     return true;
                                 default:
                                     resolve(null);
@@ -317,7 +331,7 @@ export function httpRequest(
                                 reject(error);
                                 return true;
                             case ResponseType.Response:
-                                resolve({status});
+                                resolve({ status });
                                 return true;
                             case ResponseType.Text:
                             case ResponseType.Blob:
@@ -384,7 +398,7 @@ export function httpRequest(
                 return;
             }
 
-            const {status} = response;
+            const { status } = response;
 
             /** LOGS */
             const requestUid = response.headers && response.headers.get('X-Request-Id')
@@ -471,10 +485,11 @@ export function httpRequest(
                 }), error, '\nInput: ', input);
                 if (!ignoreErrors && useChaynsAuth && autoRefreshToken) {
                     try {
-                        let jRes: {[key: string]: any} = {};
+                        let jRes: { [key: string]: any } = {};
                         try {
                             jRes = await response.json();
-                        } catch(e) { /* ignored */ }
+                        } catch (e) { /* ignored */
+                        }
                         if (jRes.message === 'token_expired') {
                             resolve(httpRequest(address, config, processName, {
                                 responseType,
@@ -617,6 +632,10 @@ export function httpRequest(
             }
         })();
     });
+    if (waitCursor) {
+        requestPromise.finally(hideWaitCursor);
+    }
+    return requestPromise;
 }
 
 function fullRequest(
@@ -624,7 +643,7 @@ function fullRequest(
     config?: HttpRequestConfig,
     processName?: string,
     options?: HttpRequestOptions,
-    errorHandler?: (err: Error|RequestError|ChaynsError, statusCode?: number, resolve?: (value?: any) => any, reject?: (value?: any) => any) => any,
+    errorHandler?: (err: Error | RequestError | ChaynsError, statusCode?: number, resolve?: (value?: any) => any, reject?: (value?: any) => any) => any,
     handlerOptions?: HandleRequestOptions
 ) {
     return handleRequest(httpRequest(

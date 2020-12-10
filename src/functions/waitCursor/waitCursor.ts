@@ -1,4 +1,3 @@
-
 export interface WaitCursorConfig {
     text?: string,
     textTimeout?: number,
