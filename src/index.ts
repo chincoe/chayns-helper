@@ -30,7 +30,7 @@ export { default as iFrameDialog } from './functions/chaynsDialogs/dialogs/iFram
 // general functions
 export { default as copyToClipboard } from './functions/copy';
 export { default as types } from './functions/types';
-export { default as showWaitCursor } from './functions/waitCursor';
+export { default as showWaitCursor } from './functions/waitCursor/waitCursor';
 export { default as generateUUID } from './functions/generateUid';
 export { default as localStorage } from './other/localStorageHelper';
 export { default as getHookState } from './functions/getHookState';

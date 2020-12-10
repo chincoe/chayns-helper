@@ -94,7 +94,7 @@ initChaynsHelper({
 | [stringToColor](/src/functions/colors/stringToColor.ts)| Convert a string to a hex color or rgb color object which returns a rgba() css function when stringified | |
 | [toHslColor](/src/functions/colors/toHslColor.ts)| Convert a string or int to an hsl color object which returns a hsl() css function when stringified | |
 | [types](/src/functions/types.ts)| a collection of helpers for types in general but especially objects and arrays. Includes: mapObject, reduceObject, mapObjectToArray, forEachKey, firstOrDefault, replaceAll, type checking | |
-| [showWaitCursor](/src/functions/waitCursor.ts)| helper for chayns.showWaitCursor with a timeout before displaying ||
+| [showWaitCursor](/src/functions/waitCursor/waitCursor.ts)| helper for chayns.showWaitCursor with a timeout before displaying | [waitCursor.md](src/functions/waitCursor/waitCursor.md) |
 | [WebSocketClient](/src/other/WsClient.ts)| custom alternative to tobit-websocket-service-client | |
 
 ### Constants
