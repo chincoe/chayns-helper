@@ -7,15 +7,15 @@ const hexToRgb = (hex: string): ({r: number, g: number, b: number, a: number|nul
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16),
         a: null,
-        // @ts-ignore
+        // @ts-expect-error
         __proto__: {
             /**
              * @returns {string}
              */
             toString(): string {
-                // @ts-ignore
+                // @ts-expect-error
                 return this.a !== null
-                    // @ts-ignore
+                    // @ts-expect-error
                     ? `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})` : `rgb(${this.r}, ${this.g}, ${this.b})`;
             }
         }

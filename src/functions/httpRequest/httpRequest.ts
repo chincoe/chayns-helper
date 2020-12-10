@@ -1,5 +1,5 @@
 import isNullOrWhiteSpace from '../../utils/isNullOrWhiteSpace';
-// @ts-ignore
+// @ts-expect-error
 import logger from 'chayns-logger';
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import colorLog from '../../utils/colorLog';
@@ -163,7 +163,6 @@ export function httpRequest(
 
             // eslint-disable-next-line no-param-reassign
             if (!processName) processName = 'HttpRequest';
-            // @ts-ignore
             if (responseType != null && !Object.values(ResponseType)
                 .includes(<string>responseType)) {
                 console.error(
@@ -203,9 +202,9 @@ export function httpRequest(
             };
 
             // this way other config elements like "credentials", "mode", "cache" or "signal" can be passed to fetch()
-            // @ts-ignore
+            // @ts-expect-error
             const remainingFetchConfig: RequestInit = { ...fetchConfig };
-            // @ts-ignore
+            // @ts-expect-error
             delete remainingFetchConfig.useChaynsAuth;
 
             let requestAddress: string = '';
@@ -222,12 +221,12 @@ export function httpRequest(
                 for (let i = 0; i < replacementKeys.length; i++) {
                     if (regexRegex.test(replacementKeys[i])) {
                         const regex = stringToRegex(replacementKeys[i]);
-                        // @ts-ignore
+                        // @ts-expect-error
                         requestAddress = requestAddress.replace(regex, replacements[replacementKeys[i]]);
                     } else {
                         requestAddress = requestAddress.replace(
                             replacementKeys[i],
-                            // @ts-ignore
+                            // @ts-expect-error
                             replacements[replacementKeys[i]]
                         );
                     }
@@ -257,7 +256,7 @@ export function httpRequest(
 
                 // handle chaynsErrorHandler
                 const isChayns: boolean = err instanceof ChaynsError;
-                // @ts-ignore
+                // @ts-expect-error
                 const chaynsErrorCode: string = isChayns ? err?.errorCode : null;
                 const errorHandlerKey = errorKeys.find((k) => (isChayns
                     && (k === chaynsErrorCode || stringToRegex(k)
@@ -279,7 +278,6 @@ export function httpRequest(
                             resolve(await handler(err));
                             return true;
                         }
-                        // @ts-ignore
                         if (Object.values(ResponseType)
                             .includes(handler)) {
                             switch (handler) {
@@ -310,7 +308,7 @@ export function httpRequest(
                     return true;
                 }
                 if (ignoreErrors === true
-                    // @ts-ignore
+                    // @ts-expect-error
                     || (status && chayns.utils.isArray(ignoreErrors) && ignoreErrors.includes(status))
                 ) {
                     if (chayns.utils.isNumber(status)) {
@@ -357,7 +355,7 @@ export function httpRequest(
             try {
                 response = await fetch(requestAddress, {
                     ...remainingFetchConfig,
-                    // @ts-ignore
+                    // @ts-expect-error
                     method,
                     headers: new Headers(requestHeaders),
                     body: stringifyBody ? jsonBody : body
@@ -381,7 +379,7 @@ export function httpRequest(
                             ...requestHeaders,
                             Authorization: undefined
                         },
-                        // @ts-ignore
+                        // @ts-expect-error
                         online: `${navigator?.onLine}, ${navigator?.connection?.effectiveType}`,
                         processName,
                         requestDuration: `${Date.now() - fetchStartTime} ms`,
@@ -439,7 +437,7 @@ export function httpRequest(
                         body: responseBody,
                     },
                     input,
-                    // @ts-ignore
+                    // @ts-expect-error
                     online: `${navigator?.onLine}, ${navigator?.connection?.effectiveType}`,
                     requestDuration: `${Date.now() - fetchStartTime} ms`,
                     requestTime: new Date(fetchStartTime).toISOString(),
@@ -460,7 +458,7 @@ export function httpRequest(
                 chaynsErrorObject.showDialog = !!errorDialogs
                     .find((e) => (e === chaynsErrorObject.errorCode)
                         || (Object.prototype.toString.call(e) === '[object RegExp]'
-                            // @ts-ignore
+                            // @ts-expect-error
                             && e.test(chaynsErrorObject.errorCode)
                         ));
             }

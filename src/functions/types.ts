@@ -33,7 +33,7 @@ const safeFirst = <T>(arr: Array<T>, callback?: (value: T, index: number, array:
     if (!isArray(arr)) return null;
     const relevantArray = (arr || []);
     if (!isFunction(callback)) return relevantArray[0] || null;
-    // @ts-ignore
+    // @ts-expect-error
     return relevantArray.filter(callback)[0] || null;
 };
 
@@ -174,7 +174,7 @@ const replaceAll = (string: string, search: string|RegExp, replacement: string|(
     let i = 0;
     let newString = string;
     while (i < maxReplacements) {
-        // @ts-ignore
+        // @ts-expect-error
         const tempString = newString.replace(search, replacement);
         if (tempString === newString) {
             return tempString;

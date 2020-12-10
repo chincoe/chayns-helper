@@ -54,7 +54,6 @@ export default function select(options: SelectDialogConfig, buttons?: DialogButt
             list,
             multiselect,
             quickfind: quickfind === null ? (list || []).length > 5 : quickfind,
-            // @ts-ignore
             type,
             preventCloseOnClick,
             buttons,

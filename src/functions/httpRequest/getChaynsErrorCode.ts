@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error
 import logger from 'chayns-logger';
 import { isChaynsErrorObject } from './isChaynsError';
 import {ChaynsErrorObject} from "./ChaynsError";

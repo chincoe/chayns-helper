@@ -37,7 +37,6 @@ const useUser = (userInfo: UseUserConfig) => {
                     setUser(cacheUser);
                 }
             }
-            // @ts-ignore
             chayns.getUser(userInfo)
                 .then((r: any) => {
                     setPrevUserInfo(userInfo);

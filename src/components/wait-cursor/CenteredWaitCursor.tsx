@@ -1,6 +1,6 @@
 import React, {FunctionComponent, JSXElementConstructor} from 'react';
 import clsx from 'clsx';
-// @ts-ignore
+// @ts-expect-error
 import { SmallWaitCursor } from 'chayns-components';
 import './centered-wait-cursor.scss';
 

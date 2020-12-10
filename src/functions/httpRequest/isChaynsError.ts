@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error
 import logger from 'chayns-logger';
 
 
@@ -14,11 +14,11 @@ export function isChaynsErrorObject(obj: object): boolean {
         && Object.hasOwnProperty.call(obj, 'displayMessage')
         && Object.hasOwnProperty.call(obj, 'errorCode')
         && Object.hasOwnProperty.call(obj, 'requestId')
-        // @ts-ignore
+        // @ts-expect-error
         && chayns.utils.isString(obj?.errorCode)
-        // @ts-ignore
+        // @ts-expect-error
         && chayns.utils.isString(obj?.displayMessage)
-        // @ts-ignore
+        // @ts-expect-error
         && chaynsErrorCodeRegex.test(obj.errorCode);
 }
 

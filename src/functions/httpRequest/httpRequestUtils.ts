@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error
 import logger from 'chayns-logger';
 import colorLog from '../../utils/colorLog';
 import stringToRegex, {regexRegex} from '../../utils/stringToRegex';
@@ -89,7 +89,7 @@ export function getStatusHandlerByStatusRegex(status: number, statusHandlers: Ma
         const regExp = stringToRegex(keys[i]);
         if (regExp.test(status?.toString())
             && (chayns.utils.isFunction(statusHandlers.get(keys[i]))
-                // @ts-ignore
+                // @ts-expect-error
                 || Object.values(ResponseType).includes(statusHandlers.get(keys[i])))
         ) {
             return statusHandlers.get(keys[i]);
@@ -196,11 +196,11 @@ export async function resolveWithHandler(
 ): Promise<boolean> {
     if (chayns.utils.isFunction(handler)) {
         // eslint-disable-next-line no-await-in-loop
-        // @ts-ignore
+        // @ts-expect-error
         resolve(await handler(chaynsErrorObject ?? response));
         return true;
     }
-    // @ts-ignore
+    // @ts-expect-error
     if (Object.values(ResponseType).includes(handler)) {
         switch (handler) {
             case ResponseType.Json:

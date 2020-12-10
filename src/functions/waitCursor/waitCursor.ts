@@ -20,7 +20,7 @@ export default function showWaitCursor(config?: WaitCursorConfig, additionalStep
             .sort((a, b) => (a - b))
         : [];
     const timeouts: number[] = [];
-    // @ts-ignore
+    // @ts-expect-error
     timeouts.push(setTimeout(() => {
         chayns.showWaitCursor(text, textTimeout);
     }, initialTimeout));
@@ -33,17 +33,15 @@ export default function showWaitCursor(config?: WaitCursorConfig, additionalStep
         let timeout;
         if (stepText !== null) {
             timeout = setTimeout(() => {
-                // @ts-ignore
                 chayns.showWaitCursor(stepText, 0);
             }, currentTimeout + initialTimeout);
         } else {
             timeout = setTimeout(() => {
-                // @ts-ignore
                 chayns.showWaitCursor(stepText, 30758400000 + Math.random());
             }, currentTimeout + initialTimeout);
         }
 
-        // @ts-ignore
+        // @ts-expect-error
         timeouts.push(timeout);
     }
 

@@ -113,7 +113,7 @@ class WebSocketClient {
             return;
         }
 
-        // @ts-ignore
+        // @ts-expect-error
         this.send('ping');
         this.answeredPing = false;
     };

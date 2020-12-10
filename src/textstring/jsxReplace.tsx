@@ -48,7 +48,6 @@ export default function jsxReplace(
             let ReplaceElement;
             if (isRegexKey) {
                 const match = (result[arrayIdx].match(regex) as RegExpMatchArray);
-                // @ts-ignore
                 [matchValue] = match;
                 matchIndex = match.index;
                 matchLength = match[0].length;
@@ -58,7 +57,7 @@ export default function jsxReplace(
                 matchIndex = result[arrayIdx].indexOf(vars[i]);
             }
             if (isReplacerFunction) {
-                // @ts-ignore
+                // @ts-expect-error
                 ReplaceElement = replacements[vars[i]]({
                     match: matchValue,
                     ...(isRegexKey ? { regex } : {}),
@@ -66,7 +65,7 @@ export default function jsxReplace(
                 });
             }
             // declare the new result array
-            // @ts-ignore
+            // @ts-expect-error
             result = [
                 ...result.slice(0, arrayIdx),
                 ...(ReplaceElement && React.isValidElement(ReplaceElement)
@@ -74,12 +73,12 @@ export default function jsxReplace(
                         result[arrayIdx].substring(0, matchIndex),
                         React.cloneElement(ReplaceElement, { key: `${guid}:${i}.${j}` }),
                         // jsx replacement
-                        // @ts-ignore
+                        // @ts-expect-error
                         result[arrayIdx].substring(matchIndex + matchLength)
                     ] : [
                         // string replacement
                         `${result[arrayIdx].substring(0, matchIndex)}${ReplaceElement}${result[arrayIdx].substring(
-                            // @ts-ignore
+                            // @ts-expect-error
                             matchIndex + matchLength
                         )}`
                     ]),
@@ -91,7 +90,7 @@ export default function jsxReplace(
         for (let i = 0; i < result.length; i += 1) {
             if (chayns.utils.isString(result[i])) {
                 // eslint-disable-next-line react/no-danger
-                // @ts-ignore
+                // @ts-expect-error
                 result[i] = <span dangerouslySetInnerHTML={{ __html: result[i] }}/>;
             }
         }

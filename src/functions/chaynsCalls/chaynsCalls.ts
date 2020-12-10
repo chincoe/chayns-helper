@@ -1,6 +1,5 @@
 import generateUid from '../generateUid';
 
-
 export interface ChaynsCall {
     action: number;
     value?: {
@@ -17,22 +16,22 @@ const chaynsCall = (call: ChaynsCall): Promise<{
     const callbackName: string = `chaynsCallback_${generateUid().split('-').join('')}`;
     const {action, value = {}} = call;
     return new Promise((resolve) => {
-        // @ts-ignore
+        // @ts-expect-error
         window[callbackName] = (v: any) => {
             if (chayns.utils.isFunction(value?.callback)) {
-                // @ts-ignore
+                // @ts-expect-error
                 value.callback(v);
             } else if (value?.callback
                 && chayns.utils.isString(value?.callback)
-                // @ts-ignore
+                // @ts-expect-error
                 && /^window\./.test(value?.callback)
-                // @ts-ignore
+                // @ts-expect-error
                 && chayns.utils.isFunction(window[value?.callback?.replace('window.', '')])) {
-                // @ts-ignore
+                // @ts-expect-error
                 window[value?.callback?.replace('window.', '')](v);
             }
             resolve(v);
-            // @ts-ignore
+            // @ts-expect-error
             if (!value?.callback) delete window[callbackName];
         };
         const config = {

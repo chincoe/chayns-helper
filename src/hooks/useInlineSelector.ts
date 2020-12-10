@@ -31,6 +31,6 @@ export default function useInlineSelector<T>(
     deps?: Array<any>
 ): T {
     const memo = useCallback(selector, (deps || []));
-    // @ts-ignore
+    // @ts-expect-error
     return useSelector(memo, shallowEqual) ?? defaultValue;
 }

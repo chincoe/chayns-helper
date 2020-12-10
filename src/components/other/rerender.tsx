@@ -1,5 +1,4 @@
 import React, {JSXElementConstructor, useCallback, useState} from 'react';
-// @ts-ignore
 import generateUUID from "../../functions/generateUid";
 
 export default function rerender(WrappedComponent: JSXElementConstructor<any>) {

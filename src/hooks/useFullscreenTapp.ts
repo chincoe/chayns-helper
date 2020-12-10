@@ -66,7 +66,6 @@ const correctWindowData = (
     return {
         ...data,
         windowHeight: data.windowHeight || window.innerHeight,
-        // @ts-ignore
         frameY: data.frameY === undefined ? (chayns.env.isChaynsnetRuntime ? 0 : 45) : data.frameY,
         pageYOffset: data.pageYOffset || 0,
     };
@@ -106,7 +105,6 @@ const useFullscreenTapp = (
         ]).then(([winData, winWidth]) => {
             if (chayns.env.isMobile && winWidth === window.innerWidth) return;
             setWindowWidth(window.innerWidth);
-            // @ts-ignore
             const data = correctWindowData(winData);
             setWindowData({
                 data,
