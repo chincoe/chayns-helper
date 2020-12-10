@@ -79,8 +79,6 @@ const TextStringMemo: FunctionComponent<TextStringMemoConfig> = memo((
     </TextString>
 ));
 
-TextStringMemo.displayName = 'TextStringMemo';
-
 interface TextStringReplacerConfig {
     children: string|ReactChildren,
     textStringChildren?: ReactChildren|null,
@@ -130,7 +128,5 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = memo((pr
         ? React.cloneElement(textStringChildren, elementProps, content)
            : <>{content}</>;
 });
-
-TextStringReplacer.displayName = 'TextStringReplacer';
 
 export default TextStringMemo;

@@ -33,6 +33,4 @@ const RestrictedAccordion: FunctionComponent<{
     </Accordion>
 );
 
-RestrictedAccordion.displayName = 'RestrictedAccordion';
-
 export default RestrictedAccordion;

@@ -59,6 +59,4 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = (
     ) : (<ResizableWaitCursor size={24}/>);
 };
 
-UACGroupChooseButton.displayName = 'UACGroupChooseButton';
-
 export default UACGroupChooseButton;

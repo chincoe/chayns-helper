@@ -39,6 +39,4 @@ const CenteredWaitCursor: FunctionComponent<{
     );
 };
 
-CenteredWaitCursor.displayName = 'CenteredWaitCursor';
-
 export default CenteredWaitCursor;

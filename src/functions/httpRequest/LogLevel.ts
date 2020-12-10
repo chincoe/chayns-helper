@@ -3,7 +3,7 @@ export interface ObjectResponse {
     data: object
 }
 
-export const enum LogLevelEnum {
+export enum LogLevelEnum {
     info = 'info',
     warning = 'warning',
     error = 'error',

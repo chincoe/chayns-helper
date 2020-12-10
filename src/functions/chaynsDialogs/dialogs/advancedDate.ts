@@ -51,7 +51,7 @@ export interface DateIntervalObject {
     end: Date;
 }
 
-export const enum textBlockPositionEnum {
+export enum textBlockPositionEnum {
     ABOVE_FIRST = 0,
     ABOVE_SECOND = 1,
     ABOVE_THIRD = 2
@@ -69,7 +69,7 @@ export interface DialogTextBlock {
     textBlockPosition: number | typeof textBlockPositionEnum
 }
 
-export const enum dateTypeEnum {
+export enum dateTypeEnum {
     DATE = 1,
     TIME = 2,
     DATE_TIME = 3
@@ -81,7 +81,7 @@ export const dateType = {
     DATE_TIME: 3
 }
 
-export const enum dateSelectTypeEnum {
+export enum dateSelectTypeEnum {
     SINGLE = 0,
     MULTISELECT = 1,
     INTERVAL = 2

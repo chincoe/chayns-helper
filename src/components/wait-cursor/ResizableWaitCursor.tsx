@@ -40,6 +40,4 @@ const ResizableWaitCursor: FunctionComponent<{
     );
 };
 
-ResizableWaitCursor.displayName = 'ResizableWaitCursor';
-
 export default React.memo(ResizableWaitCursor);

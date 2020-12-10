@@ -39,6 +39,4 @@ const DataRow: FunctionComponent<DataRow> = (
     );
 };
 
-DataRow.displayName = 'DataRow';
-
 export default DataRow;

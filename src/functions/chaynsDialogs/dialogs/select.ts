@@ -1,7 +1,7 @@
 import DialogPromise from '../DialogPromise';
 import {createDialogResult, DialogButton} from '../utils';
 
-export const enum selectTypeEnum {
+export enum selectTypeEnum {
     DEFAULT = 0,
     ICON = 1
 }

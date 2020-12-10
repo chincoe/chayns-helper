@@ -1,4 +1,4 @@
-export const enum ButtonTypeEnum {
+export enum ButtonTypeEnum {
     POSITIVE = 1,
     CANCEL = 0,
     NEGATIVE = -1

@@ -1,7 +1,7 @@
 /**
  * httpRequest response type. Default: json
  */
-export const enum ResponseTypeEnum {
+export enum ResponseTypeEnum {
     Json = 'json',
     Blob = 'blob',
     Response = 'response',

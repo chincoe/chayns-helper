@@ -17,8 +17,6 @@ class ErrorBoundary extends React.Component<{
     children: ReactChildren,
     fallback?: JSXElementConstructor<any>
 }> {
-    static displayName: string = 'ErrorBoundary';
-
     constructor(props: any) {
         super(props);
         this.state = {
