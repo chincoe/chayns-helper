@@ -1,8 +1,6 @@
 import DialogPromise from '../DialogPromise';
 import {createDialogResult, DialogButton} from '../utils';
 
-
-
 export const validateDate = (param: any | any[], allowMissingValue = true) => {
     if (allowMissingValue && (param === null || param === undefined)) return param;
     if (chayns.utils.isDate(param)) {
@@ -53,7 +51,7 @@ export interface DateIntervalObject {
     end: Date;
 }
 
-export enum textBlockPositionEnum {
+export const enum textBlockPositionEnum {
     ABOVE_FIRST = 0,
     ABOVE_SECOND = 1,
     ABOVE_THIRD = 2
@@ -63,39 +61,39 @@ export const textBlockPosition = {
     ABOVE_FIRST: 0,
     ABOVE_SECOND: 1,
     ABOVE_THIRD: 2
-};
+}
 
 export interface DialogTextBlock {
     headline: string;
     text: string;
-    textBlockPosition: number | textBlockPositionEnum
+    textBlockPosition: number | typeof textBlockPositionEnum
 }
 
-export enum dateTypeEnum {
-    DATE = chayns.dialog.dateType.DATE,
-    TIME = chayns.dialog.dateType.TIME,
-    DATE_TIME = chayns.dialog.dateType.DATE_TIME
+export const enum dateTypeEnum {
+    DATE = 1,
+    TIME = 2,
+    DATE_TIME = 3
 }
 
 export const dateType = {
-    DATE: chayns.dialog.dateType.DATE,
-    TIME: chayns.dialog.dateType.TIME,
-    DATE_TIME: chayns.dialog.dateType.DATE_TIME
+    DATE: 1,
+    TIME: 2,
+    DATE_TIME: 3
 }
 
-export enum dateSelectTypeEnum {
+export const enum dateSelectTypeEnum {
     SINGLE = 0,
     MULTISELECT = 1,
     INTERVAL = 2
-};
+}
 
 export const dateSelectType = {
     SINGLE: 0,
     MULTISELECT: 1,
     INTERVAL: 2
-};
+}
 
-export const resolveDateSelectType = (type?: dateSelectTypeEnum) => ([
+export const resolveDateSelectType = (type?: number) => ([
     {
         multiselect: false,
         interval: false,
@@ -127,8 +125,8 @@ export interface WeekDayIntervalItem {
 export interface AdvancedDateDialogConfig {
     message?: string;
     title?: string;
-    dateType?: dateTypeEnum;
-    selectType?: dateSelectTypeEnum;
+    dateType?: typeof dateTypeEnum | number;
+    selectType?: typeof dateSelectTypeEnum | number;
     minDate?: DateInformation;
     maxDate?: DateInformation;
     minuteInterval?: number;
@@ -178,6 +176,7 @@ export default function advancedDate(
         } = options || {};
         const dialogSelectType = (
                 pSelectType !== undefined
+                // @ts-ignore
                 && Object.values(dateSelectType).includes(pSelectType) ? pSelectType : null)
             ?? (multiselect
                 ? dateSelectType.MULTISELECT
@@ -217,7 +216,7 @@ export default function advancedDate(
             // @ts-ignore
             disabledWeekDayIntervals,
             getLocalTime,
-            ...resolveDateSelectType(dialogSelectType)
+            ...resolveDateSelectType(<number>dialogSelectType)
         })
             .then((result: any) => {
                 // result from chayns dialog

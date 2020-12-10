@@ -38,7 +38,7 @@ gulp.task('transpile-typescript', () => gulp
         tsProject()
     )
     .pipe(
-        gulp.dest("dist/esm")
+        gulp.dest("dist/")
     )
 )
 
@@ -135,6 +135,6 @@ gulp.task(
             // 'build-umd',
             // 'generate-docs'
         ),
-        // 'transpile-typescript'
+        'transpile-typescript'
     )
 );

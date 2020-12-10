@@ -21,8 +21,8 @@ import {
 } from './httpRequestUtils';
 import {chaynsErrorCodeRegex} from './isChaynsError';
 import RequestError from './RequestError';
-import ResponseType, { ResponseTypeEnum } from './ResponseType';
-import LogLevel, { LogLevelEnum, ObjectResponse } from './LogLevel';
+import ResponseType, {ResponseTypeEnum} from './ResponseType';
+import LogLevel, { ObjectResponse, LogLevelEnum } from './LogLevel';
 import handleRequest, {HandleRequestOptions} from './handleRequest';
 import setRequestDefaults, {defaultConfig} from './setRequestDefaults';
 import { HttpStatusCodeEnum } from './HttpStatusCodes';
@@ -31,7 +31,7 @@ import { HttpStatusCodeEnum } from './HttpStatusCodes';
  * The fetch config
  */
 export interface HttpRequestConfig {
-    method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT' | string | HttpMethodEnum;
+    method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT' | string | typeof HttpMethodEnum;
     /**
      * add user token as authorization
      */
@@ -53,14 +53,14 @@ export interface HttpRequestConfig {
  * Additional request options
  */
 export interface HttpRequestOptions {
-    responseType?: ResponseTypeEnum | string | null;
-    ignoreErrors?: boolean | HttpStatusCodeEnum[];
-    logConfig?: { [key: string]: LogLevelEnum } | Map<string, LogLevelEnum>,
+    responseType?: typeof ResponseTypeEnum | string | null;
+    ignoreErrors?: boolean | Array<typeof HttpStatusCodeEnum|string|number>;
+    logConfig?: { [key: string]: typeof LogLevelEnum|string } | Map<string, typeof LogLevelEnum|string>,
     stringifyBody?: boolean;
     additionalLogData?: object;
     autoRefreshToken?: boolean;
-    statusHandlers?: { [key: string]: ResponseTypeEnum | ((response: Response) => any) } | Map<string, ResponseTypeEnum | ((response: Response) => any)>;
-    errorHandlers?: { [key: string]: ResponseTypeEnum | ((response: Response) => any) } | Map<string, ResponseTypeEnum | ((response: Response) => any)>;
+    statusHandlers?: { [key: string]: typeof ResponseTypeEnum | string | ((response: Response) => any) } | Map<string, typeof ResponseTypeEnum | string | ((response: Response) => any)>;
+    errorHandlers?: { [key: string]: typeof ResponseTypeEnum | string | ((response: Response) => any) } | Map<string, typeof ResponseTypeEnum | string | ((response: Response) => any)>;
     errorDialogs?: Array<string|RegExp>;
     replacements?: { [key: string]: string | ((substring: string, ...args: any[]) => string) };
     internalRequestGuid?: string
@@ -148,8 +148,8 @@ export function httpRequest(
 
             // eslint-disable-next-line no-param-reassign
             if (!processName) processName = 'HttpRequest';
-            if (responseType != null && !Object.values(ResponseType)
-                .includes(responseType)) {
+            // @ts-ignore
+            if (responseType != null && !Object.values(ResponseType).includes(<string>responseType)) {
                 console.error(
                     ...colorLog({
                         '[HttpRequest]': 'color: #aaaaaa',
@@ -263,6 +263,7 @@ export function httpRequest(
                             resolve(await handler(err));
                             return true;
                         }
+                        // @ts-ignore
                         if (Object.values(ResponseType)
                             .includes(handler)) {
                             switch (handler) {
@@ -340,6 +341,7 @@ export function httpRequest(
             try {
                 response = await fetch(requestAddress, {
                     ...remainingFetchConfig,
+                    // @ts-ignore
                     method,
                     headers: new Headers(requestHeaders),
                     body: stringifyBody ? jsonBody : body

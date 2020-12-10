@@ -1,16 +1,14 @@
 import DialogPromise from '../DialogPromise';
 import {createDialogResult, DialogButton} from '../utils';
 
-
-
-export enum selectTypeEnum {
-    DEFAULT = chayns.dialog.selectType.DEFAULT,
-    ICON = chayns.dialog.selectType.ICON
+export const enum selectTypeEnum {
+    DEFAULT = 0,
+    ICON = 1
 }
 
 export const selectType = {
-    DEFAULT: chayns.dialog.selectType.DEFAULT,
-    ICON: chayns.dialog.selectType.ICON
+    DEFAULT: 0,
+    ICON: 1
 }
 
 export interface SelectDialogListItem {
@@ -33,7 +31,7 @@ export interface SelectDialogConfig {
     title?: string;
     multiselect?: boolean;
     quickfind?: boolean;
-    type?: selectTypeEnum;
+    type?: typeof selectTypeEnum|number;
     preventCloseOnClick?: boolean;
     selectAllButton?: string;
 }
