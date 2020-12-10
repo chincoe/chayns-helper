@@ -2,10 +2,10 @@ import { helperConfig } from '../../config/chaynsHelperConfig';
 import RequestError from './RequestError';
 import colorLog from '../../utils/colorLog';
 import ChaynsError from "./ChaynsError";
-
+import { httpRequestResult } from './httpRequest';
 
 export interface HandleRequestOptions {
-    finallyHandler?: () => any
+    finallyHandler?: (responseOrError: Error | httpRequestResult) => any
     noReject?: boolean
 }
 

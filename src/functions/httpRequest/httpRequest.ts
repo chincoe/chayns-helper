@@ -69,6 +69,8 @@ export interface HttpRequestOptions {
     internalRequestGuid?: string
 }
 
+export type httpRequestResult = Response | ObjectResponse | Blob | Object | string | RequestError | ChaynsError | any
+
 export function httpRequest(
     // full request address. URLs should be defined as functions or constants in a separate file
     address: string,
@@ -78,7 +80,7 @@ export function httpRequest(
     processName: string = 'httpRequest',
     // options for this helper
     options: HttpRequestOptions = {},
-): Promise<Response | ObjectResponse | Blob | Object | string | RequestError | ChaynsError | any> {
+): Promise<httpRequestResult> {
     const {
         responseType = null,
         /**
