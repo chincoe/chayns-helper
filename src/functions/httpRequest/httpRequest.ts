@@ -111,7 +111,7 @@ export function httpRequest(
         internalRequestGuid = generateUUID(),
         errorDialogs = [],
         replacements = {}
-    } = {
+    }: HttpRequestOptions = {
         responseType: ResponseType.Json,
         // logConfig: {},
         ignoreErrors: false,
@@ -134,7 +134,7 @@ export function httpRequest(
 
     if (waitCursor) {
         hideWaitCursor = showWaitCursor(
-            <WaitCursorConfig>waitCursor,
+            { action: `[httpRequest] ${processName}`, ...(typeof waitCursor !== 'boolean' ? waitCursor : {}) },
             (<{ timeout?: number, steps?: { [timeout: number]: string }; }>waitCursor)?.steps
         );
     }

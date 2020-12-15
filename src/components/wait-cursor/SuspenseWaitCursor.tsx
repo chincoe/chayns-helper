@@ -29,7 +29,7 @@ const SuspenseWaitCursorFallback: FunctionComponent<{
 }> = ({inline = false}) => {
     useEffect(() => {
         if (!inline) {
-            return showWaitCursor();
+            return showWaitCursor({ action: "Suspense for React.lazy" });
         }
         return () => null;
     }, []);
