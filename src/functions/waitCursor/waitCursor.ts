@@ -1,7 +1,8 @@
 export interface WaitCursorConfig {
     text?: string,
     textTimeout?: number,
-    timeout?: number
+    timeout?: number,
+    action?: string
 }
 
 /**
@@ -11,7 +12,7 @@ export type WaitCursorSteps = { [timeout: number]: string | null }
 
 export default function showWaitCursor(config?: WaitCursorConfig, additionalSteps?: WaitCursorSteps) {
     const {
-        text = undefined, textTimeout = 5000, timeout: initialTimeout = 300
+        text = undefined, textTimeout = 5000, timeout: initialTimeout = 300, action = 'showWaitCursor'
     } = config || {};
     /** @type {number[]} */
     const timeoutSteps = additionalSteps
@@ -22,7 +23,7 @@ export default function showWaitCursor(config?: WaitCursorConfig, additionalStep
     const timeouts: number[] = [];
     // @ts-expect-error
     timeouts.push(setTimeout(() => {
-        chayns.showWaitCursor(text, textTimeout);
+        chayns.showWaitCursor(text, textTimeout, action);
     }, initialTimeout));
     for (let i = 0; i < timeoutSteps.length; i++) {
         const currentTimeout = timeoutSteps[i];
@@ -33,11 +34,11 @@ export default function showWaitCursor(config?: WaitCursorConfig, additionalStep
         let timeout;
         if (stepText !== null) {
             timeout = setTimeout(() => {
-                chayns.showWaitCursor(stepText, 0);
+                chayns.showWaitCursor(stepText, 0, action);
             }, currentTimeout + initialTimeout);
         } else {
             timeout = setTimeout(() => {
-                chayns.showWaitCursor(stepText, 30758400000 + Math.random());
+                chayns.showWaitCursor(stepText, 30758400000 + Math.random(), action);
             }, currentTimeout + initialTimeout);
         }
 

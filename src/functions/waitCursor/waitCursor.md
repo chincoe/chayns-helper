@@ -12,6 +12,7 @@ hideWaitCursor();
 | options.timeout | The timeout in ms before the waitCursor is displayed | number | `300`|
 | options.textTimeout | The timeout in ms before text is shown in the wait cursor | number | `5000` |
 | options.text | The text that is shown after the text timeout | string | `undefined`(results in chayns default) |
+| options.action | The action name used for internal purposes | string | `'showWaitCursor'` |
 | steps | An object with keys for textTimeout and values for texts to show several different texts at different times | Object<textTimeout, text> | `undefined` |
 | **@returns** | The hideWaitCursor function to hide the waitCursor and clear the timeout | function() | |
 
