@@ -1,5 +1,6 @@
 {
   "plugins": [
+    "@babel/plugin-transform-runtime",
     "babel-plugin-pure-typescript-enum",
     "@babel/plugin-proposal-logical-assignment-operators",
     "@babel/plugin-proposal-numeric-separator",
