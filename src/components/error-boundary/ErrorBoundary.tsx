@@ -6,7 +6,6 @@ import {Button} from 'chayns-components';
 import logger from 'chayns-logger';
 import CenteredContainer from '../containers/CenteredContainer';
 
-
 /**
  * An ErrorBoundary.
  * Wrap your application in this. If an error occurs during render that causes react to fail rendering, this component
@@ -25,7 +24,7 @@ class ErrorBoundary extends React.Component<{
         };
     }
 
-    static getDerivedStateFromError(error: Error) {
+    /*#__PURE__*/static getDerivedStateFromError(error: Error) {
         // eslint-disable-next-line no-console
         console.error(error);
         // Update state so the next render will show the fallback UI.
@@ -82,6 +81,6 @@ class ErrorBoundary extends React.Component<{
 
         return children;
     }
-};
+}
 
 export default ErrorBoundary;
