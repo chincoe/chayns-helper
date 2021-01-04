@@ -75,7 +75,6 @@ const TextStringComplex: FunctionComponent<TextStringMemoConfig> = memo(function
                 ) {
                     isTobitEmployee()
                         .then(async () => {
-
                             const libResponse = await window.fetch(`https://webapi.tobit.com/TextStringService/v1.0/V2/LangLibs/${TEXTSTRING_PREFIX.libName}`, {
                                 method: 'GET',
                                 headers: new Headers({
