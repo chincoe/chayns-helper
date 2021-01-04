@@ -2,7 +2,7 @@
 import { TextString } from 'chayns-components';
 import React, {
     FunctionComponent,
-    memo, ReactChildren, useEffect, useMemo
+    memo, ReactChildren, ReactElement, useEffect, useMemo
 } from 'react';
 // @ts-expect-error
 import isTobitEmployee from 'chayns-components/dist/esm/utils/tobitEmployee.js';
@@ -42,14 +42,14 @@ import isNullOrWhiteSpace from '../utils/isNullOrWhiteSpace';
 export interface TextStringMemoConfig {
     stringName: string,
     fallback: string,
-    replacements: JsxReplacements,
+    replacements?: JsxReplacements,
     children?: React.ReactChildren | null,
     maxReplacements?: number,
     useDangerouslySetInnerHTML?: boolean,
     language?: string
 }
 
-const TextStringMemo: FunctionComponent<TextStringMemoConfig> = memo(function (
+const TextStringComplex: FunctionComponent<TextStringMemoConfig> = memo(function (
     {
         stringName,
         fallback,
@@ -68,39 +68,43 @@ const TextStringMemo: FunctionComponent<TextStringMemoConfig> = memo(function (
                 if (process.env.NODE_ENV === 'production'
                     && !isNullOrWhiteSpace(fallback)
                     && !isNullOrWhiteSpace(stringName)
-                    && TextString.getTextString(stringName) === undefined
+                    && (TextString.getTextString(stringName) ?? null) === null
                     && !isNullOrWhiteSpace(TEXTSTRING_PREFIX.libName)
+                    && !isNullOrWhiteSpace(TEXTSTRING_PREFIX.value)
+                    && chayns.env.user.isAuthenticated
                 ) {
-                    if (chayns.env.user.isAuthenticated && await isTobitEmployee()) {
-                        const libResponse = await window.fetch(`https://webapi.tobit.com/TextStringService/v1.0/V2/LangLibs/${TEXTSTRING_PREFIX.libName}`, {
-                            method: 'GET',
-                            headers: new Headers({
-                                Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`
-                            }),
-                        });
-                        const libContent = await libResponse.json();
-                        if (libResponse.status === 200 && libContent && Array.isArray(libContent) && !libContent.find(s => s.stringName === stringName)) {
-                            const response = await window.fetch(`https://webapi.tobit.com/TextStringService/v1.0/V2/LangStrings?libName=${TEXTSTRING_PREFIX.libName}`, {
-                                method: 'PUT',
+                    isTobitEmployee()
+                        .then(async () => {
+
+                            const libResponse = await window.fetch(`https://webapi.tobit.com/TextStringService/v1.0/V2/LangLibs/${TEXTSTRING_PREFIX.libName}`, {
+                                method: 'GET',
                                 headers: new Headers({
-                                    Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`,
-                                    'Content-Type': 'application/json'
+                                    Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`
                                 }),
-                                body: JSON.stringify({
-                                    description: '',
-                                    stringName: `${TEXTSTRING_PREFIX.value}${stringName}`,
-                                    textEng: '',
-                                    textFra: '',
-                                    textGer: fallback,
-                                    textIt: '',
-                                    textNl: ''
-                                })
                             });
-                            if (response && response.status === 201) {
-                                console.log(`[TextString] Created string '${stringName}' as '${fallback}'`);
+                            const libContent = await libResponse.json();
+                            if (libResponse.status === 200 && libContent && Array.isArray(libContent) && !libContent.find(s => s.stringName === stringName)) {
+                                const response = await window.fetch(`https://webapi.tobit.com/TextStringService/v1.0/V2/LangStrings?libName=${TEXTSTRING_PREFIX.libName}`, {
+                                    method: 'PUT',
+                                    headers: new Headers({
+                                        Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`,
+                                        'Content-Type': 'application/json'
+                                    }),
+                                    body: JSON.stringify({
+                                        description: '',
+                                        stringName: `${TEXTSTRING_PREFIX.value}${stringName}`,
+                                        textEng: '',
+                                        textFra: '',
+                                        textGer: fallback,
+                                        textIt: '',
+                                        textNl: ''
+                                    })
+                                });
+                                if (response && response.status === 201) {
+                                    console.warn(`[TextString] Created string '${TEXTSTRING_PREFIX.value}${stringName}' as '${fallback}'`);
+                                }
                             }
-                        }
-                    }
+                        });
                 }
             } catch (e) {
                 // ignored
@@ -113,16 +117,18 @@ const TextStringMemo: FunctionComponent<TextStringMemoConfig> = memo(function (
         useDangerouslySetInnerHTML={false}
         language={language}
     >
-        {/* @ts-expect-error */}
-        <TextStringReplacer
-            useDangerouslySetInnerHTML={useDangerouslySetInnerHTML}
-            maxReplacements={maxReplacements}
-            replacements={replacements}
-            textStringChildren={children}
-            stringName={stringName}
-            fallback={fallback}
-            {...elementProps}
-        />
+        {
+            /* @ts-expect-error */
+            <TextStringReplacer
+                useDangerouslySetInnerHTML={useDangerouslySetInnerHTML}
+                maxReplacements={maxReplacements}
+                replacements={replacements}
+                textStringChildren={children}
+                stringName={stringName}
+                fallback={fallback}
+                {...elementProps}
+            />
+        }
     </TextString>);
 });
 
@@ -160,20 +166,19 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = memo((pr
 
     // calculate the actual content with replacements. To display a mix of strings and react elements this function
     // creates an array of strings and react elements that is split further and further the more jsx replacements occur
-    const content = useMemo(() => {
-        jsxReplace({
+    const content: Array<ReactElement | string> = useMemo(() => {
+        return Object.keys(replacements).length > 0 ? jsxReplace({
             text,
             replacements,
             maxReplacements,
             useDangerouslySetInnerHTML,
             guid,
-        });
+        }) : text;
     }, [text, replacements]);
 
-    return React.isValidElement(textStringChildren)
-        // @ts-expect-error
+    return textStringChildren && React.isValidElement(textStringChildren)
         ? React.cloneElement(textStringChildren, elementProps, content)
-        : <>{content}</>;
+        : <span>{content}</span>;
 });
 
-export default TextStringMemo;
+export default TextStringComplex;

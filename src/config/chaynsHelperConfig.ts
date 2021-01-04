@@ -13,18 +13,18 @@ export const helperConfig: ChaynsHelperConfig = {
 
 export interface ChaynsHelperInit {
     textStringPrefix?: string;
-    libName?: string;
+    textLibName?: string;
     requestErrorHandler?: (err: Error | RequestError | ChaynsError, statusCode?: number, resolve?: (value?: any) => any, reject?: (value?: any) => any) => any;
 }
 
 const initChaynsHelper = (config: ChaynsHelperInit) => {
     const {
         textStringPrefix = '',
-        libName = '',
+        textLibName = '',
         requestErrorHandler = console.error
     } = config || {};
     TEXTSTRING_PREFIX.value = textStringPrefix;
-    TEXTSTRING_PREFIX.libName = libName;
+    TEXTSTRING_PREFIX.libName = textLibName;
     helperConfig.errorHandler = requestErrorHandler;
 };
 

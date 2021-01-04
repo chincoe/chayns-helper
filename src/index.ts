@@ -71,7 +71,7 @@ export { default as useInlineSelector } from './hooks/useInlineSelector';
 export { default as useAsyncState } from './hooks/useAsyncState';
 export { default as useExtendedState } from './hooks/useExtendedState';
 // textString
-export { default as TextStringComplex } from './textstring/TextStringMemo';
+export { default as TextStringComplex } from './textstring/TextStringComplex';
 export { default as jsxReplace } from './textstring/jsxReplace';
 export { default as useTextStrings } from './textstring/useTextStrings';
 export { default as getTextStrings } from './textstring/getTextStrings';

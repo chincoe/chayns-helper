@@ -22,7 +22,7 @@ Initialize the helper in your index.ts to make sure that every feature actually 
 ```javascript
 initChaynsHelper({
     textStringPrefix: 'txt_chayns_myapp_', // necessary to use all textString helpers
-    libName: 'MyTextLib', // for textString auto creation
+    textLibName: 'MyTextLib', // for textString auto creation
     requestErrorHandler: myRequestErrorHandler // used only by handleRequest
 });
 ```
@@ -45,7 +45,7 @@ initChaynsHelper({
 | [ResizableWaitCursor](/src/components/wait-cursor/ResizableWaitCursor.tsx)| chayns SmallWaitCursor but resizable |
 | [RestrictedAccordion](/src/components/restricted-accordion/RestrictedAccordion.tsx)| Accordion with lock-icon for admins |
 | [SuspenseWaitCursor](/src/components/wait-cursor/SuspenseWaitCursor.tsx)| Suspense-Component that provides a fallback for React lazy loading |
-| [TextStringMemo](/src/textstring/TextStringMemo.tsx)| Memoized Textstring Component, adds prefix. Allows complex replacements with JSX and CTRL+Click to edit |
+| [TextStringMemo](/src/textstring/TextStringComplex.tsx)| Memoized Textstring Component, adds prefix. Allows complex replacements with JSX and CTRL+Click to edit |
 | [UACGroupChooseButton](/src/components/buttons/UACGroupChooseButton.tsx)| ChooseButton for UAC groups |
 
 ### Hooks
@@ -61,7 +61,7 @@ initChaynsHelper({
 | [usePrevious](/src/hooks/usePrevious.ts)| access a value from a previous render |
 | [usePreviousEffect](/src/hooks/usePreviousEffect.ts)| useEffect hook that can access the previous values of its dependencies |
 | [usePrevState](/src/hooks/usePrevState.ts)| useState hook that can access its value from a previous render |
-| [useTextStrings](/src/textstring/TextStringMemo.tsx)| get memoized TextStrings from a list of string names |
+| [useTextStrings](/src/textstring/TextStringComplex.tsx)| get memoized TextStrings from a list of string names |
 | [useTimeoutState](/src/hooks/uniques/useTimeoutState.ts)| useState that calls an onChange method if the value hasn't change for a certain time | [useTimeoutState.md](/src/hooks/uniques/useTimeoutState.md) |
 | [useUniqueInterval](/src/hooks/uniques/useUniqueInterval.ts)| clears a previous interval when a new one is set |
 | [useUniqueTimeout](/src/hooks/uniques/useUniqueTimeout.ts)| clears a previous timeout when a new one is set |
