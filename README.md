@@ -33,8 +33,8 @@ initChaynsHelper({
 
 ### Components
 
-| Component                                                                | Description                 |
-|--------------------------------------------------------------------------|-----------------------------|
+| Component                                                                | Description                 | Readme |
+|--------------------------------------------------------------------------|-----------------------------| -------|
 | [CenteredContainer](/src/components/containers/CenteredContainer.tsx)| Centered container |
 | [CenteredWaitCursor](/src/components/wait-cursor/CenteredWaitCursor.tsx)| Inline-waitCursor, centered and with padding |
 | [DataRow](/src/components/containers/DataRow.tsx)| Container for a row with a label and e.g. a button |
@@ -45,7 +45,7 @@ initChaynsHelper({
 | [ResizableWaitCursor](/src/components/wait-cursor/ResizableWaitCursor.tsx)| chayns SmallWaitCursor but resizable |
 | [RestrictedAccordion](/src/components/restricted-accordion/RestrictedAccordion.tsx)| Accordion with lock-icon for admins |
 | [SuspenseWaitCursor](/src/components/wait-cursor/SuspenseWaitCursor.tsx)| Suspense-Component that provides a fallback for React lazy loading |
-| [TextStringMemo](/src/textstring/TextStringComplex.tsx)| Memoized Textstring Component, adds prefix. Allows complex replacements with JSX and CTRL+Click to edit |
+| [TextStringComplex](/src/textstring/TextStringComplex.tsx)| Memoized Textstring Component, adds prefix. Allows complex replacements with JSX, autoCreation and CTRL+Click to edit | [TextString.md](src/textstring/TextString.md) |
 | [UACGroupChooseButton](/src/components/buttons/UACGroupChooseButton.tsx)| ChooseButton for UAC groups |
 
 ### Hooks
@@ -87,7 +87,7 @@ initChaynsHelper({
 | [hexToRgb](/src/functions/colors/hexToRgb.ts)| Convert a hex color to an rgb object which returns a rgba() css function when stringified | |
 | [hideCWFooter](/src/functions/chaynsCalls/hideCwFooter.ts)| hide the chayns web footer | |
 | [isChaynsError](/src/functions/httpRequest/isChaynsError.ts)| determine whether something is a chayns error. Can deal with Response, Promise and Object | |
-| [jsxReplace](/src/textstring/jsxReplace.tsx)| replace strings or regex matches in a string with other strings or jsx | |
+| [jsxReplace](/src/textstring/jsxReplace.tsx)| replace strings or regex matches in a string with other strings or jsx | [TextString.md](src/textstring/TextString.md) |
 | [request](/src/functions/httpRequest/httpRequest.ts)| fetch helper with loads of options, constants and a try/catch wrapper | [httpRequest.md](/src/functions/httpRequest/httpRequest.md) |
 | [localStorage](/src/other/localStorageHelper.ts)| helper to cache httpRequest JSON strings in local storage | |
 | [setViewMode](/src/functions/chaynsCalls/chaynsCalls.ts)| toggle exclusive mode | |

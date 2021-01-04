@@ -3,7 +3,7 @@ import stringToRegex, { regexRegex } from '../utils/stringToRegex';
 import generateUUID from '../functions/generateUid';
 
 
-export type JsxReplacements = {[stringOrRegex: string]: string|((...args: any[]) => string|ReactElement)}
+export type JsxReplacements = {[stringOrRegex: string]: ReactElement|string|((params: {match: string, regex?: RegExp, variable: string}) => string|ReactElement)}
 
 export interface JsxReplaceConfig {
     text: string,
@@ -45,7 +45,7 @@ export default function jsxReplace(
             let matchIndex;
             let matchLength;
             const isReplacerFunction = chayns.utils.isFunction(replacements[vars[i]]);
-            let ReplaceElement;
+            let ReplaceElement = replacements[vars[i]];
             if (isRegexKey) {
                 const match = (result[arrayIdx].match(regex) as RegExpMatchArray);
                 [matchValue] = match;
@@ -61,7 +61,7 @@ export default function jsxReplace(
                 ReplaceElement = replacements[vars[i]]({
                     match: matchValue,
                     ...(isRegexKey ? { regex } : {}),
-                    var: vars[i]
+                    variable: vars[i]
                 });
             }
             // declare the new result array
