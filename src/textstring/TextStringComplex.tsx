@@ -39,17 +39,18 @@ import isNullOrWhiteSpace from '../utils/isNullOrWhiteSpace';
  * @return {*}
  */
 
-export interface TextStringMemoConfig {
+export interface TextStringComplexConfig {
     stringName: string,
     fallback: string,
     replacements?: JsxReplacements,
     children?: React.ReactChildren | null,
     maxReplacements?: number,
     useDangerouslySetInnerHTML?: boolean,
-    language?: string
+    language?: string,
+    autoCreation?: boolean
 }
 
-const TextStringComplex: FunctionComponent<TextStringMemoConfig> = memo(function (
+const TextStringComplex: FunctionComponent<TextStringComplexConfig> = memo(function (
     {
         stringName,
         fallback,
@@ -58,6 +59,7 @@ const TextStringComplex: FunctionComponent<TextStringMemoConfig> = memo(function
         maxReplacements = 20,
         useDangerouslySetInnerHTML = false,
         language = undefined,
+        autoCreation = process.env.NODE_ENV === 'production',
         ...elementProps
     }
 ) {
@@ -65,7 +67,7 @@ const TextStringComplex: FunctionComponent<TextStringMemoConfig> = memo(function
     useEffect(() => {
         (async () => {
             try {
-                if (process.env.NODE_ENV === 'production'
+                if (autoCreation
                     && !isNullOrWhiteSpace(fallback)
                     && !isNullOrWhiteSpace(stringName)
                     && (TextString.getTextString(stringName) ?? null) === null
