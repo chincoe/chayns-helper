@@ -1,14 +1,15 @@
-
-
 // @ts-expect-error
 import { TextString } from 'chayns-components';
 import React, {
     FunctionComponent,
-    memo, ReactChildren, useMemo
+    memo, ReactChildren, useEffect, useMemo
 } from 'react';
+// @ts-expect-error
+import isTobitEmployee from 'chayns-components/dist/esm/utils/tobitEmployee.js';
 import generateUUID from '../functions/generateUid';
-import jsxReplace, {JsxReplacements} from './jsxReplace';
+import jsxReplace, { JsxReplacements } from './jsxReplace';
 import TEXTSTRING_PREFIX from './textstringPrefix';
+import isNullOrWhiteSpace from '../utils/isNullOrWhiteSpace';
 
 // memoized textstring component
 // adds prefix automatically
@@ -42,13 +43,13 @@ export interface TextStringMemoConfig {
     stringName: string,
     fallback: string,
     replacements: JsxReplacements,
-    children?: React.ReactChildren|null,
+    children?: React.ReactChildren | null,
     maxReplacements?: number,
     useDangerouslySetInnerHTML?: boolean,
     language?: string
 }
 
-const TextStringMemo: FunctionComponent<TextStringMemoConfig> = memo((
+const TextStringMemo: FunctionComponent<TextStringMemoConfig> = memo(function (
     {
         stringName,
         fallback,
@@ -59,8 +60,54 @@ const TextStringMemo: FunctionComponent<TextStringMemoConfig> = memo((
         language = undefined,
         ...elementProps
     }
-) => (
-    <TextString
+) {
+    // create missing textStrings in QA/Production if opened by an authorized developer
+    useEffect(() => {
+        (async () => {
+            try {
+                if (process.env.NODE_ENV === 'production'
+                    && !isNullOrWhiteSpace(fallback)
+                    && !isNullOrWhiteSpace(stringName)
+                    && TextString.getTextString(stringName) === undefined
+                    && !isNullOrWhiteSpace(TEXTSTRING_PREFIX.libName)
+                ) {
+                    if (chayns.env.user.isAuthenticated && await isTobitEmployee()) {
+                        const libResponse = await window.fetch(`https://webapi.tobit.com/TextStringService/v1.0/V2/LangLibs/${TEXTSTRING_PREFIX.libName}`, {
+                            method: 'GET',
+                            headers: new Headers({
+                                Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`
+                            }),
+                        });
+                        const libContent = await libResponse.json();
+                        if (libResponse.status === 200 && libContent && Array.isArray(libContent) && !libContent.find(s => s.stringName === stringName)) {
+                            const response = await window.fetch(`https://webapi.tobit.com/TextStringService/v1.0/V2/LangStrings?libName=${TEXTSTRING_PREFIX.libName}`, {
+                                method: 'PUT',
+                                headers: new Headers({
+                                    Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`,
+                                    'Content-Type': 'application/json'
+                                }),
+                                body: JSON.stringify({
+                                    description: '',
+                                    stringName: `${TEXTSTRING_PREFIX.value}${stringName}`,
+                                    textEng: '',
+                                    textFra: '',
+                                    textGer: fallback,
+                                    textIt: '',
+                                    textNl: ''
+                                })
+                            });
+                            if (response && response.status === 201) {
+                                console.log(`[TextString] Created string '${stringName}' as '${fallback}'`);
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                // ignored
+            }
+        })();
+    }, []);
+    return (<TextString
         stringName={`${TEXTSTRING_PREFIX.value}${stringName}`}
         fallback={fallback}
         useDangerouslySetInnerHTML={false}
@@ -76,12 +123,12 @@ const TextStringMemo: FunctionComponent<TextStringMemoConfig> = memo((
             fallback={fallback}
             {...elementProps}
         />
-    </TextString>
-));
+    </TextString>);
+});
 
 interface TextStringReplacerConfig {
-    children: string|ReactChildren,
-    textStringChildren?: ReactChildren|null,
+    children: string | ReactChildren,
+    textStringChildren?: ReactChildren | null,
     replacements: JsxReplacements,
     useDangerouslySetInnerHTML?: boolean,
     maxReplacements?: number,
@@ -105,8 +152,8 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = memo((pr
     // get the string manually if it hasn't been passed by the chayns-components textstring component
     const calculatedString = TextString.getTextString(stringName) || fallback;
     const text = chayns.utils.isString(children)
-                 ? children
-                 : calculatedString;
+        ? children
+        : calculatedString;
 
     // generate a guid used for react keys
     const guid = useMemo(() => generateUUID(), []);
@@ -126,7 +173,7 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = memo((pr
     return React.isValidElement(textStringChildren)
         // @ts-expect-error
         ? React.cloneElement(textStringChildren, elementProps, content)
-           : <>{content}</>;
+        : <>{content}</>;
 });
 
 export default TextStringMemo;

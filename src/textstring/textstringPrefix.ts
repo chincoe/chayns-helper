@@ -1,5 +1,6 @@
 const TEXTSTRING_PREFIX = {
-    value: ''
+    value: '',
+    libName: ''
 };
 
 export default TEXTSTRING_PREFIX;

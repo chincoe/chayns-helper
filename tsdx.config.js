@@ -6,6 +6,7 @@ const { DEFAULT_EXTENSIONS: DEFAULT_BABEL_EXTENSIONS } = require('@babel/core')
 
 module.exports = {
     rollup(config, opts) {
+        // for tree-shaking, find tsdx babel plugin and replace it with one that sets the babelHelpers to runtime
         const babelPluginIdx = config.plugins.findIndex(p => p.name === 'babel')
         if (babelPluginIdx !== -1) {
             config.plugins[babelPluginIdx] = babelPluginTsdx({
@@ -20,7 +21,7 @@ module.exports = {
                 babelHelpers: 'runtime',
             })
         }
-
+        // add postcss
         config.plugins.push(
             postcss({
                 plugins: [

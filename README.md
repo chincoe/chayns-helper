@@ -22,6 +22,7 @@ Initialize the helper in your index.ts to make sure that every feature actually 
 ```javascript
 initChaynsHelper({
     textStringPrefix: 'txt_chayns_myapp_', // necessary to use all textString helpers
+    libName: 'MyTextLib', // for textString auto creation
     requestErrorHandler: myRequestErrorHandler // used only by handleRequest
 });
 ```
