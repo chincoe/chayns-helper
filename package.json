@@ -20,7 +20,8 @@
     "install:all": "npm i -reg http://repo.tobit.ag:8081/repository/npm/",
     "createLink": "npm link",
     "removeLink": "npm unlink",
-    "pub": "npm publish"
+    "pub": "npm publish",
+    "postpublish": ""
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -87,7 +88,6 @@
   "dependencies": {
     "@babel/runtime": "^7.12.5",
     "@types/node": "^14.14.10",
-    "@types/prop-types": "^15.7.3",
     "@types/react": "^17.0.0",
     "abortcontroller-polyfill": "^1.5.0",
     "clsx": "^1.1.1",
