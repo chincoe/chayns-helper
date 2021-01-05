@@ -2,6 +2,13 @@ import { format } from 'date-fns/esm';
 import deLocale from 'date-fns/esm/locale/de';
 import time from '../../constants/time';
 
+/**
+ * date-fns format() function extended with the feature to work with date strings and timestamps, the feature to use
+ * "heute", "morgen" or "gestern" and the feature to append the year if it differs from the current one
+ * @param date
+ * @param formatString
+ * @param options
+ */
 const fnsFormat = (date: Date|string|number, formatString: string, options?: {
     useToday?: boolean,
     appendYear?: boolean,

@@ -1,6 +1,6 @@
 {
   "name": "chayns-helper",
-  "version": "2.0.11",
+  "version": "2.1.0",
   "author": "Christian Nagel",
   "description": "my personal helpers for chayns development",
   "main": "dist/index.js",
@@ -15,12 +15,18 @@
     "node": ">=10"
   },
   "scripts": {
-    "prepublishOnly": "npm install && npm run build",
     "build": "tsdx build",
     "install:all": "npm i -reg http://repo.tobit.ag:8081/repository/npm/",
+    "pub": "npm publish",
+    "pub:beta": "npm version prerelease --preid=beta -m \":bookmark: Prerelease version %s\" && npm publish",
+    "pub:patch": "npm version patch -m \":bookmark: Patch version %s\" && npm publish",
+    "pub:minor": "npm version minor -m \":bookmark: Minor version %s\" && npm publish",
+    "pub:major": "npm version major -m \":bookmark: Major version %s\" && npm publish",
+    "prepublishOnly": "npm run build",
+    "preversion": "npm run install:all",
+    "postpublish": "git push && git push --tags",
     "createLink": "npm link",
-    "removeLink": "npm unlink",
-    "pub": "npm publish"
+    "removeLink": "npm unlink"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -87,7 +93,6 @@
   "dependencies": {
     "@babel/runtime": "^7.12.5",
     "@types/node": "^14.14.10",
-    "@types/prop-types": "^15.7.3",
     "@types/react": "^17.0.0",
     "abortcontroller-polyfill": "^1.5.0",
     "clsx": "^1.1.1",

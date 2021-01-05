@@ -1,5 +1,8 @@
 import hexToRgb from './hexToRgb';
 
+/**
+ * Hash a string and turn it into an RGB color to get predictable colors out of strings.
+ */
 const stringToColor = (str: string, rgb?: boolean): ({r: number, g: number, b: number, a: number|null}|String|null) => {
     /* eslint-disable no-bitwise */
     let hash = 0;

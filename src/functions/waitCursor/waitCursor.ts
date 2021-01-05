@@ -10,11 +10,15 @@ export interface WaitCursorConfig {
  */
 export type WaitCursorSteps = { [timeout: number]: string | null }
 
+/**
+ * chayns.showWaitCursor() function, but it has a built-in timeout and can deal with multiple steps
+ * @param config
+ * @param additionalSteps
+ */
 export default function showWaitCursor(config?: WaitCursorConfig, additionalSteps?: WaitCursorSteps) {
     const {
         text = undefined, textTimeout = 5000, timeout: initialTimeout = 300, action = 'showWaitCursor'
     } = config || {};
-    /** @type {number[]} */
     const timeoutSteps = additionalSteps
         ? Object.keys(additionalSteps)
             .map((num) => +num)

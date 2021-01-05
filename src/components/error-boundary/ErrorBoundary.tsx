@@ -1,7 +1,7 @@
-import React, {ErrorInfo, JSXElementConstructor, ReactChildren} from 'react';
+import React, { ErrorInfo, JSXElementConstructor, ReactChildren } from 'react';
 import './error-boundary.scss';
 // @ts-expect-error
-import {Button} from 'chayns-components';
+import { Button } from 'chayns-components';
 // @ts-expect-error
 import logger from 'chayns-logger';
 import CenteredContainer from '../containers/CenteredContainer';
@@ -15,7 +15,7 @@ import CenteredContainer from '../containers/CenteredContainer';
 class ErrorBoundary extends React.Component<{
     children: ReactChildren,
     fallback?: JSXElementConstructor<any>
-}> {
+}, { error?: Error | null, hasError: boolean }> {
     constructor(props: any) {
         super(props);
         this.state = {
@@ -24,7 +24,8 @@ class ErrorBoundary extends React.Component<{
         };
     }
 
-    /*#__PURE__*/static getDerivedStateFromError(error: Error) {
+    /*#__PURE__*/
+    static getDerivedStateFromError(error: Error) {
         // eslint-disable-next-line no-console
         console.error(error);
         // Update state so the next render will show the fallback UI.
@@ -38,19 +39,24 @@ class ErrorBoundary extends React.Component<{
         // You can also log the error to an error reporting service
         logger.error({
             message: '[ErrorBoundary] Unexpected react error',
-            data: {errorInfo}
+            data: { errorInfo }
         }, error);
     }
 
     render() {
-        const {state, props} = this;
-        const {children, fallback} = props;
+        const {
+            state,
+            props
+        } = this;
+        const {
+            children,
+            fallback
+        } = props;
+        // noinspection UnnecessaryLocalVariableJS
         const FallbackComponent = fallback;
-        // @ts-expect-error
         if (state.hasError) {
             // You can render any custom fallback UI
-            return fallback
-                // @ts-expect-error
+            return FallbackComponent
                 ? (<FallbackComponent error={state.error}/>)
                 : (
                     <div className="ErrorBoundary">
@@ -66,7 +72,7 @@ class ErrorBoundary extends React.Component<{
                             <CenteredContainer style={{}}>
                                 <Button
                                     onClick={() => {
-                                        chayns.appendUrlParameter({nocache: true}, true);
+                                        chayns.appendUrlParameter({ nocache: true }, true);
                                         // eslint-disable-next-line no-restricted-globals
                                         location.reload();
                                     }}

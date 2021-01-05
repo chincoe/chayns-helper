@@ -193,6 +193,9 @@ const regex = {
     whitespace: /^ +$/
 };
 
+/**
+ * a collection of helpers for type checking, arrays and objects
+ */
 const types = {
     isArray,
     isObject,

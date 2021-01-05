@@ -13,6 +13,14 @@ export interface JsxReplaceConfig {
     useDangerouslySetInnerHTML?: boolean
 }
 
+/**
+ * Replace parts in a text with JSX
+ * @param text
+ * @param replacements
+ * @param maxReplacements
+ * @param guid
+ * @param useDangerouslySetInnerHTML
+ */
 export default function jsxReplace(
     {
         text,

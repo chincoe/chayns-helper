@@ -4,6 +4,9 @@ import './resizable-wait-cursor.scss';
 import { SmallWaitCursor } from 'chayns-components';
 import clsx from 'clsx';
 
+/**
+ * Resizable version of the chayns-components SmallWaitCursor
+ */
 const ResizableWaitCursor: FunctionComponent<{
     size?: number;
     className?: string;

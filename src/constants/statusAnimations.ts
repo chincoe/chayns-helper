@@ -1,4 +1,5 @@
 /**
+ * The checkmark and failure animations as HTML strings for dialogs
  * @type {{success: string, failure: string}}
  */
 const statusAnimations = {

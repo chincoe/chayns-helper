@@ -22,7 +22,7 @@ export interface TextStringComplexConfig {
     autoCreation?: boolean
 }
 
-const TextStringComplex: FunctionComponent<TextStringComplexConfig> = function(
+const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
     {
         stringName,
         fallback,
@@ -34,7 +34,7 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = function(
         autoCreation = process.env.NODE_ENV === 'production',
         ...elementProps
     }
-) {
+) => {
     // create missing textStrings in QA/Production if opened by an authorized developer
     useEffect(() => {
         (async () => {

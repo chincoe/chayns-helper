@@ -1,6 +1,9 @@
 import React, {FunctionComponent, JSXElementConstructor, memo, ReactChildren} from 'react';
 import useRefresh from '../../utils/useRefresh';
 
+/**
+ * Re-renders its children in a certain interval
+ */
 const Refresh: FunctionComponent<{
     interval?: number,
     children?: ReactChildren;

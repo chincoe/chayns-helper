@@ -6,6 +6,11 @@ function is(x: any, y: any): boolean {
     return x !== x && y !== y;
 }
 
+/**
+ * The react-redux shallow equal function
+ * @param objA
+ * @param objB
+ */
 export default function shallowEqual(objA: any, objB: any): boolean {
     if (is(objA, objB)) return true;
 

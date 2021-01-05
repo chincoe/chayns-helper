@@ -2,9 +2,11 @@ import React, {useEffect, useState} from 'react';
 import shallowEqual from '../../functions/shallowEqual';
 import useUniqueTimeout from './useUniqueTimeout';
 
-
 /**
  * useState that will call onChange only after no change has been made for a time equal to timeout ms
+ * @param initialValue - initial value of the useState()
+ * @param onChange - function to be called when the timeout has passed. Received the current value as parameter
+ * @param timeout - time in ms that has to pass without a new setter to call onChange
  */
 const useTimeoutState = <T>(
     initialValue: T,

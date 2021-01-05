@@ -5,6 +5,9 @@ import './centered-container.scss';
 export interface CenteredContainer {
     className?: string,
     style?: object,
+    /**
+     * leave a gap between children, ideal for buttons
+     */
     gap?: boolean,
     elementType?: string|JSXElementConstructor<any>
 }

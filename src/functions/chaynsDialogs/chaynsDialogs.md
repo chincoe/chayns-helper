@@ -8,7 +8,7 @@ Most parameters and features of the chayns dialogs remain the same. Please consu
 However, the following aspects are changed by this helper.
 
 #### Autocomplete
-The JsDoc comments enable autocomplete for all the dialog properties in WebStorm
+The Typescript definitions enable code completion for all the dialog properties
 
 #### Return values
 All dialogs return promises that resolve to an Object formatted like this:

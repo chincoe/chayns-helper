@@ -1,8 +1,0 @@
-.wait-cursor.resizable-wait-cursor {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0; }
-  .wait-cursor.resizable-wait-cursor .wait-cursor__spinner {
-    height: calc(100% * (2 / 3));
-    width: calc(100% * (2 / 3)); }
