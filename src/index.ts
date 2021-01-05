@@ -16,6 +16,7 @@ export { default as rerender } from './components/other/rerender';
 export { default as chaynsCall } from './functions/chaynsCalls/chaynsCalls';
 export { default as setViewMode } from './functions/chaynsCalls/setViewMode';
 export { default as hideCwFooter } from './functions/chaynsCalls/hideCwFooter';
+export { default as setReloadOnLogin, addChaynsLoginListener } from './functions/chaynsCalls/setReloadOnLogin'
 // chaynsDialogs
 export { default as chaynsDialog } from './functions/chaynsDialogs/chaynsDialogs';
 export { ButtonType } from './functions/chaynsDialogs/utils';

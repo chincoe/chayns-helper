@@ -74,6 +74,7 @@ initChaynsHelper({
 
 | Function                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------|----- |
+| [addChaynsLoginListener](/src/functions/chaynsCalls/setReloadOnLogin.ts)| Similar to addAccessTokenChangeListener, but implements the previous behavior that prevents reload on login/logout | |
 | [chaynsCall](/src/functions/chaynsCalls/chaynsCalls.ts)| wraps the chaynsCall callbacks behind a simple promise. Just await the chayns call to get the return value | |
 | [chaynsDialogs](/src/functions/chaynsDialogs/chaynsDialogs.ts)| makes using chayns dialogs much more comfortable | |
 | [copyToClipboard](/src/functions/copy.ts)| copy a value to the user's clipboard | |
@@ -90,6 +91,7 @@ initChaynsHelper({
 | [jsxReplace](/src/textstring/jsxReplace.tsx)| replace strings or regex matches in a string with other strings or jsx | [TextString.md](src/textstring/TextString.md) |
 | [request](/src/functions/httpRequest/httpRequest.ts)| fetch helper with loads of options, constants and a try/catch wrapper | [httpRequest.md](/src/functions/httpRequest/httpRequest.md) |
 | [localStorage](/src/other/localStorageHelper.ts)| helper to cache httpRequest JSON strings in local storage | |
+| [setReloadOnLogin](/src/functions/chaynsCalls/setReloadOnLogin.ts)| enable/disable reload on login/logout | |
 | [setViewMode](/src/functions/chaynsCalls/chaynsCalls.ts)| toggle exclusive mode | |
 | [shallowEqual](/src/functions/shallowEqual.ts)| check 2 values for equality | |
 | [stringToColor](/src/functions/colors/stringToColor.ts)| Convert a string to a hex color or rgb color object which returns a rgba() css function when stringified | |
