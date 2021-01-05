@@ -15,13 +15,17 @@
     "node": ">=10"
   },
   "scripts": {
-    "prepublishOnly": "npm install && npm run build",
     "build": "tsdx build",
     "install:all": "npm i -reg http://repo.tobit.ag:8081/repository/npm/",
-    "createLink": "npm link",
-    "removeLink": "npm unlink",
     "pub": "npm publish",
-    "postpublish": ""
+    "pub:beta": "npm version prerelease --preid=beta --no-git-tag-version && npm publish",
+    "pub:patch": "npm version patch -m \":bookmark: Patch version %s\" && npm publish",
+    "pub:minor": "npm version minor -m \":bookmark: Minor version %s\" && npm publish",
+    "pub:major": "npm version major -m \":bookmark: Major version %s\" && npm publish",
+    "prepublishOnly": "npm run build",
+    "preversion": "npm run install:all",
+    "createLink": "npm link",
+    "removeLink": "npm unlink"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
