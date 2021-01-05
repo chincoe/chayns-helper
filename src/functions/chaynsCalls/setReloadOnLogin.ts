@@ -1,4 +1,4 @@
-const loginListeners: {listeners: Array<() => void>, globalReloadOnLogin: boolean, noReloadOnLogin: number} = {
+const loginListeners: { listeners: Array<() => void>, globalReloadOnLogin: boolean, noReloadOnLogin: number } = {
     listeners: [],
     globalReloadOnLogin: true,
     noReloadOnLogin: 0
@@ -21,21 +21,22 @@ export default function setReloadOnLogin(status: boolean = false, updateGlobalSt
 /**
  * Add an accessTokenChangeListener that will prevent reload on login/logout
  * @param callback
+ * @param once - remove after being called once
  */
-export const addChaynsLoginListener = (callback: () => any): (() => void) => {
+export const addChaynsLoginListener = (callback: () => any, once: boolean = false): (() => void) => {
     loginListeners.noReloadOnLogin++;
     if (loginListeners.noReloadOnLogin === 1) {
         setReloadOnLogin(false, false);
     }
 
-    function listener() {
+    const listener = once ? () => {
         callback();
         loginListeners.noReloadOnLogin--;
         if (!loginListeners.globalReloadOnLogin && !loginListeners.noReloadOnLogin) {
             setReloadOnLogin(true, false);
         }
         chayns.removeAccessTokenChangeListener(listener);
-    }
+    } : callback;
 
     loginListeners.listeners.push(listener);
 
@@ -61,4 +62,4 @@ export const removeChaynsLoginListener = (callback: () => any): boolean => {
         return true;
     }
     return false;
-}
+};
