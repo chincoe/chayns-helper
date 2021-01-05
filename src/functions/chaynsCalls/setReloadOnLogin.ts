@@ -12,7 +12,7 @@ const loginListeners: {listeners: Array<() => void>, globalReloadOnLogin: boolea
 export default function setReloadOnLogin(status: boolean = false, updateGlobalStatus: boolean = true): void {
     if (updateGlobalStatus) loginListeners.globalReloadOnLogin = status;
     parent.postMessage(JSON.stringify({
-        preventReload: status,
+        preventReload: !status,
         customPluginIframe: window.name,
     }), '*');
 
