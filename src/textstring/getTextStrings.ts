@@ -1,7 +1,7 @@
 // @ts-expect-error
 import { TextString } from 'chayns-components';
 import isNullOrWhiteSpace from '../utils/isNullOrWhiteSpace';
-import TEXTSTRING_PREFIX from './textstringPrefix';
+import TEXTSTRING_CONFIG from './textstringConfig';
 
 /**
  * Get a list of textStrings
@@ -19,7 +19,7 @@ const getTextStrings = (textStrings: string[]|{[name: string]: string}, language
         // @ts-expect-error
         const fallback = (isSimple ? current : textStrings[strings[i]]);
         const text = TextString.getTextString(
-            `${TEXTSTRING_PREFIX.value}${current}`,
+            `${TEXTSTRING_CONFIG.prefix}${current}`,
             language,
             fallback
         );

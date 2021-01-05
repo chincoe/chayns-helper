@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-cycle
-import TEXTSTRING_PREFIX from '../textstring/textstringPrefix';
+import TEXTSTRING_CONFIG from '../textstring/textstringConfig';
 import RequestError from "../functions/httpRequest/RequestError";
 import ChaynsError from "../functions/httpRequest/ChaynsError";
 
@@ -23,8 +23,8 @@ const initChaynsHelper = (config: ChaynsHelperInit) => {
         textLibName = '',
         requestErrorHandler = console.error
     } = config || {};
-    TEXTSTRING_PREFIX.value = textStringPrefix;
-    TEXTSTRING_PREFIX.libName = textLibName;
+    TEXTSTRING_CONFIG.prefix = textStringPrefix;
+    TEXTSTRING_CONFIG.libName = textLibName;
     helperConfig.errorHandler = requestErrorHandler;
 };
 
