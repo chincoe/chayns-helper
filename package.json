@@ -24,6 +24,7 @@
     "pub:major": "npm version major -m \":bookmark: Major version %s\" && npm publish",
     "prepublishOnly": "npm run build",
     "preversion": "npm run install:all",
+    "postpublish": "git push && git push --tags",
     "createLink": "npm link",
     "removeLink": "npm unlink"
   },
