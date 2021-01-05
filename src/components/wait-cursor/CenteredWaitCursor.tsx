@@ -4,6 +4,9 @@ import clsx from 'clsx';
 import { SmallWaitCursor } from 'chayns-components';
 import './centered-wait-cursor.scss';
 
+/**
+ * chayns-components SmallWaitCursor that centers itself, adds a margin and is only displayed after a delay
+ */
 const CenteredWaitCursor: FunctionComponent<{
     className?: string,
     style?: object

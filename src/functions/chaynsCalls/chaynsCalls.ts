@@ -8,6 +8,9 @@ export interface ChaynsCall {
     }
 }
 
+/**
+ * A wrapper that makes callback-based chayns calls promise based so they can be awaited
+ */
 const chaynsCall = (call: ChaynsCall): Promise<{
     addJSONParam: object;
     callback: string;

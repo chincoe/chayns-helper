@@ -1,3 +1,6 @@
+/**
+ * A helper to extract the useSelector hook from react-redux and catch the error if that package is not installed
+ */
 // eslint-disable-next-line import/no-mutable-exports
 let useSelector = () => {
     console.error('[chayns-helper] Please install react-redux to use selector hooks.');

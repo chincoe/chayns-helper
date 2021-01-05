@@ -12,8 +12,17 @@ export const helperConfig: ChaynsHelperConfig = {
 };
 
 export interface ChaynsHelperInit {
+    /**
+     * Prefix for all textstring helpers. Not necessary if no textstring helpers are used.
+     */
     textStringPrefix?: string;
+    /**
+     * LibName for the textstring helpers. Currently only required for the auto creation of text strings.
+     */
     textLibName?: string;
+    /**
+     * Request error handler for request.handle(), not necessary if only request.fetch() is used
+     */
     requestErrorHandler?: (err: Error | RequestError | ChaynsError, statusCode?: number, resolve?: (value?: any) => any, reject?: (value?: any) => any) => any;
 }
 

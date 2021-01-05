@@ -6,6 +6,7 @@ import React, {
 } from 'react';
 
 /**
+ * A useState hook that retains its previously set value as 3rd return value
  * @template T
  * @param {T} [initialState]
  * @param {?*[]} [deps]

@@ -10,6 +10,7 @@ export interface RechartsAxis<T> {
 }
 
 /**
+ * Generate data for a good recharts axis that will use customizable intervals
  * Usage:
  * const tickInfo = useAxis(min, max, divisor, maxTicks, minTicks, formatter);
  * ...

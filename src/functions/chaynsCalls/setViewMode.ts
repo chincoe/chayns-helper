@@ -1,5 +1,6 @@
-
-
+/**
+ * Set the view mode of the tapp to default, regular or exclusive mode. Full width only works with certain site layouts
+ */
 const setViewMode = (exclusive: boolean, tryFullBrowserWidth?: boolean): Promise<void> => {
     let viewMode = (tryFullBrowserWidth ?? false) ? 4 : (exclusive ? 2 : 0);
     if ((tryFullBrowserWidth ?? false) && !chayns.env.site.disposition.contentWide) {

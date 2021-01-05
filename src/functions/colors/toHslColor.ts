@@ -11,12 +11,13 @@ const getHashCode = (string: string): number => {
 };
 
 /**
+ * Turn a string or int into an hsl color object. Ideal to create predictable colors that will always have a certain saturation
  * @param {string|number} stringOrInt
  * @param {number} s
  * @param {number} l
  * @returns {string|{h: number, s: number, l:number}}
  */
-const toHslColor = (stringOrInt: string|number, s?: number, l?: number) => {
+const toHslColor = (stringOrInt: string | number, s?: number, l?: number) => {
     // @ts-expect-error
     const number: number = chayns.utils.isNumber(stringOrInt) ? stringOrInt : getHashCode(stringOrInt);
     const shortened: number = number % 360;

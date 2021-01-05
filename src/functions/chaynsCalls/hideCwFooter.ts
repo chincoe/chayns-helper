@@ -1,7 +1,5 @@
-
-
 /**
- * Hide the Tapp's footer
+ * Hide the page footer
  */
 const hideCWFooter = (): Promise<any> => chayns.invokeCall({
     action: 238,

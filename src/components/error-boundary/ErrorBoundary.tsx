@@ -1,4 +1,4 @@
-import React, { ErrorInfo, JSXElementConstructor, ReactChildren, ReactInstance } from 'react';
+import React, { ErrorInfo, JSXElementConstructor, ReactChildren } from 'react';
 import './error-boundary.scss';
 // @ts-expect-error
 import { Button } from 'chayns-components';
