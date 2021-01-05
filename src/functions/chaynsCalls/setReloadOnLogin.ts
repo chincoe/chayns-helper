@@ -4,36 +4,39 @@ const loginListeners: { listeners: Array<() => void>, globalReloadOnLogin: boole
     noReloadOnLogin: 0
 };
 
-/**
- * Prevent reload on user login/logout, previously handled by adding an accessTokenChangeListener.
- * @param status
- * @param updateGlobalStatus
- */
-export default function setReloadOnLogin(status: boolean = false, updateGlobalStatus: boolean = true): void {
-    if (updateGlobalStatus) loginListeners.globalReloadOnLogin = status;
+function setReload(reload: boolean = false) {
     parent.postMessage(JSON.stringify({
-        preventReload: !status,
+        preventReload: !reload,
         customPluginIframe: window.name,
     }), '*');
-
 }
 
 /**
- * Add an accessTokenChangeListener that will prevent reload on login/logout
+ * For pagemakerV2 iframes, prevent reload on user login/logout, otherwise handled by adding an accessTokenChangeListener.
+ * @param reload
+ */
+export default function setReloadOnLogin(reload: boolean = false): void {
+    loginListeners.globalReloadOnLogin = reload;
+    setReload(reload);
+}
+
+/**
+ * Add an accessTokenChangeListener that will prevent reload on login/logout even in pagemaker iframes
  * @param callback
  * @param once - remove after being called once
+ * @returns callback - the reference of the listener callback needed to remove it
  */
 export const addChaynsLoginListener = (callback: () => any, once: boolean = false): (() => void) => {
     loginListeners.noReloadOnLogin++;
-    if (loginListeners.noReloadOnLogin === 1) {
-        setReloadOnLogin(false, false);
+    if (loginListeners.globalReloadOnLogin || loginListeners.noReloadOnLogin === 1) {
+        setReload(false);
     }
 
     const listener = once ? () => {
         callback();
         loginListeners.noReloadOnLogin--;
         if (!loginListeners.globalReloadOnLogin && !loginListeners.noReloadOnLogin) {
-            setReloadOnLogin(true, false);
+            setReload(true);
         }
         chayns.removeAccessTokenChangeListener(listener);
     } : callback;
@@ -56,7 +59,7 @@ export const removeChaynsLoginListener = (callback: () => any): boolean => {
         loginListeners.listeners.filter((_, index) => index != listenerIdx);
         loginListeners.noReloadOnLogin--;
         if (!loginListeners.globalReloadOnLogin && !loginListeners.noReloadOnLogin) {
-            setReloadOnLogin(true, false);
+            setReload(true);
         }
         chayns.removeAccessTokenChangeListener(callback);
         return true;
