@@ -8,36 +8,8 @@ import React, {
 import isTobitEmployee from 'chayns-components/dist/esm/utils/tobitEmployee.js';
 import generateUUID from '../functions/generateUid';
 import jsxReplace, { JsxReplacements } from './jsxReplace';
-import TEXTSTRING_PREFIX from './textstringPrefix';
+import TEXTSTRING_CONFIG from './textstringConfig';
 import isNullOrWhiteSpace from '../utils/isNullOrWhiteSpace';
-
-// memoized textstring component
-// adds prefix automatically
-// allows replacements based on regexes and (inline) function components:
-// replacements: { [regexString]: (props) => <p>JSX</p> }
-// or replacements: { [regexString]: string }
-// retains all features including ctrl-click-to-change-textstring, html and language support
-// WARNING: Nested JSX Replacements or nested replacements using setInnerHTML are not supported. Cannot replace
-// anything inside a jsx replacement or anything wrapping a jsx replacement
-/**
- * Memoized textstring Component
- * Allows replacements based on regex and inline function components.
- * replacements: { [regexString]: (props) => <p>JSX</p>} or { [regexString]: string }
- * retains all features including ctrl-click-to-change-textstring, html and language support
- * @param {Object} props
- * @param {string} props.stringName
- * @param {string} props.fallback
- * @param {Object.<string, string|function>} [props.replacements={}]
- * @param {string|*} [props.children]
- * @param {number} [props.maxReplacements=20] - Max. count of replacements per replacement item to avoid being stuck in
- *     an endless replacement loop
- * @param {boolean} [useDangerouslySetInnerHTML=false]
- * @param {string} [language='de']
- *
- * @property {function} jsxReplace
- *
- * @return {*}
- */
 
 export interface TextStringComplexConfig {
     stringName: string,
@@ -50,7 +22,7 @@ export interface TextStringComplexConfig {
     autoCreation?: boolean
 }
 
-const TextStringComplex: FunctionComponent<TextStringComplexConfig> = memo(function (
+const TextStringComplex: FunctionComponent<TextStringComplexConfig> = function(
     {
         stringName,
         fallback,
@@ -71,13 +43,13 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = memo(funct
                     && !isNullOrWhiteSpace(fallback)
                     && !isNullOrWhiteSpace(stringName)
                     && (TextString.getTextString(stringName) ?? null) === null
-                    && !isNullOrWhiteSpace(TEXTSTRING_PREFIX.libName)
-                    && !isNullOrWhiteSpace(TEXTSTRING_PREFIX.value)
+                    && !isNullOrWhiteSpace(TEXTSTRING_CONFIG.libName)
+                    && !isNullOrWhiteSpace(TEXTSTRING_CONFIG.prefix)
                     && chayns.env.user.isAuthenticated
                 ) {
                     isTobitEmployee()
                         .then(async () => {
-                            const libResponse = await window.fetch(`https://webapi.tobit.com/TextStringService/v1.0/V2/LangLibs/${TEXTSTRING_PREFIX.libName}`, {
+                            const libResponse = await window.fetch(`https://webapi.tobit.com/TextStringService/v1.0/V2/LangLibs/${TEXTSTRING_CONFIG.libName}`, {
                                 method: 'GET',
                                 headers: new Headers({
                                     Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`
@@ -85,7 +57,7 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = memo(funct
                             });
                             const libContent = await libResponse.json();
                             if (libResponse.status === 200 && libContent && Array.isArray(libContent) && !libContent.find(s => s.stringName === stringName)) {
-                                const response = await window.fetch(`https://webapi.tobit.com/TextStringService/v1.0/V2/LangStrings?libName=${TEXTSTRING_PREFIX.libName}`, {
+                                const response = await window.fetch(`https://webapi.tobit.com/TextStringService/v1.0/V2/LangStrings?libName=${TEXTSTRING_CONFIG.libName}`, {
                                     method: 'PUT',
                                     headers: new Headers({
                                         Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`,
@@ -93,7 +65,7 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = memo(funct
                                     }),
                                     body: JSON.stringify({
                                         description: '',
-                                        stringName: `${TEXTSTRING_PREFIX.value}${stringName}`,
+                                        stringName: `${TEXTSTRING_CONFIG.prefix}${stringName}`,
                                         textEng: '',
                                         textFra: '',
                                         textGer: fallback,
@@ -102,7 +74,7 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = memo(funct
                                     })
                                 });
                                 if (response && response.status === 201) {
-                                    console.warn(`[TextString] Created string '${TEXTSTRING_PREFIX.value}${stringName}' as '${fallback}'`);
+                                    console.warn(`[TextString] Created string '${TEXTSTRING_CONFIG.prefix}${stringName}' as '${fallback}'`);
                                 }
                             }
                         });
@@ -113,7 +85,7 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = memo(funct
         })();
     }, []);
     return (<TextString
-        stringName={`${TEXTSTRING_PREFIX.value}${stringName}`}
+        stringName={`${TEXTSTRING_CONFIG.prefix}${stringName}`}
         fallback={fallback}
         useDangerouslySetInnerHTML={false}
         language={language}
@@ -131,7 +103,7 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = memo(funct
             />
         }
     </TextString>);
-});
+};
 
 interface TextStringReplacerConfig {
     children: string | ReactChildren,
@@ -182,4 +154,4 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = memo((pr
         : <span>{content}</span>;
 });
 
-export default TextStringComplex;
+export default memo(TextStringComplex);
