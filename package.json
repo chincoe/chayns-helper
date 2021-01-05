@@ -18,7 +18,7 @@
     "build": "tsdx build",
     "install:all": "npm i -reg http://repo.tobit.ag:8081/repository/npm/",
     "pub": "npm publish",
-    "pub:beta": "npm version prerelease --preid=beta -m \":bookmark: Beta version %s\" && npm publish",
+    "pub:beta": "npm version prerelease --preid=beta -m \":bookmark: Prerelease version %s\" && npm publish",
     "pub:patch": "npm version patch -m \":bookmark: Patch version %s\" && npm publish",
     "pub:minor": "npm version minor -m \":bookmark: Minor version %s\" && npm publish",
     "pub:major": "npm version major -m \":bookmark: Major version %s\" && npm publish",
