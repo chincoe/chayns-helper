@@ -8,7 +8,7 @@
 </div>
 </div>
 This package contains a variety of useful helpers for <a href="https://github.com/TobitSoftware">chayns</a> development.
-Read the comments in the source code for a more detailed description and further information to each asset.
+Read the READMEs or the comments in the source code for a more detailed description and further information to each asset.
 
 ## Installation
 
@@ -74,7 +74,7 @@ initChaynsHelper({
 
 | Function                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------|----- |
-| [addChaynsLoginListener/removeChaynsLoginListener](/src/functions/chaynsCalls/setReloadOnLogin.ts)| Similar to addAccessTokenChangeListener, but prevent reload on login/logout in a pagemaker iframe as well | |
+| [addChaynsLoginListener](/src/functions/chaynsCalls/setReloadOnLogin.ts)| Similar to addAccessTokenChangeListener, but prevent reload on login/logout in a pagemaker iframe as well | |
 | [chaynsCall](/src/functions/chaynsCalls/chaynsCalls.ts)| wraps the chaynsCall callbacks behind a simple promise. Just await the chayns call to get the return value | |
 | [chaynsDialogs](/src/functions/chaynsDialogs/chaynsDialogs.ts)| makes using chayns dialogs much more comfortable | |
 | [copyToClipboard](/src/functions/copy.ts)| copy a value to the user's clipboard | |
@@ -92,6 +92,7 @@ initChaynsHelper({
 | [request](/src/functions/httpRequest/httpRequest.ts)| fetch helper with loads of options, constants and a try/catch wrapper | [httpRequest.md](/src/functions/httpRequest/httpRequest.md) |
 | [localStorage](/src/other/localStorageHelper.ts)| helper to cache httpRequest JSON strings in local storage | |
 | [localStorage](/src/other/localStorageHelper.ts)| helper to cache httpRequest JSON strings in local storage | |
+| [removeChaynsLoginListener](/src/functions/chaynsCalls/setReloadOnLogin.ts)| remove the chaynsLoginListener | |
 | [setReloadOnLogin](/src/functions/chaynsCalls/setReloadOnLogin.ts)| enable/disable reload on login/logout for pagemaker iframes | |
 | [setViewMode](/src/functions/chaynsCalls/chaynsCalls.ts)| toggle exclusive mode | |
 | [shallowEqual](/src/functions/shallowEqual.ts)| check 2 values for equality | |
