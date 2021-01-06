@@ -23,7 +23,7 @@ class WebSocketClient {
 
     answeredPing = false;
 
-    listener: {[event: string]: (...args: any[]) => any} = {};
+    listener: { [event: string]: (...args: any[]) => any } = {};
 
     constructor(
         application: string,
@@ -109,7 +109,6 @@ class WebSocketClient {
     checkConnection = () => {
         if (this.answeredPing === false) {
             if (this?.socket && this?.socket?.close) this?.socket?.close();
-            this.onClose();
             return;
         }
 
@@ -125,7 +124,10 @@ class WebSocketClient {
         if (this.socket
             && this.socket?.readyState === WebSocket.OPEN
             && this.socket?.readyState !== WebSocket.CONNECTING) {
-            this.socket?.send(JSON.stringify({topic, data}));
+            this.socket?.send(JSON.stringify({
+                topic,
+                data
+            }));
         }
     };
 
@@ -133,6 +135,17 @@ class WebSocketClient {
      * @private
      */
     createConnection = () => {
+        if (this.socket) {
+            this.socket.onopen = () => {
+            };
+            this.socket.onerror = () => {
+            };
+            this.socket.onclose = () => {
+            };
+            this.socket.onmessage = () => {
+            };
+            this.socket.close();
+        }
         this.socket = new WebSocket('wss://websocket.tobit.com');
 
         this.socket.onopen = this.onOpen;
@@ -144,7 +157,7 @@ class WebSocketClient {
     /**
      * @private
      */
-    emit = (event: string, data?: any, wsEvent: Event|null = null) => {
+    emit = (event: string, data?: any, wsEvent: Event | null = null) => {
         if (typeof this.listener[event] === 'function') {
             this.listener[event](data, wsEvent);
         }
@@ -194,7 +207,6 @@ class WebSocketClient {
     closeConnection = () => {
         if (this?.socket && this?.socket?.close) {
             this?.socket?.close();
-            this.onClose();
         }
     };
 }
