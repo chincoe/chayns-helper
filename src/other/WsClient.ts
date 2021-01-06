@@ -25,6 +25,8 @@ class WebSocketClient {
 
     listener: { [event: string]: (...args: any[]) => any } = {};
 
+    shouldReconnect = true;
+
     constructor(
         application: string,
         conditions: WebsocketConditions,
@@ -98,7 +100,7 @@ class WebSocketClient {
         }
         this.socket = null;
         clearTimeout(<NodeJS.Timeout>this.reconnectTimeout);
-        this.reconnectTimeout = setTimeout(this.createConnection, this.reconnectTimeoutTime);
+        if (this.shouldReconnect) this.reconnectTimeout = setTimeout(this.createConnection, this.reconnectTimeoutTime);
 
         this.emit('CLOSED', event, event);
     };
@@ -108,7 +110,11 @@ class WebSocketClient {
      */
     checkConnection = () => {
         if (this.answeredPing === false) {
-            if (this?.socket && this?.socket?.close) this?.socket?.close();
+            if (this?.socket && this?.socket?.close) {
+                this?.socket?.close();
+            } else {
+                this.onClose();
+            }
             return;
         }
 
@@ -205,8 +211,11 @@ class WebSocketClient {
      * @public
      */
     closeConnection = () => {
+        this.shouldReconnect = false;
         if (this?.socket && this?.socket?.close) {
             this?.socket?.close();
+        } else {
+            this.onClose();
         }
     };
 }
