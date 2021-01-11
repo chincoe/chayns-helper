@@ -35,7 +35,7 @@ initChaynsHelper({
 
 | Component                                                                | Description                 | Readme |
 |--------------------------------------------------------------------------|-----------------------------| -------|
-| [CenteredContainer](/src/components/containers/CenteredContainer.tsx)| Centered container |
+| [CenteredContainer](/src/components/containers/CenteredContainer.tsx)| Container to center its children with or without a gap between them |
 | [CenteredWaitCursor](/src/components/wait-cursor/CenteredWaitCursor.tsx)| Inline-waitCursor, centered and with padding |
 | [DataRow](/src/components/containers/DataRow.tsx)| Container for a row with a label and e.g. a button |
 | [ErrorBoundary](/src/components/error-boundary/ErrorBoundary.tsx)| Customizable ErrorBoundary to catch errors during render |
@@ -90,7 +90,6 @@ initChaynsHelper({
 | [isChaynsError](/src/functions/httpRequest/isChaynsError.ts)| determine whether something is a chayns error. Can deal with Response, Promise and Object | |
 | [jsxReplace](/src/textstring/jsxReplace.tsx)| replace strings or regex matches in a string with other strings or jsx | [TextString.md](src/textstring/TextString.md) |
 | [request](/src/functions/httpRequest/httpRequest.ts)| fetch helper with loads of options, constants and a try/catch wrapper | [httpRequest.md](/src/functions/httpRequest/httpRequest.md) |
-| [localStorage](/src/other/localStorageHelper.ts)| helper to cache httpRequest JSON strings in local storage | |
 | [localStorage](/src/other/localStorageHelper.ts)| helper to cache httpRequest JSON strings in local storage | |
 | [removeChaynsLoginListener](/src/functions/chaynsCalls/setReloadOnLogin.ts)| remove the chaynsLoginListener | |
 | [setReloadOnLogin](/src/functions/chaynsCalls/setReloadOnLogin.ts)| enable/disable reload on login/logout for pagemaker iframes | |
