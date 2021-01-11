@@ -16,7 +16,7 @@
   },
   "scripts": {
     "build": "tsdx build",
-    "install:all": "npm i -reg http://repo.tobit.ag:8081/repository/npm/",
+    "install:all": "npm i -reg http://repo.tobit.ag:8081/repository/npm/ && npm i chayns-doc@latest -D",
     "pub": "npm publish",
     "pub:beta": "npm version prerelease --preid=beta -m \":bookmark: Prerelease version %s\" && npm publish",
     "pub:patch": "npm version patch -m \":bookmark: Patch v%s\" && npm publish",
@@ -68,7 +68,7 @@
     "babel-plugin-transform-rename-import": "^2.3.0",
     "babel-plugin-typescript-iife-enum": "^0.2.1",
     "chayns-components": "^4.20.6",
-    "chayns-doc": "latest",
+    "chayns-doc": "^1.1.8",
     "chayns-logger": "^2.8.6",
     "cssnano": "^4.1.10",
     "eslint": "^7.6.0",
