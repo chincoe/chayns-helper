@@ -204,18 +204,11 @@ request.defaults(
 request.fetch('/controller/endpoint/boardId', {}, 'myRequest'); // notice how the url has to start with a slash to use the base url
 ```
 
-### request.handle(request, errorHandler, options)
+### Handling errors with throwErrors = true
+Formerly done with ~~request.handle(request, errorHandler, options)~~.
+This function is deprecated since v2.3.0.
 
-A try/catch wrapper for a request, meant to be called e.g. in your redux thunk
-
-| Parameter              | Description                 | Type | Default / required |
-|------------------------|-----------------------------|------|-----------|
-|request | The un-awaited promise of the request function | Promise | required |
-|errorHandler | A handler that receives an error with status code as well as resolve and reject to determine the result of the entire promise. Handle error responses here. Pass undefined to use default| function(RequestError/Error, statusCode, resolve, reject) | defaultErrorHandler from initChaynsHelper() |
-|options | Options to configure the request handling with | Object | `{}` |
-|options.finallyHandler | function to always be executed after the request is done | function() | `() => null`|
-|options.noReject | Do not reject on error, resolve with null instead. Ensures that code after request.handle() will always be executed | boolean | `false` |
-| **@returns** | Promise of request result | Promise<*> | |
+To handle side effects of failed requests when throwErrors is activated, consider using the JS Promise functions `.then(successFn, errorFn)`, `.catch(errorFn)` and `.finally(alwaysFn)`.
 
 #### Example
 
@@ -245,15 +238,11 @@ const getExample = async (data) => {
     return result;
 }
 
-// both versions of getExample will return a Promise and thus will work with request.handle().
-
 // calling getExample:
-const result = await request.handle(
-    getExample(data),
-    (err, status) => {
-        console.error('Request Error:', status, err)
-    }
-);
+const result = await (getExample(data).catch((ex) => {
+    // handle error side effects like chayns.login() on status 401
+    throw ex;
+}));
 ```
 
 ### ResponseType | request.responseType - enum

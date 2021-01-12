@@ -1,5 +1,3 @@
-// general
-export { default as initChaynsHelper } from './config/chaynsHelperConfig';
 // components
 export { default as UACGroupChooseButton } from './components/buttons/UACGroupChooseButton';
 export { default as CenteredContainer } from './components/containers/CenteredContainer';
@@ -80,6 +78,7 @@ export { default as TextStringComplex } from './textstring/TextStringComplex';
 export { default as jsxReplace } from './textstring/jsxReplace';
 export { default as useTextStrings } from './textstring/useTextStrings';
 export { default as getTextStrings } from './textstring/getTextStrings';
+export { initTextStrings } from './textstring/textstringConfig';
 // other
 export { default as WebsocketClient } from './other/WsClient';
 export { default as statusAnimations } from './constants/statusAnimations';

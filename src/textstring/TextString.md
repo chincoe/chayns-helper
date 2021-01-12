@@ -1,10 +1,12 @@
 ## [TextString](TextStringComplex.tsx)
 There are several helpers that make using text strings more comfortable.
-To use those helpers, make sure you initialize this package with the required information:
+To use those helpers, make sure you initialize this package with the required information on initialization:
 ```javascript
-initChaynsHelper({
-    textStringPrefix: 'txt_chayns_myapp_', // necessary to use all textString helpers
-    textLibName: 'MyTextLib', // necessary for textString auto creation
+// REQUIRED INITIALIZATION
+// index.jsx
+initTextStrings({
+    prefix: 'txt_chayns_myapp_', // necessary to use all textString helpers
+    libName: 'MyTextLib', // necessary for textString auto creation
 });
 ```
 ### TextStringComplex
