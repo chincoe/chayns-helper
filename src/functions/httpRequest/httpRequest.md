@@ -1,18 +1,21 @@
 ## [Request](httpRequest.ts)
 
 ### Suggested setup and quick documentation
+
 If you've never used this helper before and just want a basic fetch helper, I suggest the following setup:
+
 ```javascript
 // index.js
 async function init() {
     // chayns ready, logger init, ...
     request.defaults("BASE_URL",
-    { 
-        // your default fetch config, e.g. header
-    }, {
-        ignoreErrors: true,
-        responseType: ResponseType.Object
-    })
+        {
+            // your default fetch config, e.g. header
+        }, {
+            throwErrors: false,
+            responseType: ResponseType.Object
+        }
+    )
     // render, ...
 }
 
@@ -23,7 +26,7 @@ export default async function postStuff(body) {
         {   // fetch config, almost identical to the 2nd param of the built-in fetch() function
             method: HttpMethod.Post, // default "GET"
             body: body,
-            useChaynsAuth: false // adds user token as Auth header if user is logged in by default
+            useChaynsAuth: false // true: adds user token as Auth header if user is logged in by default
         },
         "postStuff", // for your request logs
         {
@@ -35,13 +38,15 @@ export default async function postStuff(body) {
         }
     );
     // data is the response.json() (if available), status the the response statusCode. Failed to fetch is status 1.
-    const { data, status } = result;
+    const {
+        data,
+        status
+    } = result;
 }
 ```
 
-
-
 ### request.fetch(address, config, processName, options)
+
 A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js`).
 
 | Parameter              | Description                 | Type | Default / required |
@@ -54,8 +59,8 @@ A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js
 |options| Options to configure the request helper | Object | `{}` |
 |options.responseType | expected response format (json/blob/Object/Response) | ResponseType/string | `'json'` |
 |options.logConfig | Configure the log level of specific status codes | Object<statusCode/regex, LogLevel> | `{"[1-3][\\d]{2}":'info', 401: 'warning', "[\\d]+": 'error'}`|
-|options.ignoreErrors | Don't throw errors on error status codes, return null instead. Response types "Object" and "Response" will return an object that includes the status to make sure the status is always available. | boolean / Array<statusCode> | `false` |
-|options.stringifyBody | Call JSON.stringify() on config.body before passing it to fetch() | boolean | `true` |
+|options.throwErrors | Throw an error on error status codes instead of returning null. Response types "Object" and "Response" will return an object that includes the status to make sure the status is always available. Passing an array will set throwErrors to `true` unless it's one of the status codes in the array | boolean / Array<statusCode> | `false` |
+|options.stringifyBody | Call JSON.stringify() on config.body before passing it to fetch() and set the Content-Type header if a body is specified | boolean | `true` |
 |options.additionalLogData | This data will be logged with the request logs. Doesn't affect functionality at all | Object | `{}`|
 |options.autoRefreshToken | Automatically repeat a request with config.useChaynsAuth if it fails due to expired access token after refreshing said access token | boolean | `true` |
 |options.statusHandlers| Handle responses for specific status codes using the codes or regex. Format: <br> 1.`{ [status/regex] : (response) => { my code }, ... }`<br> 2. `{ [status/regex] : responseType, ... }` | Object<status/regex, responseType/responseHandler> | `{}` |
@@ -63,41 +68,68 @@ A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js
 |options.errorDialogs| Array of ChaynsError codes or regexes for codes that should display their respective dialog | Array<string/regex> | `[]` |
 |options.waitCursor | Show a wait cursor during the request. Can be configured like [showWaitCursor()](src/functions/waitCursor/waitCursor.md) | boolean/{text: string, timeout: number, textTimeout: number}/{timeout: number, steps: Object<textTimeout, text> } | `false` |
 |options.replacements | Replacements for the request url | Object<string/regex, string/function> | Object with replacements for `##locationId##`, `##siteId##`, `##tappId##`, `##userId##` and `##personId##`  |
-| **@returns** | Promise of: Response specified via response type or throws an error | Promise<Json/String/Object/Blob/Response/null> | |
+| **
+@returns** | Promise of: Response specified via response type or throws an error | Promise<Json/String/Object/Blob/Response/null> | |
 
-> **Note**: A "Failed to fetch" Error will be treated as a status code `1` regarding options.statusHandlers, options.logConfig as well as the return values if options.ignoreErrors is true 
+> **Note**: A "Failed to fetch" Error will be treated as a status code `1` regarding options.statusHandlers, options.logConfig as well as the return values if options.throwErrors is false
 
 > **Note**: The priority for statusHandlers is based on object key order.
 > Exceptions:
 > * Specific options will always have a higher priority than the defaults
 > * Keys that target a single status have higher priority than a regex key
-> 
+>
 > To keep the proper order, please make sure to specify all regex keys like `{[/myRegex/]: ...}` and **not** like `{'myRegex': ...}`.
 > The second notation might still work but will result in issues regarding priorities compared to single status code handlers or other regexes.
 
-> **Note**: `options.replacements` defaults will always be overwritten entirely if you pass it, so passing an empty object disables it. 
-> request.defaults has the same behavior here. 
+> **Note**: `options.replacements` defaults will always be overwritten entirely if you pass it, so passing an empty object disables it.
+> request.defaults has the same behavior here.
 > If you use regexes as key you should pass teh "g" flag to replace all occurrences.
 
-#### Default behavior
-This helper works with the following presumptions:
+### Response handling priority
 
- * Responses with status < 400 are usually a success
- * Responses with status >= 400 are usually errors and will thus throw an error / reject the promise
+In some cases, multiple different options that determine the response handling or response type will fit to a single
+response. Since only one option can be applied, some options take priority over others. This list shows the order of
+priority:
+
+1. **options.errorHandlers** for ChaynsErrors
+2. **options.statusHandlers** for a status code
+3. **options.responseType** as a default
+4. **ResponseType.Response** as fallback
+
+If several statusHandlers or errorHandlers match the response, the priority within those handlers will be as following:
+
+1. handlers passed to request.fetch()
+   1. exact status/error code
+   2. regex matching status/error code
+2. handlers passed to request.defaults()
+   1. exact status/error code
+   2. regex matching status/error code
+   
+Otherwise the priority is based on the order in which the handlers are specified.
+
+#### ThrowError behavior
+
+options.throwErrors is deactivated by default.
+
+If throwErrors is set to true (or an array), this helper works with the following presumptions:
+
+* Responses with status < 400 are usually a success
+* Responses with status >= 400 are usually errors and will thus throw an error / reject the promise
 
 This behavior makes it necessary to wrap a request into `try/catch` or define a `.catch` on the promise.
 `request.handle()` is the preferred try/catch-wrapper to handle these errors.
 
-`request.handle()` will still reject the Promise on error by default, thus code after the request may not be executed.
-
+`request.handle()` will still reject the Promise on error by default (which can be useful with e.g. redux toolkit), thus code after the request may not be executed.
 
 #### Examples
+
 * Set logLevel for 3xx response status codes to warning, 4xx to error and for 500 to critical
+
 ```javascript
 const response = request.fetch(
-    'https://www.example.com', 
-    { method: request.method.Post }, 
-    'getExample', 
+    'https://www.example.com',
+    { method: request.method.Post },
+    'getExample',
     {
         logConfig: {
             [/3[0-9]{2}/]: request.LogLevel.warning,
@@ -108,22 +140,25 @@ const response = request.fetch(
     }
 );
 ```
+
 * Return null for 204 and 3xx and the error from the response body on 400
+
 ```javascript
 const response = request.fetch(
-    'https://www.example.com', 
-    { method: request.method.Post }, 
-    'getExample', 
+    'https://www.example.com',
+    { method: request.method.Post },
+    'getExample',
     {
         statusHandlers: {
             [/(204)|3[0-9]{2}/]: (response) => null,
             400: request.responseType.Json
-        }   
+        }
     }
 );
 ```
 
 ### request.defaults(address, config, options)
+
 Set a base url as well as defaults for fetch config and request.fetch()-options.
 
 | Parameter              | Description                 | Type | Default / required |
@@ -133,11 +168,13 @@ Set a base url as well as defaults for fetch config and request.fetch()-options.
 | options | A request.fetch() options object. See request.fetch() for all properties. Properties that are not specified will keep their default value | Object | `{}` |
 
 ##### Example
+
 ```javascript
 // index.jsx
 
 // set base url and some default config and options
-request.defaults('https://example.server.com/MyApp/v1.0', // notice how the base url can't end with a slash
+request.defaults(
+    'https://example.server.com/MyApp/v1.0', // notice how the base url can't end with a slash
     {
         useChaynsAuth: false,
         cache: 'no-cache'
@@ -168,6 +205,7 @@ request.fetch('/controller/endpoint/boardId', {}, 'myRequest'); // notice how th
 ```
 
 ### request.handle(request, errorHandler, options)
+
 A try/catch wrapper for a request, meant to be called e.g. in your redux thunk
 
 | Parameter              | Description                 | Type | Default / required |
@@ -179,28 +217,28 @@ A try/catch wrapper for a request, meant to be called e.g. in your redux thunk
 |options.noReject | Do not reject on error, resolve with null instead. Ensures that code after request.handle() will always be executed | boolean | `false` |
 | **@returns** | Promise of request result | Promise<*> | |
 
-
 #### Example
+
 ```javascript
 // getExample.js
 const getExample = (data) => {
     return request.fetch(
-        'https://www.example.com', 
-        { 
+        'https://www.example.com',
+        {
             method: request.method.Post,
             body: data
-        }, 
+        },
         'getExample'
     );
 }
 // OR:
 const getExample = async (data) => {
     const result = await request.fetch(
-        'https://www.example.com', 
+        'https://www.example.com',
         {
             method: request.method.Post,
             body: data
-        }, 
+        },
         'getExample'
     );
     // do stuff with the result here ...
@@ -219,6 +257,7 @@ const result = await request.handle(
 ```
 
 ### ResponseType | request.responseType - enum
+
 > Exported as `ResponseType` and `request.responseType`
 
 | Property | Value | Response |
@@ -232,6 +271,7 @@ const result = await request.handle(
 |Error | `'error'` | RequestError/ChaynsError |
 
 ### LogLevel | request.logLevel - enum
+
 > Exported as `LogLevel` and `request.logLevel`
 
 | Property | Value |
@@ -243,6 +283,7 @@ const result = await request.handle(
 |none |`'none'`|
 
 ### HttpMethod | request.method - enum
+
 > Exported as `HttpMethod` and `request.method`
 
 ```javascript
@@ -256,6 +297,7 @@ const HttpMethod = {
 ```
 
 ### RequestError | request.error extends Error
+
 > Exported as `RequestError` and `request.error`
 
 `constructor(message, statusCode)`
@@ -266,6 +308,7 @@ const HttpMethod = {
 |statusCode | `statusCode` |
 
 ### ChaynsError extends RequestError
+
 `constructor({ displayMessage, errorCode, parameters, requestId }, processName, status)`
 
 | Class member | value |
@@ -278,8 +321,10 @@ const HttpMethod = {
 |requestId | `requestId` |
 
 ### request.full(address, config, processName, options, errorHandler, handlerOptions)
+
 A combined function of request.handle() and request.fetch()
 
 ### HttpStatusCode
+
 An enum of HTTP Status Codes
 
