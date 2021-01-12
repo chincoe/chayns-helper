@@ -22,7 +22,6 @@ import { chaynsErrorCodeRegex } from './isChaynsError';
 import RequestError from './RequestError';
 import ResponseType, { ResponseTypeEnum } from './ResponseType';
 import LogLevel, { ObjectResponse, LogLevelEnum } from './LogLevel';
-import handleRequest, { HandleRequestOptions } from './handleRequest';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
 import { HttpStatusCodeEnum } from './HttpStatusCodes';
 import showWaitCursor, { WaitCursorConfig } from '../waitCursor/waitCursor';
@@ -638,31 +637,13 @@ export function httpRequest(
     return requestPromise;
 }
 
-function fullRequest(
-    address: string,
-    config?: HttpRequestConfig,
-    processName?: string,
-    options?: HttpRequestOptions,
-    errorHandler?: (err: Error | RequestError | ChaynsError, statusCode?: number, resolve?: (value?: any) => any, reject?: (value?: any) => any) => any,
-    handlerOptions?: HandleRequestOptions
-) {
-    return handleRequest(httpRequest(
-        address,
-        config,
-        processName,
-        options
-    ), errorHandler, handlerOptions);
-}
-
 const request = {
     fetch: httpRequest,
-    handle: handleRequest,
     error: RequestError,
     responseType: ResponseType,
     logLevel: LogLevel,
     method: HttpMethod,
     defaults: setRequestDefaults,
-    full: fullRequest
 };
 
 export default request;
