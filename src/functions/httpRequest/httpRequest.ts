@@ -114,7 +114,7 @@ export function httpRequest(
     }: HttpRequestOptions = {
         responseType: ResponseType.Json,
         // logConfig: {},
-        ignoreErrors: false,
+        ignoreErrors: true,
         stringifyBody: true,
         additionalLogData: {},
         autoRefreshToken: true,
