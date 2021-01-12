@@ -54,7 +54,7 @@ export interface HttpRequestConfig {
  */
 export interface HttpRequestOptions {
     responseType?: typeof ResponseTypeEnum | string | null;
-    ignoreErrors?: boolean | Array<typeof HttpStatusCodeEnum | string | number>;
+    throwErrors?: boolean | Array<typeof HttpStatusCodeEnum | string | number>;
     logConfig?: { [key: string]: typeof LogLevelEnum | string } | Map<string, typeof LogLevelEnum | string>,
     stringifyBody?: boolean;
     additionalLogData?: object;
@@ -90,7 +90,7 @@ export function httpRequest(
          */
         // logConfig = {},
         // bool|number[]: don't throw errors on error status codes, return null instead
-        ignoreErrors = false,
+        throwErrors = false,
         // bool: call JSON.stringify() on the body passed to this function
         stringifyBody = true,
         // object: additional data to be logged
@@ -114,7 +114,7 @@ export function httpRequest(
     }: HttpRequestOptions = {
         responseType: ResponseType.Json,
         // logConfig: {},
-        ignoreErrors: true,
+        throwErrors: false,
         stringifyBody: true,
         additionalLogData: {},
         autoRefreshToken: true,
@@ -307,9 +307,9 @@ export function httpRequest(
                     reject(err);
                     return true;
                 }
-                if (ignoreErrors === true
+                if (throwErrors === false
                     // @ts-expect-error
-                    || (status && chayns.utils.isArray(ignoreErrors) && ignoreErrors.includes(status))
+                    || (status && chayns.utils.isArray(throwErrors) && throwErrors.includes(status))
                 ) {
                     if (chayns.utils.isNumber(status)) {
                         switch (responseType) {
@@ -483,7 +483,7 @@ export function httpRequest(
                 console.error(...colorLog({
                     [`[HttpRequest(${processName})]`]: 'color: #aaaaaa',
                 }), error, '\nInput: ', input);
-                if (!ignoreErrors && useChaynsAuth && autoRefreshToken) {
+                if (useChaynsAuth && autoRefreshToken) {
                     try {
                         let jRes: { [key: string]: any } = {};
                         try {
@@ -494,7 +494,7 @@ export function httpRequest(
                             resolve(httpRequest(address, config, processName, {
                                 responseType,
                                 logConfig,
-                                ignoreErrors,
+                                throwErrors,
                                 stringifyBody,
                                 additionalLogData,
                                 autoRefreshToken: false,
