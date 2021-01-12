@@ -15,17 +15,6 @@ Read the READMEs or the comments in the source code for a more detailed descript
 ```shell script
 npm install chayns-helper
 ```
-## Initialization
-
-Initialize the helper in your index.ts to make sure that every feature actually works:
-
-```javascript
-initChaynsHelper({
-    textStringPrefix: 'txt_chayns_myapp_', // necessary to use all textString helpers
-    textLibName: 'MyTextLib', // for textString auto creation
-    requestErrorHandler: myRequestErrorHandler // used only by handleRequest
-});
-```
 
 > **_NOTE:_** This package may lack documentations and examples. If you would like me to add examples and a readme to a feature, let me know, and I'll add them.
 
