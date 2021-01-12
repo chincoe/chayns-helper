@@ -65,7 +65,7 @@ export interface HttpRequestOptions {
     errorHandlers?: { [key: string]: typeof ResponseTypeEnum | string | ((response: Response) => any) } | Map<string, typeof ResponseTypeEnum | string | ((response: Response) => any)>;
     errorDialogs?: Array<string | RegExp>;
     replacements?: { [key: string]: string | ((substring: string, ...args: any[]) => string) };
-    sideEffects?: (status: number) => void | { [status: number]: () => void } | {}
+    sideEffects?: (status: number) => void | { [status: string]: () => void } | {}
     internalRequestGuid?: string
 }
 
