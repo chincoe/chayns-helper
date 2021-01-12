@@ -30,7 +30,7 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = (
             {},
             'getUacGroups',
             {
-                ignoreErrors: true,
+                throwErrors: false,
                 responseType: ResponseType.Json,
                 logConfig: {
                     [/.*/.toString()]: LogLevel.info
