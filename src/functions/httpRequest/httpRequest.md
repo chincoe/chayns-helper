@@ -12,7 +12,6 @@ async function init() {
         {
             // your default fetch config, e.g. header
         }, {
-            throwErrors: false,
             responseType: ResponseType.Object
         }
     )
