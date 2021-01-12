@@ -70,11 +70,15 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
                                         textFra: '',
                                         textGer: fallback,
                                         textIt: '',
-                                        textNl: ''
+                                        textNl: '',
+                                        textES: '',
+                                        textPT: '',
+                                        textTR: '',
+                                        toTranslate: ['en', 'nl', 'it', 'fr', 'pt', 'es', 'tr']
                                     })
                                 });
                                 if (response && response.status === 201) {
-                                    console.warn(`[TextString] Created string '${TEXTSTRING_CONFIG.prefix}${stringName}' as '${fallback}'`);
+                                    console.warn(`[TextString] Created string '${TEXTSTRING_CONFIG.prefix}${stringName}' as '${fallback}'. Translated to: ${['en', 'nl', 'it', 'fr', 'pt', 'es', 'tr'].join(', ')}.`);
                                 }
                             }
                         });

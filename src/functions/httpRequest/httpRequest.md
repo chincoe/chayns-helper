@@ -7,15 +7,15 @@ If you've never used this helper before and just want a basic fetch helper, I su
 ```javascript
 // index.js
 async function init() {
-    // chayns ready, logger init, ...
+    // chayns ready, logger init goes here
     request.defaults("BASE_URL",
         {
             // your default fetch config, e.g. header
         }, {
-            responseType: ResponseType.Object
+            responseType: ResponseType.Object // configures reques.fetch to return an object with the status and json body
         }
     )
-    // render, ...
+    // render goes here
 }
 
 // postStuff.js
@@ -34,6 +34,7 @@ export default async function postStuff(body) {
             // * use something other than json
             // * adjust the logLevel for request logs depending on status code
             // * get the response body from requests without success status code
+            // * handle ChaynsErrors
         }
     );
     // data is the response.json() (if available), status the the response statusCode. Failed to fetch is status 1.
@@ -57,18 +58,18 @@ A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js
 |processName| Name of this request for all logs | string | `'HttpRequest'` |
 |options| Options to configure the request helper | Object | `{}` |
 |options.responseType | expected response format (json/blob/Object/Response) | ResponseType/string | `'json'` |
-|options.logConfig | Configure the log level of specific status codes | Object<statusCode/regex, LogLevel> | `{"[1-3][\\d]{2}":'info', 401: 'warning', "[\\d]+": 'error'}`|
-|options.throwErrors | Throw an error on error status codes instead of returning null. Response types "Object" and "Response" will return an object that includes the status to make sure the status is always available. Passing an array will set throwErrors to `true` unless it's one of the status codes in the array | boolean / Array<statusCode> | `false` |
+|options.logConfig | Configure the log level of specific status codes | Object\<statusCode/regex, LogLevel> | `{"[1-3][\\d]{2}":'info', 401: 'warning', "[\\d]+": 'error'}`|
+|options.throwErrors | Throw an error on error status codes instead of returning null. Response types "Object" and "Response" will return an object that includes the status to make sure the status is always available. Passing an array will set throwErrors to `true` unless it's one of the status codes in the array | boolean / Array\<statusCode> | `false` |
 |options.stringifyBody | Call JSON.stringify() on config.body before passing it to fetch() and set the Content-Type header if a body is specified | boolean | `true` |
 |options.additionalLogData | This data will be logged with the request logs. Doesn't affect functionality at all | Object | `{}`|
 |options.autoRefreshToken | Automatically repeat a request with config.useChaynsAuth if it fails due to expired access token after refreshing said access token | boolean | `true` |
-|options.statusHandlers| Handle responses for specific status codes using the codes or regex. Format: <br> 1.`{ [status/regex] : (response) => { my code }, ... }`<br> 2. `{ [status/regex] : responseType, ... }` | Object<status/regex, responseType/responseHandler> | `{}` |
-|options.errorHandlers| Handle responses for specific ChaynsErrors using the errorCodes or regex. Format: <br> 1.`{ [code/regex] : (response) => { my code }, ... }`<br> 2. `{ [code/regex] : responseType, ... }` | Object<errorCode/regex, responseType/responseHandler> | `{}` |
+|options.statusHandlers| Handle responses for specific status codes using the codes or regex. Format: <br> 1.`{ [status/regex] : (response) => { my code }, ... }`<br> 2. `{ [status/regex] : responseType, ... }` | Object\<status/regex, responseType/responseHandler> | `{}` |
+|options.errorHandlers| Handle responses for specific ChaynsErrors using the errorCodes or regex. Format: <br> 1.`{ [code/regex] : (response) => { my code }, ... }`<br> 2. `{ [code/regex] : responseType, ... }` | Object\<errorCode/regex, responseType/responseHandler> | `{}` |
 |options.errorDialogs| Array of ChaynsError codes or regexes for codes that should display their respective dialog | Array<string/regex> | `[]` |
-|options.waitCursor | Show a wait cursor during the request. Can be configured like [showWaitCursor()](src/functions/waitCursor/waitCursor.md) | boolean/{text: string, timeout: number, textTimeout: number}/{timeout: number, steps: Object<textTimeout, text> } | `false` |
+|options.waitCursor | Show a wait cursor during the request. Can be configured like [showWaitCursor()](src/functions/waitCursor/waitCursor.md) | boolean/{text: string, timeout: number, textTimeout: number}/{timeout: number, steps: Object\<textTimeout, text> } | `false` |
 |options.replacements | Replacements for the request url | Object<string/regex, string/function> | Object with replacements for `##locationId##`, `##siteId##`, `##tappId##`, `##userId##` and `##personId##`  |
-|options.sideEffects | Side effects for certain status codes, like chayns.login() on status 401. Pass a function to handle all status at once or an object with an effect for each status  | (status: number) => void / Object<status: number, () => void> | `undefined` |
-| **@returns** | Promise of: Response specified via response type or throws an error | Promise<Json/String/Object/Blob/Response/null> | |
+|options.sideEffects | Side effects for certain status codes, like chayns.login() on status 401. Pass a function to handle all status at once or an object with an effect for each status  | (status: number) => void / Object\<status: number, () => void> | `undefined` |
+| **@returns** | Promise of: Response specified via response type or throws an error | Promise\<Json/String/Object/Blob/Response/null> | |
 
 > **Note**: A "Failed to fetch" Error will be treated as a status code `1` regarding options.statusHandlers, options.logConfig as well as the return values if options.throwErrors is false
 
@@ -104,7 +105,7 @@ If several statusHandlers or errorHandlers match the response, the priority with
    1. exact status/error code
    2. regex matching status/error code
    
-Otherwise the priority is based on the order in which the handlers are specified.
+Otherwise, the priority is based on the order in which the handlers are specified.
 
 #### ThrowError behavior
 
@@ -116,9 +117,85 @@ If throwErrors is set to true (or an array), this helper works with the followin
 * Responses with status >= 400 are usually errors and will thus throw an error / reject the promise
 
 This behavior makes it necessary to wrap a request into `try/catch` or define a `.catch` on the promise.
-`request.handle()` is the preferred try/catch-wrapper to handle these errors.
 
-`request.handle()` will still reject the Promise on error by default (which can be useful with e.g. redux toolkit), thus code after the request may not be executed.
+### Handling errors with throwErrors = true
+Formerly done with ~~request.handle(request, errorHandler, options)~~.
+This function is deprecated since v2.3.0.
+
+To handle side effects of failed requests when throwErrors is activated, consider using the JS Promise functions `.then(successFn, errorFn)`, `.catch(errorFn)` and `.finally(alwaysFn)`.
+
+#### Example
+
+```javascript
+// getExample.js
+const getExample = (data) => {
+    return request.fetch(
+        'https://www.example.com',
+        {
+            method: request.method.Post,
+            body: data
+        },
+        'getExample'
+    );
+}
+// OR:
+const getExample = async (data) => {
+    const result = await request.fetch(
+        'https://www.example.com',
+        {
+            method: request.method.Post,
+            body: data
+        },
+        'getExample'
+    );
+    // do stuff with the result here ...
+    return result;
+}
+
+// calling getExample:
+const result = await (getExample(data).catch((ex) => {
+    // handle error side effects like chayns.login() on status 401
+    throw ex;
+}));
+```
+
+#### Handling errors with throwErrors = true
+To handle side effects of failed requests when throwErrors is enabled, consider using the JS Promise functions `.then(successFn, errorFn)`, `.catch(errorFn)` and `.finally(alwaysFn)`.
+
+##### Example
+
+```javascript
+// getExample.js
+const getExample = (data) => {
+    return request.fetch(
+        'https://www.example.com',
+        {
+            method: request.method.Post,
+            body: data
+        },
+        'getExample'
+    );
+}
+// OR:
+const getExample = async (data) => {
+    const result = await request.fetch(
+        'https://www.example.com',
+        {
+            method: request.method.Post,
+            body: data
+        },
+        'getExample'
+    );
+    // do stuff with the result here ...
+    return result;
+}
+
+// calling getExample:
+const result = await (getExample(data).catch((ex) => {
+    // handle error side effects like chayns.login() on status 401
+    throw ex;
+}));
+```
 
 #### Examples
 
@@ -204,47 +281,6 @@ request.defaults(
 
 // usage for base url
 request.fetch('/controller/endpoint/boardId', {}, 'myRequest'); // notice how the url has to start with a slash to use the base url
-```
-
-### Handling errors with throwErrors = true
-Formerly done with ~~request.handle(request, errorHandler, options)~~.
-This function is deprecated since v2.3.0.
-
-To handle side effects of failed requests when throwErrors is activated, consider using the JS Promise functions `.then(successFn, errorFn)`, `.catch(errorFn)` and `.finally(alwaysFn)`.
-
-#### Example
-
-```javascript
-// getExample.js
-const getExample = (data) => {
-    return request.fetch(
-        'https://www.example.com',
-        {
-            method: request.method.Post,
-            body: data
-        },
-        'getExample'
-    );
-}
-// OR:
-const getExample = async (data) => {
-    const result = await request.fetch(
-        'https://www.example.com',
-        {
-            method: request.method.Post,
-            body: data
-        },
-        'getExample'
-    );
-    // do stuff with the result here ...
-    return result;
-}
-
-// calling getExample:
-const result = await (getExample(data).catch((ex) => {
-    // handle error side effects like chayns.login() on status 401
-    throw ex;
-}));
 ```
 
 ### ResponseType | request.responseType - enum

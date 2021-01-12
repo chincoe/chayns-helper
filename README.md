@@ -8,13 +8,17 @@
 </div>
 </div>
 This package contains a variety of useful helpers for <a href="https://github.com/TobitSoftware">chayns</a> development.
-Read the READMEs or the comments in the source code for a more detailed description and further information to each asset.
 
 ## Installation
 
 ```shell script
 npm install chayns-helper
 ```
+
+This package requires `react`, `chayns-components` and `chayns-logger` to work correctly.
+Please make sure you have those installed.
+
+This package supports tree-shaking, so each module will only be included in your bundle if it is imported by you or another module.
 
 > **_NOTE:_** This package may lack documentations and examples. If you would like me to add examples and a readme to a feature, let me know, and I'll add them.
 
