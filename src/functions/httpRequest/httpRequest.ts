@@ -65,7 +65,7 @@ export interface HttpRequestOptions {
     errorHandlers?: { [key: string]: typeof ResponseTypeEnum | string | ((response: Response) => any) } | Map<string, typeof ResponseTypeEnum | string | ((response: Response) => any)>;
     errorDialogs?: Array<string | RegExp>;
     replacements?: { [key: string]: string | ((substring: string, ...args: any[]) => string) };
-    sideEffects?: (status: number) => void | { [status: string]: () => void } | {}
+    sideEffects?: ((status: number) => void) | { [status: string]: () => void } | {}
     internalRequestGuid?: string
 }
 
@@ -165,7 +165,6 @@ export function httpRequest(
             const defaultEffects = defaultConfig?.options?.sideEffects;
             let sideEffects = options.sideEffects;
             if (typeof optionEffects === 'object' && typeof defaultEffects === 'object') {
-                // @ts-expect-error
                 sideEffects = {
                     ...defaultConfig.options?.sideEffects,
                     ...options?.sideEffects
@@ -173,14 +172,14 @@ export function httpRequest(
             } else if (!optionEffects && defaultEffects) {
                 sideEffects = defaultEffects;
             }
-            const sideEffect: ((status: number) => void | { [status: number]: () => void }) = sideEffects || (() => {
+            const sideEffect: (((status: number) => void) | { [status: number]: () => void }) = sideEffects || (() => {
             });
             const callSideEffects = typeof sideEffect === 'function'
                 ? (status: number) => {
+                    // @ts-expect-error
                     sideEffect(status);
                 }
                 : (status: number) => {
-                    // @ts-expect-error
                     (sideEffect[status] || (() => {}))();
                 };
 
