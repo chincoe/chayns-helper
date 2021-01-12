@@ -24,7 +24,7 @@ import ResponseType, { ResponseTypeEnum } from './ResponseType';
 import LogLevel, { ObjectResponse, LogLevelEnum } from './LogLevel';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
 import { HttpStatusCodeEnum } from './HttpStatusCodes';
-import showWaitCursor, { WaitCursorConfig } from '../waitCursor/waitCursor';
+import showWaitCursor from '../waitCursor/waitCursor';
 
 /**
  * The fetch config
@@ -65,6 +65,7 @@ export interface HttpRequestOptions {
     errorHandlers?: { [key: string]: typeof ResponseTypeEnum | string | ((response: Response) => any) } | Map<string, typeof ResponseTypeEnum | string | ((response: Response) => any)>;
     errorDialogs?: Array<string | RegExp>;
     replacements?: { [key: string]: string | ((substring: string, ...args: any[]) => string) };
+    sideEffects?: (status: number) => void | { [status: number]: () => void } | {}
     internalRequestGuid?: string
 }
 
@@ -159,6 +160,29 @@ export function httpRequest(
                 (defaultConfig?.options?.errorHandlers || {})
             );
             const logConfig = mergeOptions((options?.logConfig || {}), (defaultConfig?.options?.logConfig || {}));
+
+            const optionEffects = options?.sideEffects;
+            const defaultEffects = defaultConfig?.options?.sideEffects;
+            let sideEffects = options.sideEffects;
+            if (typeof optionEffects === 'object' && typeof defaultEffects === 'object') {
+                // @ts-expect-error
+                sideEffects = {
+                    ...defaultConfig.options?.sideEffects,
+                    ...options?.sideEffects
+                };
+            } else if (!optionEffects && defaultEffects) {
+                sideEffects = defaultEffects;
+            }
+            const sideEffect: ((status: number) => void | { [status: number]: () => void }) = sideEffects || (() => {
+            });
+            const callSideEffects = typeof sideEffect === 'function'
+                ? (status: number) => {
+                    sideEffect(status);
+                }
+                : (status: number) => {
+                    // @ts-expect-error
+                    (sideEffect[status] || (() => {}))();
+                };
 
             // eslint-disable-next-line no-param-reassign
             if (!processName) processName = 'HttpRequest';
@@ -263,6 +287,7 @@ export function httpRequest(
                 if (isChayns && errorHandlerKey) {
                     const handler = errorHandlers.get(errorHandlerKey);
                     if (handler === ResponseType.Error) {
+                        callSideEffects(<number>status);
                         reject(err);
                     }
                     if (!force) return false;
@@ -274,6 +299,7 @@ export function httpRequest(
                     if (status === 1) {
                         const handler = statusHandlers.get(statusHandlerKey);
                         if (chayns.utils.isFunction(handler)) {
+                            callSideEffects(status);
                             resolve(await handler(err));
                             return true;
                         }
@@ -281,15 +307,18 @@ export function httpRequest(
                             .includes(handler)) {
                             switch (handler) {
                                 case ResponseType.Object:
+                                    callSideEffects(status);
                                     resolve({
                                         status,
                                         data: null
                                     });
                                     return true;
                                 case ResponseType.Response:
+                                    callSideEffects(status);
                                     resolve({ status });
                                     return true;
                                 default:
+                                    callSideEffects(status);
                                     resolve(null);
                                     return true;
                             }
@@ -303,6 +332,7 @@ export function httpRequest(
                         '[HttpRequest]': 'color: #aaaaaa',
                         'ResponseType \'error\':': ''
                     }), err, '\nInput: ', input);
+                    callSideEffects(<number>status);
                     reject(err);
                     return true;
                 }
@@ -313,12 +343,14 @@ export function httpRequest(
                     if (chayns.utils.isNumber(status)) {
                         switch (responseType) {
                             case ResponseType.Object:
+                                callSideEffects(<number>status);
                                 resolve({
                                     status,
                                     data: null
                                 });
                                 return true;
                             case ResponseType.None:
+                                callSideEffects(<number>status);
                                 resolve();
                                 return true;
                             case ResponseType.Error:
@@ -327,22 +359,27 @@ export function httpRequest(
                                     '[HttpRequest]': 'color: #aaaaaa',
                                     'ResponseType \'error\':': ''
                                 }), error, '\nInput: ', input);
+                                callSideEffects(<number>status);
                                 reject(error);
                                 return true;
                             case ResponseType.Response:
+                                callSideEffects(<number>status);
                                 resolve({ status });
                                 return true;
                             case ResponseType.Text:
                             case ResponseType.Blob:
                             case ResponseType.Json:
                             default:
+                                callSideEffects(<number>status);
                                 resolve(null);
                                 return true;
                         }
                     }
+                    callSideEffects(<number>status);
                     resolve(null);
                     return true;
                 }
+                callSideEffects(<number>status);
                 reject(err);
                 return true;
             };
@@ -490,6 +527,7 @@ export function httpRequest(
                         } catch (e) { /* ignored */
                         }
                         if (jRes.message === 'token_expired') {
+                            callSideEffects(<number>status);
                             resolve(httpRequest(address, config, processName, {
                                 responseType,
                                 logConfig,
@@ -554,7 +592,10 @@ export function httpRequest(
                         internalRequestGuid,
                         chaynsErrorObject
                     );
-                    if (result) return;
+                    if (result) {
+                        callSideEffects(<number>status);
+                        return;
+                    }
                 }
                 // 1.2 errorHandlers[chaynsErrorRegex]
                 if (errorHandlers && errorHandlers.size > 0) {
@@ -576,7 +617,10 @@ export function httpRequest(
                             internalRequestGuid,
                             chaynsErrorObject
                         );
-                        if (result) return;
+                        if (result) {
+                            callSideEffects(<number>status);
+                            return;
+                        }
                     }
                 }
             }
@@ -593,7 +637,10 @@ export function httpRequest(
                     reject,
                     internalRequestGuid
                 );
-                if (result) return;
+                if (result) {
+                    callSideEffects(<number>status);
+                    return;
+                }
             }
             // 2.2 statusHandlers[regex]
             if (statusHandlers && statusHandlers.size > 0) {
@@ -608,11 +655,15 @@ export function httpRequest(
                         reject,
                         internalRequestGuid
                     );
-                    if (result) return;
+                    if (result) {
+                        callSideEffects(<number>status);
+                        return;
+                    }
                 }
             }
 
             // 3. responseType
+            callSideEffects(<number>status);
             if (responseType === null || responseType === ResponseType.Json) {
                 await jsonResolve(response, processName, resolve, internalRequestGuid);
             } else if (responseType === ResponseType.Blob) {

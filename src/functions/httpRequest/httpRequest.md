@@ -68,8 +68,8 @@ A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js
 |options.errorDialogs| Array of ChaynsError codes or regexes for codes that should display their respective dialog | Array<string/regex> | `[]` |
 |options.waitCursor | Show a wait cursor during the request. Can be configured like [showWaitCursor()](src/functions/waitCursor/waitCursor.md) | boolean/{text: string, timeout: number, textTimeout: number}/{timeout: number, steps: Object<textTimeout, text> } | `false` |
 |options.replacements | Replacements for the request url | Object<string/regex, string/function> | Object with replacements for `##locationId##`, `##siteId##`, `##tappId##`, `##userId##` and `##personId##`  |
-| **
-@returns** | Promise of: Response specified via response type or throws an error | Promise<Json/String/Object/Blob/Response/null> | |
+|options.sideEffects | Side effects for certain status codes, like chayns.login() on status 401. Pass a function to handle all status at once or an object with an effect for each status  | (status: number) => void / Object<status: number, () => void> | `undefined` |
+| **@returns** | Promise of: Response specified via response type or throws an error | Promise<Json/String/Object/Blob/Response/null> | |
 
 > **Note**: A "Failed to fetch" Error will be treated as a status code `1` regarding options.statusHandlers, options.logConfig as well as the return values if options.throwErrors is false
 
@@ -141,7 +141,7 @@ const response = request.fetch(
 );
 ```
 
-* Return null for 204 and 3xx and the error from the response body on 400
+* Return null for 204 and 3xx and the error from the response body on 400, call chayns.login on status 401
 
 ```javascript
 const response = request.fetch(
@@ -152,6 +152,9 @@ const response = request.fetch(
         statusHandlers: {
             [/(204)|3[0-9]{2}/]: (response) => null,
             400: request.responseType.Json
+        },
+        sideEffects: {
+            401: () => { if (!chayns.env.user.isAuthenticated) chayns.login() }
         }
     }
 );
