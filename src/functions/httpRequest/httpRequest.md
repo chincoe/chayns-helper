@@ -1,4 +1,6 @@
 ## [Request](httpRequest.ts)
+A request helper with customizable defaults that can be used to configure any behavior. 
+Includes the request helper as well as enums for http methods, http status codes and more.
 
 ### Suggested setup and quick documentation
 
@@ -18,26 +20,26 @@ async function init() {
     // render goes here
 }
 
-// postStuff.js
-export default async function postStuff(body) {
+// postData.js
+export default async function postData(body) {
     const result = await request.fetch(
         "/my/url/##locationId##/##tappId##/##siteId##", // route, has to start with a "/" to use the base url from index.js
         {   // fetch config, almost identical to the 2nd param of the built-in fetch() function
             method: HttpMethod.Post, // default "GET"
             body: body,
-            useChaynsAuth: false // true: adds user token as Auth header if user is logged in by default
+            useChaynsAuth: false // add user token as auth header. Default: chayns.env.user.isAuthenticated
         },
         "postStuff", // for your request logs
         {
             // only worry about these options if you want to:
             // * customize the helper's behavior 
-            // * use something other than json
+            // * use something other than json in your request or response bodies
             // * adjust the logLevel for request logs depending on status code
             // * get the response body from requests without success status code
             // * handle ChaynsErrors
         }
     );
-    // data is the response.json() (if available), status the the response statusCode. Failed to fetch is status 1.
+    // data is the result of  response.json() (if available), status is the statusCode. Failed to fetch is status 1.
     const {
         data,
         status
@@ -118,84 +120,8 @@ If throwErrors is set to true (or an array), this helper works with the followin
 
 This behavior makes it necessary to wrap a request into `try/catch` or define a `.catch` on the promise.
 
-### Handling errors with throwErrors = true
-Formerly done with ~~request.handle(request, errorHandler, options)~~.
-This function is deprecated since v2.3.0.
-
-To handle side effects of failed requests when throwErrors is activated, consider using the JS Promise functions `.then(successFn, errorFn)`, `.catch(errorFn)` and `.finally(alwaysFn)`.
-
-#### Example
-
-```javascript
-// getExample.js
-const getExample = (data) => {
-    return request.fetch(
-        'https://www.example.com',
-        {
-            method: request.method.Post,
-            body: data
-        },
-        'getExample'
-    );
-}
-// OR:
-const getExample = async (data) => {
-    const result = await request.fetch(
-        'https://www.example.com',
-        {
-            method: request.method.Post,
-            body: data
-        },
-        'getExample'
-    );
-    // do stuff with the result here ...
-    return result;
-}
-
-// calling getExample:
-const result = await (getExample(data).catch((ex) => {
-    // handle error side effects like chayns.login() on status 401
-    throw ex;
-}));
-```
-
 #### Handling errors with throwErrors = true
 To handle side effects of failed requests when throwErrors is enabled, consider using the JS Promise functions `.then(successFn, errorFn)`, `.catch(errorFn)` and `.finally(alwaysFn)`.
-
-##### Example
-
-```javascript
-// getExample.js
-const getExample = (data) => {
-    return request.fetch(
-        'https://www.example.com',
-        {
-            method: request.method.Post,
-            body: data
-        },
-        'getExample'
-    );
-}
-// OR:
-const getExample = async (data) => {
-    const result = await request.fetch(
-        'https://www.example.com',
-        {
-            method: request.method.Post,
-            body: data
-        },
-        'getExample'
-    );
-    // do stuff with the result here ...
-    return result;
-}
-
-// calling getExample:
-const result = await (getExample(data).catch((ex) => {
-    // handle error side effects like chayns.login() on status 401
-    throw ex;
-}));
-```
 
 #### Examples
 
@@ -236,6 +162,41 @@ const response = request.fetch(
 );
 ```
 
+* Handling failed requests with options.throwErrors = true
+
+```javascript
+// getExample.js
+const getExample = (data) => {
+    return request.fetch(
+        'https://www.example.com',
+        {
+            method: request.method.Post,
+            body: data
+        },
+        'getExample'
+    );
+}
+// OR:
+const getExample = async (data) => {
+    const result = await request.fetch(
+        'https://www.example.com',
+        {
+            method: request.method.Post,
+            body: data
+        },
+        'getExample'
+    );
+    // do stuff with the result here ...
+    return result;
+}
+
+// calling getExample:
+const result = await (getExample(data).catch((ex) => {
+    // handle error for your application
+    throw ex;
+}));
+```
+
 ### request.defaults(address, config, options)
 
 Set a base url as well as defaults for fetch config and request.fetch()-options.
@@ -253,7 +214,7 @@ Set a base url as well as defaults for fetch config and request.fetch()-options.
 
 // set base url and some default config and options
 request.defaults(
-    'https://example.server.com/MyApp/v1.0', // notice how the base url can't end with a slash
+    'https://example.server.com/MyApp/v1.0', // the base url can't end with a slash
     {
         useChaynsAuth: false,
         cache: 'no-cache'
@@ -280,7 +241,7 @@ request.defaults(
 // myRequest.js
 
 // usage for base url
-request.fetch('/controller/endpoint/boardId', {}, 'myRequest'); // notice how the url has to start with a slash to use the base url
+request.fetch('/controller/endpoint/boardId', {}, 'myRequest'); // the address has to start with a slash to use the base url
 ```
 
 ### ResponseType | request.responseType - enum
