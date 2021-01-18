@@ -1,6 +1,6 @@
 {
   "name": "chayns-helper",
-  "version": "2.5.1-beta.0",
+  "version": "2.5.1-beta.1",
   "author": "Christian Nagel",
   "description": "my personal helpers for chayns development",
   "main": "dist/index.js",
@@ -69,7 +69,7 @@
     "babel-plugin-transform-rename-import": "^2.3.0",
     "babel-plugin-typescript-iife-enum": "^0.2.1",
     "chayns-components": "^4.20.13",
-    "chayns-doc": "^1.1.9",
+    "chayns-doc": "^1.1.10",
     "chayns-logger": "^2.8.6",
     "cssnano": "^4.1.10",
     "eslint": "^7.6.0",
