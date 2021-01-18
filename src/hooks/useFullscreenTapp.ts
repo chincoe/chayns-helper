@@ -5,21 +5,11 @@ import hideCwFooter from '../functions/chaynsCalls/hideCwFooter';
 import setViewMode from '../functions/chaynsCalls/setViewMode';
 import shallowEqual from '../functions/shallowEqual';
 import getHookState from '../functions/getHookState';
-
+import { isPagemakerIFrame } from '../functions/isPagemakerIFrame';
+import colorLog from '../utils/colorLog';
 
 /**
  * Reducer to update the windowData state
- * @param {Object} state
- * @param {number} state.frameY
- * @param {number} state.windowHeight
- * @param {number} state.pageYOffset
- * @param {Object} action
- * @param {Object} action.data
- * @param {number} action.data.frameY
- * @param {number} action.data.windowHeight
- * @param {number} action.data.pageYOffset
- * @param {string} action.type - "compare" or "force" to either check for equality or force a rerender
- * @return {*}
  */
 const windowDataReducer = (
     state: {
@@ -37,7 +27,7 @@ const windowDataReducer = (
     }
 ): any => {
     if (!action) return state;
-    const {data} = action;
+    const { data } = action;
     if (action.type === 'compare') {
         if (!state) return data;
         if (!data) return state;
@@ -54,8 +44,6 @@ const windowDataReducer = (
 
 /**
  * Correct window data for edge cases like location apps and chayns runtime
- * @param {Object} data
- * @return {{pageYOffset: number, windowHeight: number, frameY: (number|*)}|*}
  */
 const correctWindowData = (
     data: { [key: string]: number }
@@ -81,11 +69,11 @@ export interface WindowMetrics {
 }
 
 interface TappElement extends Element {
-    style: { [key: string]: string|null }
+    style: { [key: string]: string | null }
 }
 
 /**
- * Hook to maintain a fullscreen tapp without scrolling, title image and footer
+ * Hook to maintain a fullscreen tapp without scrolling, title image and footer. Does not work in pagemaker iframes
  * Returns [windowData, isFullscreenActive, setIsFullscreenActive]
  */
 const useFullscreenTapp = (
@@ -122,6 +110,13 @@ const useFullscreenTapp = (
     };
 
     useEffect(() => {
+        if (isPagemakerIFrame()) {
+            console.warn(
+                ...colorLog({ ['[useFullscreenTapp]']: 'color: #aaaaaa' }),
+                'Pagemaker iFrames cannot be fullscreen tapps'
+            )
+            return () => {};
+        }
         Promise.all([
             chayns.hideTitleImage(),
             hideCwFooter(),

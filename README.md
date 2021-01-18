@@ -81,6 +81,8 @@ This package supports tree-shaking, so each module will only be included in your
 | [hexToRgb](/src/functions/colors/hexToRgb.ts)| Convert a hex color to an rgb object which returns a rgba() css function when stringified | |
 | [hideCWFooter](/src/functions/chaynsCalls/hideCwFooter.ts)| hide the chayns web footer | |
 | [isChaynsError](/src/functions/httpRequest/isChaynsError.ts)| determine whether something is a chayns error. Can deal with Response, Promise and Object | |
+| [isCustomTappIFrame](/src/functions/isPagemakerIFrame.ts)| check if application is in custom tapp iframe | |
+| [isPagemakerIFrame](/src/functions/isPagemakerIFrame.ts)| check if application is in pagemaker iframe | |
 | [jsxReplace](/src/textstring/jsxReplace.tsx)| replace strings or regex matches in a string with other strings or jsx | [TextString.md](src/textstring/TextString.md) |
 | [request](/src/functions/httpRequest/httpRequest.ts)| fetch helper with loads of options, constants and a try/catch wrapper | [httpRequest.md](/src/functions/httpRequest/httpRequest.md) |
 | [localStorage](/src/other/localStorageHelper.ts)| helper to cache httpRequest JSON strings in local storage | |
