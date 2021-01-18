@@ -16,7 +16,7 @@ This component wraps the `TextString` chayns-component and adds prefix usage, js
 |------|--------------|-----------|-------------|
 |stringName| The name of the textString. The prefix will be added in front of this. | string | required |
 |fallback| A fallback if no value is found | string | required |
-|replacements| Replacements for the string. Key can be string or regex. Value can be a string or a function that receives the matched string, the regex (if the key was a regex) and the key (variable) and returns a string or jsx | Object<string/regex, string/function({ match: string, regex: RegExp?, variable: string }): string/jsx> | `{}` |
+|replacements| Replacements for the string. Key can be string or regex. Value can be a string or a function that receives the matched string, the regex (if the key was a regex) and the key (variable) and returns a string or jsx | Object<string/regex, string/function({ match: string, regexMatch: RegExpMatchArray?, variable: string/regex }): string/jsx> | `{}` |
 |maxReplacements| Maximum iterations to check for replacements as a safeguard against infinite loops | number | `20` |
 |useDangerouslySetInnerHTML| render HTML strings as HTML. Wraps everything in spans to achieve that | boolean | `false` |
 |language| Set a textString language | string | `undefined` |
@@ -30,7 +30,11 @@ This component wraps the `TextString` chayns-component and adds prefix usage, js
     fallback="This is a ##LINK##GREAT##LINK## ##NAME##"
     replacements={{ 
         '##NAME##': nameString, // simple version
-        [/##LINK##(.*?)##LINK##/]: ({ match, regex, variable }) => (<a href="https://google.com">{match.match(regex)[1]}</a>)
+        [/##LINK##(.*?)##LINK##/]: ({ // complex version
+            match, // the matching part of the string, here: '##LINK##GREAT##LINK##' 
+            regexMatch, // the result of string.match(regex), here: ['##LINK##GREAT##LINK##', 'GREAT', index: 10, input: 'This is a ##LINK##GREAT##LINK## ##NAME##', groups: undefined]
+            variable // the original variable, as string or regex. here: /##LINK##(.*?)##LINK##/
+        }) => (<a href="https://google.com">{regexMatch[1]}</a>) // access regexMatch[1] for the value of the first regex capture group, here: 'GREAT'
     }}
 >
     <p/>
@@ -43,7 +47,7 @@ A string replace function that can replace parts of strings with React nodes.
 | Parameter | Description | Type | Default/required |
 |------|--------------|-----------|-------------|
 |text| The target string | string | required |
-|replacements| Replacements for the string. Identical to the replacements in TextStringComplex |Object<string/regex, string/function(...string): string/jsx> | required |
+|replacements| Replacements for the string. Identical to the replacements in TextStringComplex |Object<string/RegExp, string/function({match: string, regexMatch: RegExpMatchArray, variable: string/RegExp}): string/jsx> | required |
 |maxReplacements| Maximum iterations to check for replacements as a safeguard against infinite loops | number | `20` |
 |useDangerouslySetInnerHTML| render HTML strings as HTML. Wraps everything in spans to achieve that | boolean | `false` |
 |guid | A guid as base for the keys in the result array | string | new Guid |

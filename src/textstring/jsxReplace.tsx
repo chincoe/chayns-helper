@@ -1,9 +1,8 @@
-import React, {ReactElement} from 'react';
+import React, { ReactElement } from 'react';
 import stringToRegex, { regexRegex } from '../utils/stringToRegex';
 import generateUUID from '../functions/generateUid';
 
-
-export type JsxReplacements = {[stringOrRegex: string]: ReactElement|string|((params: {match: string, regex?: RegExp, variable: string}) => string|ReactElement)}
+export type JsxReplacements = { [stringOrRegex: string]: ReactElement | string | ((params: { match: string, regexMatch?: RegExpMatchArray, variable: string | RegExp }) => string | ReactElement) }
 
 export interface JsxReplaceConfig {
     text: string,
@@ -13,14 +12,6 @@ export interface JsxReplaceConfig {
     useDangerouslySetInnerHTML?: boolean
 }
 
-/**
- * Replace parts in a text with JSX
- * @param text
- * @param replacements
- * @param maxReplacements
- * @param guid
- * @param useDangerouslySetInnerHTML
- */
 export default function jsxReplace(
     {
         text,
@@ -29,7 +20,7 @@ export default function jsxReplace(
         guid = generateUUID(),
         useDangerouslySetInnerHTML = false
     }: JsxReplaceConfig
-): Array<ReactElement|string> {
+): Array<ReactElement | string> {
     const vars = Object.keys(replacements);
     let result = [text];
     // for every entry in "replacements"
@@ -40,25 +31,30 @@ export default function jsxReplace(
         // for every match of the current replacement
         for (let j = 0;
              j < maxReplacements
-             && result.find((m) => (chayns.utils.isString(m) && (isRegexKey
-                                                                 ? regex.test(m)
-                                                                 : m.includes(vars[i]))));
+             && result.find((m) =>
+                 (chayns.utils.isString(m) && (isRegexKey
+                     ? regex.test(m)
+                     : m.includes(vars[i])))
+             );
              j++) {
             // get the current index in the array to work with
-            const arrayIdx = result.findIndex((m) => (chayns.utils.isString(m) && (isRegexKey
-                                                                                   ? regex.test(m)
-                                                                                   : m.includes(vars[i]))));
+            const arrayIdx = result.findIndex((m) =>
+                (chayns.utils.isString(m) && (isRegexKey
+                    ? regex.test(m)
+                    : m.includes(vars[i])))
+            );
             // calculate data like the regex match if it's a regex or whether the replacement is a string or jsx
             let matchValue;
             let matchIndex;
             let matchLength;
+            let fullMatch;
             const isReplacerFunction = chayns.utils.isFunction(replacements[vars[i]]);
             let ReplaceElement = replacements[vars[i]];
             if (isRegexKey) {
-                const match = (result[arrayIdx].match(regex) as RegExpMatchArray);
-                [matchValue] = match;
-                matchIndex = match.index;
-                matchLength = match[0].length;
+                fullMatch = (result[arrayIdx].match(regex) as RegExpMatchArray);
+                [matchValue] = fullMatch;
+                matchIndex = fullMatch.index;
+                matchLength = fullMatch[0].length;
             } else {
                 matchValue = vars[i];
                 matchLength = vars[i].length;
@@ -68,8 +64,8 @@ export default function jsxReplace(
                 // @ts-expect-error
                 ReplaceElement = replacements[vars[i]]({
                     match: matchValue,
-                    ...(isRegexKey ? { regex } : {}),
-                    variable: vars[i]
+                    ...(isRegexKey ? { regexMatch: fullMatch } : {}),
+                    variable: isRegexKey ? regex : vars[i]
                 });
             }
             // declare the new result array
