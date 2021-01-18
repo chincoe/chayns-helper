@@ -23,6 +23,8 @@ export default class ChaynsError extends RequestError {
 
     requestId: string = '';
 
+    errorObject: ChaynsErrorObject;
+
     static async getChaynsErrorObject(value: object | Response | Promise<any>): Promise<ChaynsErrorObject | null> {
         if (value instanceof Response) {
             const response = value.clone();
@@ -46,6 +48,7 @@ export default class ChaynsError extends RequestError {
 
     constructor(error: ChaynsErrorObject, processName: string, status: number) {
         super(`Status ${status} with ChaynsError '${error?.errorCode}' on ${processName}`, status);
+        this.errorObject = error;
         this.displayMessage = error.displayMessage;
         this.errorCode = error.errorCode;
         this.parameters = error.parameters;
