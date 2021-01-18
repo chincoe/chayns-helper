@@ -59,12 +59,9 @@ export async function getLogFunctionByStatus(
             case LogLevel.none:
                 return console.warn;
             default:
-                console.error(...colorLog({
-                    '[HttpRequest]': 'color: #aaaaaa',
-                    // eslint-disable-next-line max-len
-                    [`LogLevel '${logConfig.get(
-                        levelKey)}' for '${levelKey}' is not valid. Please use a valid log level.`]: ''
-                }));
+                console.error(...colorLog({ '[HttpRequest]': 'color: #aaaaaa' }),
+                    `LogLevel '${logConfig.get(levelKey)}' for '${levelKey}' is invalid. Please use a valid log level.`
+                );
                 return defaultFunction;
         }
     }
@@ -103,11 +100,10 @@ export const jsonResolve = async (
             message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
             data: { internalRequestGuid }
         }, err);
-        console.warn(...colorLog({
-            [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa',
-            // eslint-disable-next-line max-len
-            [`Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
-        }), { statusHandlers: { [status]: ResponseType.None } }, '\n', err);
+        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+            `Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
+            { statusHandlers: { [status]: ResponseType.None } }, '\n', err
+        );
         resolve(null);
     }
 };
@@ -124,11 +120,10 @@ export const blobResolve = async (
             message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
             data: { internalRequestGuid }
         }, err);
-        console.warn(...colorLog({
-            [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa',
-            // eslint-disable-next-line max-len
-            [`Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
-        }), { statusHandlers: { [status]: ResponseType.None } }, '\n', err);
+        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+            `Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
+            { statusHandlers: { [status]: ResponseType.None } }, '\n', err
+        );
         resolve(null);
     }
 };
@@ -145,11 +140,10 @@ export const textResolve = async (
             message: `[HttpRequest] Getting text body failed on Status ${status} on ${processName}`,
             data: { internalRequestGuid }
         }, err);
-        console.warn(...colorLog({
-            [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa',
-            // eslint-disable-next-line max-len
-            [`Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
-        }), { statusHandlers: { [status]: ResponseType.None } }, '\n', err);
+        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+            `Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
+            { statusHandlers: { [status]: ResponseType.None } }, '\n', err
+        );
         resolve(null);
     }
 };
@@ -169,11 +163,10 @@ export const objectResolve = async (
             message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`,
             data: { internalRequestGuid }
         }, err);
-        console.warn(...colorLog({
-            [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa',
-            // eslint-disable-next-line max-len
-            [`Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
-        }), { statusHandlers: { [status]: ResponseType.Response } }, '\n', err);
+        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+            `Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
+            { statusHandlers: { [status]: ResponseType.Response } }, '\n', err
+        );
         resolve({
             status,
             data: null
@@ -223,10 +216,9 @@ export async function resolveWithHandler(
                 const error = chaynsErrorObject
                     ? new ChaynsError(chaynsErrorObject, processName, status)
                     : new RequestError(`Status ${status} on ${processName}`, status);
-                console.error(...colorLog({
-                    '[HttpRequest]': 'color: #aaaaaa',
-                    'ResponseType \'error\':': ''
-                }), error);
+                console.error(...colorLog({ '[HttpRequest]': 'color: #aaaaaa' }),
+                    'ResponseType \'error\':', error
+                );
                 reject(error);
                 return true;
             case ResponseType.Response:

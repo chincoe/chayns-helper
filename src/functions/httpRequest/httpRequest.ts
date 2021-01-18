@@ -174,8 +174,8 @@ export function httpRequest(
             });
             const callSideEffects = typeof sideEffect === 'function'
                 // @ts-expect-error
-                                    ? (status: number) => { sideEffect(status); }
-                                    : (status: number) => {
+                ? (status: number) => { sideEffect(status); }
+                : (status: number) => {
                     (sideEffect[status] || (() => {}))();
                 };
 
@@ -184,11 +184,8 @@ export function httpRequest(
             if (responseType != null && !Object.values(ResponseType)
             .includes(<string>responseType)) {
                 console.error(
-                    ...colorLog({
-                        [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa',
-                        // eslint-disable-next-line max-len
-                        [`Response type "${responseType}" is not valid. Use json|blob|response|object|none instead.`]: ''
-                    })
+                    ...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                    `Response type "${responseType}" is not valid. Use json|blob|response|object|none instead.`
                 );
                 reject(new Error('Invalid responseType'));
                 return;
@@ -356,11 +353,9 @@ export function httpRequest(
                     },
                     section: 'httpRequest.js'
                 }, err);
-                console.error(...colorLog({
-                    [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa',
-                    // eslint-disable-next-line max-len
-                    [`Request failed: `]: '',
-                }), err, '\nInput: ', input);
+                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                    `Request failed:`, err, '\nInput: ', input
+                );
                 err.statusCode = 1;
                 const status = 1;
                 const {
@@ -409,10 +404,9 @@ export function httpRequest(
                                 break;
                             case ResponseType.Error:
                                 const error = new RequestError(`Status ${status} on ${processName}`, status);
-                                console.error(...colorLog({
-                                    [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa',
-                                    'ResponseType \'error\':': ''
-                                }), error, '\nInput: ', input);
+                                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                                    'ResponseType \'error\':', error, '\nInput: ', input
+                                );
                                 reject(error);
                                 break;
                             case ResponseType.Response:
@@ -439,7 +433,7 @@ export function httpRequest(
 
 // LOGS
             const requestUid = response.headers && response.headers.get('X-Request-Id')
-                               ? response.headers.get('X-Request-Id') : undefined;
+                ? response.headers.get('X-Request-Id') : undefined;
 
             let responseBody = null;
             try {
@@ -464,8 +458,8 @@ export function httpRequest(
                             ...requestHeaders,
                             Authorization: requestHeaders?.Authorization
                                            && chayns.utils.isJwt(requestHeaders?.Authorization)
-                                           ? `Payload: ${requestHeaders.Authorization.split('.')[1]}`
-                                           : undefined
+                                ? `Payload: ${requestHeaders.Authorization.split('.')[1]}`
+                                : undefined
                         },
                     },
                     response: {
@@ -510,15 +504,15 @@ export function httpRequest(
                 });
             } else if (response && status === 401) {
                 const error = chaynsErrorObject
-                              ? new ChaynsError(chaynsErrorObject, processName, status)
-                              : new RequestError(`Status ${status} on ${processName}`, status);
+                    ? new ChaynsError(chaynsErrorObject, processName, status)
+                    : new RequestError(`Status ${status} on ${processName}`, status);
                 log({
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`,
                 }, error);
-                console.error(...colorLog({
-                    [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa',
-                }), error, '\nInput: ', input);
+                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                    error, '\nInput: ', input
+                );
                 if (useChaynsAuth && autoRefreshToken) {
                     try {
                         let jRes: { [key: string]: any } = {};
@@ -547,15 +541,15 @@ export function httpRequest(
                 }
             } else {
                 const error = chaynsErrorObject
-                              ? new ChaynsError(chaynsErrorObject, processName, status)
-                              : new RequestError(`Status ${status} on ${processName}`, status);
+                    ? new ChaynsError(chaynsErrorObject, processName, status)
+                    : new RequestError(`Status ${status} on ${processName}`, status);
                 log({
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`
                 }, error);
-                console.error(...colorLog({
-                    [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa',
-                }), error, '\nInput: ', input);
+                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                    error, '\nInput: ', input
+                );
                 tryReject(error, status, response);
             }
 
