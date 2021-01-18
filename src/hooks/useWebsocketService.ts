@@ -1,42 +1,15 @@
-import {useEffect, useMemo, useState} from 'react';
+import { useEffect, useMemo, useState } from 'react';
 // @ts-expect-error
 import logger from 'chayns-logger';
 import shallowEqual from '../functions/shallowEqual';
-import WsClient, {WebsocketConditions} from '../other/WsClient';
+import WsClient, { WebsocketConditions } from '../other/WsClient';
 import WebSocketClient from "../other/WsClient";
-
-
-/**
- * tobit-websocket-client has some unhandled errors. They don't affect the user but generate error logs. Using these
- * with the provided logger middleware reduces the logLevel for those errors to "warning"
- * @type {string[]}
- */
-export const wssLoggerIgnore = [
-    'null is not an object (evaluating \'a.socket.close\')',
-    'Failed to execute \'send\' on \'WebSocket\': Still in CONNECTING state.',
-    'a.socket is null',
-    'Cannot read property \'close\' of null',
-    'Unable to get property \'close\' of undefined or null reference'
-];
-
-/**
- * middleware to ignore unnecessary tobit-websocket-client error logs.
- * Add this in your chaynsLogger.init()
- * @param payload
- */
-export const wssLoggerIgnoreMiddleware = (payload: any) => {
-    const {message, ex} = payload;
-    if ((message && wssLoggerIgnore.some((e) => (e.includes(message))))
-        || (ex && ex.message && wssLoggerIgnore.some((e) => (e.includes(ex.message))))) {
-        // eslint-disable-next-line no-param-reassign
-        payload.level = 'Warning';
-    }
-};
+import colorLog from '../utils/colorLog';
 
 /**
  * @type {Object.<string, WebSocketClient>}
  */
-const websocketClients: {[serviceName: string]: WebSocketClient} = {};
+const websocketClients: { [serviceName: string]: WebSocketClient } = {};
 
 /**
  * @callback wsEventHandler
@@ -77,7 +50,7 @@ export interface WebsocketServiceConfig {
 const useWebsocketService = (
     config: WebsocketServiceConfig,
     deps?: any[]
-): WebSocketClient|undefined => {
+): WebSocketClient | undefined => {
     const {
         serviceName,
         conditions,
@@ -96,7 +69,7 @@ const useWebsocketService = (
     useEffect(() => {
         if (waitForDefinedConditions
             && Object.values(conditions)
-                .reduce((total, current) => total && current !== undefined, true)
+            .reduce((total, current) => total && current !== undefined, true)
         ) {
             const isInit = ownConnection ? !ownClient : !Object.prototype.hasOwnProperty.call(
                 websocketClients,
@@ -108,7 +81,7 @@ const useWebsocketService = (
             if (isInit) {
                 webSocketClient = new WsClient(
                     serviceName,
-                    {...conditions}
+                    { ...conditions }
                 );
                 if (ownConnection) {
                     setOwnClient(webSocketClient);
@@ -119,8 +92,8 @@ const useWebsocketService = (
                 webSocketClient = <WebSocketClient>(ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`]);
             }
 
-            if (!shallowEqual(webSocketClient.conditions, {...webSocketClient.conditions, ...conditions})) {
-                webSocketClient.updateConditions({...webSocketClient.conditions, ...conditions});
+            if (!shallowEqual(webSocketClient.conditions, { ...webSocketClient.conditions, ...conditions })) {
+                webSocketClient.updateConditions({ ...webSocketClient.conditions, ...conditions });
             }
 
             if (isInit) {
@@ -129,8 +102,9 @@ const useWebsocketService = (
                     if (process.env.NODE_ENV === 'development') {
                         // eslint-disable-next-line no-console
                         console.log(
-                            '[Websocket] client registered',
-                            {serviceName, conditions, clientGroup}
+                            ...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }),
+                            'client registered',
+                            { serviceName, conditions, clientGroup }
                         );
                     }
                     logger.info({
@@ -147,25 +121,50 @@ const useWebsocketService = (
                 // WS client default: WS register error (e.g. WSS webhook didn't work out)
                 webSocketClient.on('register_error', (data) => {
                     // eslint-disable-next-line no-console
-                    console.error('[Websocket] register error', data);
-                    logger.error({message: '[Websocket] registration failed'}, data);
+                    console.error(
+                        ...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }), 'register error', data);
+                    logger.error({
+                        message: '[Websocket] registration failed',
+                        data: {
+                            conditions,
+                            serviceName,
+                            clientGroup
+                        }
+                    }, data);
                 });
 
                 // WS client default: WS connection closed
                 webSocketClient.on('CLOSED', (data) => {
                     // eslint-disable-next-line no-console
-                    if (process.env.NODE_ENV === 'development') console.log('[Websocket] closed', data);
+                    if (process.env.NODE_ENV === 'development') {
+                        console.log(
+                            ...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }),
+                            'connection closed', data
+                        );
+                    }
                     logger.info({
                         message: '[Websocket] connection closed',
-                        data
+                        data: {
+                            data,
+                            conditions,
+                            serviceName,
+                            clientGroup
+                        }
                     });
                 });
 
                 // WS client default: WS connection error
                 webSocketClient.on('ERROR', (error) => {
                     // eslint-disable-next-line no-console
-                    console.error('[Websocket] error', error);
-                    logger.warning({message: '[Websocket] error'}, error);
+                    console.error(...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }), 'error', error);
+                    logger.warning({
+                        message: '[Websocket] error',
+                        data: {
+                            conditions,
+                            serviceName,
+                            clientGroup
+                        }
+                    }, error);
                 });
             }
         }

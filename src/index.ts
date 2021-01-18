@@ -64,7 +64,7 @@ export { default as useUniqueInterval } from './hooks/uniques/useUniqueInterval'
 export { default as useUniqueTimeout } from './hooks/uniques/useUniqueTimeout';
 export { default as useFullscreenTapp } from './hooks/useFullscreenTapp';
 export { default as useUser } from './hooks/useUser';
-export { default as useWebsocketService, wssLoggerIgnoreMiddleware } from './hooks/useWebsocketService';
+export { default as useWebsocketService } from './hooks/useWebsocketService';
 export { default as usePrevState } from './hooks/usePrevState';
 export { default as usePrevious } from './hooks/usePrevious';
 export { default as usePreviousEffect } from './hooks/usePreviousEffect';
