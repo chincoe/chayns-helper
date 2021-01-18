@@ -90,7 +90,7 @@ export function httpRequest(
          */
         // logConfig = {},
         // bool|number[]: don't throw errors on error status codes, return null instead
-        throwErrors = false,
+        throwErrors,
         // bool: call JSON.stringify() on the body passed to this function
         stringifyBody = true,
         // object: additional data to be logged
@@ -140,9 +140,7 @@ export function httpRequest(
     }
     const requestPromise = new Promise((globalResolve, reject) => {
         (async () => {
-            /** INPUT HANDLING */
-
-
+// INPUT HANDLING START
             const input = {
                 address,
                 config,
@@ -175,10 +173,8 @@ export function httpRequest(
             const sideEffect: (((status: number) => void) | { [status: number]: () => void }) = sideEffects || (() => {
             });
             const callSideEffects = typeof sideEffect === 'function'
-                ? (status: number) => {
-                    // @ts-expect-error
-                    sideEffect(status);
-                }
+                // @ts-expect-error
+                ? (status: number) => { sideEffect(status); }
                 : (status: number) => {
                     (sideEffect[status] || (() => {}))();
                 };
@@ -186,13 +182,10 @@ export function httpRequest(
             // eslint-disable-next-line no-param-reassign
             if (!processName) processName = 'HttpRequest';
             if (responseType != null && !Object.values(ResponseType)
-                .includes(<string>responseType)) {
+            .includes(<string>responseType)) {
                 console.error(
-                    ...colorLog({
-                        '[HttpRequest]': 'color: #aaaaaa',
-                        // eslint-disable-next-line max-len
-                        [`Response type "${responseType}" is not valid. Use json|blob|response|object|none instead.`]: ''
-                    })
+                    ...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                    `Response type "${responseType}" is not valid. Use json|blob|response|object|none instead.`
                 );
                 reject(new Error('Invalid responseType'));
                 return;
@@ -254,6 +247,34 @@ export function httpRequest(
                     }
                 }
             }
+// INPUT HANDLING END
+            const getHandlers = (status: number, err?: Error | RequestError | ChaynsError) => {
+                // get statusHandler if exists
+                const handlerKeys = getMapKeys(statusHandlers);
+                const statusHandlerKey = handlerKeys.find((k) =>
+                    (k === `${status}` || stringToRegex(k)
+                    .test(`${status}`))
+                    && (chayns.utils.isFunction(statusHandlers.get(k))
+                        || Object.values(ResponseType)
+                        .includes(statusHandlers.get(k)))
+                );
+
+                // get errorHandler if exists
+                const errorKeys = getMapKeys(errorHandlers);
+                const isChayns: boolean = !!err && (err instanceof ChaynsError);
+                const chaynsErrorCode: string | null = isChayns ? (<ChaynsError>err).errorCode : null;
+                const errorHandlerKey = errorKeys.find((k) =>
+                    (chaynsErrorCode && (k === chaynsErrorCode || stringToRegex(k)
+                    .test(chaynsErrorCode)))
+                    && (chayns.utils.isFunction(errorHandlers.get(k))
+                        || Object.values(ResponseType)
+                        .includes(errorHandlers.get(k)))
+                );
+                return {
+                    statusHandler: statusHandlers.get(statusHandlerKey),
+                    errorHandler: errorHandlers.get(errorHandlerKey)
+                };
+            };
 
             const resolve = (value?: any) => {
                 globalResolve(value);
@@ -266,126 +287,34 @@ export function httpRequest(
                 });
             };
 
-            const tryReject = async (
-                err: Error | RequestError | ChaynsError | null = null,
-                status: number | null = null,
-                force = false
-            ) => {
-                const handlerKeys = getMapKeys(statusHandlers);
-                const statusHandlerKey = handlerKeys.find((k) => k === `${status}` || stringToRegex(k)
-                    .test(`${status}`));
-                const errorKeys = getMapKeys(errorHandlers);
-
-                // handle chaynsErrorHandler
-                const isChayns: boolean = err instanceof ChaynsError;
-                // @ts-expect-error
-                const chaynsErrorCode: string = isChayns ? err?.errorCode : null;
-                const errorHandlerKey = errorKeys.find((k) => (isChayns
-                    && (k === chaynsErrorCode || stringToRegex(k)
-                        .test(chaynsErrorCode))));
-                if (isChayns && errorHandlerKey) {
-                    const handler = errorHandlers.get(errorHandlerKey);
-                    if (handler === ResponseType.Error) {
-                        callSideEffects(<number>status);
-                        reject(err);
-                    }
-                    if (!force) return false;
-                }
-
-                // handle statusCode handler
-                if (statusHandlerKey && statusHandlers.get(statusHandlerKey) !== ResponseType.Error
-                    && (!force || status === 1)) {
-                    if (status === 1) {
-                        const handler = statusHandlers.get(statusHandlerKey);
-                        if (chayns.utils.isFunction(handler)) {
-                            callSideEffects(status);
-                            resolve(await handler(err));
-                            return true;
-                        }
-                        if (Object.values(ResponseType)
-                            .includes(handler)) {
-                            switch (handler) {
-                                case ResponseType.Object:
-                                    callSideEffects(status);
-                                    resolve({
-                                        status,
-                                        data: null
-                                    });
-                                    return true;
-                                case ResponseType.Response:
-                                    callSideEffects(status);
-                                    resolve({ status });
-                                    return true;
-                                default:
-                                    callSideEffects(status);
-                                    resolve(null);
-                                    return true;
-                            }
-                        }
-                    }
+            const tryReject = (
+                err: Error | RequestError | ChaynsError,
+                status: number,
+                response?: Response
+            ): boolean => {
+                const {
+                    statusHandler,
+                    errorHandler
+                } = getHandlers(status, err);
+                if (errorHandler || statusHandler) {
                     return false;
-                }
-                if (statusHandlers.has(`${status}`)
-                    && statusHandlers.get(`${status}`) === ResponseType.Error) {
-                    console.error(...colorLog({
-                        '[HttpRequest]': 'color: #aaaaaa',
-                        'ResponseType \'error\':': ''
-                    }), err, '\nInput: ', input);
-                    callSideEffects(<number>status);
-                    reject(err);
-                    return true;
-                }
-                if (throwErrors === false
-                    // @ts-expect-error
-                    || (status && chayns.utils.isArray(throwErrors) && throwErrors.includes(status))
-                ) {
-                    if (chayns.utils.isNumber(status)) {
-                        switch (responseType) {
-                            case ResponseType.Object:
-                                callSideEffects(<number>status);
-                                resolve({
-                                    status,
-                                    data: null
-                                });
-                                return true;
-                            case ResponseType.None:
-                                callSideEffects(<number>status);
-                                resolve();
-                                return true;
-                            case ResponseType.Error:
-                                const error = new RequestError(`Status ${status} on ${processName}`, <number>status);
-                                console.error(...colorLog({
-                                    '[HttpRequest]': 'color: #aaaaaa',
-                                    'ResponseType \'error\':': ''
-                                }), error, '\nInput: ', input);
-                                callSideEffects(<number>status);
-                                reject(error);
-                                return true;
-                            case ResponseType.Response:
-                                callSideEffects(<number>status);
-                                resolve({ status });
-                                return true;
-                            case ResponseType.Text:
-                            case ResponseType.Blob:
-                            case ResponseType.Json:
-                            default:
-                                callSideEffects(<number>status);
-                                resolve(null);
-                                return true;
-                        }
+                } else {
+                    if (!throwErrors
+                        // @ts-expect-error
+                        || (status && chayns.utils.isArray(throwErrors) && throwErrors.includes(status))
+                    ) {
+                        return false;
+                    } else {
+                        callSideEffects(status);
+                        reject(err);
+                        return true;
                     }
-                    callSideEffects(<number>status);
-                    resolve(null);
-                    return true;
                 }
-                callSideEffects(<number>status);
-                reject(err);
-                return true;
             };
 
             const fetchStartTime = Date.now();
 
-            /** REQUEST */
+// REQUEST
             let response;
             try {
                 response = await fetch(requestAddress, {
@@ -402,6 +331,7 @@ export function httpRequest(
                     );
                 }
             } catch (err) {
+// HANDLE FAILED TO FETCH START
                 const failedToFetchLog = await getLogFunctionByStatus(1, logConfig, logger.warning);
                 failedToFetchLog({
                     message: `[HttpRequest] Failed to fetch on ${processName}`,
@@ -423,19 +353,85 @@ export function httpRequest(
                     },
                     section: 'httpRequest.js'
                 }, err);
-                console.error(...colorLog({
-                    [`[HttpRequest(${processName})]`]: 'color: #aaaaaa',
-                    // eslint-disable-next-line max-len
-                    [`(${processName}) Failed to fetch: `]: '',
-                }), err, '\nInput: ', input);
+                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                    `Request failed:`, err, '\nInput: ', input
+                );
                 err.statusCode = 1;
-                tryReject(err, 1, true);
-                return;
+                const status = 1;
+                const {
+                    statusHandler,
+                    errorHandler
+                } = getHandlers(status, err);
+                if (errorHandler) {
+                    callSideEffects(status);
+                    await resolveWithHandler(
+                        errorHandler,
+                        <Response>({ status }),
+                        status,
+                        processName,
+                        resolve,
+                        reject,
+                        internalRequestGuid
+                    );
+                    return;
+                } else if (statusHandler) {
+                    callSideEffects(status);
+                    await resolveWithHandler(
+                        statusHandler,
+                        <Response>({ status }),
+                        status,
+                        processName,
+                        resolve,
+                        reject,
+                        internalRequestGuid
+                    );
+                    return;
+                } else {
+                    if (!throwErrors
+                        // @ts-expect-error
+                        || (status && chayns.utils.isArray(throwErrors) && throwErrors.includes(status))
+                    ) {
+                        callSideEffects(status);
+                        switch (responseType) {
+                            case ResponseType.Object:
+                                resolve({
+                                    status,
+                                    data: null
+                                });
+                                break;
+                            case ResponseType.None:
+                                resolve();
+                                break;
+                            case ResponseType.Error:
+                                const error = new RequestError(`Status ${status} on ${processName}`, status);
+                                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                                    'ResponseType \'error\':', error, '\nInput: ', input
+                                );
+                                reject(error);
+                                break;
+                            case ResponseType.Response:
+                                resolve(response || { status });
+                                break;
+                            case ResponseType.Text:
+                            case ResponseType.Blob:
+                            case ResponseType.Json:
+                            default:
+                                resolve(response || null);
+                                break;
+                        }
+                        return;
+                    } else {
+                        callSideEffects(status);
+                        reject(err);
+                        return;
+                    }
+                }
+// HANDLE FAILED TO FETCH END
             }
 
             const { status } = response;
 
-            /** LOGS */
+// LOGS
             const requestUid = response.headers && response.headers.get('X-Request-Id')
                 ? response.headers.get('X-Request-Id') : undefined;
 
@@ -461,7 +457,7 @@ export function httpRequest(
                         headers: {
                             ...requestHeaders,
                             Authorization: requestHeaders?.Authorization
-                            && chayns.utils.isJwt(requestHeaders?.Authorization)
+                                           && chayns.utils.isJwt(requestHeaders?.Authorization)
                                 ? `Payload: ${requestHeaders.Authorization.split('.')[1]}`
                                 : undefined
                         },
@@ -490,12 +486,12 @@ export function httpRequest(
 
             const chaynsErrorObject = await ChaynsError.getChaynsErrorObject(responseBody);
             if (chaynsErrorObject) {
-                chaynsErrorObject.showDialog = !!errorDialogs
-                    .find((e) => (e === chaynsErrorObject.errorCode)
-                        || (Object.prototype.toString.call(e) === '[object RegExp]'
-                            // @ts-expect-error
-                            && e.test(chaynsErrorObject.errorCode)
-                        ));
+                chaynsErrorObject.showDialog = !!errorDialogs.find((e) =>
+                    (e === chaynsErrorObject.errorCode)
+                    || (Object.prototype.toString.call(e) === '[object RegExp]'
+                        // @ts-expect-error
+                        && e.test(chaynsErrorObject.errorCode)
+                    ));
             }
             if (chaynsErrorObject && chaynsErrorObject?.showDialog) {
                 chayns.dialog.alert('', chaynsErrorObject.displayMessage);
@@ -514,17 +510,13 @@ export function httpRequest(
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`,
                 }, error);
-                // eslint-disable-next-line no-console
-                console.error(...colorLog({
-                    [`[HttpRequest(${processName})]`]: 'color: #aaaaaa',
-                }), error, '\nInput: ', input);
+                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                    error, '\nInput: ', input
+                );
                 if (useChaynsAuth && autoRefreshToken) {
                     try {
                         let jRes: { [key: string]: any } = {};
-                        try {
-                            jRes = await response.json();
-                        } catch (e) { /* ignored */
-                        }
+                        try { jRes = await response.json(); } catch (e) { /* ignored */ }
                         if (jRes.message === 'token_expired') {
                             callSideEffects(<number>status);
                             resolve(httpRequest(address, config, processName, {
@@ -539,13 +531,13 @@ export function httpRequest(
                                 internalRequestGuid
                             }));
                         } else {
-                            tryReject(error, status, false);
+                            if (tryReject(error, status, response)) return;
                         }
                     } catch (err) {
-                        tryReject(error, status, false);
+                        if (tryReject(error, status, response)) return;
                     }
                 } else {
-                    tryReject(error, status, false);
+                    if (tryReject(error, status, response)) return;
                 }
             } else {
                 const error = chaynsErrorObject
@@ -555,14 +547,13 @@ export function httpRequest(
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`
                 }, error);
-                // eslint-disable-next-line no-console
-                console.error(...colorLog({
-                    [`[HttpRequest(${processName})]`]: 'color: #aaaaaa',
-                }), error, '\nInput: ', input);
-                tryReject(error, status, false);
+                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                    error, '\nInput: ', input
+                );
+                tryReject(error, status, response);
             }
 
-            /** RESPONSE HANDLING */
+// RESPONSE HANDLING
             /*
              * Response handling priorities:
              * 1. errorHandlers
@@ -602,7 +593,7 @@ export function httpRequest(
                     const key: string = errorKeys.find((k) => (
                         chaynsErrorCodeRegex.test(k)
                         && stringToRegex(key)
-                            .test(errorCode)
+                        .test(errorCode)
                     ));
                     const handler = errorHandlers.get(key);
                     if (handler) {

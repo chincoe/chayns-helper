@@ -1,10 +1,10 @@
 // @ts-expect-error
 import logger from 'chayns-logger';
 import colorLog from '../../utils/colorLog';
-import stringToRegex, {regexRegex} from '../../utils/stringToRegex';
-import ChaynsError, {ChaynsErrorObject} from './ChaynsError';
+import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
+import ChaynsError, { ChaynsErrorObject } from './ChaynsError';
 import getChaynsErrorCode from './getChaynsErrorCode';
-import {chaynsErrorCodeRegex} from './isChaynsError';
+import { chaynsErrorCodeRegex } from './isChaynsError';
 import LogLevel, { LogLevelEnum } from './LogLevel';
 import RequestError from './RequestError';
 import ResponseType, { ResponseTypeEnum } from './ResponseType';
@@ -13,30 +13,23 @@ export const getMapKeys = (map: Map<string, any>) => {
     const result = [];
     const keys = map.keys();
     for (let i = 0; i < map.size; i++) {
-        const {value} = keys.next();
+        const { value } = keys.next();
         result.push(value);
     }
     return result;
 };
 
-/**
- * @param {number} status
- * @param {Object.<string|RegExp|number, function|LogLevel>} logConfig
- * @param {function} defaultFunction
- * @param {Response|Promise|Object} [chaynsErrorObject]
- * @returns {Promise<function(Object)>}
- */
 export async function getLogFunctionByStatus(
     status: number,
-    logConfig: Map<string, typeof LogLevelEnum| string>,
+    logConfig: Map<string, typeof LogLevelEnum | string>,
     defaultFunction: (data: object) => any,
     chaynsErrorObject?: ChaynsErrorObject
 ): Promise<(data: object, error?: Error) => any> {
     const logKeys: string[] = [];
     const mapKeys = getMapKeys(logConfig);
     logKeys.push(...(mapKeys.filter((k) => !/^[0-9]+$/.test(k)
-        && !regexRegex.test(k)
-        && chaynsErrorCodeRegex.test(k))));
+                                           && !regexRegex.test(k)
+                                           && chaynsErrorCodeRegex.test(k))));
     logKeys.push(...(mapKeys.filter((k) => !logKeys.includes(k))));
 
     let chaynsErrorCode: string | null = null;
@@ -45,14 +38,14 @@ export async function getLogFunctionByStatus(
     }
 
     const levelKey = logKeys
-        .find((key) => (
-            (/^[\d]$/.test(key) && parseInt(key, 10) === status)
-            || stringToRegex(key)
-                .test(`${status}`)
-            || (chaynsErrorCode && key === chaynsErrorCode)
-            || (chaynsErrorCode && stringToRegex(key)
-                .test(chaynsErrorCode))
-        ));
+    .find((key) => (
+        (/^[\d]$/.test(key) && parseInt(key, 10) === status)
+        || stringToRegex(key)
+        .test(`${status}`)
+        || (chaynsErrorCode && key === chaynsErrorCode)
+        || (chaynsErrorCode && stringToRegex(key)
+        .test(chaynsErrorCode))
+    ));
     if (levelKey && logConfig.get(levelKey)) {
         switch (logConfig.get(levelKey)) {
             case LogLevel.info:
@@ -64,33 +57,30 @@ export async function getLogFunctionByStatus(
             case LogLevel.critical:
                 return logger.critical;
             case LogLevel.none:
-                // eslint-disable-next-line no-console
                 return console.warn;
             default:
-                console.error(...colorLog({
-                    '[HttpRequest]': 'color: #aaaaaa',
-                    // eslint-disable-next-line max-len
-                    [`LogLevel '${logConfig.get(levelKey)}' for '${levelKey}' is not valid. Please use a valid log level.`]: ''
-                }));
+                console.error(...colorLog({ '[HttpRequest]': 'color: #aaaaaa' }),
+                    `LogLevel '${logConfig.get(levelKey)}' for '${levelKey}' is invalid. Please use a valid log level.`
+                );
                 return defaultFunction;
         }
     }
     return defaultFunction;
 }
 
-/**
- * @param status
- * @param statusHandlers
- * @returns {function(*=)|ResponseType|null}
- */
-export function getStatusHandlerByStatusRegex(status: number, statusHandlers: Map<string, (response: Response) => any>): ((value?: any) => any)|ResponseType|null|undefined {
+export function getStatusHandlerByStatusRegex(
+    status: number,
+    statusHandlers: Map<string, (response: Response) => any>
+): ((value?: any) => any) | ResponseType | null | undefined {
     const keys = getMapKeys(statusHandlers);
     for (let i = 0; i < keys.length; i += 1) {
         const regExp = stringToRegex(keys[i]);
         if (regExp.test(status?.toString())
             && (chayns.utils.isFunction(statusHandlers.get(keys[i]))
+                || Object.values(ResponseType)
                 // @ts-expect-error
-                || Object.values(ResponseType).includes(statusHandlers.get(keys[i])))
+                .includes(statusHandlers.get(keys[i]))
+            )
         ) {
             return statusHandlers.get(keys[i]);
         }
@@ -98,69 +88,71 @@ export function getStatusHandlerByStatusRegex(status: number, statusHandlers: Ma
     return null;
 }
 
-export const jsonResolve = async (response: Response, processName: string, resolve: (value: any) => void, internalRequestGuid: string | null = null) : Promise<void> => {
-    const {status} = response;
+export const jsonResolve = async (
+    response: Response, processName: string, resolve: (value: any) => void,
+    internalRequestGuid: string | null = null
+): Promise<void> => {
+    const { status } = response;
     try {
         resolve(await response.json());
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
-            data: {
-                internalRequestGuid
-            }
+            data: { internalRequestGuid }
         }, err);
-        // eslint-disable-next-line no-console
-        console.warn(...colorLog({
-            '[HttpRequest]': 'color: #aaaaaa',
-            // eslint-disable-next-line max-len
-            [`Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
-        }), {statusHandlers: {[status]: ResponseType.None}}, '\n', err);
+        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+            `Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
+            { statusHandlers: { [status]: ResponseType.None } }, '\n', err
+        );
         resolve(null);
     }
 };
 
-export const blobResolve = async (response: Response, processName: string, resolve: (value: any) => void, internalRequestGuid: string | null = null) : Promise<void> => {
-    const {status} = response;
+export const blobResolve = async (
+    response: Response, processName: string, resolve: (value: any) => void,
+    internalRequestGuid: string | null = null
+): Promise<void> => {
+    const { status } = response;
     try {
         resolve(await response.blob());
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
-            data: {
-                internalRequestGuid
-            }
+            data: { internalRequestGuid }
         }, err);
-        // eslint-disable-next-line no-console
-        console.warn(...colorLog({
-            '[HttpRequest]': 'color: #aaaaaa',
-            // eslint-disable-next-line max-len
-            [`Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
-        }), {statusHandlers: {[status]: ResponseType.None}}, '\n', err);
+        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+            `Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
+            { statusHandlers: { [status]: ResponseType.None } }, '\n', err
+        );
         resolve(null);
     }
 };
 
-export const textResolve = async (response: Response, processName: string, resolve: (value: any) => void, internalRequestGuid: string | null = null) : Promise<void> => {
-    const {status} = response;
+export const textResolve = async (
+    response: Response, processName: string, resolve: (value: any) => void,
+    internalRequestGuid: string | null = null
+): Promise<void> => {
+    const { status } = response;
     try {
         resolve(await response.text());
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting text body failed on Status ${status} on ${processName}`,
-            data: {internalRequestGuid}
+            data: { internalRequestGuid }
         }, err);
-        // eslint-disable-next-line no-console
-        console.warn(...colorLog({
-            '[HttpRequest]': 'color: #aaaaaa',
-            // eslint-disable-next-line max-len
-            [`Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
-        }), {statusHandlers: {[status]: ResponseType.None}}, '\n', err);
+        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+            `Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
+            { statusHandlers: { [status]: ResponseType.None } }, '\n', err
+        );
         resolve(null);
     }
 };
 
-export const objectResolve = async (response: Response, processName: string, resolve: (value: any) => void, internalRequestGuid: string | null = null) : Promise<void> => {
-    const {status} = response;
+export const objectResolve = async (
+    response: Response, processName: string, resolve: (value: any) => void,
+    internalRequestGuid: string | null = null
+): Promise<void> => {
+    const { status } = response;
     try {
         resolve({
             status,
@@ -169,14 +161,12 @@ export const objectResolve = async (response: Response, processName: string, res
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`,
-            data: {internalRequestGuid}
+            data: { internalRequestGuid }
         }, err);
-        // eslint-disable-next-line no-console
-        console.warn(...colorLog({
-            '[HttpRequest]': 'color: #aaaaaa',
-            // eslint-disable-next-line max-len
-            [`Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`]: ''
-        }), {statusHandlers: {[status]: ResponseType.None}}, '\n', err);
+        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+            `Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
+            { statusHandlers: { [status]: ResponseType.Response } }, '\n', err
+        );
         resolve({
             status,
             data: null
@@ -226,10 +216,9 @@ export async function resolveWithHandler(
                 const error = chaynsErrorObject
                     ? new ChaynsError(chaynsErrorObject, processName, status)
                     : new RequestError(`Status ${status} on ${processName}`, status);
-                console.error(...colorLog({
-                    '[HttpRequest]': 'color: #aaaaaa',
-                    'ResponseType \'error\':': ''
-                }), error);
+                console.error(...colorLog({ '[HttpRequest]': 'color: #aaaaaa' }),
+                    'ResponseType \'error\':', error
+                );
                 reject(error);
                 return true;
             case ResponseType.Response:
@@ -250,7 +239,9 @@ export async function resolveWithHandler(
     return false;
 }
 
-export const mergeOptions = (obj1: { [key: string]: any } | Map<string, any>, obj2: { [key: string]: any }): Map<string, any> => {
+// merge 2 options into a map to keep the right object key order
+export const mergeOptions = (
+    obj1: { [key: string]: any } | Map<string, any>, obj2: { [key: string]: any }): Map<string, any> => {
     const result: Map<string, any> = obj1 instanceof Map ? obj1 : new Map();
     if (!(obj1 instanceof Map)) {
         const keys1 = Object.keys(obj1);

@@ -45,6 +45,7 @@ export { default as stringToColor } from './functions/colors/stringToColor';
 export { default as hexToRgb } from './functions/colors/hexToRgb';
 export { default as toHslColor } from './functions/colors/toHslColor';
 export { default as getJsonSettings, DateTimeZoneHandling } from './functions/getJsonSettings';
+export { isPagemakerIFrame, isCustomTappIFrame } from './functions/isPagemakerIFrame';
 // functions with deps
 export { default as useShallowSelector } from './hooks/useShallowSelector';
 export { default as useRechartsAxis, generateRechartsAxis } from './functions/recharts/useRechartsAxis';
@@ -64,7 +65,7 @@ export { default as useUniqueInterval } from './hooks/uniques/useUniqueInterval'
 export { default as useUniqueTimeout } from './hooks/uniques/useUniqueTimeout';
 export { default as useFullscreenTapp } from './hooks/useFullscreenTapp';
 export { default as useUser } from './hooks/useUser';
-export { default as useWebsocketService, wssLoggerIgnoreMiddleware } from './hooks/useWebsocketService';
+export { default as useWebsocketService } from './hooks/useWebsocketService';
 export { default as usePrevState } from './hooks/usePrevState';
 export { default as usePrevious } from './hooks/usePrevious';
 export { default as usePreviousEffect } from './hooks/usePreviousEffect';
