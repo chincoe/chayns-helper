@@ -185,7 +185,7 @@ export function httpRequest(
             .includes(<string>responseType)) {
                 console.error(
                     ...colorLog({
-                        '[HttpRequest]': 'color: #aaaaaa',
+                        [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa',
                         // eslint-disable-next-line max-len
                         [`Response type "${responseType}" is not valid. Use json|blob|response|object|none instead.`]: ''
                     })
@@ -255,9 +255,11 @@ export function httpRequest(
                 // get statusHandler if exists
                 const handlerKeys = getMapKeys(statusHandlers);
                 const statusHandlerKey = handlerKeys.find((k) =>
-                    (k === `${status}` || stringToRegex(k).test(`${status}`))
+                    (k === `${status}` || stringToRegex(k)
+                    .test(`${status}`))
                     && (chayns.utils.isFunction(statusHandlers.get(k))
-                        || Object.values(ResponseType).includes(statusHandlers.get(k)))
+                        || Object.values(ResponseType)
+                        .includes(statusHandlers.get(k)))
                 );
 
                 // get errorHandler if exists
@@ -265,15 +267,17 @@ export function httpRequest(
                 const isChayns: boolean = !!err && (err instanceof ChaynsError);
                 const chaynsErrorCode: string | null = isChayns ? (<ChaynsError>err).errorCode : null;
                 const errorHandlerKey = errorKeys.find((k) =>
-                    (chaynsErrorCode && (k === chaynsErrorCode || stringToRegex(k).test(chaynsErrorCode)))
+                    (chaynsErrorCode && (k === chaynsErrorCode || stringToRegex(k)
+                    .test(chaynsErrorCode)))
                     && (chayns.utils.isFunction(errorHandlers.get(k))
-                        || Object.values(ResponseType).includes(errorHandlers.get(k)))
+                        || Object.values(ResponseType)
+                        .includes(errorHandlers.get(k)))
                 );
                 return {
                     statusHandler: statusHandlers.get(statusHandlerKey),
                     errorHandler: errorHandlers.get(errorHandlerKey)
-                }
-            }
+                };
+            };
 
             const resolve = (value?: any) => {
                 globalResolve(value);
@@ -291,7 +295,10 @@ export function httpRequest(
                 status: number,
                 response?: Response
             ): boolean => {
-                const { statusHandler, errorHandler } = getHandlers(status, err);
+                const {
+                    statusHandler,
+                    errorHandler
+                } = getHandlers(status, err);
                 if (errorHandler || statusHandler) {
                     return false;
                 } else {
@@ -350,13 +357,16 @@ export function httpRequest(
                     section: 'httpRequest.js'
                 }, err);
                 console.error(...colorLog({
-                    [`[HttpRequest(${processName})]`]: 'color: #aaaaaa',
+                    [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa',
                     // eslint-disable-next-line max-len
-                    [`(${processName}) Failed to fetch: `]: '',
+                    [`Request failed: `]: '',
                 }), err, '\nInput: ', input);
                 err.statusCode = 1;
                 const status = 1;
-                const { statusHandler, errorHandler } = getHandlers(status, err);
+                const {
+                    statusHandler,
+                    errorHandler
+                } = getHandlers(status, err);
                 if (errorHandler) {
                     callSideEffects(status);
                     await resolveWithHandler(
@@ -400,7 +410,7 @@ export function httpRequest(
                             case ResponseType.Error:
                                 const error = new RequestError(`Status ${status} on ${processName}`, status);
                                 console.error(...colorLog({
-                                    '[HttpRequest]': 'color: #aaaaaa',
+                                    [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa',
                                     'ResponseType \'error\':': ''
                                 }), error, '\nInput: ', input);
                                 reject(error);
@@ -506,9 +516,8 @@ export function httpRequest(
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`,
                 }, error);
-                // eslint-disable-next-line no-console
                 console.error(...colorLog({
-                    [`[HttpRequest(${processName})]`]: 'color: #aaaaaa',
+                    [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa',
                 }), error, '\nInput: ', input);
                 if (useChaynsAuth && autoRefreshToken) {
                     try {
@@ -544,9 +553,8 @@ export function httpRequest(
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`
                 }, error);
-                // eslint-disable-next-line no-console
                 console.error(...colorLog({
-                    [`[HttpRequest(${processName})]`]: 'color: #aaaaaa',
+                    [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa',
                 }), error, '\nInput: ', input);
                 tryReject(error, status, response);
             }
