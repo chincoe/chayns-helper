@@ -18,7 +18,7 @@
     "build": "tsdx build",
     "install:all": "npm i -reg http://repo.tobit.ag:8081/repository/npm/ && npm i chayns-doc@latest -D",
     "pub": "npm publish",
-    "pub:beta": "npm version prerelease --preid=beta -m \":bookmark: Prerelease version %s\" && npm publish",
+    "pub:beta": "npm version prerelease --preid=beta -m \":bookmark: Prerelease version %s\" && npm publish && deprecate.bat \"Version #pkgversion# is unstable, please install a stable version\"",
     "pub:patch": "npm version patch -m \":bookmark: Patch v%s\" && npm publish",
     "pub:patch:deprecate": "deprecate.bat \"Version #pkgversion# contains errors, please update to @latest\" && npm version patch -m \":bookmark: Patch v%s\" && npm publish",
     "pub:minor": "npm version minor -m \":bookmark: Minor release v%s\" && npm publish",
