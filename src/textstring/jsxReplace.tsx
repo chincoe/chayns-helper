@@ -37,7 +37,8 @@ export default function jsxReplace(
                      ? regex.test(m)
                      : m.includes(vars[i])))
              );
-             j++) {
+             j++
+        ) {
             // get the current index in the array to work with
             const arrayIdx = result.findIndex((m) =>
                 (typeof (m) === 'string' && (isRegexKey
@@ -46,21 +47,19 @@ export default function jsxReplace(
             );
             // calculate data like the regex match if it's a regex or whether the replacement is a string or jsx
             let matchValue;
-            let matchIndex;
+            let matchIndex: number;
             let matchLength;
             let fullMatch;
             let ReplaceElement = replacements[vars[i]];
             if (isRegexKey) {
-                // @ts-expect-error
-                fullMatch = (result[arrayIdx].match(regex) as RegExpMatchArray);
+                fullMatch = ((result[arrayIdx] as string).match(regex) as RegExpMatchArray);
                 [matchValue] = fullMatch;
-                matchIndex = fullMatch.index;
+                matchIndex = fullMatch.index as number;
                 matchLength = fullMatch[0].length;
             } else {
                 matchValue = vars[i];
                 matchLength = vars[i].length;
-                // @ts-expect-error
-                matchIndex = result[arrayIdx].indexOf(vars[i]);
+                matchIndex = (result[arrayIdx] as string).indexOf(vars[i]);
             }
             if (typeof replacements[vars[i]] === 'function') {
                 ReplaceElement = (replacements[vars[i]] as JsxReplacementFunction)({
@@ -70,22 +69,19 @@ export default function jsxReplace(
                 });
             }
             // declare the new result array
+            const splitString = result[arrayIdx] as string;
             result = [
                 ...result.slice(0, arrayIdx),
                 ...(ReplaceElement && React.isValidElement(ReplaceElement)
                     ? [
                         // jsx replacement
-                        // @ts-expect-error
-                        result[arrayIdx].substring(0, matchIndex),
+                        splitString.substring(0, matchIndex),
                         React.cloneElement(ReplaceElement, { key: `${guid}:${i}.${j}` }),
-                        // @ts-expect-error
-                        result[arrayIdx].substring(matchIndex + matchLength)
+                        splitString.substring(matchIndex + matchLength)
                     ] : [
                         // string replacement
-                        // @ts-expect-error
-                        `${result[arrayIdx].substring(0, matchIndex)}${ReplaceElement}${result[arrayIdx].substring(
-                            matchIndex + matchLength
-                        )}`
+                        `${splitString.substring(0, matchIndex)}${ReplaceElement}${
+                            splitString.substring(matchIndex + matchLength)}`
                     ]),
                 ...result.slice(arrayIdx + 1)
             ];
@@ -95,8 +91,7 @@ export default function jsxReplace(
         for (let i = 0; i < result.length; i += 1) {
             if (typeof (result[i]) === 'string') {
                 // eslint-disable-next-line react/no-danger
-                // @ts-expect-error
-                result[i] = <span dangerouslySetInnerHTML={{ __html: result[i] }}/>;
+                result[i] = <span dangerouslySetInnerHTML={{ __html: (result[i] as string) }}/>;
             }
         }
     }

@@ -1,9 +1,9 @@
-import hexToRgb from './hexToRgb';
+import hexToRgb, { RGBAObject } from './hexToRgb';
 
 /**
  * Hash a string and turn it into an RGB color to get predictable colors out of strings.
  */
-const stringToColor = (str: string, rgb?: boolean): ({r: number, g: number, b: number, a: number|null}|String|null) => {
+const stringToColor = (str: string, rgb?: boolean): (RGBAObject|String|null) => {
     /* eslint-disable no-bitwise */
     let hash = 0;
     for (let i = 0; i < str.length; i += 1) {
@@ -26,8 +26,7 @@ const stringToColor = (str: string, rgb?: boolean): ({r: number, g: number, b: n
          */
         toRgb(a?: number) {
             const rgbValue = hexToRgb(this);
-            // @ts-expect-error
-            if (a) rgbValue.a = a;
+            if (a) (<RGBAObject>rgbValue).a = a;
             return rgbValue;
         },
         __proto__: String.prototype

@@ -1,11 +1,10 @@
-import React, {useState, useEffect, FunctionComponent} from 'react';
+import React, { useState, useEffect, FunctionComponent } from 'react';
 // @ts-expect-error
-import {SelectButton} from 'chayns-components';
-import {httpRequest} from '../../functions/httpRequest/httpRequest';
+import { SelectButton } from 'chayns-components';
+import { httpRequest } from '../../functions/httpRequest/httpRequest';
 import LogLevel from '../../functions/httpRequest/LogLevel';
 import ResponseType from '../../functions/httpRequest/ResponseType';
 import ResizableWaitCursor from '../wait-cursor/ResizableWaitCursor';
-
 
 declare interface UACGroupChooseButton {
     value: number,
@@ -37,7 +36,7 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = (
                 }
             }
         )
-            .then((res) => setUacGroups(res));
+        .then((res) => setUacGroups(res));
     }, []);
 
     return uacGroups ? (

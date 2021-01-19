@@ -1,24 +1,20 @@
 // @ts-expect-error
 import logger from 'chayns-logger';
 
-
 export const chaynsErrorCodeRegex = /^[a-zA-Z0-9_]+\/[a-zA-Z0-9/_]+$/;
 
 /**
  * @param {Object} obj
  * @returns {boolean}
  */
-export function isChaynsErrorObject(obj: object): boolean {
+export function isChaynsErrorObject(obj: {[key: string]: any}): boolean {
     return !!obj
         && chayns.utils.isObject(obj)
         && Object.hasOwnProperty.call(obj, 'displayMessage')
         && Object.hasOwnProperty.call(obj, 'errorCode')
         && Object.hasOwnProperty.call(obj, 'requestId')
-        // @ts-expect-error
         && typeof (obj?.errorCode) === 'string'
-        // @ts-expect-error
         && typeof (obj?.displayMessage) === 'string'
-        // @ts-expect-error
         && chaynsErrorCodeRegex.test(obj.errorCode);
 }
 

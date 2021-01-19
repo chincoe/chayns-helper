@@ -177,8 +177,8 @@ export default function advancedDate(
         } = options || {};
         const dialogSelectType = (
                                      pSelectType !== undefined
-                                     // @ts-expect-error
-                                     && Object.values(dateSelectType).includes(pSelectType) ? pSelectType : null)
+                                     &&
+                                     Object.values(dateSelectType).includes(<number>pSelectType) ? pSelectType : null)
                                  ?? (multiselect
                 ? dateSelectType.MULTISELECT
                 : null)
@@ -198,15 +198,14 @@ export default function advancedDate(
             preSelect: Array.isArray(preSelect)
                 ? validateDateArray(preSelect)
                 : chayns.utils.isObject(preSelect)
-                  // @ts-expect-error
-                  && preSelect?.start
-                  // @ts-expect-error
-                  && preSelect?.end
-                    // @ts-expect-error
-                    ? { start: validateDate(preSelect?.start), end: validateDate(preSelect?.end), }
+                  && (<DateIntervalObject>preSelect)?.start
+                  && (<DateIntervalObject>preSelect)?.end
+                    ? {
+                        start: validateDate((<DateIntervalObject>preSelect)?.start),
+                        end: validateDate((<DateIntervalObject>preSelect)?.end),
+                    }
                     : validateDate(preSelect),
-            // @ts-expect-error
-            disabledDates: validateDateArray(disabledDates),
+            disabledDates: validateDateArray(<Array<DateInformation>>disabledDates),
             textBlocks,
             yearSelect,
             monthSelect,
@@ -227,8 +226,7 @@ export default function advancedDate(
 
             const validDates = (selectedDates || []).map((d: any) => ({
                 ...(d ?? {}),
-                // @ts-expect-error
-                timestamp: d?.timestamp ? new Date(d.timestamp) * 1000 : d?.timestamp
+                timestamp: d?.timestamp ? new Date(d.timestamp * 1000) : d?.timestamp
             }));
 
             if (dialogSelectType === dateSelectType.SINGLE) {
