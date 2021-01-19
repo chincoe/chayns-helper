@@ -100,7 +100,7 @@ const useFullscreenTapp = (
             });
             chayns.setHeight({
                 height: data.windowHeight - (
-                    chayns.utils.isNumber(data.frameY) && chayns.utils.isNumber(data.pageYOffset)
+                    typeof (data.frameY) === 'number' && typeof (data.pageYOffset) === 'number'
                         ? (data.frameY + data.pageYOffset)
                         : 45
                 ),

@@ -1,12 +1,12 @@
 import DialogPromise from '../DialogPromise';
-import {createDialogResult, DialogButton} from '../utils';
+import { createDialogResult, DialogButton } from '../utils';
 
 export const validateDate = (param: any | any[], allowMissingValue = true) => {
     if (allowMissingValue && (param === null || param === undefined)) return param;
     if (chayns.utils.isDate(param)) {
         return param;
     }
-    if (chayns.utils.isString(param)) {
+    if (typeof (param) === 'string') {
         try {
             return new Date(param);
         } catch (e) {
@@ -15,7 +15,7 @@ export const validateDate = (param: any | any[], allowMissingValue = true) => {
             return undefined;
         }
     }
-    if (chayns.utils.isFunction(param)) {
+    if (typeof (param) === 'function') {
         try {
             const date = param();
             if (chayns.utils.isDate(date)) return date;
@@ -28,7 +28,7 @@ export const validateDate = (param: any | any[], allowMissingValue = true) => {
             return undefined;
         }
     }
-    if (chayns.utils.isNumber(param)) {
+    if (typeof (param) === 'number') {
         try {
             return new Date(param);
         } catch (e) {
@@ -44,7 +44,8 @@ export const validateDate = (param: any | any[], allowMissingValue = true) => {
     return undefined;
 };
 
-export const validateDateArray = (paramArray: Array<any>) => paramArray?.map((p) => validateDate(p, false) ?? undefined);
+export const validateDateArray = (paramArray: Array<any>) => paramArray?.map(
+    (p) => validateDate(p, false) ?? undefined);
 
 export interface DateIntervalObject {
     start: Date;
@@ -175,16 +176,16 @@ export default function advancedDate(
             getLocalTime = false
         } = options || {};
         const dialogSelectType = (
-                pSelectType !== undefined
-                // @ts-expect-error
-                && Object.values(dateSelectType).includes(pSelectType) ? pSelectType : null)
-            ?? (multiselect
+                                     pSelectType !== undefined
+                                     // @ts-expect-error
+                                     && Object.values(dateSelectType).includes(pSelectType) ? pSelectType : null)
+                                 ?? (multiselect
                 ? dateSelectType.MULTISELECT
                 : null)
-            ?? (interval
+                                 ?? (interval
                 ? dateSelectType.INTERVAL
                 : null)
-            ?? dateSelectType.SINGLE;
+                                 ?? dateSelectType.SINGLE;
 
         chayns.dialog.advancedDate({
             title,
@@ -194,16 +195,15 @@ export default function advancedDate(
             minDate: validateDate(minDate),
             maxDate: validateDate(maxDate),
             minuteInterval,
-            preSelect: chayns.utils.isArray(preSelect)
-                // @ts-expect-error
+            preSelect: Array.isArray(preSelect)
                 ? validateDateArray(preSelect)
                 : chayns.utils.isObject(preSelect)
-                // @ts-expect-error
-                && preSelect?.start
-                // @ts-expect-error
-                && preSelect?.end
+                  // @ts-expect-error
+                  && preSelect?.start
+                  // @ts-expect-error
+                  && preSelect?.end
                     // @ts-expect-error
-                    ? {start: validateDate(preSelect?.start), end: validateDate(preSelect?.end),}
+                    ? { start: validateDate(preSelect?.start), end: validateDate(preSelect?.end), }
                     : validateDate(preSelect),
             // @ts-expect-error
             disabledDates: validateDateArray(disabledDates),
@@ -217,30 +217,30 @@ export default function advancedDate(
             getLocalTime,
             ...resolveDateSelectType(<number>dialogSelectType)
         })
-            .then((result: any) => {
-                // result from chayns dialog
-                // single date: { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }] }
-                // multiselect : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, ...] }
-                // interval : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, { isSelected:
-                // true, timestamp: ... in s }] }
-                const {buttonType: type, selectedDates} = result;
+        .then((result: any) => {
+            // result from chayns dialog
+            // single date: { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }] }
+            // multiselect : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, ...] }
+            // interval : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, { isSelected:
+            // true, timestamp: ... in s }] }
+            const { buttonType: type, selectedDates } = result;
 
-                const validDates = (selectedDates || []).map((d: any) => ({
-                    ...(d ?? {}),
-                    // @ts-expect-error
-                    timestamp: d?.timestamp ? new Date(d.timestamp) * 1000 : d?.timestamp
-                }));
+            const validDates = (selectedDates || []).map((d: any) => ({
+                ...(d ?? {}),
+                // @ts-expect-error
+                timestamp: d?.timestamp ? new Date(d.timestamp) * 1000 : d?.timestamp
+            }));
 
-                if (dialogSelectType === dateSelectType.SINGLE) {
-                    const selectedDate = validDates[0] ?? null;
-                    resolve(createDialogResult(type, selectedDate));
-                } else if (dialogSelectType !== dateSelectType.SINGLE) {
-                    resolve(createDialogResult(type, validDates));
-                }
-            });
+            if (dialogSelectType === dateSelectType.SINGLE) {
+                const selectedDate = validDates[0] ?? null;
+                resolve(createDialogResult(type, selectedDate));
+            } else if (dialogSelectType !== dateSelectType.SINGLE) {
+                resolve(createDialogResult(type, validDates));
+            }
+        });
     });
 }
 
-advancedDate.type = {...dateType};
-advancedDate.selectType = {...dateSelectType};
-advancedDate.textBlockPosition = {...textBlockPosition};
+advancedDate.type = { ...dateType };
+advancedDate.selectType = { ...dateSelectType };
+advancedDate.textBlockPosition = { ...textBlockPosition };

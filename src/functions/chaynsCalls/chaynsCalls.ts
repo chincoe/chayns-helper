@@ -21,15 +21,14 @@ const chaynsCall = (call: ChaynsCall): Promise<{
     return new Promise((resolve) => {
         // @ts-expect-error
         window[callbackName] = (v: any) => {
-            if (chayns.utils.isFunction(value?.callback)) {
-                // @ts-expect-error
+            if (typeof (value?.callback) === 'function') {
                 value.callback(v);
             } else if (value?.callback
-                && chayns.utils.isString(value?.callback)
+                && typeof (value.callback) === 'string'
+                && /^window\./.test(value.callback)
                 // @ts-expect-error
-                && /^window\./.test(value?.callback)
-                // @ts-expect-error
-                && chayns.utils.isFunction(window[value?.callback?.replace('window.', '')])) {
+                && typeof (window[value.callback.replace('window.', '')]) === 'function'
+            ) {
                 // @ts-expect-error
                 window[value?.callback?.replace('window.', '')](v);
             }

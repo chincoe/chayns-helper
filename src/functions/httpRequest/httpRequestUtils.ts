@@ -76,7 +76,7 @@ export function getStatusHandlerByStatusRegex(
     for (let i = 0; i < keys.length; i += 1) {
         const regExp = stringToRegex(keys[i]);
         if (regExp.test(status?.toString())
-            && (chayns.utils.isFunction(statusHandlers.get(keys[i]))
+            && (typeof (statusHandlers.get(keys[i])) === 'function'
                 || Object.values(ResponseType)
                 // @ts-expect-error
                 .includes(statusHandlers.get(keys[i]))
@@ -184,7 +184,7 @@ export async function resolveWithHandler(
     internalRequestGuid: string,
     chaynsErrorObject: ChaynsErrorObject | null = null,
 ): Promise<boolean> {
-    if (chayns.utils.isFunction(handler)) {
+    if (typeof (handler) === 'function') {
         // eslint-disable-next-line no-await-in-loop
         // @ts-expect-error
         resolve(await handler(chaynsErrorObject ?? response));

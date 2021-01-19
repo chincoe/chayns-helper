@@ -18,8 +18,7 @@ const getHashCode = (string: string): number => {
  * @returns {string|{h: number, s: number, l:number}}
  */
 const toHslColor = (stringOrInt: string | number, s?: number, l?: number) => {
-    // @ts-expect-error
-    const number: number = chayns.utils.isNumber(stringOrInt) ? stringOrInt : getHashCode(stringOrInt);
+    const number: number = typeof (stringOrInt) === 'number' ? stringOrInt : getHashCode(stringOrInt);
     const shortened: number = number % 360;
     // const result = `hsl(${shortened},${s ?? 70}%,${l ?? 40}%)`;
     return {

@@ -47,17 +47,22 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
                     && !isNullOrWhiteSpace(TEXTSTRING_CONFIG.prefix)
                     && chayns.env.user.isAuthenticated
                 ) {
-                    isTobitEmployee()
-                        .then(async () => {
-                            const libResponse = await window.fetch(`https://webapi.tobit.com/TextStringService/v1.0/V2/LangLibs/${TEXTSTRING_CONFIG.libName}`, {
+                    isTobitEmployee().then(async () => {
+                        const libResponse = await fetch(
+                            `https://webapi.tobit.com/TextStringService/v1.0/V2/LangLibs/${TEXTSTRING_CONFIG.libName}`,
+                            {
                                 method: 'GET',
                                 headers: new Headers({
                                     Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`
                                 }),
-                            });
-                            const libContent = await libResponse.json();
-                            if (libResponse.status === 200 && libContent && Array.isArray(libContent) && !libContent.find(s => s.stringName === stringName)) {
-                                const response = await window.fetch(`https://webapi.tobit.com/TextStringService/v1.0/V2/LangStrings?libName=${TEXTSTRING_CONFIG.libName}`, {
+                            }
+                        );
+                        const libContent = await libResponse.json();
+                        if (libResponse.status === 200 && libContent && Array.isArray(libContent) &&
+                            !libContent.find(s => s.stringName === stringName)) {
+                            const response = await fetch(
+                                `https://webapi.tobit.com/TextStringService/v1.0/V2/LangStrings?libName=${TEXTSTRING_CONFIG.libName}`,
+                                {
                                     method: 'PUT',
                                     headers: new Headers({
                                         Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`,
@@ -76,37 +81,49 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
                                         textTR: '',
                                         toTranslate: ['en', 'nl', 'it', 'fr', 'pt', 'es', 'tr']
                                     })
-                                });
-                                if (response && response.status === 201) {
-                                    console.warn(`[TextString] Created string '${TEXTSTRING_CONFIG.prefix}${stringName}' as '${fallback}'. Translated to: ${['en', 'nl', 'it', 'fr', 'pt', 'es', 'tr'].join(', ')}.`);
                                 }
+                            );
+                            if (response && response.status === 201) {
+                                console.warn(
+                                    `[TextString] Created string '${TEXTSTRING_CONFIG.prefix}${stringName}' as '${fallback}'. Translated to: ${[
+                                        'en',
+                                        'nl',
+                                        'it',
+                                        'fr',
+                                        'pt',
+                                        'es',
+                                        'tr'
+                                    ].join(', ')}.`);
                             }
-                        });
+                        }
+                    });
                 }
             } catch (e) {
                 // ignored
             }
         })();
     }, []);
-    return (<TextString
-        stringName={`${TEXTSTRING_CONFIG.prefix}${stringName}`}
-        fallback={fallback}
-        useDangerouslySetInnerHTML={false}
-        language={language}
-    >
-        {
-            /* @ts-expect-error */
-            <TextStringReplacer
-                useDangerouslySetInnerHTML={useDangerouslySetInnerHTML}
-                maxReplacements={maxReplacements}
-                replacements={replacements}
-                textStringChildren={children}
-                stringName={stringName}
-                fallback={fallback}
-                {...elementProps}
-            />
-        }
-    </TextString>);
+    return (
+        <TextString
+            stringName={`${TEXTSTRING_CONFIG.prefix}${stringName}`}
+            fallback={fallback}
+            useDangerouslySetInnerHTML={false}
+            language={language}
+        >
+            {
+                /* @ts-expect-error */
+                <TextStringReplacer
+                    useDangerouslySetInnerHTML={useDangerouslySetInnerHTML}
+                    maxReplacements={maxReplacements}
+                    replacements={replacements}
+                    textStringChildren={children}
+                    stringName={stringName}
+                    fallback={fallback}
+                    {...elementProps}
+                />
+            }
+        </TextString>
+    );
 };
 
 interface TextStringReplacerConfig {
@@ -120,21 +137,19 @@ interface TextStringReplacerConfig {
 
 }
 
-const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = memo((props) => {
-    const {
-        children,
-        textStringChildren,
-        useDangerouslySetInnerHTML,
-        replacements,
-        maxReplacements,
-        stringName,
-        fallback,
-        ...elementProps
-    } = props;
-
+const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
+    children,
+    textStringChildren,
+    useDangerouslySetInnerHTML,
+    replacements,
+    maxReplacements,
+    stringName,
+    fallback,
+    ...elementProps
+}) => {
     // get the string manually if it hasn't been passed by the chayns-components textstring component
     const calculatedString = TextString.getTextString(stringName) || fallback;
-    const text = chayns.utils.isString(children)
+    const text = typeof (children) === 'string'
         ? children
         : calculatedString;
 
@@ -156,6 +171,6 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = memo((pr
     return textStringChildren && React.isValidElement(textStringChildren)
         ? React.cloneElement(textStringChildren, elementProps, content)
         : <span>{content}</span>;
-});
+};
 
 export default memo(TextStringComplex);

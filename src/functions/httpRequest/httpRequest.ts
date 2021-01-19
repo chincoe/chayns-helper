@@ -254,7 +254,7 @@ export function httpRequest(
                 const statusHandlerKey = handlerKeys.find((k) =>
                     (k === `${status}` || stringToRegex(k)
                     .test(`${status}`))
-                    && (chayns.utils.isFunction(statusHandlers.get(k))
+                    && (typeof (statusHandlers.get(k)) === 'function'
                         || Object.values(ResponseType)
                         .includes(statusHandlers.get(k)))
                 );
@@ -266,7 +266,7 @@ export function httpRequest(
                 const errorHandlerKey = errorKeys.find((k) =>
                     (chaynsErrorCode && (k === chaynsErrorCode || stringToRegex(k)
                     .test(chaynsErrorCode)))
-                    && (chayns.utils.isFunction(errorHandlers.get(k))
+                    && (typeof (errorHandlers.get(k)) === 'function'
                         || Object.values(ResponseType)
                         .includes(errorHandlers.get(k)))
                 );
@@ -300,8 +300,7 @@ export function httpRequest(
                     return false;
                 } else {
                     if (!throwErrors
-                        // @ts-expect-error
-                        || (status && chayns.utils.isArray(throwErrors) && throwErrors.includes(status))
+                        || (status && Array.isArray(throwErrors) && throwErrors.includes(status))
                     ) {
                         return false;
                     } else {
@@ -388,8 +387,7 @@ export function httpRequest(
                     return;
                 } else {
                     if (!throwErrors
-                        // @ts-expect-error
-                        || (status && chayns.utils.isArray(throwErrors) && throwErrors.includes(status))
+                        || (status && Array.isArray(throwErrors) && throwErrors.includes(status))
                     ) {
                         callSideEffects(status);
                         switch (responseType) {

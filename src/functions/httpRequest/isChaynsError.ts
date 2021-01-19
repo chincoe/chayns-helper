@@ -15,9 +15,9 @@ export function isChaynsErrorObject(obj: object): boolean {
         && Object.hasOwnProperty.call(obj, 'errorCode')
         && Object.hasOwnProperty.call(obj, 'requestId')
         // @ts-expect-error
-        && chayns.utils.isString(obj?.errorCode)
+        && typeof (obj?.errorCode) === 'string'
         // @ts-expect-error
-        && chayns.utils.isString(obj?.displayMessage)
+        && typeof (obj?.displayMessage) === 'string'
         // @ts-expect-error
         && chaynsErrorCodeRegex.test(obj.errorCode);
 }

@@ -18,7 +18,7 @@ const useTimeoutState = <T>(
     const setStateTimeout = useUniqueTimeout();
 
     useEffect(() => {
-        if (chayns.utils.isString(state) || chayns.utils.isString(previousState)
+        if (typeof state === 'string' || typeof previousState === 'string'
             ? `${state}` === `${previousState}`
             : shallowEqual(state, previousState)) {
             const t = setStateTimeout(setTimeout(() => {

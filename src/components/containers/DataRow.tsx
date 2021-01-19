@@ -30,10 +30,8 @@ const DataRow: FunctionComponent<DataRow> = (
             style={style}
             {...props}
         >
-            {/* @ts-expect-error */}
-            {chayns.utils.isArray(children) ? children[0] || null : children}
-            {chayns.utils.isArray(children)
-                // @ts-expect-error
+            {Array.isArray(children) ? children[0] || null : children}
+            {Array.isArray(children)
             && <div className="chayns__utils__container--datarow--right">{children.slice(1)}</div>}
         </Component>
     );

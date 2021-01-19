@@ -2,7 +2,8 @@ import React, { ReactElement } from 'react';
 import stringToRegex, { regexRegex } from '../utils/stringToRegex';
 import generateUUID from '../functions/generateUid';
 
-export type JsxReplacements = { [stringOrRegex: string]: ReactElement | string | ((params: { match: string, regexMatch?: RegExpMatchArray, variable: string | RegExp }) => string | ReactElement) }
+export type JsxReplacementFunction = ((params: { match: string, regexMatch?: RegExpMatchArray, variable: string | RegExp }) => string | ReactElement);
+export type JsxReplacements = { [stringOrRegex: string]: ReactElement | string | JsxReplacementFunction };
 
 export interface JsxReplaceConfig {
     text: string,
@@ -22,7 +23,7 @@ export default function jsxReplace(
     }: JsxReplaceConfig
 ): Array<ReactElement | string> {
     const vars = Object.keys(replacements);
-    let result = [text];
+    let result: Array<string | ReactElement> = [text];
     // for every entry in "replacements"
     for (let i = 0; i < vars.length; i += 1) {
         // check whether the key is a regex
@@ -32,14 +33,14 @@ export default function jsxReplace(
         for (let j = 0;
              j < maxReplacements
              && result.find((m) =>
-                 (chayns.utils.isString(m) && (isRegexKey
+                 (typeof (m) === 'string' && (isRegexKey
                      ? regex.test(m)
                      : m.includes(vars[i])))
              );
              j++) {
             // get the current index in the array to work with
             const arrayIdx = result.findIndex((m) =>
-                (chayns.utils.isString(m) && (isRegexKey
+                (typeof (m) === 'string' && (isRegexKey
                     ? regex.test(m)
                     : m.includes(vars[i])))
             );
@@ -48,9 +49,9 @@ export default function jsxReplace(
             let matchIndex;
             let matchLength;
             let fullMatch;
-            const isReplacerFunction = chayns.utils.isFunction(replacements[vars[i]]);
             let ReplaceElement = replacements[vars[i]];
             if (isRegexKey) {
+                // @ts-expect-error
                 fullMatch = (result[arrayIdx].match(regex) as RegExpMatchArray);
                 [matchValue] = fullMatch;
                 matchIndex = fullMatch.index;
@@ -58,31 +59,31 @@ export default function jsxReplace(
             } else {
                 matchValue = vars[i];
                 matchLength = vars[i].length;
+                // @ts-expect-error
                 matchIndex = result[arrayIdx].indexOf(vars[i]);
             }
-            if (isReplacerFunction) {
-                // @ts-expect-error
-                ReplaceElement = replacements[vars[i]]({
+            if (typeof replacements[vars[i]] === 'function') {
+                ReplaceElement = (replacements[vars[i]] as JsxReplacementFunction)({
                     match: matchValue,
                     ...(isRegexKey ? { regexMatch: fullMatch } : {}),
                     variable: isRegexKey ? regex : vars[i]
                 });
             }
             // declare the new result array
-            // @ts-expect-error
             result = [
                 ...result.slice(0, arrayIdx),
                 ...(ReplaceElement && React.isValidElement(ReplaceElement)
                     ? [
                         // jsx replacement
+                        // @ts-expect-error
                         result[arrayIdx].substring(0, matchIndex),
                         React.cloneElement(ReplaceElement, { key: `${guid}:${i}.${j}` }),
                         // @ts-expect-error
                         result[arrayIdx].substring(matchIndex + matchLength)
                     ] : [
                         // string replacement
+                        // @ts-expect-error
                         `${result[arrayIdx].substring(0, matchIndex)}${ReplaceElement}${result[arrayIdx].substring(
-                            // @ts-expect-error
                             matchIndex + matchLength
                         )}`
                     ]),
@@ -92,7 +93,7 @@ export default function jsxReplace(
     }
     if (useDangerouslySetInnerHTML) {
         for (let i = 0; i < result.length; i += 1) {
-            if (chayns.utils.isString(result[i])) {
+            if (typeof (result[i]) === 'string') {
                 // eslint-disable-next-line react/no-danger
                 // @ts-expect-error
                 result[i] = <span dangerouslySetInnerHTML={{ __html: result[i] }}/>;
