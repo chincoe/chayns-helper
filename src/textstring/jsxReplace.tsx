@@ -74,9 +74,9 @@ export default function jsxReplace(
                 ...result.slice(0, arrayIdx),
                 ...(ReplaceElement && React.isValidElement(ReplaceElement)
                     ? [
+                        // jsx replacement
                         result[arrayIdx].substring(0, matchIndex),
                         React.cloneElement(ReplaceElement, { key: `${guid}:${i}.${j}` }),
-                        // jsx replacement
                         // @ts-expect-error
                         result[arrayIdx].substring(matchIndex + matchLength)
                     ] : [
