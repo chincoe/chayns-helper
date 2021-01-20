@@ -1,3 +1,5 @@
+export type RGBAObject = {r: number, g: number, b: number, a: number|null};
+
 /**
  * Convert a hex string to RGB. The resulting object will have the properties r, g, b and a.
  * The .toString() method of the result will format the object as a css rgb() / rgba() string.
@@ -13,10 +15,9 @@ const hexToRgb = (hex: string): ({r: number, g: number, b: number, a: number|nul
         // @ts-expect-error
         __proto__: {
             toString(): string {
-                // @ts-expect-error
-                return this.a !== null
-                    // @ts-expect-error
-                    ? `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})` : `rgb(${this.r}, ${this.g}, ${this.b})`;
+                const rgba: RGBAObject = <RGBAObject>this
+                return rgba.a !== null
+                    ? `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})` : `rgb(${rgba.r}, ${rgba.g}, ${rgba.b})`;
             }
         }
     };

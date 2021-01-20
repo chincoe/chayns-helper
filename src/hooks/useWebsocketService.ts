@@ -187,14 +187,14 @@ const useWebsocketService = (
             const eventKeys = Object.keys(events);
 
             for (let i = 0; i < eventKeys.length; i += 1) {
-                if (chayns.utils.isString(eventKeys[i]) && chayns.utils.isFunction(events[eventKeys[i]])) {
+                if (typeof (eventKeys[i]) === 'string' && typeof (events[eventKeys[i]]) === 'function') {
                     webSocketClient.on(eventKeys[i], events[eventKeys[i]]);
                 }
             }
 
             return () => {
                 for (let i = 0; i < eventKeys.length; i += 1) {
-                    if (chayns.utils.isString(eventKeys[i]) && chayns.utils.isFunction(events[eventKeys[i]])) {
+                    if (typeof (eventKeys[i]) === 'string' && typeof (events[eventKeys[i]]) === 'function') {
                         webSocketClient.off(eventKeys[i]);
                     }
                 }

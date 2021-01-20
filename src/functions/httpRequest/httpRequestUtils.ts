@@ -59,7 +59,8 @@ export async function getLogFunctionByStatus(
             case LogLevel.none:
                 return console.warn;
             default:
-                console.error(...colorLog({ '[HttpRequest]': 'color: #aaaaaa' }),
+                console.error(
+                    ...colorLog({ '[HttpRequest]': 'color: #aaaaaa' }),
                     `LogLevel '${logConfig.get(levelKey)}' for '${levelKey}' is invalid. Please use a valid log level.`
                 );
                 return defaultFunction;
@@ -76,10 +77,8 @@ export function getStatusHandlerByStatusRegex(
     for (let i = 0; i < keys.length; i += 1) {
         const regExp = stringToRegex(keys[i]);
         if (regExp.test(status?.toString())
-            && (chayns.utils.isFunction(statusHandlers.get(keys[i]))
-                || Object.values(ResponseType)
-                // @ts-expect-error
-                .includes(statusHandlers.get(keys[i]))
+            && (typeof (statusHandlers.get(keys[i])) === 'function'
+                || Object.values(ResponseType).includes(<string><unknown>statusHandlers.get(keys[i]))
             )
         ) {
             return statusHandlers.get(keys[i]);
@@ -184,14 +183,12 @@ export async function resolveWithHandler(
     internalRequestGuid: string,
     chaynsErrorObject: ChaynsErrorObject | null = null,
 ): Promise<boolean> {
-    if (chayns.utils.isFunction(handler)) {
+    if (typeof (handler) === 'function') {
         // eslint-disable-next-line no-await-in-loop
-        // @ts-expect-error
-        resolve(await handler(chaynsErrorObject ?? response));
+        resolve(await handler(<Response><unknown>chaynsErrorObject ?? response));
         return true;
     }
-    // @ts-expect-error
-    if (Object.values(ResponseType).includes(handler)) {
+    if (Object.values(ResponseType).includes(<string>handler)) {
         switch (handler) {
             case ResponseType.Json:
                 // eslint-disable-next-line no-await-in-loop

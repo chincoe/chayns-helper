@@ -174,8 +174,7 @@ const replaceAll = (string: string, search: string|RegExp, replacement: string|(
     let i = 0;
     let newString = string;
     while (i < maxReplacements) {
-        // @ts-expect-error
-        const tempString = newString.replace(search, replacement);
+        const tempString = newString.replace(search, <string>replacement);
         if (tempString === newString) {
             return tempString;
         }

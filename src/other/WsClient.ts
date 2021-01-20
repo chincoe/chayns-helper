@@ -118,7 +118,6 @@ class WebSocketClient {
             return;
         }
 
-        // @ts-expect-error
         this.send('ping');
         this.answeredPing = false;
     };
@@ -126,7 +125,7 @@ class WebSocketClient {
     /**
      * @private
      */
-    send = (topic: string, data: any) => {
+    send = (topic: string, data?: any) => {
         if (this.socket
             && this.socket?.readyState === WebSocket.OPEN
             && this.socket?.readyState !== WebSocket.CONNECTING) {

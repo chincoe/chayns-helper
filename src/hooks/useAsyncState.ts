@@ -17,7 +17,7 @@ export default function useAsyncState<T>(
     const setter = useCallback((newValue) => new Promise((r) => {
         if (chayns.utils.isPromise(newValue)) {
             Promise.resolve(newValue).then(setState);
-        } else if (chayns.utils.isFunction(newValue)) {
+        } else if (typeof (newValue) === 'function') {
             const prevStatePromise = new Promise((resolve) => {
                 setState((prev) => {
                     resolve(prev);

@@ -65,8 +65,7 @@ class ErrorBoundary extends React.Component<{
                             <p>Wir sind bereits davon informiert und beheben den Fehler so schnell wie möglich.</p>
                             {process.env.NODE_ENV === 'development' && (
                                 <p>
-                                    {/* @ts-expect-error */}
-                                    {`Fehler: ${state.error.toString()}`}
+                                    {`Fehler: ${(state.error as Error).toString()}`}
                                 </p>
                             )}
                             <CenteredContainer style={{}}>

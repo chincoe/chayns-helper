@@ -33,7 +33,7 @@ export function generateRechartsAxis<T>(
     if (!tickFormatter) tickFormatter = (base, intervalLength, i) => (<number>base + intervalLength * i);
 
     let relevantDivisor: number|undefined = undefined;
-    if (chayns.utils.isArray(divisor) && typeof divisor !== "number") {
+    if (Array.isArray(divisor)) {
         const divisorList = divisor.sort((a: number, b: number) => a - b);
         for (let i = 0; i < divisorList.length; i++) {
             const d = divisorList[i];

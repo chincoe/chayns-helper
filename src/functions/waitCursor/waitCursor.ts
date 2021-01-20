@@ -1,3 +1,5 @@
+import Timeout = NodeJS.Timeout;
+
 export interface WaitCursorConfig {
     text?: string,
     textTimeout?: number,
@@ -24,8 +26,7 @@ export default function showWaitCursor(config?: WaitCursorConfig, additionalStep
             .map((num) => +num)
             .sort((a, b) => (a - b))
         : [];
-    const timeouts: number[] = [];
-    // @ts-expect-error
+    const timeouts: Timeout[] = [];
     timeouts.push(setTimeout(() => {
         chayns.showWaitCursor(text, textTimeout, action);
     }, initialTimeout));
@@ -46,7 +47,6 @@ export default function showWaitCursor(config?: WaitCursorConfig, additionalStep
             }, currentTimeout + initialTimeout);
         }
 
-        // @ts-expect-error
         timeouts.push(timeout);
     }
 

@@ -217,8 +217,7 @@ export function httpRequest(
             };
 
             // this way other config elements like "credentials", "mode", "cache" or "signal" can be passed to fetch()
-            // @ts-expect-error
-            const remainingFetchConfig: RequestInit = { ...fetchConfig };
+            const remainingFetchConfig: RequestInit = <RequestInit>{ ...fetchConfig };
             // @ts-expect-error
             delete remainingFetchConfig.useChaynsAuth;
 
@@ -236,13 +235,11 @@ export function httpRequest(
                 for (let i = 0; i < replacementKeys.length; i++) {
                     if (regexRegex.test(replacementKeys[i])) {
                         const regex = stringToRegex(replacementKeys[i]);
-                        // @ts-expect-error
-                        requestAddress = requestAddress.replace(regex, replacements[replacementKeys[i]]);
+                        requestAddress = requestAddress.replace(regex, `${replacements[replacementKeys[i]]}`);
                     } else {
                         requestAddress = requestAddress.replace(
                             replacementKeys[i],
-                            // @ts-expect-error
-                            replacements[replacementKeys[i]]
+                            `${replacements[replacementKeys[i]]}`
                         );
                     }
                 }
@@ -254,7 +251,7 @@ export function httpRequest(
                 const statusHandlerKey = handlerKeys.find((k) =>
                     (k === `${status}` || stringToRegex(k)
                     .test(`${status}`))
-                    && (chayns.utils.isFunction(statusHandlers.get(k))
+                    && (typeof (statusHandlers.get(k)) === 'function'
                         || Object.values(ResponseType)
                         .includes(statusHandlers.get(k)))
                 );
@@ -266,7 +263,7 @@ export function httpRequest(
                 const errorHandlerKey = errorKeys.find((k) =>
                     (chaynsErrorCode && (k === chaynsErrorCode || stringToRegex(k)
                     .test(chaynsErrorCode)))
-                    && (chayns.utils.isFunction(errorHandlers.get(k))
+                    && (typeof (errorHandlers.get(k)) === 'function'
                         || Object.values(ResponseType)
                         .includes(errorHandlers.get(k)))
                 );
@@ -300,8 +297,7 @@ export function httpRequest(
                     return false;
                 } else {
                     if (!throwErrors
-                        // @ts-expect-error
-                        || (status && chayns.utils.isArray(throwErrors) && throwErrors.includes(status))
+                        || (status && Array.isArray(throwErrors) && throwErrors.includes(status))
                     ) {
                         return false;
                     } else {
@@ -319,8 +315,7 @@ export function httpRequest(
             try {
                 response = await fetch(requestAddress, {
                     ...remainingFetchConfig,
-                    // @ts-expect-error
-                    method,
+                    method: <string>method,
                     headers: new Headers(requestHeaders),
                     body: stringifyBody ? jsonBody : body
                 });
@@ -388,8 +383,7 @@ export function httpRequest(
                     return;
                 } else {
                     if (!throwErrors
-                        // @ts-expect-error
-                        || (status && chayns.utils.isArray(throwErrors) && throwErrors.includes(status))
+                        || (status && Array.isArray(throwErrors) && throwErrors.includes(status))
                     ) {
                         callSideEffects(status);
                         switch (responseType) {
@@ -489,8 +483,7 @@ export function httpRequest(
                 chaynsErrorObject.showDialog = !!errorDialogs.find((e) =>
                     (e === chaynsErrorObject.errorCode)
                     || (Object.prototype.toString.call(e) === '[object RegExp]'
-                        // @ts-expect-error
-                        && e.test(chaynsErrorObject.errorCode)
+                        && (<RegExp>e).test(chaynsErrorObject.errorCode)
                     ));
             }
             if (chaynsErrorObject && chaynsErrorObject?.showDialog) {
