@@ -29,7 +29,7 @@ export default async function postData(body) {
             body: body,
             useChaynsAuth: false // add user token as auth header. Default: chayns.env.user.isAuthenticated
         },
-        "postStuff", // for your request logs
+        "postData", // for your request logs
         {
             // only worry about these options if you want to:
             // * customize the helper's behavior 
