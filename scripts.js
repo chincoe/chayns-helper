@@ -37,7 +37,11 @@ if (process.argv[2] === '-d' || process.argv[2] === '-deprecate') {
     new Promise(((resolve) => {
         (async () => {
             const result = await exec(`git branch`)
-            const mainBranchName = result.stdout.split('\n').find((b) => mainRegex.test(b)).replace(mainRegex, "$1")
+            const mainBranchName = result.stdout
+            .split('\n')
+            .map((b) => b.trim())
+            .find((b) => mainRegex.test(b))
+            .replace(mainRegex, "$1")
             await exec(`git checkout ${mainBranchName}`);
             await exec(`git push`);
             await exec(`git push --tags`);
