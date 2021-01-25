@@ -3,7 +3,8 @@ const exec = util.promisify(require('child_process').exec);
 const { version, name } = require('./package.json');
 if (process.argv[2] === '-d' || process.argv[2] === '-deprecate') {
     const deprecationMessage = (process.argv[3] || "Version v%version% is outdated, update to @latest")
-    .replace(/%version%/g, version).replace(/%name%/g, name)
+        .replace(/%version%/g, version)
+        .replace(/%name%/g, name);
     new Promise((resolve) => {
         (async () => {
             await exec(`npm deprecate ${name}@${version} "${deprecationMessage}"`)
@@ -38,10 +39,10 @@ if (process.argv[2] === '-d' || process.argv[2] === '-deprecate') {
         (async () => {
             const result = await exec(`git branch`)
             const mainBranchName = result.stdout
-            .split('\n')
-            .map((b) => b.trim())
-            .find((b) => mainRegex.test(b))
-            .replace(mainRegex, "$1")
+                .split('\n')
+                .map((b) => b.trim())
+                .find((b) => mainRegex.test(b))
+                .replace(mainRegex, "$1")
             await exec(`git checkout ${mainBranchName}`);
             await exec(`git push`);
             await exec(`git push --tags`);
