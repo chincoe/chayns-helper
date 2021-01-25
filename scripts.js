@@ -32,17 +32,6 @@ if (process.argv[2] === '-d' || process.argv[2] === '-deprecate') {
     }).then(() => {
         console.log(`${commitString} v${version}`)
     })
-} else if (process.argv[2] === '-b' || process.argv[2] === '-branch') {
-    const branchName = `release/v${version}`;
-    new Promise((resolve) => {
-        (async () => {
-            await exec(`git branch ${branchName}`);
-            await exec(`git checkout ${branchName}`);
-            resolve()
-        })()
-    }).then(() => {
-        console.log(`Created branch ${branchName}`)
-    })
 } else if (process.argv[2] === '-pt' || process.argv[2] === '-pushtags') {
     new Promise(((resolve) => {
         (async () => {
