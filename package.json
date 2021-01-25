@@ -22,7 +22,7 @@
     "pub:patch:deprecate": "node scripts.js -d \\\"%name%@%version% contains errors, please update to @latest\\\" && npm version patch --no-git-tag-version && npm publish",
     "pub:minor": "npm version minor --no-git-tag-version && npm publish",
     "pub:major": "npm version major --no-git-tag-version && npm publish",
-    "git:tags": "node scripts.js -pushtags",
+    "git:postpublish": "node scripts.js -pushtags",
     "----------": "",
     "prepublishOnly": "npm run build",
     "preversion": "npm run install:all",

@@ -33,9 +33,16 @@ if (process.argv[2] === '-d' || process.argv[2] === '-deprecate') {
         console.log(`${commitString} v${version}`)
     })
 } else if (process.argv[2] === '-pt' || process.argv[2] === '-pushtags') {
+    const mainRegex = /^(?:\* )?((?:master)|(?:main))$/;
     new Promise(((resolve) => {
         (async () => {
+            const result = await exec(`git branch`)
+            const mainBranchName = result.stdout.split('\n').find((b) => mainRegex.test(b)).replace(mainRegex, "$1")
+            await exec(`git checkout ${mainBranchName}`);
+            await exec(`git push`);
             await exec(`git push --tags`);
+            await exec(`git checkout develop`);
+            await exec(`git push`);
             resolve();
         })()
     })).then(() => {
