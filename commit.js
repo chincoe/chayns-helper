@@ -11,7 +11,9 @@ new Promise((resolve) => {
     (async () => {
         await exec(`git add .`)
         await exec(`git commit -m ":bookmark: ${commitString} v${version}"`)
-        await exec(`git push`)
+        await exec(`git push`).catch(async (err) => {
+            await exec(err.stderr.match(/git push --set-upstream origin [^\\]+/)[0]);
+        });
         await exec(`git push --tags`)
         resolve('process finished')
     })()
