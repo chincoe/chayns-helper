@@ -219,7 +219,7 @@ export function httpRequest(
             const jsonBody: string | null = body && stringifyBody ? JSON.stringify(body, jsonSettings) : null;
 
             // create request headers
-            let requestHeaders: HeadersInit = stringifyBody ? { 'Content-Type': 'application/json' } : {};
+            let requestHeaders: HeadersInit = body && stringifyBody ? { 'Content-Type': 'application/json' } : {};
             if (useChaynsAuth) requestHeaders.Authorization = `Bearer ${chayns.env.user.tobitAccessToken}`;
             requestHeaders = {
                 ...requestHeaders,
