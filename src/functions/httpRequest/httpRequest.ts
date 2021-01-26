@@ -235,8 +235,7 @@ export function httpRequest(
             let requestAddress: string = '';
             if (!isNullOrWhiteSpace(defaultConfig.address)
                 && !/^.+?:\/\//.test(address)
-                && /^.+?:\/\//.test(defaultConfig.address)
-                && /^\//.test(address)) {
+                && /^.+?:\/\//.test(defaultConfig.address)) {
                 requestAddress = `${defaultConfig.address}${address}`;
             } else {
                 requestAddress = address;

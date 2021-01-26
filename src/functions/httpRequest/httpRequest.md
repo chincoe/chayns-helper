@@ -170,7 +170,7 @@ const getExample = (data) => {
     return request.fetch(
         'https://www.example.com',
         {
-            method: request.method.Post,
+            method: HttpMethod.Post,
             body: data
         },
         'getExample'
@@ -181,7 +181,7 @@ const getExample = async (data) => {
     const result = await request.fetch(
         'https://www.example.com',
         {
-            method: request.method.Post,
+            method: HttpMethod.Post,
             body: data
         },
         'getExample'
@@ -203,9 +203,17 @@ Set a base url as well as defaults for fetch config and request.fetch()-options.
 
 | Parameter              | Description                 | Type | Default / required |
 |------------------------|-----------------------------|------|-----------|
-| address | A base url. Will be used as prefix to the address in request.fetch() if:<br> - This default address starts with a protocol (e.g. `https://`)<br> - The request address doesn't start with a protocol <br> - The request address starts with a `/` | string | `''` |
+| address | A base url. Will be used as prefix to the address in request.fetch() if:<br> - This default address starts with a protocol (e.g. `https://`)<br> - The request address doesn't start with a protocol | string | `''` |
 | config | A fetch config object. See request.fetch() for all properties. Properties that are not specified will keep their default value | Object | `{}` |
 | options | A request.fetch() options object. See request.fetch() for all properties. Properties that are not specified will keep their default value | Object | `{}` |
+
+By default, if a field in options or config is set on a specific request it will overwrite the default set with this function entirely.
+There are some important exceptions where defaults and specific options are merged, with the specific taking priority over the default:
+* options.statusHandlers
+* options.errorHandlers
+* options.logConfig
+* options.stringifyBody
+* options.sideEffects
 
 ##### Example
 
@@ -214,24 +222,24 @@ Set a base url as well as defaults for fetch config and request.fetch()-options.
 
 // set base url and some default config and options
 request.defaults(
-    'https://example.server.com/MyApp/v1.0', // the base url can't end with a slash
+    'https://example.server.com/MyApp/v1.0',
     {
         useChaynsAuth: false,
         cache: 'no-cache'
     },
     {
         // always get Object with json body and status unless otherwise specified
-        responseType: request.responseType.Object,
+        responseType: ResponseType.Object,
         // log 2xx as info, 3xx as warning, 401 as warning and anything else as error
         logConfig: {
-            [/2[\d]{2}/]: 'info',
-            [/3[\d]{2}/]: 'warning',
-            401: 'warning',
-            [/[\d]+/]: 'error'
+            [/2[\d]{2}/]: LogLevel.info,
+            [/3[\d]{2}/]: LogLevel.warning,
+            401: LogLevel.warning,
+            [/[\d]+/]: LogLevel.error
         },
         // don't try to get json body on 204
         statusHandlers: {
-            204: request.responseType.Response
+            204: ResponseType.Response
         }
     }
 );
@@ -241,7 +249,7 @@ request.defaults(
 // myRequest.js
 
 // usage for base url
-request.fetch('/controller/endpoint/boardId', {}, 'myRequest'); // the address has to start with a slash to use the base url
+request.fetch('/controller/endpoint/boardId', {}, 'myRequest');
 ```
 
 ### ResponseType | request.responseType - enum
