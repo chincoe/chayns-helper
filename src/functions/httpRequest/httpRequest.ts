@@ -9,22 +9,23 @@ import ChaynsError from './ChaynsError';
 import HttpMethod, { HttpMethodEnum } from './HttpMethod';
 import {
     blobResolve,
-    jsonResolve,
-    objectResolve,
-    textResolve,
-    mergeOptions,
-    getMapKeys,
     getLogFunctionByStatus,
+    getMapKeys,
     getStatusHandlerByStatusRegex,
-    resolveWithHandler
+    jsonResolve,
+    mergeOptions,
+    objectResolve,
+    resolveWithHandler,
+    textResolve
 } from './httpRequestUtils';
 import { chaynsErrorCodeRegex } from './isChaynsError';
 import RequestError from './RequestError';
 import ResponseType, { ResponseTypeEnum } from './ResponseType';
-import LogLevel, { ObjectResponse, LogLevelEnum } from './LogLevel';
+import LogLevel, { LogLevelEnum, ObjectResponse } from './LogLevel';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
 import { HttpStatusCodeEnum } from './HttpStatusCodes';
 import showWaitCursor from '../waitCursor/waitCursor';
+import getJsonSettings, { JsonSettings } from '../getJsonSettings';
 
 /**
  * The fetch config
@@ -55,7 +56,7 @@ export interface HttpRequestOptions {
     responseType?: typeof ResponseTypeEnum | string | null;
     throwErrors?: boolean | Array<typeof HttpStatusCodeEnum | string | number>;
     logConfig?: { [key: string]: typeof LogLevelEnum | string } | Map<string, typeof LogLevelEnum | string>,
-    stringifyBody?: boolean;
+    stringifyBody?: boolean | JsonSettings;
     additionalLogData?: object;
     autoRefreshToken?: boolean;
     waitCursor?: boolean
@@ -92,7 +93,7 @@ export function httpRequest(
         // bool|number[]: don't throw errors on error status codes, return null instead
         throwErrors,
         // bool: call JSON.stringify() on the body passed to this function
-        stringifyBody = true,
+        stringifyBody: defaultStringify = true,
         // object: additional data to be logged
         additionalLogData = {},
         // bool: automatically try to refresh the token once if it is expired
@@ -134,7 +135,7 @@ export function httpRequest(
 
     if (waitCursor) {
         hideWaitCursor = showWaitCursor(
-            { action: `[httpRequest] ${processName}`, ...(typeof waitCursor !== 'boolean' ? waitCursor : {}) },
+            { action: `[HttpRequest] ${processName}`, ...(typeof waitCursor !== 'boolean' ? waitCursor : {}) },
             (<{ timeout?: number, steps?: { [timeout: number]: string }; }>waitCursor)?.steps
         );
     }
@@ -159,6 +160,11 @@ export function httpRequest(
             );
             const logConfig = mergeOptions((options?.logConfig || {}), (defaultConfig?.options?.logConfig || {}));
 
+            const stringifyBody = typeof defaultConfig.options.stringifyBody === 'object'
+                                  && typeof options.stringifyBody === 'object'
+                ? { ...defaultConfig.options.stringifyBody, ...options.stringifyBody }
+                : defaultStringify
+
             const optionEffects = options?.sideEffects;
             const defaultEffects = defaultConfig?.options?.sideEffects;
             let sideEffects = options.sideEffects;
@@ -182,7 +188,7 @@ export function httpRequest(
             // eslint-disable-next-line no-param-reassign
             if (!processName) processName = 'HttpRequest';
             if (responseType != null && !Object.values(ResponseType)
-            .includes(<string>responseType)) {
+                .includes(<string>responseType)) {
                 console.error(
                     ...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
                     `Response type "${responseType}" is not valid. Use json|blob|response|object|none instead.`
@@ -205,7 +211,12 @@ export function httpRequest(
                 headers
             } = fetchConfig;
 
-            const jsonBody: string | null = body && stringifyBody ? JSON.stringify(body) : null;
+            const jsonSettings = typeof stringifyBody !== 'boolean' && typeof stringifyBody === 'object'
+                ? getJsonSettings(stringifyBody)
+                : null;
+
+            // @ts-expect-error
+            const jsonBody: string | null = body && stringifyBody ? JSON.stringify(body, jsonSettings) : null;
 
             // create request headers
             let requestHeaders: HeadersInit = stringifyBody ? { 'Content-Type': 'application/json' } : {};
@@ -250,10 +261,10 @@ export function httpRequest(
                 const handlerKeys = getMapKeys(statusHandlers);
                 const statusHandlerKey = handlerKeys.find((k) =>
                     (k === `${status}` || stringToRegex(k)
-                    .test(`${status}`))
+                        .test(`${status}`))
                     && (typeof (statusHandlers.get(k)) === 'function'
                         || Object.values(ResponseType)
-                        .includes(statusHandlers.get(k)))
+                            .includes(statusHandlers.get(k)))
                 );
 
                 // get errorHandler if exists
@@ -262,10 +273,10 @@ export function httpRequest(
                 const chaynsErrorCode: string | null = isChayns ? (<ChaynsError>err).errorCode : null;
                 const errorHandlerKey = errorKeys.find((k) =>
                     (chaynsErrorCode && (k === chaynsErrorCode || stringToRegex(k)
-                    .test(chaynsErrorCode)))
+                        .test(chaynsErrorCode)))
                     && (typeof (errorHandlers.get(k)) === 'function'
                         || Object.values(ResponseType)
-                        .includes(errorHandlers.get(k)))
+                            .includes(errorHandlers.get(k)))
                 );
                 return {
                     statusHandler: statusHandlers.get(statusHandlerKey),
@@ -586,7 +597,7 @@ export function httpRequest(
                     const key: string = errorKeys.find((k) => (
                         chaynsErrorCodeRegex.test(k)
                         && stringToRegex(key)
-                        .test(errorCode)
+                            .test(errorCode)
                     ));
                     const handler = errorHandlers.get(key);
                     if (handler) {

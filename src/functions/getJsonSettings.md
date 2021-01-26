@@ -2,14 +2,24 @@
 Modify the output of JSON.stringify with this function.
 ### Usage
 ```javascript
-JSON.stringify(myObject, getJsonSettings(options));
+JSON.stringify(myObject, getJsonSettings(jsonSettings));
 ```
 
 | Parameter | Description | Type | Default/required |
 |------|--------------|-----------|-------------|
-| options.ignoreNullValues | Remove null values from result | boolean | `false`|
-| options.includeUndefined | Includes undefined keys as null | boolean | `false` |
-| options.includeNotSerializable | Include not serializable values like functions as a string | boolean | `false`|
-| options.excludeKeys | Exclude these keys everywhere | boolean | `false`|
-| options.dateTimeZoneHandling | Adjust the date format | `'default'`/`'localoffset'` | `'default'` |
+| options | An object of JsonSettings | JsonSettings | required |
 | **@returns** | A replacer function for JSON.stringify | function(key, value) | |
+
+### JsonSettings
+A config object with the following possible keys:
+
+| Property | Description | Type | Default/required |
+|------|--------------|-----------|-------------|
+| ignoreNullValues | Remove null values from result | boolean | `false`|
+| includeUndefined | Includes undefined values as null | boolean | `false` |
+| includeNotSerializable | Include not serializable values like functions as a string | boolean | `false`|
+| excludeKeys | Exclude these keys everywhere | boolean | `false`|
+| dateTimeZoneHandling | Adjust the date format. Can either result in a utc date or a dateTimeOffset | `'utc'`/`'localoffset'` | `'utc'` |
+
+> Note: You can pass JsonSettings to [request.fetch()](src/functions/httpRequest/httpRequest.md) as well. 
+> That helper will call `getJsonSettings()` for you, so only the settings object should be passed there. 
