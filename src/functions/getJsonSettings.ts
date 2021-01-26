@@ -28,7 +28,10 @@ export default function getJsonSettings(options: JsonSettings): (key: string, va
         excludeKeys = [],
         dateTimeZoneHandling = DateTimeZoneHandling.Default
     } = options;
-    return function replacer(key, value) {
+    return function replacer(key, val) {
+        // if a value implements a toJSON() method like a Date, the value passed to this method is already stringified
+        // @ts-expect-error
+        const value = typeof this === 'object' ? this[key] : val;
         if (excludeKeys.includes(key)) {
             return undefined;
         }
