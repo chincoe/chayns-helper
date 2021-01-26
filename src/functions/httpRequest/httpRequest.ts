@@ -211,12 +211,16 @@ export function httpRequest(
                 headers
             } = fetchConfig;
 
+            console.log(stringifyBody)
             const jsonSettings = typeof stringifyBody !== 'boolean' && typeof stringifyBody === 'object'
                 ? getJsonSettings(stringifyBody)
                 : null;
+            console.log(jsonSettings)
 
             // @ts-expect-error
             const jsonBody: string | null = body && stringifyBody ? JSON.stringify(body, jsonSettings) : null;
+
+            console.log(jsonBody)
 
             // create request headers
             let requestHeaders: HeadersInit = stringifyBody ? { 'Content-Type': 'application/json' } : {};

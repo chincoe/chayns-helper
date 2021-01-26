@@ -2,7 +2,13 @@
 Modify the output of JSON.stringify with this function.
 ### Usage
 ```javascript
-JSON.stringify(myObject, getJsonSettings(jsonSettings));
+JSON.stringify(myObject, getJsonSettings({
+    dateTimeZoneHandling: DateTimeZoneHandling.LocalOffset,
+    ignoreNullValues: false,
+    includeUndefined: false,
+    includeNotSerializable: false,
+    excludeKeys: ['excludeThisKey', 'uselessData']
+}));
 ```
 
 | Parameter | Description | Type | Default/required |
