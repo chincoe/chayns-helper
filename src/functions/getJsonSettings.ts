@@ -17,7 +17,7 @@ export interface JsonSettings {
     includeUndefined?: boolean,
     includeNotSerializable?: boolean,
     excludeKeys?: string[],
-    dateTimeZoneHandling?: DateTimeZoneHandlingEnum
+    dateTimeZoneHandling?: typeof DateTimeZoneHandlingEnum | string
 }
 
 export default function getJsonSettings(options: JsonSettings): (key: string, value: any) => any {
@@ -28,7 +28,10 @@ export default function getJsonSettings(options: JsonSettings): (key: string, va
         excludeKeys = [],
         dateTimeZoneHandling = DateTimeZoneHandling.Default
     } = options;
-    return function replacer(key, value) {
+    return function replacer(key, val) {
+        // if a value implements a toJSON() method like a Date, the value passed to this method is already stringified
+        // @ts-expect-error
+        const value = typeof this === 'object' ? this[key] : val;
         if (excludeKeys.includes(key)) {
             return undefined;
         }
@@ -36,26 +39,26 @@ export default function getJsonSettings(options: JsonSettings): (key: string, va
             return undefined;
         }
         if (includeUndefined && value === undefined) {
-            return typeof (includeUndefined) === 'boolean'
-                ? null
-                : includeUndefined;
+            return null;
         }
         if (Array.isArray(value)) {
             return value.map((v: any): any => replacer(key, v));
         }
-        if (dateTimeZoneHandling === DateTimeZoneHandling.LocalOffset && chayns.utils.isDate(value)) {
+        if (dateTimeZoneHandling === DateTimeZoneHandling.LocalOffset
+            && "[object Date]" === Object.prototype.toString.call(value)
+        ) {
             const offset = new Date().getTimezoneOffset();
             const hourOffset = `00${Math.floor(Math.abs(offset) / 60)}`.slice(-2);
             const minuteOffset = `00${Math.floor(Math.abs(offset) % 60)}`.slice(-2);
             return `${new Date(value - offset * time.minute).toISOString()
-            .replace(/Z$/, '')}${offset <= 0 ? '+' : '-'}${hourOffset}:${minuteOffset}`;
+                .replace(/Z$/, '')}${offset <= 0 ? '+' : '-'}${hourOffset}:${minuteOffset}`;
         }
         if (includeNotSerializable) {
             if (!(typeof (value) === 'number')
                 && !(typeof (value) === 'string')
                 && !(typeof (value) === 'boolean')
                 && !chayns.utils.isObject(value)
-                && !chayns.utils.isDate(value)
+                && "[object Date]" !== Object.prototype.toString.call(value)
                 && value !== null
                 && value !== undefined
             ) {
