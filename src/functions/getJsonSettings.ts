@@ -32,8 +32,6 @@ export default function getJsonSettings(options: JsonSettings): (key: string, va
         // if a value implements a toJSON() method like a Date, the value passed to this method is already stringified
         // @ts-expect-error
         const value = typeof this === 'object' ? this[key] : val;
-        // @ts-expect-error
-        console.log(this, key, typeof key, val, typeof val, value, typeof value);
         if (excludeKeys.includes(key)) {
             return undefined;
         }
