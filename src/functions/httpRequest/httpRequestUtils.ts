@@ -1,6 +1,6 @@
 // @ts-expect-error
 import logger from 'chayns-logger';
-import chalk from 'chalk';
+import colorLog from '../../utils/colorLog';
 import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
 import ChaynsError, { ChaynsErrorObject } from './ChaynsError';
 import getChaynsErrorCode from './getChaynsErrorCode';
@@ -60,7 +60,7 @@ export async function getLogFunctionByStatus(
                 return console.warn;
             default:
                 console.error(
-                    chalk.hex('#aaaaaa')('[HttpRequest]'),
+                    ...colorLog({ '[HttpRequest]': 'color: #aaaaaa' }),
                     `LogLevel '${logConfig.get(levelKey)}' for '${levelKey}' is invalid. Please use a valid log level.`
                 );
                 return defaultFunction;
@@ -99,8 +99,7 @@ export const jsonResolve = async (
             message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
             data: { internalRequestGuid }
         }, err);
-        console.warn(
-            chalk.hex('#aaaaaa')(`[HttpRequest<${processName}>]`),
+        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
             `Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.None } }, '\n', err
         );
@@ -120,8 +119,7 @@ export const blobResolve = async (
             message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
             data: { internalRequestGuid }
         }, err);
-        console.warn(
-            chalk.hex('#aaaaaa')(`[HttpRequest<${processName}>]`),
+        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
             `Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.None } }, '\n', err
         );
@@ -141,8 +139,7 @@ export const textResolve = async (
             message: `[HttpRequest] Getting text body failed on Status ${status} on ${processName}`,
             data: { internalRequestGuid }
         }, err);
-        console.warn(
-            chalk.hex('#aaaaaa')(`[HttpRequest<${processName}>]`),
+        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
             `Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.None } }, '\n', err
         );
@@ -165,8 +162,7 @@ export const objectResolve = async (
             message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`,
             data: { internalRequestGuid }
         }, err);
-        console.warn(
-            chalk.hex('#aaaaaa')(`[HttpRequest<${processName}>]`),
+        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
             `Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.Response } }, '\n', err
         );
@@ -217,7 +213,9 @@ export async function resolveWithHandler(
                 const error = chaynsErrorObject
                     ? new ChaynsError(chaynsErrorObject, processName, status)
                     : new RequestError(`Status ${status} on ${processName}`, status);
-                console.error(chalk.hex('#aaaaaa')('[HttpRequest]'), 'ResponseType \'error\':', error);
+                console.error(...colorLog({ '[HttpRequest]': 'color: #aaaaaa' }),
+                    'ResponseType \'error\':', error
+                );
                 reject(error);
                 return true;
             case ResponseType.Response:

@@ -4,7 +4,7 @@ import logger from 'chayns-logger';
 import shallowEqual from '../functions/shallowEqual';
 import WsClient, { WebsocketConditions } from '../other/WsClient';
 import WebSocketClient from "../other/WsClient";
-import chalk from 'chalk';
+import colorLog from '../utils/colorLog';
 
 /**
  * @type {Object.<string, WebSocketClient>}
@@ -110,7 +110,7 @@ const useWebsocketService = (
                     if (process.env.NODE_ENV === 'development') {
                         // eslint-disable-next-line no-console
                         console.log(
-                            chalk.hex('#aaaaaa')(`[Websocket<${serviceName}>]`),
+                            ...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }),
                             'client registered',
                             { serviceName, conditions, clientGroup }
                         );
@@ -130,7 +130,7 @@ const useWebsocketService = (
                 webSocketClient.on('register_error', (data) => {
                     // eslint-disable-next-line no-console
                     console.error(
-                        chalk.hex('#aaaaaa')(`[Websocket<${serviceName}>]`), 'register error', data);
+                        ...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }), 'register error', data);
                     logger.error({
                         message: '[Websocket] registration failed',
                         data: {
@@ -146,7 +146,7 @@ const useWebsocketService = (
                     // eslint-disable-next-line no-console
                     if (process.env.NODE_ENV === 'development') {
                         console.log(
-                            chalk.hex('#aaaaaa')(`[Websocket<${serviceName}>]`),
+                            ...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }),
                             'connection closed', data
                         );
                     }
@@ -164,7 +164,7 @@ const useWebsocketService = (
                 // WS client default: WS connection error
                 webSocketClient.on('ERROR', (error) => {
                     // eslint-disable-next-line no-console
-                    console.error(chalk.hex('#aaaaaa')(`[Websocket<${serviceName}>]`), 'error', error);
+                    console.error(...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }), 'error', error);
                     logger.warning({
                         message: '[Websocket] error',
                         data: {

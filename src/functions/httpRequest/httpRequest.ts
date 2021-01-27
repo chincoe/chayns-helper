@@ -2,7 +2,7 @@ import isNullOrWhiteSpace from '../../utils/isNullOrWhiteSpace';
 // @ts-expect-error
 import logger from 'chayns-logger';
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
-import chalk from 'chalk';
+import colorLog from '../../utils/colorLog';
 import generateUUID from '../generateUid';
 import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
 import ChaynsError from './ChaynsError';
@@ -197,7 +197,7 @@ export function httpRequest(
             if (responseType != null && !Object.values(ResponseType)
                 .includes(<string>responseType)) {
                 console.error(
-                    chalk.hex('#aaaaaa')(`[HttpRequest<${processName}>]`),
+                    ...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
                     `Response type "${responseType}" is not valid. Use json|blob|response|object|none instead.`
                 );
                 reject(new Error('Invalid responseType'));
@@ -365,8 +365,7 @@ export function httpRequest(
                     },
                     section: 'httpRequest.js'
                 }, err);
-                console.error(
-                    chalk.hex('#aaaaaa')(`[HttpRequest<${processName}>]`),
+                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
                     `Request failed:`, err, '\nInput: ', input
                 );
                 err.statusCode = 1;
@@ -416,8 +415,7 @@ export function httpRequest(
                                 break;
                             case ResponseType.Error:
                                 const error = new RequestError(`Status ${status} on ${processName}`, status);
-                                console.error(
-                                    chalk.hex('#aaaaaa')(`[HttpRequest<${processName}>]`),
+                                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
                                     'ResponseType \'error\':', error, '\nInput: ', input
                                 );
                                 reject(error);
@@ -522,8 +520,7 @@ export function httpRequest(
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`,
                 }, error);
-                console.error(
-                    chalk.hex('#aaaaaa')(`[HttpRequest<${processName}>]`),
+                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
                     error, '\nInput: ', input
                 );
                 if (useChaynsAuth && autoRefreshToken) {
@@ -560,8 +557,7 @@ export function httpRequest(
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`
                 }, error);
-                console.error(
-                    chalk.hex('#aaaaaa')(`[HttpRequest<${processName}>]`),
+                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
                     error, '\nInput: ', input
                 );
                 tryReject(error, status, response);
