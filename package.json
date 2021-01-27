@@ -1,7 +1,10 @@
 {
   "name": "chayns-helper",
   "version": "2.7.1",
-  "author": "Christian Nagel",
+  "author": {
+    "name": "Christian Nagel",
+    "email": "christian.nagel@tobit.com"
+  },
   "description": "my personal helpers for chayns development",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
