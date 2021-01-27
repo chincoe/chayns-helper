@@ -1,21 +1,20 @@
-import React, { useState, useEffect, FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 // @ts-expect-error
-import { SelectButton } from 'chayns-components';
+import { ChooseButton } from 'chayns-components';
 import { httpRequest } from '../../functions/httpRequest/httpRequest';
 import LogLevel from '../../functions/httpRequest/LogLevel';
 import ResponseType from '../../functions/httpRequest/ResponseType';
 import ResizableWaitCursor from '../wait-cursor/ResizableWaitCursor';
 
 declare interface UACGroupChooseButton {
-    value: number,
+    value: number | number[],
     onChange: (param: any) => any,
     multiSelect?: boolean,
     disabled?: boolean
 }
 
-// TODO: Properly support multiselect
 /**
- * A Button that opens a select dialog to choose a UAC group from the current site
+ * A Button that opens a select dialog to choose one or more UAC groups from the current site
  * @param value - currently selected uacGroupId
  * @param onChange - onChange handler
  * @param multiSelect - select multiple groups at once
@@ -46,25 +45,48 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = (
                 }
             }
         )
-        .then((res) => setUacGroups(res));
+            .then((res) => setUacGroups(res));
     }, []);
 
     return uacGroups ? (
-        <SelectButton
-            list={uacGroups.map((e) => ({
-                    id: e.id,
-                    name: e.showName
-                }
-            ))}
-            multiSelect={multiSelect}
-            label={(uacGroups.find((e) => e.id === value) || {}).showName || 'Wählen'}
-            onSelect={onChange}
-            listKey="id"
-            listValue="name"
-            quickFind
+        <ChooseButton
+            onClick={() => {
+                chayns.dialog.select({
+                    list: uacGroups.map((e) => ({
+                            value: e.id,
+                            name: e.showName,
+                            isSelected: Array.isArray(value) && value.includes(e.id)
+                        }
+                    )),
+                    multiselect: multiSelect,
+                    quickfind: Array.isArray(uacGroups) && uacGroups.length > 5
+                })
+                    .then(({ buttonType, selection }: {
+                        buttonType: number, selection: Array<{
+                            name: string,
+                            value: number,
+                            backgroundColor?: string,
+                            className?: string,
+                            url?: string,
+                            isSelected?: boolean
+                        }>
+                    }) => {
+                        if (buttonType === 1) {
+                            onChange(selection);
+                        }
+                    });
+            }}
             disabled={disabled}
             {...props}
-        />
+        >
+            {
+                Array.isArray(value) && value.length > 1
+                    ? `${value.length} Gruppen`
+                    : (uacGroups.find((e) =>
+                    e.id === (Array.isArray(value) ? value[0] : value)) || {}).showName || 'Wählen'
+
+            }
+        </ChooseButton>
     ) : (<ResizableWaitCursor size={24}/>);
 };
 
