@@ -6,8 +6,7 @@ import setViewMode from '../functions/chaynsCalls/setViewMode';
 import shallowEqual from '../functions/shallowEqual';
 import getHookState from '../functions/getHookState';
 import { isPagemakerIFrame } from '../functions/isPagemakerIFrame';
-import colorLog from '../utils/colorLog';
-
+import chalk from 'chalk';
 /**
  * Reducer to update the windowData state
  */
@@ -114,7 +113,7 @@ const useFullscreenTapp = (
     useEffect(() => {
         if (isPagemakerIFrame()) {
             console.warn(
-                ...colorLog({ ['[useFullscreenTapp]']: 'color: #aaaaaa' }),
+                chalk.hex('#aaaaaa')('[useFullscreenTapp]'),
                 'Pagemaker iFrames cannot be fullscreen tapps'
             )
             return () => {};
