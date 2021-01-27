@@ -18,12 +18,10 @@ import useSelector from '../utils/requireUseSelector';
  * selector, the selector might still run before unmounting and throw an error as result if you do not follow this
  * advice.
  *
- * @template T
- * @param {function(*) : T} selector - the selector function
- * @param {T} [defaultValue] - use this if you want to use an impure selector function that uses e.g. props
- * @param {*[]} [deps=[]] - use this if you want to use an impure selector function that uses e.g. props that can
+ * @param selector - the selector function
+ * @param [defaultValue] - use this if you want to use an impure selector function that uses e.g. props
+ * @param [deps=[]] - use this if you want to use an impure selector function that uses e.g. props that can
  *     change
- * @returns {T}
  */
 export default function useInlineSelector<T>(
     selector: (state: any) => T,

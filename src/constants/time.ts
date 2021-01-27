@@ -1,6 +1,5 @@
 /**
  * Constant for time based on ms
- * @type {{hour: number, day: number, second: number, minute: number}}
  */
 const time = {
     second: 1000,

@@ -11,7 +11,7 @@ export const defaultConfig : {
 };
 
 /**
- * Set defaults for httpRequest
+ * Set default for request.fetch. Consult httpRequest.md for usage.
  */
 export default function setRequestDefaults(address: string, config: HttpRequestConfig, options: HttpRequestOptions) {
     defaultConfig.address = address || '';

@@ -72,6 +72,13 @@ export interface HttpRequestOptions {
 
 export type httpRequestResult = Response | ObjectResponse | Blob | Object | string | RequestError | ChaynsError | any
 
+/**
+ * Extensive and highly customizable fetch helper. Consult httpRequest.md for usage.
+ * @param address
+ * @param config
+ * @param processName
+ * @param options
+ */
 export function httpRequest(
     // full request address. URLs should be defined as functions or constants in a separate file
     address: string,

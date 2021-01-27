@@ -1,7 +1,8 @@
 export type WebsocketConditions = { [key: string]: string | number | boolean };
 
 /**
- * This websocket client works exactly like the tobit-websocket-service-client but had additional null value handling
+ * This websocket client works exactly like the tobit-websocket-service-client but has additional null value handling
+ * and additional precautions to prevent duplicate connections
  */
 class WebSocketClient {
     reconnectTimeoutTime: number;
@@ -184,7 +185,10 @@ class WebSocketClient {
     /**
      * Registers a new event handler that is called once for the given event name.
      */
-    once = (event: string, listener: (data: { [key: string]: number | string | null }, wsEvent: MessageEvent) => any) => {
+    once = (
+        event: string,
+        listener: (data: { [key: string]: number | string | null }, wsEvent: MessageEvent) => any
+    ) => {
         this.listener[event] = (data, wsEvent) => {
             listener(data, wsEvent);
             this.listener[event] = () => {

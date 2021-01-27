@@ -18,7 +18,13 @@ const websocketClients: { [serviceName: string]: WebSocketClient } = {};
  */
 
 export interface WebsocketServiceConfig {
+    /**
+     * name of your websocket service
+     */
     serviceName: string
+    /**
+     * object with your conditions
+     */
     conditions: WebsocketConditions
     /**
      * Format: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
@@ -46,6 +52,8 @@ export interface WebsocketServiceConfig {
 
 /**
  * Use a websocket client. Each service is only initialized once.
+ * @param config - websocket client configuration
+ * @param deps - if these dependencies change, the event listeners will be renewed, default: []
  */
 const useWebsocketService = (
     config: WebsocketServiceConfig,

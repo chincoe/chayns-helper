@@ -22,7 +22,8 @@ export interface GetUserResult {
 const usersCache: Array<GetUserResult> = [];
 
 /**
- * Wrapper for chayns.getUser to use inside a react component
+ * Wrapper for chayns.getUser to use inside a react component.
+ * @param userInfo
  */
 const useUser = (userInfo: UseUserConfig) => {
     const [user, setUser] = useState({});

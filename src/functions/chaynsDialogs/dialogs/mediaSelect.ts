@@ -8,6 +8,11 @@ export interface MediaSelectDialogConfig {
     multiselect?: boolean;
 }
 
+/**
+ * Improved chayns.dialog.mediaSelect
+ * @param options
+ * @param buttons
+ */
 export default function mediaSelect(options?: MediaSelectDialogConfig, buttons?: DialogButton[]) {
     return new DialogPromise<File|any>((resolve) => {
         const {

@@ -52,23 +52,6 @@ export const lineClampType = {
     LINES: 'lines'
 }
 
-/**
- * Restrict the text to a specific height or line count, calculating and by default adding an ellipsis like "..." at
- * the end. Supports HTML-strings, but modifies those slightly to make the line breaks easier to line clamp.
- *
- * @param {string} input
- * @param {Object} [options]
- * @param {string} [options.ellipsis] - the string used to cut
- * @param {boolean} [options.appendEllipsis=true] - whether the ellipsis should be added to the text or just factored
- *     in for calculation
- * @param {number} [options.limit] - limit type depends on options.type, either height in px or max lines goes here
- * @param {boolean} [options.type='lines'] - height or lines
- * @param {boolean} [options.html=false] - use html strings with innerHTML
- * @param {function(string) : string} [options.replacer] - a function that receives the result string and returns a
- *     potentially modified result
- * @returns {[string, function(*), number]}
- */
-
 export interface ClampLinesConfig {
     /**
      * the string appended after the cut
@@ -82,6 +65,9 @@ export interface ClampLinesConfig {
      * limit type depends on options.type, either height in px or max lines goes here
      */
     limit?: number
+    /**
+     * type of the limit: 'lines' or 'height'
+     */
     type?: 'lines'|'height'|typeof lineClampTypeEnum,
     /**
      * use html strings with innerHTML
@@ -93,6 +79,12 @@ export interface ClampLinesConfig {
     replacer?: (value: string) => string
 }
 
+/**
+ * Restrict the text to a specific height or line count, calculating and by default adding an ellipsis like "..." at
+ * the end. Supports HTML-strings, but modifies those slightly to make the line breaks easier to line clamp.
+ * @param input
+ * @param options
+ */
 const useClampLines = (input: string, options?: ClampLinesConfig): [string, React.Dispatch<SetStateAction<any>>] => {
     const {
         ellipsis = '...',

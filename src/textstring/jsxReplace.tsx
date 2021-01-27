@@ -13,6 +13,16 @@ export interface JsxReplaceConfig {
     useDangerouslySetInnerHTML?: boolean
 }
 
+/**
+ * A helper to replace parts of a string with react components. Returns a mixed array of strings and react components
+ * that can be rendered. Consult TextString.md for usage.
+ * @param text - the original text
+ * @param replacements - the replacements
+ * @param maxReplacements - maximum amount of iterations per replacement, default: 20
+ * @param guid - guid used to generate react list keys, default: new GUID
+ * @param useDangerouslySetInnerHTML - interpret left over strings as HTML by wrapping them in spans with
+ *     dangerouslyInnerHtml
+ */
 export default function jsxReplace(
     {
         text,

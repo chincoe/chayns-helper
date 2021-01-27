@@ -13,6 +13,16 @@ declare interface UACGroupChooseButton {
     disabled?: boolean
 }
 
+// TODO: Properly support multiselect
+/**
+ * A Button that opens a select dialog to choose a UAC group from the current site
+ * @param value - currently selected uacGroupId
+ * @param onChange - onChange handler
+ * @param multiSelect - select multiple groups at once
+ * @param disabled - disable the button
+ * @param props
+ * @constructor
+ */
 const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = (
     {
         value = null,

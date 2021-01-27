@@ -1,6 +1,5 @@
 import {useMemo} from 'react';
 
-
 export interface RechartsAxis<T> {
     intervalCount: number,
     intervalLength: number,
@@ -9,6 +8,7 @@ export interface RechartsAxis<T> {
     ticks: Array<number|T>
 }
 
+// TODO: Make this intuitive to use, maybe as own Component
 /**
  * Generate data for a good recharts axis that will use customizable intervals
  * Usage:

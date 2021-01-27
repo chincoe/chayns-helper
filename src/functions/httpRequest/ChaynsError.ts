@@ -11,6 +11,7 @@ export interface ChaynsErrorObject {
 }
 
 /**
+ * Custom error class for ChaynsErrors
  * @public
  * @class
  */

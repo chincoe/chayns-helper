@@ -36,6 +36,11 @@ export interface FileSelectDialogConfig {
     directory?: boolean;
 }
 
+/**
+ * Improved chayns.dialog.fileSelect
+ * @param options
+ * @param buttons
+ */
 export default function fileSelect(
     options?: FileSelectDialogConfig, buttons?: DialogButton[]
 ): DialogPromise<any|File> {

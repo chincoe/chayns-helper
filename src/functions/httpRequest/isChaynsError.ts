@@ -4,8 +4,8 @@ import logger from 'chayns-logger';
 export const chaynsErrorCodeRegex = /^[a-zA-Z0-9_]+\/[a-zA-Z0-9/_]+$/;
 
 /**
- * @param {Object} obj
- * @returns {boolean}
+ * Check if object is a chayns error object
+ * @param obj
  */
 export function isChaynsErrorObject(obj: {[key: string]: any}): boolean {
     return !!obj
@@ -19,8 +19,8 @@ export function isChaynsErrorObject(obj: {[key: string]: any}): boolean {
 }
 
 /**
- * @param {Promise|Response|Object} value
- * @returns {Promise<boolean>}
+ * Check if response has a chayns error object body
+ * @param value
  */
 export default async function isChaynsError(value: any): Promise<boolean> {
     try {

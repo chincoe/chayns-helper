@@ -30,6 +30,11 @@ export interface InputDialogConfig {
     disableButtonTypes?: number[];
 }
 
+/**
+ * Improved chayns.dialog.input
+ * @param options
+ * @param buttons
+ */
 export default function input(options?: InputDialogConfig, buttons?: DialogButton[]): DialogPromise<string> {
     return new DialogPromise<string>((resolve) => {
         chayns.dialog.input({

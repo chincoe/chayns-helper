@@ -13,10 +13,9 @@ const getHashCode = (string: string): number => {
 /**
  * Turn a string or int into an hsl color object. Ideal to create predictable colors that will always have a certain
  * saturation
- * @param {string|number} stringOrInt
- * @param {number} s
- * @param {number} l
- * @returns {string|{h: number, s: number, l:number}}
+ * @param stringOrInt
+ * @param s
+ * @param l
  */
 const toHslColor = (
     stringOrInt: string | number,

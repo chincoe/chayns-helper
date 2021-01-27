@@ -20,6 +20,10 @@ export interface JsonSettings {
     dateTimeZoneHandling?: typeof DateTimeZoneHandlingEnum | string
 }
 
+/**
+ * Pass the return value of this function as second argument of JSON.stringify to customize the serialization
+ * @param options
+ */
 export default function getJsonSettings(options: JsonSettings): (key: string, value: any) => any {
     const {
         ignoreNullValues = false,

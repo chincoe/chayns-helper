@@ -6,10 +6,9 @@ import CenteredWaitCursor from './CenteredWaitCursor';
  * SuspenseWaitCursor
  * A suspense component for lazy loading with React.lazy() that displays a waitCursor during the dynamic import.
  * The waitCursor can either be a <SmallWaitCursor/> (inline = true) or a chayns.showWaitCursor (inline = false)
- * @param {Object} props
- * @param {*|*[]} props.children
- * @param {boolean} [props.inline=false] - true: Small inline waitCursor; false: Big chayns overlay waitCursor
- * @return {*}
+ * @param props
+ * @param props.children
+ * @param [props.inline=false] - true: Small inline waitCursor; false: Big chayns overlay waitCursor
  * @constructor
  */
 const SuspenseWaitCursor: FunctionComponent<{

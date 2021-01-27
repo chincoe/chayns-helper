@@ -6,6 +6,9 @@ export enum HttpMethodEnum {
     Delete = 'DELETE',
 }
 
+/**
+ * An enum for HTTP methods
+ */
 const HttpMethod = {
     Get: 'GET',
     Post: 'POST',
