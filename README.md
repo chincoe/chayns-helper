@@ -32,6 +32,7 @@ This package supports tree-shaking, so each module will only be included in your
 | [CenteredWaitCursor](/src/components/wait-cursor/CenteredWaitCursor.tsx)| Inline-waitCursor, centered and with padding |
 | [DataRow](/src/components/containers/DataRow.tsx)| Container for a row with a label and e.g. a button |
 | [ErrorBoundary](/src/components/error-boundary/ErrorBoundary.tsx)| Customizable ErrorBoundary to catch errors during render |
+| [RechartsAxis](/src/components/recharts-axis/RechartsAxis.tsx)| HOC to rerender a Component in an interval |
 | [refresh](/src/components/other/refresh.tsx)| HOC to rerender a Component in an interval |
 | [Refresh](/src/components/other/RefreshComponent.tsx)| Component to rerender its children in an interval |
 | [rerender](/src/components/other/rerender.tsx)| HOC that passes a rerenderSelf function to a component |

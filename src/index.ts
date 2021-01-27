@@ -10,6 +10,7 @@ export { default as ResizableWaitCursor } from './components/wait-cursor/Resizab
 export { default as SuspenseWaitCursor } from './components/wait-cursor/SuspenseWaitCursor';
 export { default as RestrictedAccordion } from './components/restricted-accordion/RestrictedAccordion';
 export { default as rerender } from './components/other/rerender';
+export { default as RechartsAxis } from './components/recharts-axis/RechartsAxis';
 // chaynsCall
 export { default as chaynsCall } from './functions/chaynsCalls/chaynsCalls';
 export { default as setViewMode } from './functions/chaynsCalls/setViewMode';
