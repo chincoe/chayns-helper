@@ -2,20 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 // @ts-expect-error
 import logger from 'chayns-logger';
 import shallowEqual from '../functions/shallowEqual';
-import WsClient, { WebsocketConditions } from '../other/WsClient';
-import WebSocketClient from "../other/WsClient";
+import WsClient from '../other/WsClient';
+import WebSocketClient, { WebsocketConditions } from '../other/WsClient';
 import colorLog from '../utils/colorLog';
 
-/**
- * @type {Object.<string, WebSocketClient>}
- */
 const websocketClients: { [serviceName: string]: WebSocketClient } = {};
-
-/**
- * @callback wsEventHandler
- * @param {Object|*} data
- * @param {MessageEvent} wsEvent
- */
 
 export interface WebsocketServiceConfig {
     /**
@@ -29,7 +20,7 @@ export interface WebsocketServiceConfig {
     /**
      * Format: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
      */
-    events: { [topic: string]: (data: any) => any }
+    events: { [topic: string]: (data: { [key: string]: string } | any, wsEvent?: MessageEvent) => void | any }
     /**
      * services of the same client group share a ws connection and their conditions
      */
@@ -40,6 +31,8 @@ export interface WebsocketServiceConfig {
      */
     waitForDefinedConditions?: boolean
     /**
+     * Disconnect the websocket client if the calling component is unmounted. Should be deactivated if the same service
+     * is used in multiple components
      * default: true
      */
     disconnectOnUnmount?: boolean,
@@ -77,7 +70,7 @@ const useWebsocketService = (
     useEffect(() => {
         if (waitForDefinedConditions
             && Object.values(conditions)
-            .reduce((total, current) => total && current !== undefined, true)
+                .reduce((total, current) => total && current !== undefined, true)
         ) {
             const isInit = ownConnection ? !ownClient : !Object.prototype.hasOwnProperty.call(
                 websocketClients,
