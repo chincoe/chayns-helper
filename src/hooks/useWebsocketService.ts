@@ -110,7 +110,7 @@ const useWebsocketService = (
                     if (process.env.NODE_ENV === 'development') {
                         // eslint-disable-next-line no-console
                         console.log(
-                            ...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }),
+                            ...colorLog.gray(`[Websocket<${serviceName}>]`),
                             'client registered',
                             { serviceName, conditions, clientGroup }
                         );
@@ -130,7 +130,7 @@ const useWebsocketService = (
                 webSocketClient.on('register_error', (data) => {
                     // eslint-disable-next-line no-console
                     console.error(
-                        ...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }), 'register error', data);
+                        ...colorLog.gray(`[Websocket<${serviceName}>]`), 'register error', data);
                     logger.error({
                         message: '[Websocket] registration failed',
                         data: {
@@ -146,7 +146,7 @@ const useWebsocketService = (
                     // eslint-disable-next-line no-console
                     if (process.env.NODE_ENV === 'development') {
                         console.log(
-                            ...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }),
+                            ...colorLog.gray(`[Websocket<${serviceName}>]`),
                             'connection closed', data
                         );
                     }
@@ -164,7 +164,7 @@ const useWebsocketService = (
                 // WS client default: WS connection error
                 webSocketClient.on('ERROR', (error) => {
                     // eslint-disable-next-line no-console
-                    console.error(...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }), 'error', error);
+                    console.error(...colorLog.gray(`[Websocket<${serviceName}>]`), 'error', error);
                     logger.warning({
                         message: '[Websocket] error',
                         data: {

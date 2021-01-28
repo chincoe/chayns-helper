@@ -114,7 +114,7 @@ const useFullscreenTapp = (
     useEffect(() => {
         if (isPagemakerIFrame()) {
             console.warn(
-                ...colorLog({ ['[useFullscreenTapp]']: 'color: #aaaaaa' }),
+                ...colorLog.gray('[useFullscreenTapp]'),
                 'Pagemaker iFrames cannot be fullscreen tapps'
             )
             return () => {};

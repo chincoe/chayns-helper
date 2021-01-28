@@ -197,7 +197,7 @@ export function httpRequest(
             if (responseType != null && !Object.values(ResponseType)
                 .includes(<string>responseType)) {
                 console.error(
-                    ...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                    ...colorLog.gray(`[HttpRequest<${processName}>]`),
                     `Response type "${responseType}" is not valid. Use json|blob|response|object|none instead.`
                 );
                 reject(new Error('Invalid responseType'));
@@ -365,7 +365,8 @@ export function httpRequest(
                     },
                     section: 'httpRequest.js'
                 }, err);
-                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                console.error(
+                    ...colorLog.gray(`[HttpRequest<${processName}>]`),
                     `Request failed:`, err, '\nInput: ', input
                 );
                 err.statusCode = 1;
@@ -415,7 +416,8 @@ export function httpRequest(
                                 break;
                             case ResponseType.Error:
                                 const error = new RequestError(`Status ${status} on ${processName}`, status);
-                                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                                console.error(
+                                    ...colorLog.gray(`[HttpRequest<${processName}>]`),
                                     'ResponseType \'error\':', error, '\nInput: ', input
                                 );
                                 reject(error);
@@ -520,7 +522,8 @@ export function httpRequest(
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`,
                 }, error);
-                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                console.error(
+                    ...colorLog.gray(`[HttpRequest<${processName}>]`),
                     error, '\nInput: ', input
                 );
                 if (useChaynsAuth && autoRefreshToken) {
@@ -557,7 +560,8 @@ export function httpRequest(
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`
                 }, error);
-                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                console.error(
+                    ...colorLog.gray(`[HttpRequest<${processName}>]`),
                     error, '\nInput: ', input
                 );
                 tryReject(error, status, response);
