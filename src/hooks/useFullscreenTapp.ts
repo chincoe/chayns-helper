@@ -119,13 +119,9 @@ const useFullscreenTapp = (
             )
             return () => {};
         }
-        Promise.all([
-            chayns.hideTitleImage(),
-            hideCwFooter(),
-            ...(forceExclusive ? [
-                setViewMode(isFullscreenActive ? true : !!defaultExclusive, false),
-            ] : []),
-        ]);
+        chayns.hideTitleImage();
+        hideCwFooter()
+        if (forceExclusive) setViewMode(isFullscreenActive ? true : !!defaultExclusive, false);
         let interval: NodeJS.Timeout = setTimeout(v => v, 0);
         clearInterval(resizeInterval);
         const tapp = <TappElement>document.querySelector('.tapp');

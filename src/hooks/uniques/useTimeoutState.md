@@ -1,4 +1,4 @@
-## [useTimeoutState](useTimeoutState.js)
+## [useTimeoutState](useTimeoutState.ts)
 A debounced useState hook.
 Executes an onChange method when the state has not been modified for a short timeout.
 
