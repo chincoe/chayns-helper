@@ -8,6 +8,16 @@ import colorLog from '../utils/colorLog';
 
 const websocketClients: { [serviceName: string]: WebSocketClient } = {};
 
+/**
+ * A config for the websocket service
+ * @property {string} serviceName
+ * @property {WebsocketConditions} conditions
+ * @property {Object.<string, function(any, MessageEvent?)>} events
+ * @property {string} [clientGroup=undefined]
+ * @property {boolean} [waitForDefinedConditions=true]
+ * @property {boolean} [forceDisconnectOnUnmount=false]
+ * @property {boolean} [forceOwnConnection=false]
+ */
 export interface WebsocketServiceConfig {
     /**
      * name of your websocket service
@@ -31,11 +41,13 @@ export interface WebsocketServiceConfig {
      */
     waitForDefinedConditions?: boolean
     /**
-     * Disconnect the websocket client if the calling component is unmounted. Should be deactivated if the same service
-     * is used in multiple components
-     * default: true
+     *  Disconnect the websocket client if the calling component is unmounted.
+     *  Should be deactivated if the same service is used in multiple components
+     *  If set to false, it will disconnect once the last component calling this hook has been unmounted.
+     *  If set to true, it will disconnect once the first component calling this hook has been unmounted.
+     *  default: false
      */
-    disconnectOnUnmount?: boolean,
+    forceDisconnectOnUnmount?: boolean,
     /**
      * don't use any existing client from other hooks. required for wallet items to work properly
      * default: false
@@ -58,7 +70,7 @@ const useWebsocketService = (
         events,
         clientGroup = '',
         waitForDefinedConditions = true,
-        disconnectOnUnmount = true,
+        forceDisconnectOnUnmount = false,
         forceOwnConnection = chayns.env.site.tapp.id === 250357
     } = config || {};
     // events pattern: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
@@ -96,6 +108,8 @@ const useWebsocketService = (
             if (!shallowEqual(webSocketClient.conditions, { ...webSocketClient.conditions, ...conditions })) {
                 webSocketClient.updateConditions({ ...webSocketClient.conditions, ...conditions });
             }
+
+            webSocketClient.connections++;
 
             if (isInit) {
                 // WS client default: WS registered successfully
@@ -169,15 +183,17 @@ const useWebsocketService = (
                 });
             }
         }
-        return disconnectOnUnmount || ownConnection ? () => {
+        return () => {
             const webSocketClient = ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`];
             if (webSocketClient) {
-                webSocketClient.closeConnection();
+                webSocketClient.connections--;
+                if (forceDisconnectOnUnmount || ownConnection || !webSocketClient.connections) {
+                    webSocketClient.closeConnection();
+                    if (!ownConnection) {
+                        delete websocketClients[`${serviceName}_${group}`];
+                    }
+                }
             }
-            if (!ownConnection) {
-                delete websocketClients[`${serviceName}_${group}`];
-            }
-        } : () => {
         };
     }, [ownConnection ? null : !!websocketClients[`${serviceName}_${group}`], ...Object.values(conditions)]);
 
