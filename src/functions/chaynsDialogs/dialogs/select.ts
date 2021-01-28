@@ -36,6 +36,11 @@ export interface SelectDialogConfig {
     selectAllButton?: string;
 }
 
+/**
+ * Improved chayns.dialog.select
+ * @param options
+ * @param buttons
+ */
 export default function select(options: SelectDialogConfig, buttons?: DialogButton[]): DialogPromise<SelectDialogResult | SelectDialogResult[]> {
     return new DialogPromise<SelectDialogResult | SelectDialogResult[]>((resolve) => {
         const {

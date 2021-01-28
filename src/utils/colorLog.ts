@@ -3,7 +3,7 @@ const isChromeBased = !!window.chrome;
 // @ts-expect-error
 const isFirefox = typeof InstallTrigger !== 'undefined';
 // eslint-disable-next-line no-console
-export default function colorLog(elements: {[message: string]: string}): string[] {
+export function createColorLog(elements: {[message: string]: string}): string[] {
     if (!isChromeBased && !isFirefox) return [Object.keys(elements).join(' ')];
     const logs = [];
     const styles = [];
@@ -15,3 +15,17 @@ export default function colorLog(elements: {[message: string]: string}): string[
     // eslint-disable-next-line no-console
     return [logs.join(' '), ...styles];
 }
+
+export interface colorLog {
+    create: (elements: {[message: string]: string}) => string[],
+    gray: (v: string) => string[],
+    color: (color: string, v: string) => string[]
+}
+
+const colorLog: colorLog = {
+    create: createColorLog,
+    gray: (v: string) => createColorLog({[v]: 'color:#aaaaaa'}),
+    color: (color: string, v: string) => createColorLog({[v]: `color:${color}`})
+}
+
+export default colorLog;

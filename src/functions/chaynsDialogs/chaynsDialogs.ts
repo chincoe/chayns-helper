@@ -8,6 +8,9 @@ import select, {selectType} from './dialogs/select';
 import fileSelect, {fileType} from './dialogs/fileSelect';
 import mediaSelect from './dialogs/mediaSelect';
 
+/**
+ * Collection of improved versions of chayns dialogs and their enums
+ */
 const chaynsDialog = {
     alert,
     confirm,

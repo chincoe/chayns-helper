@@ -72,6 +72,13 @@ export interface HttpRequestOptions {
 
 export type httpRequestResult = Response | ObjectResponse | Blob | Object | string | RequestError | ChaynsError | any
 
+/**
+ * Extensive and highly customizable fetch helper. Consult httpRequest.md for usage.
+ * @param address
+ * @param config
+ * @param processName
+ * @param options
+ */
 export function httpRequest(
     // full request address. URLs should be defined as functions or constants in a separate file
     address: string,
@@ -190,7 +197,7 @@ export function httpRequest(
             if (responseType != null && !Object.values(ResponseType)
                 .includes(<string>responseType)) {
                 console.error(
-                    ...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                    ...colorLog.gray(`[HttpRequest<${processName}>]`),
                     `Response type "${responseType}" is not valid. Use json|blob|response|object|none instead.`
                 );
                 reject(new Error('Invalid responseType'));
@@ -219,7 +226,7 @@ export function httpRequest(
             const jsonBody: string | null = body && stringifyBody ? JSON.stringify(body, jsonSettings) : null;
 
             // create request headers
-            let requestHeaders: HeadersInit = stringifyBody ? { 'Content-Type': 'application/json' } : {};
+            let requestHeaders: HeadersInit = body && stringifyBody ? { 'Content-Type': 'application/json' } : {};
             if (useChaynsAuth) requestHeaders.Authorization = `Bearer ${chayns.env.user.tobitAccessToken}`;
             requestHeaders = {
                 ...requestHeaders,
@@ -358,7 +365,8 @@ export function httpRequest(
                     },
                     section: 'httpRequest.js'
                 }, err);
-                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                console.error(
+                    ...colorLog.gray(`[HttpRequest<${processName}>]`),
                     `Request failed:`, err, '\nInput: ', input
                 );
                 err.statusCode = 1;
@@ -408,7 +416,8 @@ export function httpRequest(
                                 break;
                             case ResponseType.Error:
                                 const error = new RequestError(`Status ${status} on ${processName}`, status);
-                                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                                console.error(
+                                    ...colorLog.gray(`[HttpRequest<${processName}>]`),
                                     'ResponseType \'error\':', error, '\nInput: ', input
                                 );
                                 reject(error);
@@ -513,7 +522,8 @@ export function httpRequest(
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`,
                 }, error);
-                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                console.error(
+                    ...colorLog.gray(`[HttpRequest<${processName}>]`),
                     error, '\nInput: ', input
                 );
                 if (useChaynsAuth && autoRefreshToken) {
@@ -550,7 +560,8 @@ export function httpRequest(
                     ...logData,
                     message: `[HttpRequest] http request failed: Status ${status} on ${processName}`
                 }, error);
-                console.error(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+                console.error(
+                    ...colorLog.gray(`[HttpRequest<${processName}>]`),
                     error, '\nInput: ', input
                 );
                 tryReject(error, status, response);

@@ -60,7 +60,7 @@ export async function getLogFunctionByStatus(
                 return console.warn;
             default:
                 console.error(
-                    ...colorLog({ '[HttpRequest]': 'color: #aaaaaa' }),
+                    ...colorLog.gray('[HttpRequest]'),
                     `LogLevel '${logConfig.get(levelKey)}' for '${levelKey}' is invalid. Please use a valid log level.`
                 );
                 return defaultFunction;
@@ -99,7 +99,8 @@ export const jsonResolve = async (
             message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
             data: { internalRequestGuid }
         }, err);
-        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+        console.warn(
+            ...colorLog.gray(`[HttpRequest<${processName}>]`),
             `Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.None } }, '\n', err
         );
@@ -119,7 +120,7 @@ export const blobResolve = async (
             message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
             data: { internalRequestGuid }
         }, err);
-        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+        console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
             `Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.None } }, '\n', err
         );
@@ -139,7 +140,7 @@ export const textResolve = async (
             message: `[HttpRequest] Getting text body failed on Status ${status} on ${processName}`,
             data: { internalRequestGuid }
         }, err);
-        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+        console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
             `Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.None } }, '\n', err
         );
@@ -162,7 +163,7 @@ export const objectResolve = async (
             message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`,
             data: { internalRequestGuid }
         }, err);
-        console.warn(...colorLog({ [`[HttpRequest<${processName}>]`]: 'color: #aaaaaa' }),
+        console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
             `Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.Response } }, '\n', err
         );
@@ -213,7 +214,7 @@ export async function resolveWithHandler(
                 const error = chaynsErrorObject
                     ? new ChaynsError(chaynsErrorObject, processName, status)
                     : new RequestError(`Status ${status} on ${processName}`, status);
-                console.error(...colorLog({ '[HttpRequest]': 'color: #aaaaaa' }),
+                console.error(...colorLog.gray(`[HttpRequest<${processName}>]`),
                     'ResponseType \'error\':', error
                 );
                 reject(error);

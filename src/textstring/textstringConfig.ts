@@ -14,6 +14,10 @@ export interface TextStringInit {
     libName?: string;
 }
 
+/**
+ * Set a global text string prefix and library name for all text string helpers
+ * @param config
+ */
 export const initTextStrings = (config: TextStringInit) => {
     const {
         prefix = '',

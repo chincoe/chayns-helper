@@ -12,8 +12,9 @@ function getChaynsErrorCodeFromObject(value: ChaynsErrorObject): string|null {
 }
 
 /**
- * @param {Response|Promise|Object} value
- * @returns {Promise<null>}
+ * Get the chayns error code from a Response or errorObject
+ * @param value
+ * @returns
  */
 export default async function getChaynsErrorCode(value: any): Promise<string|null> {
     try {

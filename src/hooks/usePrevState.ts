@@ -7,10 +7,9 @@ import React, {
 
 /**
  * A useState hook that retains its previously set value as 3rd return value
- * @template T
- * @param {T} [initialState]
- * @param {?*[]} [deps]
- * @returns {[T, function(T), T]} - [state, setState, prevState]
+ * @param [initialState]
+ * @param [deps]
+ * @returns [state, setState, prevState]
  */
 export default function usePrevState<T>(
     initialState: T,

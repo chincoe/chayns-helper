@@ -13,6 +13,11 @@ export interface IFrameDialogConfig {
     customTransitionTimeout?: number;
 }
 
+/**
+ * Improve chayns.dialog.iFrame
+ * @param options
+ * @param buttons
+ */
 export default function iFrame(options: IFrameDialogConfig, buttons?: DialogButton[]): IframeDialogPromise {
     return new IframeDialogPromise((resolve) => {
         const {

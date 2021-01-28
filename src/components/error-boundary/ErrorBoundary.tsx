@@ -9,8 +9,9 @@ import CenteredContainer from '../containers/CenteredContainer';
 /**
  * An ErrorBoundary.
  * Wrap your application in this. If an error occurs during render that causes react to fail rendering, this component
- * will catch the error, log it and display a fallback instead. The default fallback is a warning content card with a
- * generic error message, error details and reload button.
+ * will catch the error, log it and display a fallback instead. Its logs will be able to show your, in which component
+ * the error occurred. The default fallback is a warning content card with a generic error message, error details and
+ * reload button.
  */
 class ErrorBoundary extends React.Component<{
     children: ReactChildren,

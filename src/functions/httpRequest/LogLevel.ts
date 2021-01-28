@@ -11,6 +11,9 @@ export enum LogLevelEnum {
     none = 'none',
 }
 
+/**
+ * An enum for request.fetch logLevels
+ */
 const LogLevel = {
     info: 'info',
     warning: 'warning',

@@ -1,3 +1,6 @@
+/**
+ * generate a ne GUID
+ */
 export default function generateUUID(): string {
     let d = Date.now();
     if (typeof window !== 'undefined' && window.performance && typeof window.performance.now === 'function') {

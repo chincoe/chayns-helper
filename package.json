@@ -1,7 +1,10 @@
 {
   "name": "chayns-helper",
-  "version": "2.7.1",
-  "author": "Christian Nagel",
+  "version": "2.8.0",
+  "author": {
+    "name": "Christian Nagel",
+    "email": "christian.nagel@tobit.com"
+  },
   "description": "my personal helpers for chayns development",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -68,7 +71,7 @@
     "babel-plugin-transform-rename-import": "^2.3.0",
     "babel-plugin-typescript-iife-enum": "^0.2.1",
     "chayns-components": "^4.20.13",
-    "chayns-doc": "^1.1.12",
+    "chayns-doc": "^1.2.1",
     "chayns-logger": "^2.8.6",
     "cssnano": "^4.1.10",
     "eslint": "^7.6.0",
@@ -88,6 +91,7 @@
     "tsc": "^1.20150623.0",
     "tsdx": "^0.14.1",
     "tslib": "^2.0.3",
+    "typedoc": "^0.20.19",
     "typescript": "^4.1.2"
   },
   "dependencies": {

@@ -6,6 +6,13 @@ import './centered-wait-cursor.scss';
 
 /**
  * chayns-components SmallWaitCursor that centers itself, adds a margin and is only displayed after a delay
+ * @param className
+ * @param style
+ * @param children
+ * @param elementType - react element type of the container around the wait cursor, default: 'div'
+ * @param delay - delay until the wait cursor is displayed
+ * @param props
+ * @constructor
  */
 const CenteredWaitCursor: FunctionComponent<{
     className?: string,
@@ -19,13 +26,13 @@ const CenteredWaitCursor: FunctionComponent<{
         children = null,
         elementType = 'div',
         delay = 300,
-        ...elementProps
+        ...props
     }
 ) => {
     const Component = elementType;
     return (
         <Component
-            {...elementProps}
+            {...props}
             className={clsx(
                 'chayns__utils__container',
                 'chayns__utils__container--centered',

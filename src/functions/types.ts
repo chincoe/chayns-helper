@@ -29,6 +29,11 @@ const typeStrings = {
     null: '[object Null]'
 };
 
+/**
+ * firstOrDefault(array, callback)
+ * @param arr
+ * @param callback
+ */
 const safeFirst = <T>(arr: Array<T>, callback?: (value: T, index: number, array: Array<T>) => boolean): null | T => {
     if (!isArray(arr)) return null;
     const relevantArray = (arr || []);
@@ -38,7 +43,7 @@ const safeFirst = <T>(arr: Array<T>, callback?: (value: T, index: number, array:
 };
 
 /**
- * Array.distinct(selector)
+ * distinct(array, selector)
  */
 const distinct = (arr: any[], selector: (value: any) => any): any[] | null => {
     if (!isArray(arr) || !isFunction(selector)) return null;
@@ -81,6 +86,10 @@ const length = (val: any[] | object | string | number): number => {
     }
 };
 
+/**
+ * check if value is null or empty
+ * @param value
+ */
 const isNullOrEmpty = (value: any): boolean => {
     const type = getType(value);
     switch (type) {
@@ -102,6 +111,11 @@ const isNullOrEmpty = (value: any): boolean => {
     }
 };
 
+/**
+ * execute a callback for each key of an object
+ * @param obj
+ * @param callback
+ */
 const forEachKey = <T>(
     obj: { [key: string]: T },
     callback: (key: string, value: T, index: number, source: { [key: string]: T }) => void
@@ -164,13 +178,12 @@ const reduceObject = (
 
 /**
  * Replace up to maxReplacements occurrences of a string
- * @param {string} string
- * @param {string|RegExp} search
- * @param {string|function} replacement
- * @param {number} maxReplacements
- * @return {string}
+ * @param string
+ * @param search
+ * @param replacement
+ * @param maxReplacements - maximum replacements, default: 200
  */
-const replaceAll = (string: string, search: string|RegExp, replacement: string|((substring: string, ...args:any[]) => string), maxReplacements = 50) => {
+const replaceAll = (string: string, search: string|RegExp, replacement: string|((substring: string, ...args:any[]) => string), maxReplacements = 200) => {
     let i = 0;
     let newString = string;
     while (i < maxReplacements) {

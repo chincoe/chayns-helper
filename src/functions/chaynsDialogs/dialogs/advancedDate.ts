@@ -127,6 +127,9 @@ export interface AdvancedDateDialogConfig {
     message?: string;
     title?: string;
     dateType?: typeof dateTypeEnum | number;
+    /**
+     * Single(0), Multiselect(1) or Interval(2)
+     */
     selectType?: typeof dateSelectTypeEnum | number;
     minDate?: DateInformation;
     maxDate?: DateInformation;
@@ -149,6 +152,12 @@ export interface AdvancedDateDialogResult {
     timestamp: number;
 }
 
+/**
+ * Improved chayns.dialog.advancedDate. Works almost identically, but the timestamp in s conversion has been fixed to
+ * be timestamps in ms and multiselect/interval are now exclusive
+ * @param options
+ * @param buttons
+ */
 export default function advancedDate(
     options?: AdvancedDateDialogConfig,
     buttons?: Array<DialogButton>
@@ -216,26 +225,26 @@ export default function advancedDate(
             getLocalTime,
             ...resolveDateSelectType(<number>dialogSelectType)
         })
-        .then((result: any) => {
-            // result from chayns dialog
-            // single date: { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }] }
-            // multiselect : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, ...] }
-            // interval : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, { isSelected:
-            // true, timestamp: ... in s }] }
-            const { buttonType: type, selectedDates } = result;
+            .then((result: any) => {
+                // result from chayns dialog
+                // single date: { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }] }
+                // multiselect : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, ...] }
+                // interval : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, { isSelected:
+                // true, timestamp: ... in s }] }
+                const { buttonType: type, selectedDates } = result;
 
-            const validDates = (selectedDates || []).map((d: any) => ({
-                ...(d ?? {}),
-                timestamp: d?.timestamp ? new Date(d.timestamp * 1000) : d?.timestamp
-            }));
+                const validDates = (selectedDates || []).map((d: any) => ({
+                    ...(d ?? {}),
+                    timestamp: d?.timestamp ? new Date(d.timestamp * 1000) : d?.timestamp
+                }));
 
-            if (dialogSelectType === dateSelectType.SINGLE) {
-                const selectedDate = validDates[0] ?? null;
-                resolve(createDialogResult(type, selectedDate));
-            } else if (dialogSelectType !== dateSelectType.SINGLE) {
-                resolve(createDialogResult(type, validDates));
-            }
-        });
+                if (dialogSelectType === dateSelectType.SINGLE) {
+                    const selectedDate = validDates[0] ?? null;
+                    resolve(createDialogResult(type, selectedDate));
+                } else if (dialogSelectType !== dateSelectType.SINGLE) {
+                    resolve(createDialogResult(type, validDates));
+                }
+            });
     });
 }
 

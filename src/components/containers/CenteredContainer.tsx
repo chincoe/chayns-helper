@@ -12,6 +12,16 @@ export interface CenteredContainer {
     elementType?: string|JSXElementConstructor<any>
 }
 
+/**
+ * A container to center its children
+ * @param className
+ * @param style
+ * @param children
+ * @param gap - leave a gap between the children. Useful to display multiple buttons next to each other
+ * @param elementType - react element type of the container, default: 'div'
+ * @param props
+ * @constructor
+ */
 const CenteredContainer: FunctionComponent<CenteredContainer> = (
     {
         className = '',

@@ -1,31 +1,31 @@
 export type WebsocketConditions = { [key: string]: string | number | boolean };
 
 /**
- * This websocket client works exactly like the tobit-websocket-service-client but had additional null value handling
+ * This websocket client works exactly like the tobit-websocket-service-client but has additional null value handling
+ * and additional precautions to prevent duplicate connections
  */
 class WebSocketClient {
-    reconnectTimeoutTime: number;
+    private readonly reconnectTimeoutTime: number;
 
-    checkConnectionIntervalTime: number;
+    private readonly checkConnectionIntervalTime: number;
 
-    application: string | null = null;
+    private readonly application: string | null = null;
 
     conditions: WebsocketConditions | null = null;
 
-    /**
-     * @type {WebSocket|null}
-     */
-    socket: WebSocket | null = null;
+    private socket: WebSocket | null = null;
 
-    checkConnectionInterval: NodeJS.Timeout | null = null;
+    private checkConnectionInterval: NodeJS.Timeout | null = null;
 
-    reconnectTimeout: NodeJS.Timeout | null = null;
+    private reconnectTimeout: NodeJS.Timeout | null = null;
 
-    answeredPing = false;
+    private answeredPing = false;
 
-    listener: { [event: string]: (...args: any[]) => any } = {};
+    private readonly listener: { [event: string]: (...args: any[]) => any } = {};
 
-    shouldReconnect = true;
+    private shouldReconnect = true;
+
+    public connections: number = 0;
 
     constructor(
         application: string,
@@ -47,7 +47,7 @@ class WebSocketClient {
     /**
      * @private
      */
-    onOpen = () => {
+    private onOpen = () => {
         clearTimeout(<NodeJS.Timeout>this.reconnectTimeout);
 
         this.send('register', {
@@ -65,7 +65,7 @@ class WebSocketClient {
     /**
      * @private
      */
-    onMessage = (e: MessageEvent) => {
+    private onMessage = (e: MessageEvent) => {
         const message = JSON.parse(e.data);
 
         if (message.topic === 'pong') {
@@ -79,14 +79,14 @@ class WebSocketClient {
     /**
      * @private
      */
-    onError = (err?: Event) => {
+    private onError = (err?: Event) => {
         this.emit('ERROR', err, err);
     };
 
     /**
      * @private
      */
-    onClose = (event?: CloseEvent) => {
+    private onClose = (event?: CloseEvent) => {
         clearInterval(<NodeJS.Timeout>this.checkConnectionInterval);
         if (this.socket) {
             this.socket.onopen = () => {
@@ -108,10 +108,10 @@ class WebSocketClient {
     /**
      * @private
      */
-    checkConnection = () => {
-        if (this.answeredPing === false) {
-            if (this?.socket && this?.socket?.close) {
-                this?.socket?.close();
+    private checkConnection = () => {
+        if (!this.answeredPing) {
+            if (this.socket && this.socket?.close) {
+                this.socket?.close();
             } else {
                 this.onClose();
             }
@@ -122,10 +122,7 @@ class WebSocketClient {
         this.answeredPing = false;
     };
 
-    /**
-     * @private
-     */
-    send = (topic: string, data?: any) => {
+    private send = (topic: string, data?: any) => {
         if (this.socket
             && this.socket?.readyState === WebSocket.OPEN
             && this.socket?.readyState !== WebSocket.CONNECTING) {
@@ -136,10 +133,7 @@ class WebSocketClient {
         }
     };
 
-    /**
-     * @private
-     */
-    createConnection = () => {
+    private createConnection = () => {
         if (this.socket) {
             this.socket.onopen = () => {
             };
@@ -159,10 +153,7 @@ class WebSocketClient {
         this.socket.onmessage = this.onMessage;
     };
 
-    /**
-     * @private
-     */
-    emit = (event: string, data?: any, wsEvent: Event | null = null) => {
+    private emit = (event: string, data?: any, wsEvent: Event | null = null) => {
         if (typeof this.listener[event] === 'function') {
             this.listener[event](data, wsEvent);
         }
@@ -172,11 +163,11 @@ class WebSocketClient {
      * Registers a new event handler for the given event name.
      * Overrides any previous event handler for this event.
      */
-    on = (event: string, listener: (data: { [key: string]: number | string | null }, wsEvent: MessageEvent) => any) => {
+    public on = (event: string, listener: (data: { [key: string]: number | string | null }, wsEvent: MessageEvent) => any) => {
         this.listener[event] = listener;
     };
 
-    off = (event: string) => {
+    public off = (event: string) => {
         this.listener[event] = () => {
         };
     };
@@ -184,7 +175,10 @@ class WebSocketClient {
     /**
      * Registers a new event handler that is called once for the given event name.
      */
-    once = (event: string, listener: (data: { [key: string]: number | string | null }, wsEvent: MessageEvent) => any) => {
+    public once = (
+        event: string,
+        listener: (data: { [key: string]: number | string | null }, wsEvent: MessageEvent) => any
+    ) => {
         this.listener[event] = (data, wsEvent) => {
             listener(data, wsEvent);
             this.listener[event] = () => {
@@ -195,9 +189,8 @@ class WebSocketClient {
     /**
      * Updates the conditions.
      * @param {Object} conditions
-     * @public
      */
-    updateConditions = (conditions: WebsocketConditions) => {
+    public updateConditions = (conditions: WebsocketConditions) => {
         this.conditions = conditions;
         this.send('register', {
             application: this.application,
@@ -207,9 +200,8 @@ class WebSocketClient {
 
     /**
      * Close websocket connection.
-     * @public
      */
-    closeConnection = () => {
+    public closeConnection = () => {
         this.shouldReconnect = false;
         if (this?.socket && this?.socket?.close) {
             this?.socket?.close();

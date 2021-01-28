@@ -74,7 +74,9 @@ interface TappElement extends Element {
 
 /**
  * Hook to maintain a fullscreen tapp without scrolling, title image and footer. Does not work in pagemaker iframes
- * Returns [windowData, isFullscreenActive, setIsFullscreenActive]
+ * @param initialValue - fullscreen initially active or not, default: true
+ * @param forceExclusive - force a page to exclusive mode, default: false
+ * @returns [windowData, isFullscreenActive, setIsFullscreenActive]
  */
 const useFullscreenTapp = (
     initialValue: boolean = true,
@@ -112,7 +114,7 @@ const useFullscreenTapp = (
     useEffect(() => {
         if (isPagemakerIFrame()) {
             console.warn(
-                ...colorLog({ ['[useFullscreenTapp]']: 'color: #aaaaaa' }),
+                ...colorLog.gray('[useFullscreenTapp]'),
                 'Pagemaker iFrames cannot be fullscreen tapps'
             )
             return () => {};

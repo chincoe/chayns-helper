@@ -5,7 +5,13 @@ import { SmallWaitCursor } from 'chayns-components';
 import clsx from 'clsx';
 
 /**
+ *
  * Resizable version of the chayns-components SmallWaitCursor
+ * @param size - size in px
+ * @param className
+ * @param style
+ * @param props
+ * @constructor
  */
 const ResizableWaitCursor: FunctionComponent<{
     size?: number;
@@ -16,7 +22,7 @@ const ResizableWaitCursor: FunctionComponent<{
         size = 32,
         className = '',
         style = {},
-        ...elementProps
+        ...props
     }
 ) => {
     useEffect(() => {
@@ -38,7 +44,7 @@ const ResizableWaitCursor: FunctionComponent<{
                 width: size
             }}
             show
-            {...elementProps}
+            {...props}
         />
     );
 };

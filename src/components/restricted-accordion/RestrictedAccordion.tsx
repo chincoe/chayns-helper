@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import './restricted-accordion.scss';
 
 /**
- * Accordion styled for exclusive access by e.g. managers
+ * An Accordion styled for exclusive access by e.g. managers
  */
 const RestrictedAccordion: FunctionComponent<{
     className: string,

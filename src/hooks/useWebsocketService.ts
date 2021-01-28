@@ -2,28 +2,35 @@ import { useEffect, useMemo, useState } from 'react';
 // @ts-expect-error
 import logger from 'chayns-logger';
 import shallowEqual from '../functions/shallowEqual';
-import WsClient, { WebsocketConditions } from '../other/WsClient';
-import WebSocketClient from "../other/WsClient";
+import WsClient from '../other/WsClient';
+import WebSocketClient, { WebsocketConditions } from '../other/WsClient';
 import colorLog from '../utils/colorLog';
 
-/**
- * @type {Object.<string, WebSocketClient>}
- */
 const websocketClients: { [serviceName: string]: WebSocketClient } = {};
 
 /**
- * @callback wsEventHandler
- * @param {Object|*} data
- * @param {MessageEvent} wsEvent
+ * A config for the websocket service
+ * @property {string} serviceName
+ * @property {WebsocketConditions} conditions
+ * @property {Object.<string, function(any, MessageEvent?)>} events
+ * @property {string} [clientGroup=undefined]
+ * @property {boolean} [waitForDefinedConditions=true]
+ * @property {boolean} [forceDisconnectOnUnmount=false]
+ * @property {boolean} [forceOwnConnection=false]
  */
-
 export interface WebsocketServiceConfig {
+    /**
+     * name of your websocket service
+     */
     serviceName: string
+    /**
+     * object with your conditions
+     */
     conditions: WebsocketConditions
     /**
      * Format: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
      */
-    events: { [topic: string]: (data: any) => any }
+    events: { [topic: string]: (data: { [key: string]: string } | any, wsEvent?: MessageEvent) => void | any }
     /**
      * services of the same client group share a ws connection and their conditions
      */
@@ -34,9 +41,13 @@ export interface WebsocketServiceConfig {
      */
     waitForDefinedConditions?: boolean
     /**
-     * default: true
+     *  Disconnect the websocket client if the calling component is unmounted.
+     *  Should be deactivated if the same service is used in multiple components
+     *  If set to false, it will disconnect once the last component calling this hook has been unmounted.
+     *  If set to true, it will disconnect once the first component calling this hook has been unmounted.
+     *  default: false
      */
-    disconnectOnUnmount?: boolean,
+    forceDisconnectOnUnmount?: boolean,
     /**
      * don't use any existing client from other hooks. required for wallet items to work properly
      * default: false
@@ -46,6 +57,8 @@ export interface WebsocketServiceConfig {
 
 /**
  * Use a websocket client. Each service is only initialized once.
+ * @param config - websocket client configuration
+ * @param deps - if these dependencies change, the event listeners will be renewed, default: []
  */
 const useWebsocketService = (
     config: WebsocketServiceConfig,
@@ -57,7 +70,7 @@ const useWebsocketService = (
         events,
         clientGroup = '',
         waitForDefinedConditions = true,
-        disconnectOnUnmount = true,
+        forceDisconnectOnUnmount = false,
         forceOwnConnection = chayns.env.site.tapp.id === 250357
     } = config || {};
     // events pattern: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
@@ -69,7 +82,7 @@ const useWebsocketService = (
     useEffect(() => {
         if (waitForDefinedConditions
             && Object.values(conditions)
-            .reduce((total, current) => total && current !== undefined, true)
+                .reduce((total, current) => total && current !== undefined, true)
         ) {
             const isInit = ownConnection ? !ownClient : !Object.prototype.hasOwnProperty.call(
                 websocketClients,
@@ -96,13 +109,15 @@ const useWebsocketService = (
                 webSocketClient.updateConditions({ ...webSocketClient.conditions, ...conditions });
             }
 
+            webSocketClient.connections++;
+
             if (isInit) {
                 // WS client default: WS registered successfully
                 webSocketClient.on('registered', (data) => {
                     if (process.env.NODE_ENV === 'development') {
                         // eslint-disable-next-line no-console
                         console.log(
-                            ...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }),
+                            ...colorLog.gray(`[Websocket<${serviceName}>]`),
                             'client registered',
                             { serviceName, conditions, clientGroup }
                         );
@@ -122,7 +137,7 @@ const useWebsocketService = (
                 webSocketClient.on('register_error', (data) => {
                     // eslint-disable-next-line no-console
                     console.error(
-                        ...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }), 'register error', data);
+                        ...colorLog.gray(`[Websocket<${serviceName}>]`), 'register error', data);
                     logger.error({
                         message: '[Websocket] registration failed',
                         data: {
@@ -138,7 +153,7 @@ const useWebsocketService = (
                     // eslint-disable-next-line no-console
                     if (process.env.NODE_ENV === 'development') {
                         console.log(
-                            ...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }),
+                            ...colorLog.gray(`[Websocket<${serviceName}>]`),
                             'connection closed', data
                         );
                     }
@@ -156,7 +171,7 @@ const useWebsocketService = (
                 // WS client default: WS connection error
                 webSocketClient.on('ERROR', (error) => {
                     // eslint-disable-next-line no-console
-                    console.error(...colorLog({ [`[Websocket<${serviceName}>]`]: 'color: #aaaaaa' }), 'error', error);
+                    console.error(...colorLog.gray(`[Websocket<${serviceName}>]`), 'error', error);
                     logger.warning({
                         message: '[Websocket] error',
                         data: {
@@ -168,15 +183,17 @@ const useWebsocketService = (
                 });
             }
         }
-        return disconnectOnUnmount || ownConnection ? () => {
+        return () => {
             const webSocketClient = ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`];
             if (webSocketClient) {
-                webSocketClient.closeConnection();
+                webSocketClient.connections--;
+                if (forceDisconnectOnUnmount || ownConnection || !webSocketClient.connections) {
+                    webSocketClient.closeConnection();
+                    if (!ownConnection) {
+                        delete websocketClients[`${serviceName}_${group}`];
+                    }
+                }
             }
-            if (!ownConnection) {
-                delete websocketClients[`${serviceName}_${group}`];
-            }
-        } : () => {
         };
     }, [ownConnection ? null : !!websocketClients[`${serviceName}_${group}`], ...Object.values(conditions)]);
 

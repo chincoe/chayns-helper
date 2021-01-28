@@ -1,9 +1,6 @@
 // @ts-expect-error
 import { TextString } from 'chayns-components';
-import React, {
-    FunctionComponent,
-    memo, ReactChildren, ReactElement, useEffect, useMemo
-} from 'react';
+import React, { FunctionComponent, memo, ReactChildren, ReactElement, useEffect, useMemo } from 'react';
 // @ts-expect-error
 import isTobitEmployee from 'chayns-components/dist/esm/utils/tobitEmployee.js';
 import generateUUID from '../functions/generateUid';
@@ -22,6 +19,20 @@ export interface TextStringComplexConfig {
     autoCreation?: boolean
 }
 
+/**
+ * An improved version of chayns-components TextString that features automatic prefixing, jsx replacements and
+ * automatic text string creation for missing texts. Consult TextString.md for usage
+ * @param stringName - the string name without prefix
+ * @param fallback - a required fallback
+ * @param replacements - replacements
+ * @param children - the child node the text should be rendered into
+ * @param maxReplacements - maximum iterations per replacement, default: 20
+ * @param useDangerouslySetInnerHTML
+ * @param language
+ * @param autoCreation - turn auto creation for missing texts on/off
+ * @param props
+ * @constructor
+ */
 const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
     {
         stringName,
@@ -32,7 +43,7 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
         useDangerouslySetInnerHTML = false,
         language = undefined,
         autoCreation = process.env.NODE_ENV === 'production',
-        ...elementProps
+        ...props
     }
 ) => {
     // create missing textStrings in QA/Production if opened by an authorized developer
@@ -119,7 +130,7 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
                     textStringChildren={children}
                     stringName={stringName}
                     fallback={fallback}
-                    {...elementProps}
+                    {...props}
                 />
             }
         </TextString>

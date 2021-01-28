@@ -11,13 +11,17 @@ const getHashCode = (string: string): number => {
 };
 
 /**
- * Turn a string or int into an hsl color object. Ideal to create predictable colors that will always have a certain saturation
- * @param {string|number} stringOrInt
- * @param {number} s
- * @param {number} l
- * @returns {string|{h: number, s: number, l:number}}
+ * Turn a string or int into an hsl color object. Ideal to create predictable colors that will always have a certain
+ * saturation
+ * @param stringOrInt
+ * @param s
+ * @param l
  */
-const toHslColor = (stringOrInt: string | number, s?: number, l?: number) => {
+const toHslColor = (
+    stringOrInt: string | number,
+    s?: number,
+    l?: number
+): { h: number, s: number, l: number, readonly toString: () => string } => {
     const number: number = typeof (stringOrInt) === 'number' ? stringOrInt : getHashCode(stringOrInt);
     const shortened: number = number % 360;
     // const result = `hsl(${shortened},${s ?? 70}%,${l ?? 40}%)`;
@@ -25,16 +29,10 @@ const toHslColor = (stringOrInt: string | number, s?: number, l?: number) => {
         h: shortened,
         s: s ?? 70,
         l: l ?? 40,
-        __proto__: {
-            /**
-             * @returns {string}
-             */
-            // @ts-expect-error
-            toString() {
-                // @ts-expect-error
-                return `hsl(${this.h},${this.s}%,${this.l}%)`;
-            }
+        toString(): string {
+            return `hsl(${this.h},${this.s}%,${this.l}%)`;
         }
+
     };
 };
 

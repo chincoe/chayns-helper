@@ -13,7 +13,7 @@ export interface WaitCursorConfig {
 export type WaitCursorSteps = { [timeout: number]: string | null }
 
 /**
- * chayns.showWaitCursor() function, but it has a built-in timeout and can deal with multiple steps
+ * chayns.showWaitCursor() function, but it has a built-in delay and can deal with multiple steps
  * @param config
  * @param additionalSteps
  */
