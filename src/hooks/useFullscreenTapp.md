@@ -1,4 +1,4 @@
-## [useFullscreenTapp](useFullscreenTapp.js)
+## [useFullscreenTapp](useFullscreenTapp.ts)
 Makes the tapp a consistent fullscreen tapp regarding the height - as far as that is currently possible in chayns.
 Some site layouts may still be slightly scrollable, usually just on mobile, due to the site layout.
 

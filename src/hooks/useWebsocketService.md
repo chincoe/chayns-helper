@@ -1,4 +1,4 @@
-## [useWebsocketService](useWebsocketService.js)
+## [useWebsocketService](useWebsocketService.ts)
 Use the tobit websocket service client.
 Uses only one client instance for all hooks unless otherwise specified via config.
 
