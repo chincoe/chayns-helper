@@ -28,13 +28,11 @@ import showWaitCursor from '../waitCursor/waitCursor';
 import getJsonSettings, { JsonSettings } from '../getJsonSettings';
 
 /**
- * The fetch config
+ * The fetch config. Contains all parameters viable for the window.fetch init object, extended by the following:
+ * @param useChaynsAuth - default: chayns.env.user.isAuthenticated - Add use token as auth header
  */
 export interface HttpRequestConfig {
     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT' | string | typeof HttpMethodEnum;
-    /**
-     * add user token as authorization
-     */
     useChaynsAuth?: boolean;
     headers?: object;
     body?: object | string | FormData | any,
@@ -50,7 +48,20 @@ export interface HttpRequestConfig {
 }
 
 /**
- * Additional request options
+ * Additional request options. Consult documentation for details
+ * @param responseType - default: 'json' - the data format this helper should return
+ * @param throwErrors - default: false - throw errors on error status codes
+ * @param logConfig - configure which status code should be logged with which level
+ * @param stringifyBody - default: true - call JSON.stringify on the body. Accepts an object to configure serializer settings
+ * @param additionalLogData - additional data to to be passed to the request logs
+ * @param autoRefreshToken - default: true - automatically refresh an expired chayns token and repeat the request
+ * @param waitCursor - default: false - show a chayns waitCursor, pass an object to configure text, delay, and multiple steps
+ * @param statusHandlers - modify the return value for specific status codes
+ * @param errorHandlers - modify the return value for specific chayns errors
+ * @param errorDialogs - list of chayns errors to display a dialog for
+ * @param replacements - object with url string replacements
+ * @param sideEffects - additional effects to be executed on certain status codes
+ * @param internalRequestGuid - internal guid to group logs for the same request together
  */
 export interface HttpRequestOptions {
     responseType?: typeof ResponseTypeEnum | string | null;
@@ -91,49 +102,21 @@ export function httpRequest(
 ): Promise<httpRequestResult> {
     const {
         responseType = null,
-        /**
-         * log level config of each status code
-         * Defaults: status<400 : info, status=401: warning, else: error
-         * @type {Object.<string|RegExp,LogLevel|string>}
-         */
-        // logConfig = {},
-        // bool|number[]: don't throw errors on error status codes, return null instead
         throwErrors,
-        // bool: call JSON.stringify() on the body passed to this function
         stringifyBody: defaultStringify = true,
-        // object: additional data to be logged
         additionalLogData = {},
-        // bool: automatically try to refresh the token once if it is expired
         autoRefreshToken = true,
-        /*
-         * Handle responses for specific status codes manually. Format:
-         * 1. { [statusCodeOrRegexString] : (response) => { my code }, ... }
-         * 2. { [statusCodeOrRegexString] : responseType, ... }
-         * - handler always receives entire response as parameter, not just the body
-         * - value returned from handler is returned as result of the request
-         * - handler can be async and will be awaited
-         * => Use this to get jsonBody on error status codes or .json() on 204
-         */
-        // statusHandlers = {},
         waitCursor = false,
         internalRequestGuid = generateUUID(),
         errorDialogs = [],
-        replacements = {}
+        // replacements = {}
     }: HttpRequestOptions = {
         responseType: ResponseType.Json,
-        // logConfig: {},
         throwErrors: false,
         stringifyBody: true,
         additionalLogData: {},
         autoRefreshToken: true,
-        // statusHandlers: {},
-        replacements: {
-            [/##locationId##/g.toString()]: `${chayns.env.site.locationId}`,
-            [/##siteId##/g.toString()]: `${chayns.env.site.id}`,
-            [/##tappId##/g.toString()]: `${chayns.env.site.tapp.id}`,
-            [/##userId##/g.toString()]: `${chayns.env.user.id}`,
-            [/##personId##/g.toString()]: `${chayns.env.user.personId}`
-        },
+        // replacements: {},
         errorDialogs: [],
         ...(defaultConfig.options || {}),
         ...(options || {})
@@ -171,6 +154,16 @@ export function httpRequest(
                                   && typeof options.stringifyBody === 'object'
                 ? { ...defaultConfig.options.stringifyBody, ...options.stringifyBody }
                 : defaultStringify
+
+            const replacements = {
+                [/##locationId##/g.toString()]: `${chayns.env.site.locationId}`,
+                [/##siteId##/g.toString()]: `${chayns.env.site.id}`,
+                [/##tappId##/g.toString()]: `${chayns.env.site.tapp.id}`,
+                [/##userId##/g.toString()]: `${chayns.env.user.id}`,
+                [/##personId##/g.toString()]: `${chayns.env.user.personId}`,
+                ...(defaultConfig?.options?.replacements || {}),
+                ...(options?.replacements || {})
+            }
 
             const optionEffects = options?.sideEffects;
             const defaultEffects = defaultConfig?.options?.sideEffects;
