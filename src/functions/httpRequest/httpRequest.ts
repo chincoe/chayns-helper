@@ -28,8 +28,12 @@ import showWaitCursor from '../waitCursor/waitCursor';
 import getJsonSettings, { JsonSettings } from '../getJsonSettings';
 
 /**
- * The fetch config. Contains all parameters viable for the window.fetch init object, extended by the following:
+ * The fetch config. Contains all parameters viable for the window.fetch init object including the following:
  * @param useChaynsAuth - default: chayns.env.user.isAuthenticated - Add use token as auth header
+ * @param method - default: 'GET' - HttpMethod
+ * @param headers - plain JS object with headers
+ * @param body - the request body
+ * @param signal - an AbortSignal
  */
 export interface HttpRequestConfig {
     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT' | string | typeof HttpMethodEnum;
