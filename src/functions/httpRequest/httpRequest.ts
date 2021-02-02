@@ -160,11 +160,11 @@ export function httpRequest(
                 : defaultStringify
 
             const replacements = {
-                [/##locationId##/g.toString()]: `${chayns.env.site.locationId}`,
-                [/##siteId##/g.toString()]: `${chayns.env.site.id}`,
-                [/##tappId##/g.toString()]: `${chayns.env.site.tapp.id}`,
-                [/##userId##/g.toString()]: `${chayns.env.user.id}`,
-                [/##personId##/g.toString()]: `${chayns.env.user.personId}`,
+                [/##locationId##/ig.toString()]: `${chayns.env.site.locationId}`,
+                [/##siteId##/ig.toString()]: `${chayns.env.site.id}`,
+                [/##tappId##/ig.toString()]: `${chayns.env.site.tapp.id}`,
+                [/##userId##/ig.toString()]: `${chayns.env.user.id}`,
+                [/##personId##/ig.toString()]: `${chayns.env.user.personId}`,
                 ...(defaultConfig?.options?.replacements || {}),
                 ...(options?.replacements || {})
             }
