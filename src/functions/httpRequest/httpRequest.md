@@ -23,7 +23,7 @@ async function init() {
 // postData.js
 export default async function postData(body) {
     const result = await request.fetch(
-        "/my/url/##locationId##/##tappId##/##siteId##", // route, has to start with a "/" to use the base url from index.js
+        "/my/url/##locationId##/##tappId##/##siteId##", // route, prefixed with base url if it doesn't start with "http[s]://" or another protocol
         {   // fetch config, almost identical to the 2nd param of the built-in fetch() function
             method: HttpMethod.Post, // default "GET"
             body: body,
