@@ -7,7 +7,7 @@ import getChaynsErrorCode from './getChaynsErrorCode';
 import { chaynsErrorCodeRegex } from './isChaynsError';
 import LogLevel, { LogLevelEnum } from './LogLevel';
 import RequestError from './RequestError';
-import ResponseType, { ResponseTypeEnum } from './ResponseType';
+import ResponseType, { ResponseTypeList, ResponseTypeValue } from './ResponseType';
 
 export const getMapKeys = (map: Map<string, any>) => {
     const result = [];
@@ -38,14 +38,14 @@ export async function getLogFunctionByStatus(
     }
 
     const levelKey = logKeys
-    .find((key) => (
-        (/^[\d]$/.test(key) && parseInt(key, 10) === status)
-        || stringToRegex(key)
-        .test(`${status}`)
-        || (chaynsErrorCode && key === chaynsErrorCode)
-        || (chaynsErrorCode && stringToRegex(key)
-        .test(chaynsErrorCode))
-    ));
+        .find((key) => (
+            (/^[\d]$/.test(key) && parseInt(key, 10) === status)
+            || stringToRegex(key)
+                .test(`${status}`)
+            || (chaynsErrorCode && key === chaynsErrorCode)
+            || (chaynsErrorCode && stringToRegex(key)
+                .test(chaynsErrorCode))
+        ));
     if (levelKey && logConfig.get(levelKey)) {
         switch (logConfig.get(levelKey)) {
             case LogLevel.info:
@@ -78,7 +78,7 @@ export function getStatusHandlerByStatusRegex(
         const regExp = stringToRegex(keys[i]);
         if (regExp.test(status?.toString())
             && (typeof (statusHandlers.get(keys[i])) === 'function'
-                || Object.values(ResponseType).includes(<string><unknown>statusHandlers.get(keys[i]))
+                || ResponseTypeList.includes(<string><unknown>statusHandlers.get(keys[i]))
             )
         ) {
             return statusHandlers.get(keys[i]);
@@ -88,12 +88,16 @@ export function getStatusHandlerByStatusRegex(
 }
 
 export const jsonResolve = async (
-    response: Response, processName: string, resolve: (value: any) => void,
+    response: Response,
+    addStatus: boolean,
+    processName: string,
+    resolve: (value: any) => void,
     internalRequestGuid: string | null = null
 ): Promise<void> => {
     const { status } = response;
     try {
-        resolve(await response.json());
+        const data = await response.json();
+        resolve(addStatus ? { status, data } : data);
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
@@ -109,12 +113,16 @@ export const jsonResolve = async (
 };
 
 export const blobResolve = async (
-    response: Response, processName: string, resolve: (value: any) => void,
+    response: Response,
+    addStatus: boolean,
+    processName: string,
+    resolve: (value: any) => void,
     internalRequestGuid: string | null = null
 ): Promise<void> => {
     const { status } = response;
     try {
-        resolve(await response.blob());
+        const data = await response.blob();
+        resolve(addStatus ? { status, data } : data);
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
@@ -129,15 +137,19 @@ export const blobResolve = async (
 };
 
 export const textResolve = async (
-    response: Response, processName: string, resolve: (value: any) => void,
+    response: Response,
+    addStatus: boolean,
+    processName: string,
+    resolve: (value: any) => void,
     internalRequestGuid: string | null = null
 ): Promise<void> => {
     const { status } = response;
     try {
-        resolve(await response.text());
+        const data = await response.text();
+        resolve(addStatus ? { status, data } : data);
     } catch (err) {
         logger.warning({
-            message: `[HttpRequest] Getting text body failed on Status ${status} on ${processName}`,
+            message: `[HttpRequest] Getting TEXT body failed on Status ${status} on ${processName}`,
             data: { internalRequestGuid }
         }, err);
         console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
@@ -175,7 +187,7 @@ export const objectResolve = async (
 };
 
 export async function resolveWithHandler(
-    handler: typeof ResponseTypeEnum | string | ((response: Response) => any),
+    handler: ResponseTypeValue | ((response: Response) => any),
     response: Response,
     status: number,
     processName: string,
@@ -189,34 +201,46 @@ export async function resolveWithHandler(
         resolve(await handler(<Response><unknown>chaynsErrorObject ?? response));
         return true;
     }
-    if (Object.values(ResponseType).includes(<string>handler)) {
+    if (ResponseTypeList.includes(<string>handler)) {
         switch (handler) {
             case ResponseType.Json:
-                // eslint-disable-next-line no-await-in-loop
-                await jsonResolve(response, processName, resolve, internalRequestGuid);
+            case ResponseType.Status.Json:
+                await jsonResolve(
+                    response,
+                    handler === ResponseType.Status.Json,
+                    processName,
+                    resolve,
+                    internalRequestGuid
+                );
                 return true;
             case ResponseType.Blob:
-                // eslint-disable-next-line no-await-in-loop
-                await blobResolve(response, processName, resolve, internalRequestGuid);
-                return true;
-            case ResponseType.Object:
-                // eslint-disable-next-line no-await-in-loop
-                await objectResolve(response, processName, resolve, internalRequestGuid);
+            case ResponseType.Status.Blob:
+                await blobResolve(
+                    response,
+                    handler === ResponseType.Status.Blob,
+                    processName,
+                    resolve,
+                    internalRequestGuid
+                );
                 return true;
             case ResponseType.Text:
-                // eslint-disable-next-line no-await-in-loop
-                await textResolve(response, processName, resolve, internalRequestGuid);
+            case ResponseType.Status.Text:
+                await textResolve(
+                    response,
+                    handler === ResponseType.Status.Text,
+                    processName,
+                    resolve,
+                    internalRequestGuid
+                );
                 return true;
             case ResponseType.None:
                 resolve();
                 return true;
-            case ResponseType.Error:
+            case ResponseType.ThrowError:
                 const error = chaynsErrorObject
                     ? new ChaynsError(chaynsErrorObject, processName, status)
                     : new RequestError(`Status ${status} on ${processName}`, status);
-                console.error(...colorLog.gray(`[HttpRequest<${processName}>]`),
-                    'ResponseType \'error\':', error
-                );
+                console.error(...colorLog.gray(`[HttpRequest<${processName}>]`), 'ResponseType \'error\':', error);
                 reject(error);
                 return true;
             case ResponseType.Response:
