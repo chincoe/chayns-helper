@@ -12,7 +12,8 @@ const ResponseType = {
     Status: {
         Json: 'status_json',
         Blob: 'status_blob',
-        Text: 'status_text'
+        Text: 'status_text',
+        None: 'status_none'
     }
 }
 
@@ -28,6 +29,7 @@ export type ResponseTypeValue =
     | 'status_json'
     | 'status_blob'
     | 'status_text'
+    | 'status_none'
 
 export const ResponseTypeList = [...Object.values(ResponseType).slice(0, -1), ...Object.values(ResponseType.Status)]
 

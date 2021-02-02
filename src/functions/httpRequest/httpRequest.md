@@ -269,6 +269,7 @@ request.fetch('/controller/endpoint/boardId', {}, 'myRequest');
 |Status.Json | `'status_json'` | `{ status: response.status, data: await response.json() }` |
 |Status.Blob | `'status_blob'` | `{ status: response.status, data: await response.blob() }` |
 |Status.Text | `'status_text'` | `{ status: response.status, data: await response.text() }` |
+|Status.None | `'status_none'` | `{ status: response.status, data: undefined }` |
 
 > ResponseType.Object is not deprecated and will be removed in a future release.
 

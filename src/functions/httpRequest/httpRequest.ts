@@ -366,16 +366,12 @@ export function httpRequest(
                     },
                     section: 'httpRequest.js'
                 }, err);
-                console.error(
-                    ...colorLog.gray(`[HttpRequest<${processName}>]`),
+                console.error(...colorLog.gray(`[HttpRequest<${processName}>]`),
                     `Request failed:`, err, '\nInput: ', input
                 );
                 err.statusCode = 1;
                 const status = 1;
-                const {
-                    statusHandler,
-                    errorHandler
-                } = getHandlers(status, err);
+                const { statusHandler, errorHandler } = getHandlers(status, err);
                 if (errorHandler) {
                     callSideEffects(status);
                     await resolveWithHandler(
@@ -401,13 +397,14 @@ export function httpRequest(
                     );
                     return;
                 } else {
-                    if (!throwErrors
-                        || (status && Array.isArray(throwErrors) && throwErrors.includes(status))
-                    ) {
+                    if (!throwErrors || (status && Array.isArray(throwErrors) && throwErrors.includes(status))) {
                         callSideEffects(status);
                         switch (responseType) {
                             case ResponseType.None:
                                 resolve();
+                                break;
+                            case ResponseType.Status.None:
+                                resolve({ status, data: undefined });
                                 break;
                             case ResponseType.Status.Blob:
                             case ResponseType.Status.Json:
@@ -444,9 +441,7 @@ export function httpRequest(
                 }
 // HANDLE FAILED TO FETCH END
             }
-
             const { status } = response;
-
 // LOGS
             const requestUid = response.headers && response.headers.get('X-Request-Id')
                 ? response.headers.get('X-Request-Id') : undefined;

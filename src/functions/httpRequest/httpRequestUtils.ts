@@ -236,6 +236,9 @@ export async function resolveWithHandler(
             case ResponseType.None:
                 resolve();
                 return true;
+            case ResponseType.Status.None:
+                resolve({ status, data: undefined })
+                return true;
             case ResponseType.ThrowError:
                 const error = chaynsErrorObject
                     ? new ChaynsError(chaynsErrorObject, processName, status)
