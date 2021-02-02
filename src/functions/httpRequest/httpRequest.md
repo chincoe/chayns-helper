@@ -214,6 +214,7 @@ There are some important exceptions where defaults and specific options are merg
 * options.logConfig
 * options.stringifyBody
 * options.sideEffects
+* options.replacements
 
 ##### Example
 
