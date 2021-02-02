@@ -271,7 +271,7 @@ request.fetch('/controller/endpoint/boardId', {}, 'myRequest');
 |Status.Text | `'status_text'` | `{ status: response.status, data: await response.text() }` |
 |Status.None | `'status_none'` | `{ status: response.status, data: undefined }` |
 
-> ResponseType.Object is not deprecated and will be removed in a future release.
+> ResponseType.Object is deprecated and will be removed in a future release.
 
 ### LogLevel | request.logLevel - enum
 
