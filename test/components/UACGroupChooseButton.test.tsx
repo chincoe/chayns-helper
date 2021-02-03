@@ -5,7 +5,7 @@ import UACGroupChooseButton from '../../src/components/buttons/UACGroupChooseBut
 describe('components/UACGroupChooseButton', () => {
     it('renders without crashing', () => {
         const div = document.createElement('div');
-        // ReactDOM.render(<UACGroupChooseButton value={1} onChange={console.log} />, div);
+        ReactDOM.render(<UACGroupChooseButton value={1} onChange={console.log} />, div);
         ReactDOM.unmountComponentAtNode(div);
     });
 });

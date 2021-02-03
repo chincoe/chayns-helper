@@ -17,5 +17,7 @@ module.exports = {
         iFrame: (options) => new Promise(res => {res({ buttonType: -1 })}),
         alert: (options) => new Promise(res => {res({ buttonType: -1 })})
     },
-    register(){}
+    register(){},
+    showWaitCursor(){},
+    hideWaitCursor(){},
 }

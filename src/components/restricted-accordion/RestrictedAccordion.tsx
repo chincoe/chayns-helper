@@ -8,7 +8,7 @@ import './restricted-accordion.scss';
  * An Accordion styled for exclusive access by e.g. managers
  */
 const RestrictedAccordion: FunctionComponent<{
-    className: string,
+    className?: string,
     children: ReactNode,
     onSearch?: (value: string) => any;
     onSearchEnter?: (value: string) => any;
