@@ -5,7 +5,7 @@ import ResizableWaitCursor from '../../../src/components/wait-cursor/ResizableWa
 describe('components/ResizableWaitCursor', () => {
     it('renders without crashing', () => {
         const div = document.createElement('div');
-        ReactDOM.render(<ResizableWaitCursor size={32}/>, div);
+        ReactDOM.render(<ResizableWaitCursor size={24}/>, div);
         ReactDOM.unmountComponentAtNode(div);
     });
 });
