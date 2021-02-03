@@ -4,12 +4,12 @@ export { default as CenteredContainer } from './components/containers/CenteredCo
 export { default as CenteredWaitCursor } from './components/wait-cursor/CenteredWaitCursor';
 export { default as DataRow } from './components/containers/DataRow';
 export { default as ErrorBoundary } from './components/error-boundary/ErrorBoundary';
-export { default as refresh } from './components/other/refresh';
-export { default as Refresh } from './components/other/RefreshComponent';
+export { default as refresh } from './components/rerender/refresh';
+export { default as Refresh } from './components/rerender/RefreshComponent';
 export { default as ResizableWaitCursor } from './components/wait-cursor/ResizableWaitCursor';
 export { default as SuspenseWaitCursor } from './components/wait-cursor/SuspenseWaitCursor';
 export { default as RestrictedAccordion } from './components/restricted-accordion/RestrictedAccordion';
-export { default as rerender } from './components/other/rerender';
+export { default as rerender } from './components/rerender/rerender';
 export { default as RechartsAxis } from './components/recharts-axis/RechartsAxis';
 // chaynsCall
 export { default as chaynsCall } from './functions/chaynsCalls/chaynsCalls';
@@ -45,7 +45,7 @@ export { default as Guid } from './functions/guid';
 export { default as stringToColor } from './functions/colors/stringToColor';
 export { default as hexToRgb } from './functions/colors/hexToRgb';
 export { default as toHslColor } from './functions/colors/toHslColor';
-export { default as getJsonSettings, DateTimeZoneHandling } from './functions/getJsonSettings';
+export { default as getJsonSettings, DateTimeZoneHandling } from './functions/getJsonSettings/getJsonSettings';
 export { isPagemakerIFrame, isCustomTappIFrame } from './functions/isPagemakerIFrame';
 // functions with deps
 export { default as useShallowSelector } from './hooks/useShallowSelector';
@@ -81,7 +81,7 @@ export { default as jsxReplace } from './textstring/jsxReplace';
 export { default as useTextStrings } from './textstring/useTextStrings';
 export { default as getTextStrings } from './textstring/getTextStrings';
 export { initTextStrings } from './textstring/textstringConfig';
-// other
+// rerender
 export { default as WebsocketClient } from './other/WsClient';
 export { default as statusAnimations } from './constants/statusAnimations';
 export { default as time } from './constants/time';

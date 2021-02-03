@@ -1,11 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import CenteredWaitCursor from '../../src/components/wait-cursor/CenteredWaitCursor';
+import SuspenseWaitCursor from '../../../src/components/wait-cursor/SuspenseWaitCursor';
 
-describe('components/CenteredWaitCursor', () => {
+describe('components/SuspenseWaitCursor', () => {
     it('renders without crashing', () => {
         const div = document.createElement('div');
-        ReactDOM.render(<CenteredWaitCursor/>, div);
+        ReactDOM.render(<SuspenseWaitCursor><p/></SuspenseWaitCursor>, div);
         ReactDOM.unmountComponentAtNode(div);
     });
 });

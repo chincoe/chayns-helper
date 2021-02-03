@@ -33,9 +33,9 @@ This package supports tree-shaking, so each module will only be included in your
 | [DataRow](/src/components/containers/DataRow.tsx)| Container for a row with a label and e.g. a button |
 | [ErrorBoundary](/src/components/error-boundary/ErrorBoundary.tsx)| Customizable ErrorBoundary to catch errors during render |
 | [RechartsAxis](/src/components/recharts-axis/RechartsAxis.tsx)| HOC to rerender a Component in an interval |
-| [refresh](/src/components/other/refresh.tsx)| HOC to rerender a Component in an interval |
-| [Refresh](/src/components/other/RefreshComponent.tsx)| Component to rerender its children in an interval |
-| [rerender](/src/components/other/rerender.tsx)| HOC that passes a rerenderSelf function to a component |
+| [refresh](/src/components/rerender/refresh.tsx)| HOC to rerender a Component in an interval |
+| [Refresh](/src/components/rerender/RefreshComponent.tsx)| Component to rerender its children in an interval |
+| [rerender](/src/components/rerender/rerender.tsx)| HOC that passes a rerenderSelf function to a component |
 | [ResizableWaitCursor](/src/components/wait-cursor/ResizableWaitCursor.tsx)| chayns SmallWaitCursor but resizable |
 | [RestrictedAccordion](/src/components/restricted-accordion/RestrictedAccordion.tsx)| Accordion with lock-icon for admins |
 | [SuspenseWaitCursor](/src/components/wait-cursor/SuspenseWaitCursor.tsx)| Suspense-Component that provides a fallback for React lazy loading |
@@ -77,7 +77,7 @@ This package supports tree-shaking, so each module will only be included in your
 | [generateUUID](/src/functions/generateUid.ts)| generate a GUID | |
 | [getChaynsErrorCode](/src/functions/httpRequest/getChaynsErrorCode.ts)| get the error code of a chayns error response. Can deal with Response, Promise and Object | |
 | [getHookState](/src/functions/getHookState.ts)| get the current state of a hook via the setState function | |
-| [getJsonSettings](/src/functions/getJsonSettings.ts)| pass as second param to JSON.stringify to modify the serialization | [getJsonSettings.md](https://github.com/chincoe/chayns-helper/blob/master/src/functions/getJsonSettings.md) |
+| [getJsonSettings](/src/functions/getJsonSettings/getJsonSettings.ts)| pass as second param to JSON.stringify to modify the serialization | [getJsonSettings.md](https://github.com/chincoe/chayns-helper/blob/master/src/functions/getJsonSettings/getJsonSettings.md) |
 | [Guid](/src/functions/guid.ts)| a Guid class | |
 | [hexToRgb](/src/functions/colors/hexToRgb.ts)| Convert a hex color to an rgb object which returns a rgba() css function when stringified | |
 | [hideCWFooter](/src/functions/chaynsCalls/hideCwFooter.ts)| hide the chayns web footer | |

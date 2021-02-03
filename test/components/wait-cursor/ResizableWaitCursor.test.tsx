@@ -1,11 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import DataRow from '../../src/components/containers/DataRow'
+import ResizableWaitCursor from '../../../src/components/wait-cursor/ResizableWaitCursor';
 
-describe('components/DataRow', () => {
+describe('components/ResizableWaitCursor', () => {
     it('renders without crashing', () => {
         const div = document.createElement('div');
-        ReactDOM.render(<DataRow />, div);
+        ReactDOM.render(<ResizableWaitCursor size={32}/>, div);
         ReactDOM.unmountComponentAtNode(div);
     });
 });

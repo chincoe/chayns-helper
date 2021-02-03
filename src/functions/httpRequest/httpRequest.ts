@@ -21,7 +21,7 @@ import LogLevel, { LogLevelEnum, ObjectResponse } from './LogLevel';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
 import { HttpStatusCodeEnum } from './HttpStatusCodes';
 import showWaitCursor from '../waitCursor/waitCursor';
-import getJsonSettings, { JsonSettings } from '../getJsonSettings';
+import getJsonSettings, { JsonSettings } from '../getJsonSettings/getJsonSettings';
 
 /**
  * The fetch config. Contains all parameters viable for the window.fetch init object including the following:
@@ -238,7 +238,7 @@ export function httpRequest(
                 ...headers
             };
 
-            // this way other config elements like "credentials", "mode", "cache" or "signal" can be passed to fetch()
+            // this way rerender config elements like "credentials", "mode", "cache" or "signal" can be passed to fetch()
             const remainingFetchConfig: RequestInit = <RequestInit>{ ...fetchConfig };
             // @ts-expect-error
             delete remainingFetchConfig.useChaynsAuth;

@@ -1,11 +1,12 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import CenteredContainer from '../../src/components/containers/CenteredContainer'
+import refresh from '../../../src/components/rerender/refresh';
 
-describe('components/CenteredContainer', () => {
+describe('components/refreshHOC', () => {
     it('renders without crashing', () => {
         const div = document.createElement('div');
-        ReactDOM.render(<CenteredContainer gap />, div);
+        const Component = refresh(() => (<div/>), 10000);
+        ReactDOM.render(<Component/>, div);
         ReactDOM.unmountComponentAtNode(div);
     });
 });

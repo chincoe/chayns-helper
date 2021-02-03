@@ -1,12 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import rerender from '../../src/components/other/rerender';
+import Refresh from '../../../src/components/rerender/RefreshComponent';
 
-describe('components/rerenderHOC', () => {
+describe('components/Refresh', () => {
     it('renders without crashing', () => {
         const div = document.createElement('div');
-        const Component = rerender(() => (<div/>));
-        ReactDOM.render(<Component/>, div);
+        ReactDOM.render(<Refresh interval={10000}><p/></Refresh>, div);
         ReactDOM.unmountComponentAtNode(div);
     });
 });

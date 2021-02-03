@@ -1,11 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import Refresh from '../../src/components/other/RefreshComponent';
+import DataRow from '../../../src/components/containers/DataRow'
 
-describe('components/Refresh', () => {
+describe('components/DataRow', () => {
     it('renders without crashing', () => {
         const div = document.createElement('div');
-        ReactDOM.render(<Refresh interval={10000}><p/></Refresh>, div);
+        ReactDOM.render(<DataRow />, div);
         ReactDOM.unmountComponentAtNode(div);
     });
 });
