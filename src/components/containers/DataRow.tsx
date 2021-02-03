@@ -1,11 +1,11 @@
-import React, { FunctionComponent, JSXElementConstructor, ReactChildren } from 'react';
+import React, { FunctionComponent, JSXElementConstructor, ReactNode } from 'react';
 import clsx from 'clsx';
 import './data-row.scss';
 
 export interface DataRow {
     className?: string,
     style?: object,
-    children?: ReactChildren,
+    children?: ReactNode,
     elementType?: string | JSXElementConstructor<any>
 }
 
