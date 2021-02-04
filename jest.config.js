@@ -6,7 +6,10 @@ const config = {
     },
     globals: {
         chayns: chaynsMock,
-    }
+    },
+    transformIgnorePatterns: [
+        "node_modules/(?!(date-fns)/)"
+    ]
 }
 
 module.exports = config;
