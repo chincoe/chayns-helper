@@ -78,6 +78,7 @@ This package supports tree-shaking, so each module will only be included in your
 | [getChaynsErrorCode](/src/functions/httpRequest/getChaynsErrorCode.ts)| get the error code of a chayns error response. Can deal with Response, Promise and Object | |
 | [getHookState](/src/functions/getHookState.ts)| get the current state of a hook via the setState function | |
 | [getJsonSettings](/src/functions/getJsonSettings/getJsonSettings.ts)| pass as second param to JSON.stringify to modify the serialization | [getJsonSettings.md](https://github.com/chincoe/chayns-helper/blob/master/src/functions/getJsonSettings/getJsonSettings.md) |
+| [getJwtPayload](/src/functions/getJwtPayload.ts)| safely get JWT token payload | |
 | [Guid](/src/functions/guid.ts)| a Guid class | |
 | [hexToRgb](/src/functions/colors/hexToRgb.ts)| Convert a hex color to an rgb object which returns a rgba() css function when stringified | |
 | [hideCWFooter](/src/functions/chaynsCalls/hideCwFooter.ts)| hide the chayns web footer | |

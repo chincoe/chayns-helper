@@ -84,6 +84,7 @@
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.0.4",
     "identity-obj-proxy": "^3.0.0",
+    "jest-fetch-mock": "^3.0.3",
     "jsdoc": "^3.6.6",
     "node-sass": "^4.11.0",
     "react": "^17.0.1",

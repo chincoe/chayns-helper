@@ -32,7 +32,7 @@ export default async function isChaynsError(value: any): Promise<boolean> {
             } catch(e) { /* ignored */ }
             return isChaynsErrorObject(obj);
         }
-        if (chayns.utils.isPromise(value)) {
+        if (value && typeof (<Promise<any>>value)?.then === 'function') {
             const result = await Promise.resolve(value);
             return isChaynsError(result);
         }

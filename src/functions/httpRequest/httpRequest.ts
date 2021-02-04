@@ -22,6 +22,7 @@ import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
 import { HttpStatusCodeEnum } from './HttpStatusCodes';
 import showWaitCursor from '../waitCursor/waitCursor';
 import getJsonSettings, { JsonSettings } from '../getJsonSettings/getJsonSettings';
+import getJwtPayload from '../getJwtPayload';
 
 /**
  * The fetch config. Contains all parameters viable for the window.fetch init object including the following:
@@ -468,7 +469,7 @@ export function httpRequest(
                         headers: {
                             ...requestHeaders,
                             Authorization: requestHeaders?.Authorization
-                                           && chayns.utils.isJwt(requestHeaders?.Authorization)
+                                           && !!getJwtPayload(requestHeaders?.Authorization)
                                 ? `Payload: ${requestHeaders.Authorization.split('.')[1]}`
                                 : undefined
                         },

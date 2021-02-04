@@ -28,7 +28,7 @@ export default async function getChaynsErrorCode(value: any): Promise<string | n
             } catch (e) { /* ignored */ }
             return getChaynsErrorCodeFromObject(<ChaynsErrorObject>obj);
         }
-        if (chayns.utils.isPromise(value)) {
+        if (value && typeof (<Promise<any>>value)?.then === 'function') {
             const result = await Promise.resolve(value);
             return getChaynsErrorCode(result);
         }

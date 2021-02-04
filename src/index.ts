@@ -45,6 +45,7 @@ export { default as Guid } from './functions/guid';
 export { default as stringToColor } from './functions/colors/stringToColor';
 export { default as hexToRgb } from './functions/colors/hexToRgb';
 export { default as toHslColor } from './functions/colors/toHslColor';
+export { default as getJwtPayload } from './functions/getJwtPayload';
 export { default as getJsonSettings, DateTimeZoneHandling } from './functions/getJsonSettings/getJsonSettings';
 export { isPagemakerIFrame, isCustomTappIFrame } from './functions/isPagemakerIFrame';
 // functions with deps

@@ -7,7 +7,7 @@ describe('functions/getJsonSettings', () => {
         c: null,
         d: undefined,
         e: new Date(0),
-        f: console.log
+        f: () => {}
     }
     it('runs without crashing', () => {
         JSON.stringify(foo, getJsonSettings({}));
@@ -29,6 +29,6 @@ describe('functions/getJsonSettings', () => {
             ignoreNullValues: true,
             includeNotSerializable: true,
             includeUndefined: true
-        }))).toMatch(`{"a":1,"d":null,"e":"1970-01-01T01:00:00.000+01:00","f":"function () { [native code] }"}`)
+        }))).toMatch(`{"a":1,"d":null,"e":"1970-01-01T01:00:00.000+01:00","f":"function () { }"}`)
     })
 })

@@ -3,7 +3,7 @@ import { createDialogResult, DialogButton } from '../utils';
 
 export const validateDate = (param: any | any[], allowMissingValue = true) => {
     if (allowMissingValue && (param === null || param === undefined)) return param;
-    if (chayns.utils.isDate(param)) {
+    if (Object.prototype.toString.call(param) === '[object Date]') {
         return param;
     }
     if (typeof (param) === 'string') {
@@ -18,7 +18,7 @@ export const validateDate = (param: any | any[], allowMissingValue = true) => {
     if (typeof (param) === 'function') {
         try {
             const date = param();
-            if (chayns.utils.isDate(date)) return date;
+            if (Object.prototype.toString.call(date) === '[object Date]') return date;
             // eslint-disable-next-line no-console
             console.error('[ChaynsDialog] date parameter of type function did not return a date');
             return undefined;
