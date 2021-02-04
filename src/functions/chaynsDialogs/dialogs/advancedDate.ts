@@ -206,7 +206,7 @@ export default function advancedDate(
             minuteInterval,
             preSelect: Array.isArray(preSelect)
                 ? validateDateArray(preSelect)
-                : chayns.utils.isObject(preSelect)
+                : Object.prototype.toString.call(preSelect) === "[object Object]"
                   && (<DateIntervalObject>preSelect)?.start
                   && (<DateIntervalObject>preSelect)?.end
                     ? {

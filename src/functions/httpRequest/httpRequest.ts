@@ -251,7 +251,7 @@ export function httpRequest(
             } else {
                 requestAddress = address;
             }
-            if (replacements && chayns.utils.isObject(replacements)) {
+            if (replacements && Object.prototype.toString.call(replacements) === "[object Object]") {
                 const replacementKeys: Array<string> = Object.keys(replacements);
                 for (let i = 0; i < replacementKeys.length; i++) {
                     if (regexRegex.test(replacementKeys[i])) {
