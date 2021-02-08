@@ -118,7 +118,7 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
         <TextString
             stringName={`${TEXTSTRING_CONFIG.prefix}${stringName}`}
             fallback={fallback}
-            useDangerouslySetInnerHTML={false}
+            useDangerouslySetInnerHTML={useDangerouslySetInnerHTML}
             language={language}
         >
             {
