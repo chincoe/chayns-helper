@@ -170,13 +170,13 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
     // calculate the actual content with replacements. To display a mix of strings and react elements this function
     // creates an array of strings and react elements that is split further and further the more jsx replacements occur
     const content: Array<ReactElement | string> = useMemo(() => {
-        return Object.keys(replacements).length > 0 ? jsxReplace({
+        return jsxReplace({
             text,
-            replacements,
+            replacements: replacements || {},
             maxReplacements,
             useDangerouslySetInnerHTML: dangerouslySetInnerHTML,
             guid,
-        }) : text;
+        });
     }, [text, replacements]);
 
     return textStringChildren && React.isValidElement(textStringChildren)
