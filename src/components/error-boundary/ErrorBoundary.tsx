@@ -1,4 +1,4 @@
-import React, { ErrorInfo, JSXElementConstructor, ReactChildren } from 'react';
+import React, { ErrorInfo, JSXElementConstructor, ReactNode } from 'react';
 import './error-boundary.scss';
 // @ts-expect-error
 import { Button } from 'chayns-components';
@@ -14,7 +14,7 @@ import CenteredContainer from '../containers/CenteredContainer';
  * reload button.
  */
 class ErrorBoundary extends React.Component<{
-    children: ReactChildren,
+    children: ReactNode,
     fallback?: JSXElementConstructor<any>
 }, { error?: Error | null, hasError: boolean }> {
     constructor(props: any) {
