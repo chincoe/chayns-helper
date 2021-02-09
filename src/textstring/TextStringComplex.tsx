@@ -124,7 +124,7 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
             {
                 /* @ts-expect-error */
                 <TextStringReplacer
-                    useDangerouslySetInnerHTML={useDangerouslySetInnerHTML}
+                    dangerouslySetInnerHTML={useDangerouslySetInnerHTML}
                     maxReplacements={maxReplacements}
                     replacements={replacements}
                     textStringChildren={children}
@@ -141,7 +141,7 @@ interface TextStringReplacerConfig {
     children: string | ReactNode,
     textStringChildren?: ReactNode | null,
     replacements: JsxReplacements,
-    useDangerouslySetInnerHTML?: boolean,
+    dangerouslySetInnerHTML?: boolean,
     maxReplacements?: number,
     stringName: string,
     fallback: string
@@ -151,7 +151,7 @@ interface TextStringReplacerConfig {
 const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
     children,
     textStringChildren,
-    useDangerouslySetInnerHTML,
+    dangerouslySetInnerHTML,
     replacements,
     maxReplacements,
     stringName,
@@ -170,13 +170,13 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
     // calculate the actual content with replacements. To display a mix of strings and react elements this function
     // creates an array of strings and react elements that is split further and further the more jsx replacements occur
     const content: Array<ReactElement | string> = useMemo(() => {
-        return Object.keys(replacements).length > 0 ? jsxReplace({
+        return jsxReplace({
             text,
-            replacements,
+            replacements: replacements || {},
             maxReplacements,
-            useDangerouslySetInnerHTML,
+            useDangerouslySetInnerHTML: dangerouslySetInnerHTML,
             guid,
-        }) : text;
+        });
     }, [text, replacements]);
 
     return textStringChildren && React.isValidElement(textStringChildren)
