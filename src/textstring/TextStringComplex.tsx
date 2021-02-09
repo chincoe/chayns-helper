@@ -118,13 +118,13 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
         <TextString
             stringName={`${TEXTSTRING_CONFIG.prefix}${stringName}`}
             fallback={fallback}
-            useDangerouslySetInnerHTML={useDangerouslySetInnerHTML}
+            useDangerouslySetInnerHTML={false}
             language={language}
         >
             {
                 /* @ts-expect-error */
                 <TextStringReplacer
-                    useDangerouslySetInnerHTML={useDangerouslySetInnerHTML}
+                    dangerouslySetInnerHTML={useDangerouslySetInnerHTML}
                     maxReplacements={maxReplacements}
                     replacements={replacements}
                     textStringChildren={children}
@@ -141,7 +141,7 @@ interface TextStringReplacerConfig {
     children: string | ReactNode,
     textStringChildren?: ReactNode | null,
     replacements: JsxReplacements,
-    useDangerouslySetInnerHTML?: boolean,
+    dangerouslySetInnerHTML?: boolean,
     maxReplacements?: number,
     stringName: string,
     fallback: string
@@ -151,7 +151,7 @@ interface TextStringReplacerConfig {
 const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
     children,
     textStringChildren,
-    useDangerouslySetInnerHTML,
+    dangerouslySetInnerHTML,
     replacements,
     maxReplacements,
     stringName,
@@ -174,7 +174,7 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
             text,
             replacements,
             maxReplacements,
-            useDangerouslySetInnerHTML,
+            useDangerouslySetInnerHTML: dangerouslySetInnerHTML,
             guid,
         }) : text;
     }, [text, replacements]);
