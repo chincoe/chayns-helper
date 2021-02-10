@@ -1,5 +1,7 @@
 const isArray = (arr: any): boolean => (Array.isArray(arr));
 const isObject = (obj: any) => (Object.prototype.toString.call(obj) === '[object Object]');
+const isPlainObject = (obj: any) => (Object.prototype.toString.call(obj) === '[object Object]' &&
+                                     Object.prototype.isPrototypeOf(obj));
 const isBasedOnObject = (obj: any) => (obj !== null && typeof (obj) === 'object');
 const isFunction = (func: any): boolean => (typeof (func) === 'function');
 const isBoolean = (func: any): boolean => (typeof (func) === 'boolean');
@@ -10,7 +12,8 @@ const isNumber = (num: any): boolean => (typeof (num) === 'number' && !isNaN(num
 // eslint-disable-next-line no-restricted-globals
 const isFiniteNumber = (num: any): boolean => (typeof (num) === 'number' && num !== Infinity && !(isNaN(num)));
 // eslint-disable-next-line no-restricted-globals
-const isInteger = (int: any): boolean => (typeof (int) === 'number' && int !== Infinity && !(isNaN(int)) && int % 1 === 0);
+const isInteger = (int: any): boolean => (typeof (int) === 'number' && int !== Infinity && !(isNaN(int)) && int % 1 ===
+                                          0);
 // eslint-disable-next-line no-prototype-builtins
 const isPromise = (prom: any): boolean => Promise.prototype.isPrototypeOf(prom);
 
@@ -136,7 +139,7 @@ const mapObject = <T, TResult>(
 ): { [key: string]: TResult } => {
     if (!isObject(obj) || !isFunction(callback)) return {};
     const keys = Object.keys(obj);
-    const newObj: { [key: string]: TResult | T } = {...obj};
+    const newObj: { [key: string]: TResult | T } = { ...obj };
     for (let i = 0; i < length(keys); i += 1) {
         newObj[keys[i]] = callback(keys[i], obj[keys[i]], i, obj);
     }
@@ -183,7 +186,12 @@ const reduceObject = (
  * @param replacement
  * @param maxReplacements - maximum replacements, default: 200
  */
-const replaceAll = (string: string, search: string|RegExp, replacement: string|((substring: string, ...args:any[]) => string), maxReplacements = 200) => {
+const replaceAll = (
+    string: string,
+    search: string | RegExp,
+    replacement: string | ((substring: string, ...args: any[]) => string),
+    maxReplacements = 200
+) => {
     let i = 0;
     let newString = string;
     while (i < maxReplacements) {
@@ -211,6 +219,7 @@ const regex = {
 const types = {
     isArray,
     isObject,
+    isPlainObject,
     isBasedOnObject,
     isFunction,
     isString,

@@ -9,7 +9,7 @@ export const chaynsErrorCodeRegex = /^[a-zA-Z0-9_]+\/[a-zA-Z0-9/_]+$/;
  */
 export function isChaynsErrorObject(obj: {[key: string]: any}): boolean {
     return !!obj
-        && chayns.utils.isObject(obj)
+        && Object.prototype.toString.call(obj) === "[object Object]"
         && Object.hasOwnProperty.call(obj, 'displayMessage')
         && Object.hasOwnProperty.call(obj, 'errorCode')
         && Object.hasOwnProperty.call(obj, 'requestId')
@@ -32,7 +32,7 @@ export default async function isChaynsError(value: any): Promise<boolean> {
             } catch(e) { /* ignored */ }
             return isChaynsErrorObject(obj);
         }
-        if (chayns.utils.isPromise(value)) {
+        if (value && typeof (<Promise<any>>value)?.then === 'function') {
             const result = await Promise.resolve(value);
             return isChaynsError(result);
         }

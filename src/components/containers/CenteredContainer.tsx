@@ -17,7 +17,7 @@ export interface CenteredContainer {
  * @param className
  * @param style
  * @param children
- * @param gap - leave a gap between the children. Useful to display multiple buttons next to each other
+ * @param gap - leave a gap between the children. Useful to display multiple buttons next to each rerender
  * @param elementType - react element type of the container, default: 'div'
  * @param props
  * @constructor

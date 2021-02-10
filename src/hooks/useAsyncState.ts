@@ -10,12 +10,12 @@ export default function useAsyncState<T>(
     initialState?: T|Promise<T>
 ): [T|Promise<T>|undefined, React.Dispatch<React.SetStateAction<T|Promise<T>>>] {
     const [state, setState] = useState(initialState);
-    if (chayns.utils.isPromise(initialState)) {
+    if (initialState && typeof (<Promise<T>>initialState)?.then === 'function') {
         Promise.resolve(initialState).then(setState);
     }
 
     const setter = useCallback((newValue) => new Promise((r) => {
-        if (chayns.utils.isPromise(newValue)) {
+        if (newValue && typeof (<Promise<T>>newValue)?.then === 'function') {
             Promise.resolve(newValue).then(setState);
         } else if (typeof (newValue) === 'function') {
             const prevStatePromise = new Promise((resolve) => {
@@ -26,7 +26,7 @@ export default function useAsyncState<T>(
             });
             prevStatePromise.then((prevState) => {
                 const nextValue = newValue(prevState);
-                if (chayns.utils.isPromise(nextValue)) {
+                if (nextValue && typeof (<Promise<T>>nextValue)?.then === 'function') {
                     Promise.resolve(nextValue).then((res) => {
                         setState(res);
                         r(undefined);

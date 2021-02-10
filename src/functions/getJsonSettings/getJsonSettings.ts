@@ -1,4 +1,4 @@
-import time from '../constants/time';
+import time from '../../constants/time';
 
 export enum DateTimeZoneHandlingEnum {
     Default = 'default',
@@ -61,13 +61,16 @@ export default function getJsonSettings(options: JsonSettings): (key: string, va
             if (!(typeof (value) === 'number')
                 && !(typeof (value) === 'string')
                 && !(typeof (value) === 'boolean')
-                && !chayns.utils.isObject(value)
+                && "[object Object]" !== Object.prototype.toString.call(value)
                 && "[object Date]" !== Object.prototype.toString.call(value)
                 && value !== null
                 && value !== undefined
             ) {
                 return `${value}`;
             }
+        }
+        if (value && typeof value === 'object' && value.toJSON && typeof value.toJSON === 'function') {
+            return value.toJSON();
         }
         return value;
     };
