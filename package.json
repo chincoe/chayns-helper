@@ -103,7 +103,8 @@
     "@types/react": "^17.0.0",
     "abortcontroller-polyfill": "^1.7.1",
     "clsx": "^1.1.1",
-    "date-fns": "^2.16.1"
+    "date-fns": "^2.16.1",
+    "html-react-parser": "^1.2.4"
   },
   "repository": {
     "type": "git",
