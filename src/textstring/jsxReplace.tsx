@@ -22,7 +22,7 @@ const jsxPlaceholderRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-4][0-9a-fA-F]{3}-
  * that can be rendered. Consult TextString.md for usage.
  * @param text - the original text
  * @param replacements - the replacements
- * @param maxReplacements - maximum amount of iterations per replacement, default: 20
+ * @param maxReplacements - maximum amount of iterations per replacement, default: 255
  * @param guid - guid used to generate react list keys, default: new GUID
  * @param useDangerouslySetInnerHTML - interpret left over strings as HTML by wrapping them in spans with
  *     dangerouslyInnerHtml
@@ -31,7 +31,7 @@ export default function jsxReplace(
     {
         text,
         replacements,
-        maxReplacements = 20,
+        maxReplacements = 255,
         guid = generateUUID(),
         useDangerouslySetInnerHTML = false
     }: JsxReplaceConfig
@@ -47,16 +47,12 @@ export default function jsxReplace(
         // for every match of the current replacement
         for (let j = 0;
              j < maxReplacements && result.find((m) =>
-                 (typeof (m) === 'string' && (isRegexKey
-                     ? regex.test(m)
-                     : m.includes(vars[i]))));
+                 (typeof (m) === 'string' && (isRegexKey ? regex.test(m) : m.includes(vars[i]))));
              j++
         ) {
             // get the current index in the array to work with
             const arrayIdx = result.findIndex((m) =>
-                (typeof (m) === 'string' && (isRegexKey
-                    ? regex.test(m)
-                    : m.includes(vars[i]))));
+                (typeof (m) === 'string' && (isRegexKey ? regex.test(m) : m.includes(vars[i]))));
             // calculate data like the regex match if it's a regex or whether the replacement is a string or jsx
             let matchValue;
             let matchIndex;
@@ -111,13 +107,10 @@ export default function jsxReplace(
     if (useDangerouslySetInnerHTML) {
         const htmlString = result.join('');
         return parse(htmlString, {
-            // @ts-expect-error
-            replace: (domNode) => {
+            replace: (domNode): ReactElement | void => {
                 if (domNode.type === 'tag' && (domNode as { name: string }).name === 'span') {
-                    const attribute = (domNode as { attributes: { name: string, value: string }[] })
-                        .attributes.find((a) => a.name === 'id'
-                                                && jsxPlaceholderRegex.test(a.value)
-                        );
+                    const attribute = (domNode as { attributes: { name: string, value: string }[] }).attributes
+                        .find((a) => a.name === 'id' && jsxPlaceholderRegex.test(a.value));
                     if (attribute) {
                         const index = (attribute.value.match(jsxPlaceholderRegex) as RegExpMatchArray)[1];
                         return jsxReplacements[+index];
