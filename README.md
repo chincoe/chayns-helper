@@ -3,6 +3,7 @@
 ![Issues](https://img.shields.io/github/issues/chincoe/chayns-helper)
 ![Known Vulnerabilities](https://snyk.io/test/github/dwyl/hapi-auth-jwt2/badge.svg?targetFile=package.json)
 ![Size](https://img.shields.io/bundlephobia/minzip/chayns-helper)
+![Node Version](https://img.shields.io/node/v/chayns-helper)
 ![React Version](https://img.shields.io/npm/dependency-version/chayns-helper/peer/react)
 ![Chayns-Components Version](https://img.shields.io/npm/dependency-version/chayns-helper/peer/chayns-components)
 
