@@ -19,7 +19,6 @@
   },
   "scripts": {
     "build": "tsdx build",
-    "install:all": "npm i -reg http://repo.tobit.ag:8081/repository/npm/",
     "pub:beta": "npm version prerelease --preid=beta --no-git-tag-version && npm publish && node scripts.js -d \"%name%@%version% is unstable, please install a stable version\"",
     "pub:patch": "npm version patch --no-git-tag-version && npm publish",
     "pub:patch:deprecate": "node scripts.js -d \"%name%@%version% contains errors, please update to @latest\" && npm version patch --no-git-tag-version && npm publish",
@@ -30,7 +29,7 @@
     "test": "tsdx test --passWithNoTests",
     "--------": "",
     "prepublishOnly": "npm run build",
-    "preversion": "npm run install:all",
+    "preversion": "npm install",
     "postpublish": "node scripts.js -commit"
   },
   "publishConfig": {
