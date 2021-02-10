@@ -4,7 +4,7 @@
     <img src="https://img.shields.io/npm/dm/chayns-helper.svg?style=for-the-badge" alt="" />
     <img src="https://img.shields.io/npm/v/chayns-helper?style=for-the-badge" alt="" />
     <img src="https://img.shields.io/github/license/chincoe/chayns-helper?style=for-the-badge" alt="" />
-    <!--<img src="https://img.shields.io/github/contributors/chincoe/chayns-helper?style=for-the-badge" alt="" /> -->
+    <img src="https://img.shields.io/github/contributors/chincoe/chayns-helper?style=for-the-badge" alt="" />
 </div>
 </div>
 This package contains a variety of useful helpers for <a href="https://github.com/TobitSoftware">chayns</a> development.
