@@ -29,7 +29,7 @@
     "test": "tsdx test --passWithNoTests",
     "--------": "",
     "prepublishOnly": "npm run build",
-    "preversion": "npm install",
+    "preversion": "npm run test && npm install",
     "postpublish": "node scripts.js -commit"
   },
   "publishConfig": {
