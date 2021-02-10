@@ -1,10 +1,20 @@
+![Types](https://img.shields.io/npm/types/chayns-helper)
+![Last Commit](https://img.shields.io/github/last-commit/chincoe/chayns-helper)
+![Issues](https://img.shields.io/github/issues/chincoe/chayns-helper)
+![Known Vulnerabilities](https://snyk.io/test/github/dwyl/hapi-auth-jwt2/badge.svg?targetFile=package.json)
+![Size](https://img.shields.io/bundlephobia/minzip/chayns-helper)
+![Node Version](https://img.shields.io/node/v/chayns-helper)
+![React Version](https://img.shields.io/npm/dependency-version/chayns-helper/peer/react)
+![Chayns-Components Version](https://img.shields.io/npm/dependency-version/chayns-helper/peer/chayns-components)
+
+
 <div align="center">
 <h1>chayns-helper</h1>
 <div style="border-bottom: 2px solid gray; padding-bottom: 8px; margin-bottom: 10px">
-    <img src="https://img.shields.io/npm/dm/chayns-helper.svg?style=for-the-badge" alt="" />
     <img src="https://img.shields.io/npm/v/chayns-helper?style=for-the-badge" alt="" />
+    <img src="https://img.shields.io/npm/dm/chayns-helper.svg?style=for-the-badge" alt="" />
     <img src="https://img.shields.io/github/license/chincoe/chayns-helper?style=for-the-badge" alt="" />
-    <!--<img src="https://img.shields.io/github/contributors/chincoe/chayns-helper?style=for-the-badge" alt="" /> -->
+    <img src="https://img.shields.io/github/contributors/chincoe/chayns-helper?style=for-the-badge" alt="" />
 </div>
 </div>
 This package contains a variety of useful helpers for <a href="https://github.com/TobitSoftware">chayns</a> development.

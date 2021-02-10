@@ -1,6 +1,6 @@
 {
   "name": "chayns-helper",
-  "version": "2.11.0",
+  "version": "2.11.1",
   "author": {
     "name": "Christian Nagel",
     "email": "christian.nagel@tobit.com"
@@ -19,6 +19,7 @@
   },
   "scripts": {
     "build": "tsdx build",
+    "install:all": "npm install -reg http://repo.tobit.ag:8081/repository/npm/",
     "pub:beta": "npm version prerelease --preid=beta --no-git-tag-version && npm publish && node scripts.js -d \"%name%@%version% is unstable, please install a stable version\"",
     "pub:patch": "npm version patch --no-git-tag-version && npm publish",
     "pub:patch:deprecate": "node scripts.js -d \"%name%@%version% contains errors, please update to @latest\" && npm version patch --no-git-tag-version && npm publish",
@@ -28,8 +29,8 @@
     "----------": "",
     "test": "tsdx test --passWithNoTests",
     "--------": "",
-    "prepublishOnly": "npm run build && npm install",
-    "preversion": "npm run test",
+    "prepublishOnly": "npm run build",
+    "preversion": "npm run test && npm run install:all",
     "postpublish": "node scripts.js -commit"
   },
   "publishConfig": {
