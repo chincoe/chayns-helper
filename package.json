@@ -28,7 +28,7 @@
     "----------": "",
     "test": "tsdx test --passWithNoTests",
     "--------": "",
-    "prepublishOnly": "npm run build && npm install",
+    "prepublishOnly": "npm run build && npm install -reg \"http://repo.tobit.ag:8081/repository/npm/\"",
     "preversion": "npm run test",
     "postpublish": "node scripts.js -commit"
   },
