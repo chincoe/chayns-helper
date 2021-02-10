@@ -1,6 +1,6 @@
 {
   "name": "chayns-helper",
-  "version": "2.11.0",
+  "version": "2.11.1",
   "author": {
     "name": "Christian Nagel",
     "email": "christian.nagel@tobit.com"
@@ -29,8 +29,8 @@
     "----------": "",
     "test": "tsdx test --passWithNoTests",
     "--------": "",
-    "prepublishOnly": "npm run build && npm run install:all",
-    "preversion": "npm run test",
+    "prepublishOnly": "npm run build",
+    "preversion": "npm run test && npm run install:all",
     "postpublish": "node scripts.js -commit"
   },
   "publishConfig": {
