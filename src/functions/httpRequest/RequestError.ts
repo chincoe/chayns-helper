@@ -1,5 +1,5 @@
 /**
- * Custom error for error statusCodes or other errors during a httpRequest
+ * Custom error for error statusCodes or rerender errors during a httpRequest
  * @public
  * @class
  */

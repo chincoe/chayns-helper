@@ -1,0 +1,10 @@
+require('jest-fetch-mock').enableMocks();
+const logger = require('chayns-logger');
+logger.warning = () => {};
+logger.info = () => {};
+logger.critical = () => {};
+logger.error = () => {};
+global.chayns = require('./chaynsMock');
+global.console.log = jest.fn();
+global.console.error = jest.fn();
+global.console.warn = jest.fn();

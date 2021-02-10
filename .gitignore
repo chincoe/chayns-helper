@@ -3,6 +3,7 @@
 node_modules
 .cache
 dist
+.npmrc
 
 .idea/
 node_modules/

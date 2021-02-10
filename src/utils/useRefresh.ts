@@ -13,13 +13,13 @@ const useRefresh = (interval: number): [number, () => void] => {
     }, []);
 
     useEffect(() => {
-        let val: NodeJS.Timeout;
+        let val: NodeJS.Timeout|number;
         if (interval) {
             val = setInterval(() => {
                 manualRefresh();
             }, interval);
         }
-        return () => { clearInterval(val || 0); };
+        return () => { clearInterval(<NodeJS.Timeout>val || 0); };
     }, []);
 
     return [refresh, manualRefresh];

@@ -49,7 +49,7 @@ export interface WebsocketServiceConfig {
      */
     forceDisconnectOnUnmount?: boolean,
     /**
-     * don't use any existing client from other hooks. required for wallet items to work properly
+     * don't use any existing client from rerender hooks. required for wallet items to work properly
      * default: false
      */
     forceOwnConnection?: boolean

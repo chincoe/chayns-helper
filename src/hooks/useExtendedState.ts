@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 
 /**
- * useState hook that includes an async getter to get the current state in e.g. eventListeners or other functions that
+ * useState hook that includes an async getter to get the current state in e.g. eventListeners or rerender functions that
  * have to keep their reference as well as a way to retain a prevState from a previous render
  * @param initialState
  * @param deps

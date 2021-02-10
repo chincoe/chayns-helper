@@ -21,7 +21,8 @@ import LogLevel, { LogLevelEnum, ObjectResponse } from './LogLevel';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
 import { HttpStatusCodeEnum } from './HttpStatusCodes';
 import showWaitCursor from '../waitCursor/waitCursor';
-import getJsonSettings, { JsonSettings } from '../getJsonSettings';
+import getJsonSettings, { JsonSettings } from '../getJsonSettings/getJsonSettings';
+import getJwtPayload from '../getJwtPayload';
 
 /**
  * The fetch config. Contains all parameters viable for the window.fetch init object including the following:
@@ -238,7 +239,7 @@ export function httpRequest(
                 ...headers
             };
 
-            // this way other config elements like "credentials", "mode", "cache" or "signal" can be passed to fetch()
+            // this way rerender config elements like "credentials", "mode", "cache" or "signal" can be passed to fetch()
             const remainingFetchConfig: RequestInit = <RequestInit>{ ...fetchConfig };
             // @ts-expect-error
             delete remainingFetchConfig.useChaynsAuth;
@@ -251,7 +252,7 @@ export function httpRequest(
             } else {
                 requestAddress = address;
             }
-            if (replacements && chayns.utils.isObject(replacements)) {
+            if (replacements && Object.prototype.toString.call(replacements) === "[object Object]") {
                 const replacementKeys: Array<string> = Object.keys(replacements);
                 for (let i = 0; i < replacementKeys.length; i++) {
                     if (regexRegex.test(replacementKeys[i])) {
@@ -468,7 +469,7 @@ export function httpRequest(
                         headers: {
                             ...requestHeaders,
                             Authorization: requestHeaders?.Authorization
-                                           && chayns.utils.isJwt(requestHeaders?.Authorization)
+                                           && !!getJwtPayload(requestHeaders?.Authorization)
                                 ? `Payload: ${requestHeaders.Authorization.split('.')[1]}`
                                 : undefined
                         },

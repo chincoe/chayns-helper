@@ -37,7 +37,7 @@ export default class ChaynsError extends RequestError {
                 return <ChaynsErrorObject>obj;
             }
         }
-        if (chayns.utils.isPromise(value)) {
+        if (value && typeof (<Promise<any>>value)?.then === 'function') {
             const result = await Promise.resolve(value);
             return ChaynsError.getChaynsErrorObject(result);
         }

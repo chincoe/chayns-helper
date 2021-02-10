@@ -26,7 +26,7 @@ export default function showWaitCursor(config?: WaitCursorConfig, additionalStep
             .map((num) => +num)
             .sort((a, b) => (a - b))
         : [];
-    const timeouts: Timeout[] = [];
+    const timeouts: Array<Timeout|number> = [];
     timeouts.push(setTimeout(() => {
         chayns.showWaitCursor(text, textTimeout, action);
     }, initialTimeout));
@@ -36,7 +36,7 @@ export default function showWaitCursor(config?: WaitCursorConfig, additionalStep
         if (additionalSteps) {
             stepText = additionalSteps[currentTimeout];
         }
-        let timeout;
+        let timeout: Timeout|number;
         if (stepText !== null) {
             timeout = setTimeout(() => {
                 chayns.showWaitCursor(stepText, 0, action);
@@ -52,7 +52,7 @@ export default function showWaitCursor(config?: WaitCursorConfig, additionalStep
 
     return () => {
         for (let i = 0; i < timeouts.length; i++) {
-            clearTimeout(timeouts[i]);
+            clearTimeout(<Timeout>timeouts[i]);
         }
         chayns.hideWaitCursor();
     };

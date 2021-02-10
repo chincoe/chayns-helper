@@ -10,7 +10,7 @@ import TEXTSTRING_CONFIG from './textstringConfig';
  */
 const getTextStrings = (textStrings: string[]|{[name: string]: string}, language = 'de'): Array<string> => {
     const returnList = [];
-    const isSimple = !chayns.utils.isObject(textStrings);
+    const isSimple = Object.prototype.toString.call(textStrings) !== "[object Object]";
     const strings: string[] = <string[]>(isSimple ? textStrings : Object.keys(textStrings));
     for (let i = 0; i < strings.length; i += 1) {
         const current = strings[i];

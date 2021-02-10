@@ -1,6 +1,6 @@
 {
   "name": "chayns-helper",
-  "version": "2.10.1",
+  "version": "2.10.2-beta.0",
   "author": {
     "name": "Christian Nagel",
     "email": "christian.nagel@tobit.com"
@@ -19,7 +19,6 @@
   },
   "scripts": {
     "build": "tsdx build",
-    "install:all": "npm i -reg http://repo.tobit.ag:8081/repository/npm/",
     "pub:beta": "npm version prerelease --preid=beta --no-git-tag-version && npm publish && node scripts.js -d \"%name%@%version% is unstable, please install a stable version\"",
     "pub:patch": "npm version patch --no-git-tag-version && npm publish",
     "pub:patch:deprecate": "node scripts.js -d \"%name%@%version% contains errors, please update to @latest\" && npm version patch --no-git-tag-version && npm publish",
@@ -27,18 +26,20 @@
     "pub:major": "npm version major --no-git-tag-version && npm publish",
     "git:postpublish": "node scripts.js -pushtags",
     "----------": "",
+    "test": "tsdx test --passWithNoTests",
+    "--------": "",
     "prepublishOnly": "npm run build",
-    "preversion": "npm run install:all",
+    "preversion": "npm run test && npm install",
     "postpublish": "node scripts.js -commit"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
   "peerDependencies": {
-    "react-redux": ">=7.1.3",
-    "react": ">=16",
+    "chayns-components": ">=4.20.4",
     "chayns-logger": ">=2.8.5",
-    "chayns-components": ">=4.20.4"
+    "react": ">=16",
+    "react-redux": ">=7.1.3"
   },
   "peerDependenciesMeta": {
     "react-redux": {
@@ -81,6 +82,8 @@
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.0.4",
+    "identity-obj-proxy": "^3.0.0",
+    "jest-fetch-mock": "^3.0.3",
     "jsdoc": "^3.6.6",
     "node-sass": "^4.11.0",
     "react": "^17.0.1",
@@ -100,7 +103,8 @@
     "@types/react": "^17.0.0",
     "abortcontroller-polyfill": "^1.7.1",
     "clsx": "^1.1.1",
-    "date-fns": "^2.16.1"
+    "date-fns": "^2.16.1",
+    "html-react-parser": "^1.2.4"
   },
   "repository": {
     "type": "git",

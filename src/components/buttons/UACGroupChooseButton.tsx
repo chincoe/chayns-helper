@@ -1,10 +1,11 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 // @ts-expect-error
 import { ChooseButton } from 'chayns-components';
-import { httpRequest } from '../../functions/httpRequest/httpRequest';
+import request from '../../functions/httpRequest/httpRequest';
 import LogLevel from '../../functions/httpRequest/LogLevel';
 import ResponseType from '../../functions/httpRequest/ResponseType';
 import ResizableWaitCursor from '../wait-cursor/ResizableWaitCursor';
+import colorLog from '../../utils/colorLog';
 
 declare interface UACGroupChooseButton {
     value: number | number[],
@@ -33,7 +34,7 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = (
 ) => {
     const [uacGroups, setUacGroups] = useState<{ id: number, showName: string }[]>();
     useEffect(() => {
-        httpRequest(
+        request.fetch(
             `https://sub50.tobit.com/backend/${chayns.env.site.locationId}/UserGroup`,
             {},
             'getUacGroups',
@@ -45,7 +46,10 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = (
                 }
             }
         )
-            .then((res) => setUacGroups(res));
+            .then((res) => setUacGroups(res))
+            .catch((ex) => {
+                console.error(...colorLog.gray('[UACGroupChooseButton]'), 'Failed to fetch UAC Groups.', ex);
+            })
     }, []);
 
     return uacGroups ? (

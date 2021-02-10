@@ -27,5 +27,5 @@ A config object with the following possible keys:
 | excludeKeys | Exclude these keys everywhere | boolean | `false`|
 | dateTimeZoneHandling | Adjust the date format. Can either result in a utc date or a dateTimeOffset | `'utc'`/`'localoffset'` | `'utc'` |
 
-> Note: You can pass JsonSettings to [request.fetch()](src/functions/httpRequest/httpRequest.md) as well. 
+> Note: You can pass JsonSettings to [request.fetch()](../httpRequest/httpRequest.md) as well. 
 > That helper will call `getJsonSettings()` for you, so only the settings object should be passed there. 
