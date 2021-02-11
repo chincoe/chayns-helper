@@ -1,4 +1,4 @@
-import React, { ErrorInfo, JSXElementConstructor, ReactNode } from 'react';
+import React, { ErrorInfo, FunctionComponent, JSXElementConstructor, ReactNode } from 'react';
 import './error-boundary.scss';
 // @ts-expect-error
 import { Button } from 'chayns-components';
@@ -36,6 +36,17 @@ class ErrorBoundary extends React.Component<{
         };
     }
 
+    static wrap(WrappedComponent: JSXElementConstructor<any>, fallback?: JSXElementConstructor<any>) {
+        const safeComponent: FunctionComponent<any> = (props: any) => {
+            return (
+                <ErrorBoundary fallback={fallback}>
+                    <WrappedComponent {...props}/>
+                </ErrorBoundary>
+            )
+        }
+        return safeComponent;
+    }
+
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         // You can also log the error to an error reporting service
         logger.error({
@@ -69,7 +80,7 @@ class ErrorBoundary extends React.Component<{
                                     {`Fehler: ${(state.error as Error).toString()}`}
                                 </p>
                             )}
-                            <CenteredContainer style={{}}>
+                            <CenteredContainer>
                                 <Button
                                     onClick={() => {
                                         chayns.appendUrlParameter({ nocache: true }, true);

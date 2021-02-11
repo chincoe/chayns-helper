@@ -17,14 +17,12 @@ const ResizableWaitCursor: FunctionComponent<{
     size?: number;
     className?: string;
     style?: object;
-}> = (
-    {
-        size = 32,
-        className = '',
-        style = {},
-        ...props
-    }
-) => {
+}> = ({
+    size = 32,
+    className = '',
+    style = {},
+    ...props
+}) => {
     useEffect(() => {
         if (size % 3 !== 0) {
             // eslint-disable-next-line no-console

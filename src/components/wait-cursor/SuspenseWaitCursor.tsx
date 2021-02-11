@@ -1,4 +1,4 @@
-import React, { FunctionComponent, Suspense, useEffect } from 'react';
+import React, { FunctionComponent, ReactNode, Suspense, useEffect } from 'react';
 import showWaitCursor from '../../functions/waitCursor/waitCursor';
 import CenteredWaitCursor from './CenteredWaitCursor';
 
@@ -13,6 +13,7 @@ import CenteredWaitCursor from './CenteredWaitCursor';
  */
 const SuspenseWaitCursor: FunctionComponent<{
     inline?: boolean;
+    children: ReactNode;
 }> = ({ children, inline = false }) => (
     <Suspense fallback={(<SuspenseWaitCursorFallback inline={inline}/>)}>
         {children}

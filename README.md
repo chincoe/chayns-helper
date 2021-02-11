@@ -36,19 +36,19 @@ This package supports tree-shaking, so each module will only be included in your
 
 | Component                                                                | Description                 | Readme |
 |--------------------------------------------------------------------------|-----------------------------| -------|
-| [CenteredContainer](/src/components/containers/CenteredContainer.tsx)| Container to center its children with or without a gap between them |
-| [CenteredWaitCursor](/src/components/wait-cursor/CenteredWaitCursor.tsx)| Inline-waitCursor, centered and with padding |
-| [DataRow](/src/components/containers/DataRow.tsx)| Container for a row with a label and e.g. a button |
-| [ErrorBoundary](/src/components/error-boundary/ErrorBoundary.tsx)| Customizable ErrorBoundary to catch errors during render |
-| [RechartsAxis](/src/components/recharts-axis/RechartsAxis.tsx)| HOC to rerender a Component in an interval |
-| [refresh](/src/components/rerender/refresh.tsx)| HOC to rerender a Component in an interval |
-| [Refresh](/src/components/rerender/RefreshComponent.tsx)| Component to rerender its children in an interval |
-| [rerender](/src/components/rerender/rerender.tsx)| HOC that passes a rerenderSelf function to a component |
-| [ResizableWaitCursor](/src/components/wait-cursor/ResizableWaitCursor.tsx)| chayns SmallWaitCursor but resizable |
-| [RestrictedAccordion](/src/components/restricted-accordion/RestrictedAccordion.tsx)| Accordion with lock-icon for admins |
-| [SuspenseWaitCursor](/src/components/wait-cursor/SuspenseWaitCursor.tsx)| Suspense-Component that provides a fallback for React lazy loading |
+| [CenteredContainer](/src/components/containers/CenteredContainer.tsx)| Container to center its children with or without a gap between them | [CenteredContainer.md](docs/components/CenteredContainer.md) |
+| [CenteredWaitCursor](/src/components/wait-cursor/CenteredWaitCursor.tsx)| Inline-waitCursor, centered and with padding | [CenteredWaitCursor.md](docs/components/CenteredWaitCursor.md) |
+| [DataRow](/src/components/containers/DataRow.tsx)| Container for a row with a label and e.g. a button | [DataRow.md](docs/components/DataRow.md) |
+| [ErrorBoundary](/src/components/error-boundary/ErrorBoundary.tsx)| Customizable ErrorBoundary to catch errors during render | [ErrorBoundary.md](docs/components/ErrorBoundary.md) |
+| [RechartsAxis](/src/components/recharts-axis/RechartsAxis.tsx)| Wrapper for recharts' XAxis or YAxis to create better label intervals | [RechartsAxis.md](docs/components/RechartsAxis.md) |
+| [refresh](/src/components/rerender/refresh.tsx)| HOC to rerender a Component in an interval | [refresh.md](docs/components/refresh.md) |
+| [Refresh](/src/components/rerender/RefreshComponent.tsx)| Component to rerender its children in an interval | [Refresh.md](docs/components/RefreshComponent.md) |
+| [rerender](/src/components/rerender/rerender.tsx)| HOC that passes a rerenderSelf function to a component | [rerender.md](docs/components/rerender.md) |
+| [ResizableWaitCursor](/src/components/wait-cursor/ResizableWaitCursor.tsx)| chayns SmallWaitCursor but resizable | [ResizableWaitCursor.md](docs/components/ResizableWaitCursor.md) |
+| [RestrictedAccordion](/src/components/restricted-accordion/RestrictedAccordion.tsx)| Accordion with lock-icon for admins | [RestrictedAccordion.md](docs/components/RestrictedAccordion.md) |
+| [SuspenseWaitCursor](/src/components/wait-cursor/SuspenseWaitCursor.tsx)| Suspense-Component that provides a fallback for React lazy loading | [SuspenseWaitCursor.md](docs/components/SuspenseWaitCursor.md) |
 | [TextStringComplex](/src/textstring/TextStringComplex.tsx)| Memoized Textstring Component, adds prefix. Allows complex replacements with JSX, autoCreation and CTRL+Click to edit | [TextString.md](https://github.com/chincoe/chayns-helper/blob/master/src/textstring/TextString.md) |
-| [UACGroupChooseButton](/src/components/buttons/UACGroupChooseButton.tsx)| ChooseButton for UAC groups |
+| [UACGroupChooseButton](/src/components/buttons/UACGroupChooseButton.tsx)| ChooseButton for UAC groups | [UACGroupChooseButton.md](docs/components/UACGroupChooseButton.md) |
 
 ### Hooks
 
