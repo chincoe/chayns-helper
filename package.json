@@ -30,7 +30,7 @@
     "git:postpublish": "node scripts.js -pushtags",
     "lint": "tsdx lint src",
     "size": "size-limit",
-    "analyze": "size-limit --why",
+    "size:analyze": "size-limit --why",
     "prepare": "npm run build",
     "preversion": "npm run test && npm run install:all",
     "postpublish": "node scripts.js -commit"
@@ -61,18 +61,18 @@
   "size-limit": [
     {
       "path": "dist/chayns-helper.cjs.production.min.js",
-      "limit": "10 KB"
+      "limit": "55KB"
     },
     {
       "path": "dist/chayns-helper.esm.js",
-      "limit": "10 KB"
+      "limit": "45KB"
+    },
+    {
+      "path": "dist/chayns-helper.esm.js",
+      "import": "{ statusAnimations }",
+      "limit": "18KB"
     }
   ],
-  "husky": {
-    "hooks": {
-      "pre-commit": ""
-    }
-  },
   "prettier": {
     "tabWidth": 4,
     "printWidth": 120,
@@ -88,6 +88,7 @@
     "@babel/plugin-proposal-pipeline-operator": "^7.8.3",
     "@babel/plugin-proposal-throw-expressions": "^7.8.3",
     "@babel/plugin-transform-runtime": "^7.12.10",
+    "@size-limit/preset-big-lib": "^4.9.2",
     "@types/react-dom": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
