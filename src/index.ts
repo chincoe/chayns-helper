@@ -31,6 +31,7 @@ export {
 export { default as mediaSelectDialog } from './functions/chaynsDialogs/dialogs/mediaSelect';
 export { default as fileSelectDialog } from './functions/chaynsDialogs/dialogs/fileSelect';
 export { default as iFrameDialog } from './functions/chaynsDialogs/dialogs/iFrame';
+export { default as statusDialog, dialogType, dialogStatusType } from './functions/chaynsDialogs/statusDialog';
 // general functions
 export { default as copyToClipboard } from './functions/copy';
 export { default as types } from './functions/types';

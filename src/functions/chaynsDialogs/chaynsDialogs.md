@@ -7,7 +7,7 @@ This helper aims to solve this problem by wrapping all chayns dialogs to allow a
 Most parameters and features of the chayns dialogs remain the same. Please consult the [chayns-js wiki](https://github.com/TobitSoftware/chayns-js/wiki/Dialogs) for the full documentation.
 However, the following aspects are changed by this helper.
 
-#### Autocomplete
+#### Code completion
 The Typescript definitions enable code completion for all the dialog properties
 
 #### Return values
@@ -42,6 +42,9 @@ All return values are Dates.
 
 #### Enums
 All chayns dialog enums (like `chayns.dialog.buttonType`) are exported by this helper as well for ease of use.
+
+#### Exports 
+All dialogs are exported both as `chaynsDialog.[name]` and `[name]Dialog`.
 
 ### Additional result handlers
 Working with chayns dialogs, often times we just want to handle successful dialogs that resolved with `buttonType === 1`.
@@ -94,3 +97,13 @@ The 3 dateSelectTypes are SINGLE, MULTISELECT and INTERVAL - 0, 1 and 2 respecti
 
 #### date
 This helper does not implement the chayns.dialog.date dialog as it offers no feature that cannot be implemented with advancedDate.
+
+#### status(statusType, options)
+Additional dialog that displays a status animation either as confirm or alert dialog. Has different parameters:
+
+| Parameter | Description | Type | Required/Default |
+|-----------|-------------|------|------------------|
+| statusType | Dialog status, determines which animation to show | `'SUCCESS'`/`'WARNING'`/`'ERROR'` | required |
+| options.message | additional html string to be displayed below the animation | string | `''` |
+| options.dialog | name of the dialog to use | `'alert'`/`'confirm'` | `'alert'` |
+| options.buttons | dialog buttons extended by an `onClick` function that will be called if that button is pressed | { buttonType: number, text: string, onClick?: function } | `null` |

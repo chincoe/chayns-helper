@@ -7,6 +7,7 @@ import iFrame from './dialogs/iFrame';
 import select, { selectType } from './dialogs/select';
 import fileSelect, { fileType } from './dialogs/fileSelect';
 import mediaSelect from './dialogs/mediaSelect';
+import status, {dialogStatusType} from './statusDialog';
 
 /**
  * Collection of improved versions of chayns dialogs and their enums
@@ -20,13 +21,15 @@ const chaynsDialog = {
     advancedDate,
     fileSelect,
     mediaSelect,
+    status,
     fileType,
     buttonType: ButtonType,
     inputType,
     selectType,
     textBlockPosition,
     dateType,
-    dateSelectType
+    dateSelectType,
+    statusType: dialogStatusType
 };
 
 export default chaynsDialog;
