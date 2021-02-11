@@ -19,8 +19,10 @@ const useRefresh = (interval: number): [number, () => void] => {
                 manualRefresh();
             }, interval);
         }
-        return () => { clearInterval(<NodeJS.Timeout>val || 0); };
-    }, []);
+        return () => {
+            clearInterval((val as NodeJS.Timeout) || 0);
+        };
+    }, [manualRefresh]);
 
     return [refresh, manualRefresh];
 };

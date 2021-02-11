@@ -1,6 +1,6 @@
+import React, { FunctionComponent, memo, ReactElement, ReactNode, useEffect, useMemo } from 'react';
 // @ts-expect-error
 import { TextString } from 'chayns-components';
-import React, { FunctionComponent, memo, ReactElement, ReactNode, useEffect, useMemo } from 'react';
 // @ts-expect-error
 import isTobitEmployee from 'chayns-components/dist/esm/utils/tobitEmployee.js';
 import generateUUID from '../functions/generateUid';
@@ -33,19 +33,17 @@ export interface TextStringComplexConfig {
  * @param props
  * @constructor
  */
-const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
-    {
-        stringName,
-        fallback,
-        replacements = {},
-        children = null,
-        maxReplacements = 20,
-        useDangerouslySetInnerHTML = false,
-        language = undefined,
-        autoCreation = process.env.NODE_ENV === 'production',
-        ...props
-    }
-) => {
+const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
+    stringName,
+    fallback,
+    replacements = {},
+    children = null,
+    maxReplacements = 20,
+    useDangerouslySetInnerHTML = false,
+    language = undefined,
+    autoCreation = process.env.NODE_ENV === 'production',
+    ...props
+}) => {
     // create missing textStrings in QA/Production if opened by an authorized developer
     useEffect(() => {
         (async () => {
@@ -65,12 +63,12 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
                                 method: 'GET',
                                 headers: new Headers({
                                     Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`
-                                }),
+                                })
                             }
                         );
                         const libContent = await libResponse.json();
-                        if (libResponse.status === 200 && libContent && Array.isArray(libContent) &&
-                            !libContent.find(s => s.stringName === stringName)) {
+                        if (libResponse.status === 200 && libContent && Array.isArray(libContent)
+                            && !libContent.find(s => s.stringName === stringName)) {
                             const response = await fetch(
                                 `https://webapi.tobit.com/TextStringService/v1.0/V2/LangStrings?libName=${TEXTSTRING_CONFIG.libName}`,
                                 {
@@ -104,7 +102,8 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
                                         'pt',
                                         'es',
                                         'tr'
-                                    ].join(', ')}.`);
+                                    ].join(', ')}.`
+                                );
                             }
                         }
                     });
@@ -138,13 +137,13 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
 };
 
 interface TextStringReplacerConfig {
-    children: string | ReactNode,
-    textStringChildren?: ReactNode | null,
-    replacements: JsxReplacements,
-    dangerouslySetInnerHTML?: boolean,
-    maxReplacements?: number,
-    stringName: string,
-    fallback: string
+    children: string | ReactNode;
+    textStringChildren?: ReactNode | null;
+    replacements: JsxReplacements;
+    dangerouslySetInnerHTML?: boolean;
+    maxReplacements?: number;
+    stringName: string;
+    fallback: string;
 
 }
 
@@ -177,7 +176,7 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
             useDangerouslySetInnerHTML: dangerouslySetInnerHTML,
             guid,
         });
-    }, [text, replacements]);
+    }, [text, replacements, dangerouslySetInnerHTML, guid, maxReplacements]);
 
     return textStringChildren && React.isValidElement(textStringChildren)
         ? React.cloneElement(textStringChildren, elementProps, content)
