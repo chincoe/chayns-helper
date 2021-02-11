@@ -1,6 +1,6 @@
 // @ts-expect-error
 import { TextString } from 'chayns-components';
-import React, { FunctionComponent, memo, ReactNode, ReactElement, useEffect, useMemo } from 'react';
+import React, { FunctionComponent, memo, ReactElement, ReactNode, useEffect, useMemo } from 'react';
 // @ts-expect-error
 import isTobitEmployee from 'chayns-components/dist/esm/utils/tobitEmployee.js';
 import generateUUID from '../functions/generateUid';
@@ -9,14 +9,14 @@ import TEXTSTRING_CONFIG from './textstringConfig';
 import isNullOrWhiteSpace from '../utils/isNullOrWhiteSpace';
 
 export interface TextStringComplexConfig {
-    stringName: string,
-    fallback: string,
-    replacements?: JsxReplacements,
-    children?: React.ReactNode | null,
-    maxReplacements?: number,
-    useDangerouslySetInnerHTML?: boolean,
-    language?: string,
-    autoCreation?: boolean
+    stringName: string;
+    fallback: string;
+    replacements?: JsxReplacements;
+    children?: React.ReactNode | null;
+    maxReplacements?: number;
+    useDangerouslySetInnerHTML?: boolean;
+    language?: string;
+    autoCreation?: boolean;
 }
 
 /**

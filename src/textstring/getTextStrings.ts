@@ -8,7 +8,7 @@ import TEXTSTRING_CONFIG from './textstringConfig';
  * @param textStrings - format: [string_name1, string_name2] or { string_name1: fallback1, string_name2: fallback2 }
  * @param language
  */
-const getTextStrings = (textStrings: string[]|{[name: string]: string}, language = 'de'): Array<string> => {
+const getTextStrings = (textStrings: string[] | { [name: string]: string }, language = 'de'): Array<string> => {
     const returnList = [];
     const isSimple = Object.prototype.toString.call(textStrings) !== "[object Object]";
     const strings: string[] = <string[]>(isSimple ? textStrings : Object.keys(textStrings));

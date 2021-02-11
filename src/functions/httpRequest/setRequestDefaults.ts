@@ -1,6 +1,6 @@
-import {HttpRequestConfig, HttpRequestOptions} from "./httpRequest";
+import { HttpRequestConfig, HttpRequestOptions } from "./httpRequest";
 
-export const defaultConfig : {
+export const defaultConfig: {
     options: HttpRequestOptions,
     address: string,
     config: HttpRequestConfig

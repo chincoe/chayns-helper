@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import shallowEqual from '../../functions/shallowEqual';
 import useUniqueTimeout from './useUniqueTimeout';
 

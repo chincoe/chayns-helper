@@ -1,6 +1,5 @@
 import DialogPromise from './DialogPromise';
 
-
 /**
  * Custom extension to DialogPromise for the iFrame dialog
  * @extends DialogPromise

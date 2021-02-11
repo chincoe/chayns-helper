@@ -1,11 +1,11 @@
-import {useMemo} from 'react';
+import { useMemo } from 'react';
 
 export interface RechartsAxis<T> {
-    intervalCount: number,
-    intervalLength: number,
-    min: number|T,
-    max: number|T,
-    ticks: Array<number|T>
+    intervalCount: number;
+    intervalLength: number;
+    min: number | T;
+    max: number | T;
+    ticks: Array<number | T>;
 }
 
 /**
@@ -38,7 +38,7 @@ export function generateRechartsAxis<T>(
     // eslint-disable-next-line no-param-reassign
     if (!tickFormatter) tickFormatter = (base, intervalLength, i) => (<number>base + intervalLength * i);
 
-    let relevantDivisor: number|undefined = undefined;
+    let relevantDivisor: number | undefined = undefined;
     if (Array.isArray(divisor)) {
         const divisorList = divisor.sort((a: number, b: number) => a - b);
         for (let i = 0; i < divisorList.length; i++) {
@@ -100,9 +100,9 @@ const useRechartsAxis = <T>(
         minTicks = 0,
         tickFormatter
     }: {
-        start: number|T,
-        end: number|T,
-        divisor: number|number[],
+        start: number | T,
+        end: number | T,
+        divisor: number | number[],
         maxTicks: number,
         minTicks: number,
         tickFormatter?: (start: number | T, intervalLength: number, i: number) => (number | T)

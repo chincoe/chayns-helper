@@ -67,7 +67,7 @@ export const textBlockPosition = {
 export interface DialogTextBlock {
     headline: string;
     text: string;
-    textBlockPosition: number | typeof textBlockPositionEnum
+    textBlockPosition: number | typeof textBlockPositionEnum;
 }
 
 export enum dateTypeEnum {
@@ -127,9 +127,6 @@ export interface AdvancedDateDialogConfig {
     message?: string;
     title?: string;
     dateType?: typeof dateTypeEnum | number;
-    /**
-     * Single(0), Multiselect(1) or Interval(2)
-     */
     selectType?: typeof dateSelectTypeEnum | number;
     minDate?: DateInformation;
     maxDate?: DateInformation;
@@ -145,7 +142,7 @@ export interface AdvancedDateDialogConfig {
     maxInterval?: number;
     disabledIntervals?: Array<DateIntervalObject>;
     disabledWeekDayIntervals: Array<WeekDayIntervalItem>[7];
-    getLocalTime?: boolean
+    getLocalTime?: boolean;
 }
 
 export interface AdvancedDateDialogResult {
@@ -156,6 +153,25 @@ export interface AdvancedDateDialogResult {
  * Improved chayns.dialog.advancedDate. Works almost identically, but the timestamp in s conversion has been fixed to
  * be timestamps in ms and multiselect/interval are now exclusive
  * @param options
+ * @param options.message
+ * @param options.title
+ * @param options.dateType
+ * @param options.selectType - Single(0), Multiselect(1) or Interval(2)
+ * @param options.minDate
+ * @param options.maxDate
+ * @param options.minuteInterval
+ * @param options.preSelect
+ * @param options.multiselect - deprecated, please use selectType parameter instead
+ * @param options.disabledDates
+ * @param options.textBlocks
+ * @param options.yearSelect
+ * @param options.monthSelect
+ * @param options.interval - deprecated, please use selectType parameter instead
+ * @param options.minInterval
+ * @param options.maxInterval
+ * @param options.disabledIntervals
+ * @param options.disabledWeekDayIntervals
+ * @param options.getLocalTime
  * @param buttons
  */
 export default function advancedDate(
@@ -184,17 +200,19 @@ export default function advancedDate(
             disabledWeekDayIntervals = undefined,
             getLocalTime = false
         } = options || {};
+        // get date select type based on selectType, multiselect, interval and the default (in this order)
         const dialogSelectType = (
                                      pSelectType !== undefined
-                                     &&
-                                     Object.values(dateSelectType).includes(<number>pSelectType) ? pSelectType : null)
-                                 ?? (multiselect
-                ? dateSelectType.MULTISELECT
-                : null)
-                                 ?? (interval
-                ? dateSelectType.INTERVAL
-                : null)
-                                 ?? dateSelectType.SINGLE;
+                                     && Object.values(dateSelectType).includes(<number>pSelectType) ? pSelectType : null
+                                 ) ?? (
+                                     multiselect
+                                         ? dateSelectType.MULTISELECT
+                                         : null
+                                 ) ?? (
+                                     interval
+                                         ? dateSelectType.INTERVAL
+                                         : null
+                                 ) ?? dateSelectType.SINGLE;
 
         chayns.dialog.advancedDate({
             title,

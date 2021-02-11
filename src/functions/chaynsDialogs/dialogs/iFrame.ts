@@ -1,10 +1,9 @@
 import IframeDialogPromise from '../IFrameDialogPromise';
-import {createDialogResult, DialogButton} from '../utils';
-
+import { createDialogResult, DialogButton } from '../utils';
 
 export interface IFrameDialogConfig {
     url: string;
-    input?: object|any;
+    input?: object | any;
     seamless?: boolean;
     transparent?: boolean;
     waitCursor?: boolean;

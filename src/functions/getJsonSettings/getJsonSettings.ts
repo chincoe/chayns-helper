@@ -13,11 +13,11 @@ export const DateTimeZoneHandling = {
 };
 
 export interface JsonSettings {
-    ignoreNullValues?: boolean,
-    includeUndefined?: boolean,
-    includeNotSerializable?: boolean,
-    excludeKeys?: string[],
-    dateTimeZoneHandling?: typeof DateTimeZoneHandlingEnum | string
+    ignoreNullValues?: boolean;
+    includeUndefined?: boolean;
+    includeNotSerializable?: boolean;
+    excludeKeys?: string[];
+    dateTimeZoneHandling?: typeof DateTimeZoneHandlingEnum | string;
 }
 
 /**

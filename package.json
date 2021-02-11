@@ -18,6 +18,8 @@
     "node": ">=10"
   },
   "scripts": {
+    "start": "tsdx watch",
+    "test": "tsdx test --passWithNoTests",
     "build": "tsdx build",
     "install:all": "npm install -reg http://repo.tobit.ag:8081/repository/npm/",
     "pub:beta": "npm version prerelease --preid=beta --no-git-tag-version && npm publish && node scripts.js -d \"%name%@%version% is unstable, please install a stable version\"",
@@ -26,8 +28,10 @@
     "pub:minor": "npm version minor --no-git-tag-version && npm publish",
     "pub:major": "npm version major --no-git-tag-version && npm publish",
     "git:postpublish": "node scripts.js -pushtags",
-    "test": "tsdx test --passWithNoTests",
-    "prepublishOnly": "npm run build",
+    "lint": "tsdx lint src",
+    "size": "size-limit",
+    "analyze": "size-limit --why",
+    "prepare": "npm run build",
     "preversion": "npm run test && npm run install:all",
     "postpublish": "node scripts.js -commit"
   },
@@ -53,6 +57,30 @@
     "chayns-components": {
       "optional": false
     }
+  },
+  "size-limit": [
+    {
+      "path": "dist/chayns-helper.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/chayns-helper.esm.js",
+      "limit": "10 KB"
+    }
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": ""
+    }
+  },
+  "prettier": {
+    "tabWidth": 4,
+    "printWidth": 120,
+    "semi": true,
+    "singleQuote": true,
+    "jsxSingleQuote": false,
+    "trailingComma": "none",
+    "arrowParens": "always"
   },
   "devDependencies": {
     "@babel/plugin-proposal-logical-assignment-operators": "^7.8.3",
@@ -81,6 +109,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.0.4",
+    "husky": "^4.3.0",
     "identity-obj-proxy": "^3.0.0",
     "jest-fetch-mock": "^3.0.3",
     "jsdoc": "^3.6.6",
@@ -90,6 +119,7 @@
     "react-redux": "^7.1.3",
     "rollup-plugin-postcss": "^3.1.4",
     "rollup-plugin-scss": "^2.6.1",
+    "size-limit": "^4.9.1",
     "tsc": "^1.20150623.0",
     "tsdx": "^0.14.1",
     "tslib": "^2.1.0",

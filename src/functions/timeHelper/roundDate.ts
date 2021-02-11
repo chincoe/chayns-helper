@@ -5,7 +5,7 @@ import time from '../../constants/time';
  * @param date
  * @param ms
  */
-const roundDate = (date: Date|string|number, ms: number = time.minute * 5): Date => {
+const roundDate = (date: Date | string | number, ms: number = time.minute * 5): Date => {
     const d = new Date(date);
     const rounded = Math.round(new Date(d).getTime() / (ms));
     return new Date(rounded * ms);

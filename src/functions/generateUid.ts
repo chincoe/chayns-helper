@@ -1,5 +1,6 @@
 /**
- * generate a ne GUID
+ * generate a new GUID
+ * @return {string} guid
  */
 export default function generateUUID(): string {
     let d = Date.now();

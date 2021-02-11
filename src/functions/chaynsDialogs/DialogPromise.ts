@@ -1,5 +1,4 @@
-import {DialogResult} from "./utils";
-
+import { DialogResult } from "./utils";
 
 /**
  * Custom extension to Promise for dialogs

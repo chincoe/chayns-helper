@@ -1,9 +1,4 @@
-import React, {
-    useState,
-    useRef,
-    useEffect,
-    useMemo, SetStateAction
-} from 'react';
+import React, { SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
 
 /**
  * A useState hook that retains its previously set value as 3rd return value

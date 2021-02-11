@@ -1,8 +1,8 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 /**
  * Hook to keep refreshing a component in an interval by using the refreshId as id somewhere
- * @param {number} interval
+ * @param interval
  * @return {[number, function]}
  */
 const useRefresh = (interval: number): [number, () => void] => {
@@ -13,7 +13,7 @@ const useRefresh = (interval: number): [number, () => void] => {
     }, []);
 
     useEffect(() => {
-        let val: NodeJS.Timeout|number;
+        let val: NodeJS.Timeout | number;
         if (interval) {
             val = setInterval(() => {
                 manualRefresh();

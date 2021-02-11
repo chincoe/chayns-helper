@@ -1,10 +1,10 @@
 import Timeout = NodeJS.Timeout;
 
 export interface WaitCursorConfig {
-    text?: string,
-    textTimeout?: number,
-    timeout?: number,
-    action?: string
+    text?: string;
+    textTimeout?: number;
+    timeout?: number;
+    action?: string;
 }
 
 /**
@@ -26,17 +26,17 @@ export default function showWaitCursor(config?: WaitCursorConfig, additionalStep
             .map((num) => +num)
             .sort((a, b) => (a - b))
         : [];
-    const timeouts: Array<Timeout|number> = [];
+    const timeouts: Array<Timeout | number> = [];
     timeouts.push(setTimeout(() => {
         chayns.showWaitCursor(text, textTimeout, action);
     }, initialTimeout));
     for (let i = 0; i < timeoutSteps.length; i++) {
         const currentTimeout = timeoutSteps[i];
-        let stepText: string|null = '';
+        let stepText: string | null = '';
         if (additionalSteps) {
             stepText = additionalSteps[currentTimeout];
         }
-        let timeout: Timeout|number;
+        let timeout: Timeout | number;
         if (stepText !== null) {
             timeout = setTimeout(() => {
                 chayns.showWaitCursor(stepText, 0, action);

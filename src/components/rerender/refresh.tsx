@@ -1,4 +1,4 @@
-import React, {JSXElementConstructor, memo} from 'react';
+import React, { JSXElementConstructor, memo } from 'react';
 import useRefresh from '../../utils/useRefresh';
 
 /**

@@ -36,7 +36,7 @@ export interface HttpRequestConfig {
     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT' | string | typeof HttpMethodEnum;
     useChaynsAuth?: boolean;
     headers?: object;
-    body?: object | string | FormData | any,
+    body?: object | string | FormData | any;
     cache?: string;
     referrer?: string;
     referrerPolicy?: string;
@@ -69,22 +69,22 @@ export interface HttpRequestConfig {
 export interface HttpRequestOptions {
     responseType?: ResponseTypeValue | null;
     throwErrors?: boolean | Array<typeof HttpStatusCodeEnum | string | number>;
-    logConfig?: { [key: string]: typeof LogLevelEnum | string } | Map<string, typeof LogLevelEnum | string>,
+    logConfig?: { [key: string]: typeof LogLevelEnum | string } | Map<string, typeof LogLevelEnum | string>;
     stringifyBody?: boolean | JsonSettings;
     additionalLogData?: object;
     autoRefreshToken?: boolean;
     waitCursor?: boolean
         | { text?: string, textTimeout?: number, timeout?: number, }
-        | { timeout?: number, steps?: { [timeout: number]: string }; },
+        | { timeout?: number, steps?: { [timeout: number]: string }; };
     statusHandlers?: { [key: string]: ResponseTypeValue | ((response: Response) => any) } | Map<string, ResponseTypeValue | ((response: Response) => any)>;
     errorHandlers?: { [key: string]: ResponseTypeValue | ((response: Response) => any) } | Map<string, ResponseTypeValue | ((response: Response) => any)>;
     errorDialogs?: Array<string | RegExp>;
     replacements?: { [key: string]: string | ((substring: string, ...args: any[]) => string) };
-    sideEffects?: ((status: number) => void) | { [status: string]: () => void } | {}
-    internalRequestGuid?: string
+    sideEffects?: ((status: number) => void) | { [status: string]: () => void } | {};
+    internalRequestGuid?: string;
 }
 
-export type httpRequestResult = Response | ObjectResponse | Blob | Object | string | RequestError | ChaynsError | any
+export type httpRequestResult = Response | ObjectResponse | Blob | Object | string | RequestError | ChaynsError | any;
 
 /**
  * Extensive and highly customizable fetch helper. Consult httpRequest.md for usage.
@@ -239,7 +239,8 @@ export function httpRequest(
                 ...headers
             };
 
-            // this way rerender config elements like "credentials", "mode", "cache" or "signal" can be passed to fetch()
+            // this way rerender config elements like "credentials", "mode", "cache" or "signal" can be passed to
+            // fetch()
             const remainingFetchConfig: RequestInit = <RequestInit>{ ...fetchConfig };
             // @ts-expect-error
             delete remainingFetchConfig.useChaynsAuth;

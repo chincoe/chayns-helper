@@ -1,4 +1,4 @@
-import React, {JSXElementConstructor, useCallback, useState} from 'react';
+import React, { JSXElementConstructor, useCallback, useState } from 'react';
 import generateUUID from "../../functions/generateUid";
 
 /**

@@ -9,15 +9,10 @@ const guidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-4][0-9a-fA-F]{3}-[0-9a-fA-F
 export default class Guid {
     value = '';
 
-    /**
-     * @static
-     * @type {function(): string}
-     * @public
-     */
-    static generateGuid = generateUid;
+    public static generateGuid = generateUid;
 
     /**
-     * @param {?string} str
+     * @param str
      * @constructor
      */
     constructor(str: string = '') {
@@ -31,11 +26,7 @@ export default class Guid {
         }
     }
 
-    /**
-     * @public
-     * @returns {string}
-     */
-    toString() {
+    public toString(): string {
         return this.value;
     }
 }

@@ -4,7 +4,7 @@ export interface ChaynsCall {
     action: number;
     value?: {
         callback?: string | ((param?: any) => any);
-        addJSONParam?: string
+        addJSONParam?: string;
     }
 }
 
@@ -17,17 +17,17 @@ const chaynsCall = (call: ChaynsCall): Promise<{
     retval: object
 }> => {
     const callbackName: string = `chaynsCallback_${generateUid().split('-').join('')}`;
-    const {action, value = {}} = call;
+    const { action, value = {} } = call;
     return new Promise((resolve) => {
         // @ts-expect-error
         window[callbackName] = (v: any) => {
             if (typeof (value?.callback) === 'function') {
                 value.callback(v);
             } else if (value?.callback
-                && typeof (value.callback) === 'string'
-                && /^window\./.test(value.callback)
-                // @ts-expect-error
-                && typeof (window[value.callback.replace('window.', '')]) === 'function'
+                       && typeof (value.callback) === 'string'
+                       && /^window\./.test(value.callback)
+                       // @ts-expect-error
+                       && typeof (window[value.callback.replace('window.', '')]) === 'function'
             ) {
                 // @ts-expect-error
                 window[value?.callback?.replace('window.', '')](v);
@@ -40,7 +40,7 @@ const chaynsCall = (call: ChaynsCall): Promise<{
             ...value,
             callback: `window.${callbackName}`
         };
-        chayns.invokeCall(JSON.stringify({action, value: config,}));
+        chayns.invokeCall(JSON.stringify({ action, value: config, }));
     });
 };
 

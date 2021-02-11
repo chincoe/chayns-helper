@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useEffect} from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import './resizable-wait-cursor.scss';
 // @ts-expect-error
 import { SmallWaitCursor } from 'chayns-components';
@@ -16,7 +16,7 @@ import clsx from 'clsx';
 const ResizableWaitCursor: FunctionComponent<{
     size?: number;
     className?: string;
-    style?: object
+    style?: object;
 }> = (
     {
         size = 32,

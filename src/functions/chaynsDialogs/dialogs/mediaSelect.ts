@@ -1,6 +1,5 @@
 import DialogPromise from '../DialogPromise';
-import {createDialogResult, DialogButton} from '../utils';
-
+import { createDialogResult, DialogButton } from '../utils';
 
 export interface MediaSelectDialogConfig {
     title?: string;
@@ -14,7 +13,7 @@ export interface MediaSelectDialogConfig {
  * @param buttons
  */
 export default function mediaSelect(options?: MediaSelectDialogConfig, buttons?: DialogButton[]) {
-    return new DialogPromise<File|any>((resolve) => {
+    return new DialogPromise<File | any>((resolve) => {
         const {
             title = '',
             message = '',

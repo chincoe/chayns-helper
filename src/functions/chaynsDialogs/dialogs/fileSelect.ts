@@ -1,6 +1,5 @@
 import DialogPromise from '../DialogPromise';
-import {createDialogResult, DialogButton} from '../utils';
-
+import { createDialogResult, DialogButton } from '../utils';
 
 /**
  * fileTypes
@@ -43,8 +42,8 @@ export interface FileSelectDialogConfig {
  */
 export default function fileSelect(
     options?: FileSelectDialogConfig, buttons?: DialogButton[]
-): DialogPromise<any|File> {
-    return new DialogPromise<any|File>((resolve) => {
+): DialogPromise<any | File> {
+    return new DialogPromise<any | File>((resolve) => {
         const {
             title = '',
             message = '',

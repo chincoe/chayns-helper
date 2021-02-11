@@ -14,9 +14,9 @@ import CenteredContainer from '../containers/CenteredContainer';
  * reload button.
  */
 class ErrorBoundary extends React.Component<{
-    children: ReactNode,
-    fallback?: JSXElementConstructor<any>
-}, { error?: Error | null, hasError: boolean }> {
+    children: ReactNode;
+    fallback?: JSXElementConstructor<any>;
+}, { error?: Error | null; hasError: boolean }> {
     constructor(props: any) {
         super(props);
         this.state = {

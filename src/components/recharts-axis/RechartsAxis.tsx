@@ -2,12 +2,12 @@ import React, { FunctionComponent } from 'react';
 import useRechartsAxis from '../../functions/recharts/useRechartsAxis';
 
 export interface RechartsAxis<T> {
-    start: number | T,
-    end: number | T,
-    divisor: number | number[],
-    minTicks: number,
-    maxTicks: number,
-    tickFormatter?: (start: number | T, intervalLength: number, i: number) => (number | T)
+    start: number | T;
+    end: number | T;
+    divisor: number | number[];
+    minTicks: number;
+    maxTicks: number;
+    tickFormatter?: (start: number | T, intervalLength: number, i: number) => (number | T);
 }
 
 /**

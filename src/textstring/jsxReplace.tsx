@@ -8,11 +8,11 @@ export type JsxReplacementFunction = ((params: { match: string, regexMatch?: Reg
 export type JsxReplacements = { [stringOrRegex: string]: ReactElement | string | JsxReplacementFunction };
 
 export interface JsxReplaceConfig {
-    text: string,
-    replacements: JsxReplacements,
-    maxReplacements?: number
-    guid?: string,
-    useDangerouslySetInnerHTML?: boolean
+    text: string;
+    replacements: JsxReplacements;
+    maxReplacements?: number;
+    guid?: string;
+    useDangerouslySetInnerHTML?: boolean;
 }
 
 // eslint-disable-next-line max-len

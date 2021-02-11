@@ -1,5 +1,4 @@
-import React, { useState, useCallback } from 'react';
-
+import React, { useCallback, useState } from 'react';
 
 /**
  * useState hook that can handle promises:
@@ -7,8 +6,8 @@ import React, { useState, useCallback } from 'react';
  *  - can pass an async setter function to setState(), e.g. setState(async (prevState) => {....})
  */
 export default function useAsyncState<T>(
-    initialState?: T|Promise<T>
-): [T|Promise<T>|undefined, React.Dispatch<React.SetStateAction<T|Promise<T>>>] {
+    initialState?: T | Promise<T>
+): [T | Promise<T> | undefined, React.Dispatch<React.SetStateAction<T | Promise<T>>>] {
     const [state, setState] = useState(initialState);
     if (initialState && typeof (<Promise<T>>initialState)?.then === 'function') {
         Promise.resolve(initialState).then(setState);
