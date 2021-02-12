@@ -77,7 +77,6 @@ This package supports tree-shaking, so each module will only be included in your
 | Function                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------|----- |
 | [addChaynsLoginListener](/src/functions/chaynsCalls/setReloadOnLogin.ts)| Similar to addAccessTokenChangeListener, but prevent reload on login/logout in a pagemaker iframe as well | |
-| [chaynsCall](/src/functions/chaynsCalls/chaynsCalls.ts)| wraps the chaynsCall callbacks behind a simple promise. Just await the chayns call to get the return value | |
 | [chaynsDialogs](/src/functions/chaynsDialogs/chaynsDialogs.ts)| makes using chayns dialogs much more comfortable | |
 | [copyToClipboard](/src/functions/copy.ts)| copy a value to the user's clipboard | |
 | [fnsFormat](/src/functions/timeHelper/fnsFormat.ts)| date-fns format with option to use today/tomorrow/yesterday and add the year if it's not the current year | |
