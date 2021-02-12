@@ -54,6 +54,7 @@ Each promise returned from this helper implements the following methods in addit
 * `.positive(callback)`: The callback receives the value and is executed if `buttonType === 1`.
 * `.negative(callback)`: The callback receives the value and is executed if `buttonType === 0`.
 * `.cancelled(callback)`: The callback receives the value and is executed if `buttonType === -1`.
+* `.onType(type, callback)`: The callback receives the value and is executed if `buttonType === type`.
 
 Note that these callbacks will only receive the value, not the object that includes the buttonType.
 
@@ -72,6 +73,7 @@ chaynsDialog.confirm('Do you want to confirm?')
     .positive((value) => { console.log('User has confirmed!') })
     .negative((value) => { console.log('User has declined!') })
     .cancelled((value) => { console.log('User has cancelled!') })
+    .onType(1, (value) => { console.log('User has confirmed') })
     .then(({buttonType, value}) => { console.log(buttonType, value) })
 
 // won't work because .then() is called before the custom handlers:
@@ -80,6 +82,7 @@ chaynsDialog.confirm('Do you want to confirm?')
     .positive((value) => { console.log('User has confirmed!') })
     .negative((value) => { console.log('User has declined!') })
     .cancelled((value) => { console.log('User has cancelled!') })
+    .onType(1, (value) => { console.log('User has confirmed') })
 ```
 
 ### Specific Dialogs

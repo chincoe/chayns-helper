@@ -5,7 +5,7 @@ import { DialogResult } from "./utils";
  * @extends Promise
  */
 export default class DialogPromise<T> extends Promise<DialogResult<T>> {
-    isPending = true;
+    private isPending = true;
 
     constructor(resolveFn: (resolve: (value?: any) => any, reject: (value?: any) => any) => void) {
         super((resolve, reject) => {
@@ -21,7 +21,11 @@ export default class DialogPromise<T> extends Promise<DialogResult<T>> {
         });
     }
 
-    positive(resolveFn: (value?: T) => any) {
+    /**
+     * Execute this function if buttonType is 1
+     * @param resolveFn
+     */
+    public positive(resolveFn: (value?: T) => any) {
         super.then((result) => {
             if (result.buttonType === 1) {
                 resolveFn(result.value);
@@ -30,7 +34,11 @@ export default class DialogPromise<T> extends Promise<DialogResult<T>> {
         return this;
     }
 
-    negative(resolveFn: (value?: T) => any) {
+    /**
+     * Execute this function if buttonType is 0
+     * @param resolveFn
+     */
+    public negative(resolveFn: (value?: T) => any) {
         super.then((result) => {
             if (result.buttonType === 0) {
                 resolveFn(result.value);
@@ -39,7 +47,11 @@ export default class DialogPromise<T> extends Promise<DialogResult<T>> {
         return this;
     }
 
-    cancelled(resolveFn: (value?: T) => any) {
+    /**
+     * Execute this function if buttonType is -1
+     * @param resolveFn
+     */
+    public cancelled(resolveFn: (value?: T) => any) {
         super.then((result) => {
             if (result.buttonType === -1) {
                 resolveFn(result.value);
@@ -49,10 +61,24 @@ export default class DialogPromise<T> extends Promise<DialogResult<T>> {
     }
 
     /**
-     * close the dialog
-     * @returns {boolean} success
+     * Execute this function if buttonType is the passed buttonType. Use this for custom buttons.
+     * @param buttonType
+     * @param resolveFn
      */
-    abort() {
+    public onType(buttonType: number, resolveFn: (value?: T) => any) {
+        super.then((result) => {
+            if (result.buttonType === buttonType) {
+                resolveFn(result.value);
+            }
+        });
+        return this;
+    }
+
+    /**
+     * Close the dialog if it is still open
+     * @returns success
+     */
+    public abort() {
         if (this.isPending) {
             chayns.dialog.close();
             return true;

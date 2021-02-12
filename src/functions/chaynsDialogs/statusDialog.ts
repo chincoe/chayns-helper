@@ -19,7 +19,7 @@ const statusDialog = (
     options: {
         message?: string,
         dialog?: 'alert' | 'confirm',
-        buttons?: Array<(DialogButton & { onClick?: () => any })>
+        buttons?: Array<DialogButton>
     } = {}
 ) => new DialogPromise<undefined>((resolve) => {
     let { dialog = dialogType.ALERT } = options;
@@ -42,9 +42,6 @@ const statusDialog = (
 
     chayns.dialog[dialog]('', dialogHtml, buttons || undefined)
         .then((buttonType: number) => {
-            if (buttons) {
-                buttons.find(e => e.buttonType === buttonType && typeof e.onClick === 'function' && e.onClick());
-            }
             resolve(createDialogResult(buttonType));
         });
 });
