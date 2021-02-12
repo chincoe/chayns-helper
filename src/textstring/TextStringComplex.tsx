@@ -63,14 +63,15 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
                             `https://webapi.tobit.com/TextStringService/v1.0/V2/LangLibs/${TEXTSTRING_CONFIG.libName}`,
                             {
                                 method: 'GET',
+                                cache: 'no-cache',
                                 headers: new Headers({
                                     Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`
                                 }),
                             }
                         );
                         const libContent = await libResponse.json();
-                        if (libResponse.status === 200 && libContent && Array.isArray(libContent) &&
-                            !libContent.find(s => s.stringName === stringName)) {
+                        if (libResponse.status === 200 && libContent && Array.isArray(libContent)
+                            && !libContent.find(s => s.stringName === `${TEXTSTRING_CONFIG.prefix}${stringName}`)) {
                             const response = await fetch(
                                 `https://webapi.tobit.com/TextStringService/v1.0/V2/LangStrings?libName=${TEXTSTRING_CONFIG.libName}`,
                                 {
