@@ -1,4 +1,4 @@
-import time from '../../constants/time';
+import time from '../constants/time';
 
 export enum DateTimeZoneHandlingEnum {
     Default = 'default',

@@ -21,7 +21,7 @@ import LogLevel, { LogLevelEnum, ObjectResponse } from './LogLevel';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
 import { HttpStatusCodeEnum } from './HttpStatusCodes';
 import showWaitCursor from '../waitCursor/waitCursor';
-import getJsonSettings, { JsonSettings } from '../getJsonSettings/getJsonSettings';
+import getJsonSettings, { JsonSettings } from '../getJsonSettings';
 import getJwtPayload from '../getJwtPayload';
 
 /**

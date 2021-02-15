@@ -55,7 +55,7 @@ This package supports tree-shaking, so each module will only be included in your
 | Hook                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------| --------|
 | [useAsyncState](/src/hooks/useAsyncState.ts)| useState hook that can resolve Promises and accepts async setter functions |
-| [useRechartsAxis](/src/functions/recharts/useRechartsAxis.ts)| a hook to generate a better recharts axis |
+| [useRechartsAxis](/src/functions/generateRechartsAxis.ts)| a hook to generate a better recharts axis |
 | [useClampLines](/src/hooks/useClampLines.ts)| a hook to restrict a text to a maxHeight or max lines | [useClampLines.md](https://github.com/chincoe/chayns-helper/blob/master/src/hooks/useClampLines.md) |
 | [useExtendedState](/src/hooks/useExtendedState.ts)| useState hook with async getter and prevState |
 | [useFullscreenTapp](/src/hooks/useFullscreenTapp.ts)| Hook to create a fullscreen tapp without scrolling | [useFullscreenTapp.md](https://github.com/chincoe/chayns-helper/blob/master/src/hooks/useFullscreenTapp.md) |
@@ -78,13 +78,13 @@ This package supports tree-shaking, so each module will only be included in your
 |----------------------------------------------------------------------|-------------------------------|----- |
 | [addChaynsLoginListener](/src/functions/chaynsCalls/setReloadOnLogin.ts)| Similar to addAccessTokenChangeListener, but prevent reload on login/logout in a pagemaker iframe as well | |
 | [chaynsDialogs](/src/functions/chaynsDialogs/chaynsDialogs.ts)| makes using chayns dialogs much more comfortable | |
-| [copyToClipboard](/src/functions/copy.ts)| copy a value to the user's clipboard | |
+| [copyToClipboard](/src/functions/copyToClipboard.ts)| copy a value to the user's clipboard | |
 | [fnsFormat](/src/functions/timeHelper/fnsFormat.ts)| date-fns format with option to use today/tomorrow/yesterday and add the year if it's not the current year | |
-| [generateRechartsAxis](/src/functions/recharts/useRechartsAxis.ts)| a function to generate a better recharts axis | |
+| [generateRechartsAxis](/src/functions/generateRechartsAxis.ts)| a function to generate a better recharts axis | |
 | [generateUUID](/src/functions/generateUid.ts)| generate a GUID | |
 | [getChaynsErrorCode](/src/functions/httpRequest/getChaynsErrorCode.ts)| get the error code of a chayns error response. Can deal with Response, Promise and Object | |
 | [getHookState](/src/functions/getHookState.ts)| get the current state of a hook via the setState function | |
-| [getJsonSettings](/src/functions/getJsonSettings/getJsonSettings.ts)| pass as second param to JSON.stringify to modify the serialization | [getJsonSettings.md](https://github.com/chincoe/chayns-helper/blob/master/src/functions/getJsonSettings/getJsonSettings.md) |
+| [getJsonSettings](/src/functions/getJsonSettings.ts)| pass as second param to JSON.stringify to modify the serialization | [getJsonSettings.md](docs/functions/getJsonSettings.md) |
 | [getJwtPayload](/src/functions/getJwtPayload.ts)| safely get JWT token payload | |
 | [Guid](/src/functions/guid.ts)| a Guid class | |
 | [hexToRgb](/src/functions/colors/hexToRgb.ts)| Convert a hex color to an rgb object which returns a rgba() css function when stringified | |
@@ -97,7 +97,7 @@ This package supports tree-shaking, so each module will only be included in your
 | [localStorage](/src/other/localStorageHelper.ts)| helper to cache httpRequest JSON strings in local storage | |
 | [removeChaynsLoginListener](/src/functions/chaynsCalls/setReloadOnLogin.ts)| remove the chaynsLoginListener | |
 | [setReloadOnLogin](/src/functions/chaynsCalls/setReloadOnLogin.ts)| enable/disable reload on login/logout for pagemaker iframes | |
-| [setViewMode](/src/functions/chaynsCalls/chaynsCalls.ts)| toggle exclusive mode | |
+| [setViewMode](/src/functions/chaynsCalls/setViewMode.ts)| toggle exclusive mode | |
 | [shallowEqual](/src/functions/shallowEqual.ts)| check 2 values for equality | |
 | [stringToColor](/src/functions/colors/stringToColor.ts)| Convert a string to a hex color or rgb color object which returns a rgba() css function when stringified | |
 | [toHslColor](/src/functions/colors/toHslColor.ts)| Convert a string or int to an hsl color object which returns a hsl() css function when stringified | |

@@ -15,7 +15,7 @@ export interface RechartsAxis<T> {
  * ...
  *  <YAxis
  *      ticks={tickInfo.ticks}
- *      tickCount={ickInfo.intervalCount}
+ *      tickCount={tickInfo.intervalCount}
  *      domain={[tickInfo.min, tickInfo.max]}
  *      interval="preserveStart"
  *  />
@@ -27,14 +27,21 @@ export interface RechartsAxis<T> {
  * @param minTicks - minimum number of ticks
  * @param tickFormatter - formatter for the ticks, e.g. for dates
  */
-export function generateRechartsAxis<T>(
-    start: number | T,
-    end: number | T,
-    divisor: number | number[],
-    maxTicks: number,
-    minTicks: number,
-    tickFormatter?: (start: number | T, intervalLength: number, i: number) => (number | T)
-): RechartsAxis<T> {
+export function generateRechartsAxis<T>({
+    start,
+    end,
+    divisor,
+    minTicks,
+    maxTicks,
+    tickFormatter
+}: {
+    start: number | T;
+    end: number | T;
+    divisor: number | number[];
+    maxTicks: number;
+    minTicks: number;
+    tickFormatter?: (start: number | T, intervalLength: number, i: number) => (number | T);
+}): RechartsAxis<T> {
     // eslint-disable-next-line no-param-reassign
     if (!tickFormatter) tickFormatter = (base, intervalLength, i) => (<number>base + intervalLength * i);
 
@@ -69,7 +76,7 @@ export function generateRechartsAxis<T>(
         max: tickFormatter(ticks[ticks.length - 1], intervalLength, 1),
         ticks
     };
-};
+}
 
 /**
  * Generate data for a good recharts axis that will use customizable intervals
@@ -107,6 +114,8 @@ const useRechartsAxis = <T>(
         minTicks: number,
         tickFormatter?: (start: number | T, intervalLength: number, i: number) => (number | T)
     }, deps: Array<any>
-): RechartsAxis<T> => useMemo(() => generateRechartsAxis(start, end, divisor, maxTicks, minTicks, tickFormatter), deps);
+): RechartsAxis<T> => useMemo(() => generateRechartsAxis({
+    start, end, divisor, maxTicks, minTicks, tickFormatter
+}), deps);
 
 export default useRechartsAxis;

@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import useRechartsAxis from '../../functions/recharts/useRechartsAxis';
+import useRechartsAxis from '../../functions/generateRechartsAxis';
 
 export interface RechartsAxis<T> {
     start: number | T;

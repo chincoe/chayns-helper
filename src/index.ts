@@ -32,7 +32,7 @@ export { default as fileSelectDialog } from './functions/chaynsDialogs/dialogs/f
 export { default as iFrameDialog } from './functions/chaynsDialogs/dialogs/iFrame';
 export { default as statusDialog, dialogType, dialogStatusType } from './functions/chaynsDialogs/statusDialog';
 // general functions
-export { default as copyToClipboard } from './functions/copy';
+export { default as copyToClipboard } from './functions/copyToClipboard';
 export { default as types } from './functions/types';
 export { default as showWaitCursor } from './functions/waitCursor/waitCursor';
 export { default as generateUUID } from './functions/generateUid';
@@ -46,11 +46,11 @@ export { default as stringToColor } from './functions/colors/stringToColor';
 export { default as hexToRgb } from './functions/colors/hexToRgb';
 export { default as toHslColor } from './functions/colors/toHslColor';
 export { default as getJwtPayload } from './functions/getJwtPayload';
-export { default as getJsonSettings, DateTimeZoneHandling } from './functions/getJsonSettings/getJsonSettings';
+export { default as getJsonSettings, DateTimeZoneHandling } from './functions/getJsonSettings';
 export { isPagemakerIFrame, isCustomTappIFrame } from './functions/isPagemakerIFrame';
 // functions with deps
 export { default as useShallowSelector } from './hooks/useShallowSelector';
-export { default as useRechartsAxis, generateRechartsAxis } from './functions/recharts/useRechartsAxis';
+export { default as useRechartsAxis, generateRechartsAxis } from './functions/generateRechartsAxis';
 // httpRequest
 export { default as request } from './functions/httpRequest/httpRequest';
 export { default as HttpStatusCode } from './functions/httpRequest/HttpStatusCodes';

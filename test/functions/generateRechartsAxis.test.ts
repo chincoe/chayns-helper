@@ -1,4 +1,4 @@
-import { generateRechartsAxis } from '../../src/functions/recharts/useRechartsAxis';
+import { generateRechartsAxis } from '../../src/functions/generateRechartsAxis';
 
 describe('functions/generateRechartsAxis', () => {
     it('runs without crashing', () => {

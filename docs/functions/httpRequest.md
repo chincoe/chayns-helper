@@ -1,4 +1,4 @@
-## [Request](httpRequest.ts)
+## [Request](src/functions/httpRequest/httpRequest.ts)
 A request helper with customizable defaults that can be used to configure any behavior. 
 Includes the request helper as well as enums for http methods, http status codes and more.
 
@@ -62,7 +62,7 @@ A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js
 |options.responseType | expected response format (json/blob/Response/etc.) | ResponseType/string | `'json'` |
 |options.logConfig | Configure the log level of specific status codes | Object\<statusCode/regex, LogLevel> | `{"[1-3][\\d]{2}":'info', 401: 'warning', "[\\d]+": 'error'}`|
 |options.throwErrors | Throw an error on error status codes instead of returning null. Response types "Object" and "Response" will return an object that includes the status to make sure the status is always available. Passing an array will set throwErrors to `true` unless it's one of the status codes in the array | boolean / Array\<statusCode> | `false` |
-|options.stringifyBody | Call JSON.stringify() on config.body before passing it to fetch() and set the Content-Type header if a body is specified. You can pass an object with [JsonSettings](../getJsonSettings/getJsonSettings.md#JsonSettings) as well to customize serialization | boolean/JsonSettings | `true` |
+|options.stringifyBody | Call JSON.stringify() on config.body before passing it to fetch() and set the Content-Type header if a body is specified. You can pass an object with [JsonSettings](getJsonSettings.md#JsonSettings) as well to customize serialization | boolean/JsonSettings | `true` |
 |options.additionalLogData | This data will be logged with the request logs. Doesn't affect functionality at all | Object | `{}`|
 |options.autoRefreshToken | Automatically repeat a request with config.useChaynsAuth if it fails due to expired access token after refreshing said access token | boolean | `true` |
 |options.statusHandlers| Handle responses for specific status codes using the codes or regex. Format: <br> 1.`{ [status/regex] : (response) => { my code }, ... }`<br> 2. `{ [status/regex] : responseType, ... }` | Object\<status/regex, responseType/responseHandler> | `{}` |
