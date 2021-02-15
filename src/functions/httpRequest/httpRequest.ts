@@ -216,6 +216,12 @@ export function httpRequest(
                 ...(defaultConfig.config || {}),
                 ...(config || {})
             };
+            if (fetchConfig.mode === 'no-cors') {
+                console.warn(
+                    ...colorLog.gray(`[HttpRequest<${processName}>]`),
+                    '`mode:\'no-cors\'` will remove your authorization header and return an opaque response with status code 0. Please check if `credentials: \'omit\' yields the desired result first.`'
+                );
+            }
             const {
                 method,
                 useChaynsAuth,
@@ -272,11 +278,9 @@ export function httpRequest(
                 // get statusHandler if exists
                 const handlerKeys = getMapKeys(statusHandlers);
                 const statusHandlerKey = handlerKeys.find((k) =>
-                    (k === `${status}` || stringToRegex(k)
-                        .test(`${status}`))
+                    (k === `${status}` || stringToRegex(k).test(`${status}`))
                     && (typeof (statusHandlers.get(k)) === 'function'
-                        || ResponseTypeList
-                            .includes(statusHandlers.get(k)))
+                        || ResponseTypeList.includes(statusHandlers.get(k)))
                 );
 
                 // get errorHandler if exists
@@ -477,8 +481,11 @@ export function httpRequest(
                     },
                     response: {
                         status,
+                        statusText: response.statusText,
+                        type: response.type,
                         requestUid,
                         body: responseBody,
+                        url: response.url
                     },
                     input,
                     // @ts-expect-error
