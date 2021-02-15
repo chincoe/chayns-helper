@@ -4,6 +4,7 @@
 const ResponseType = {
     Json: 'json',
     Blob: 'blob',
+    Binary: 'binary',
     Response: 'response',
     Text: 'text',
     Object: 'object',
@@ -13,7 +14,8 @@ const ResponseType = {
         Json: 'status_json',
         Blob: 'status_blob',
         Text: 'status_text',
-        None: 'status_none'
+        None: 'status_none',
+        Binary: 'status_binary'
     }
 }
 
@@ -22,6 +24,7 @@ export type ResponseTypeValue =
     | string
     | 'json'
     | 'blob'
+    | 'binary'
     | 'response'
     | 'text'
     | 'none'
@@ -30,6 +33,7 @@ export type ResponseTypeValue =
     | 'status_blob'
     | 'status_text'
     | 'status_none'
+    | 'status_binary'
 
 export const ResponseTypeList = [...Object.values(ResponseType).slice(0, -1), ...Object.values(ResponseType.Status)]
 

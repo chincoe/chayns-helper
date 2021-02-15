@@ -59,7 +59,7 @@ A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js
 |config.method| Method for the request | HttpMethod / string | `'GET'` |
 |processName| Name of this request for all logs | string | `'HttpRequest'` |
 |options| Options to configure the request helper | Object | `{}` |
-|options.responseType | expected response format (json/blob/Object/Response) | ResponseType/string | `'json'` |
+|options.responseType | expected response format (json/blob/Response/etc.) | ResponseType/string | `'json'` |
 |options.logConfig | Configure the log level of specific status codes | Object\<statusCode/regex, LogLevel> | `{"[1-3][\\d]{2}":'info', 401: 'warning', "[\\d]+": 'error'}`|
 |options.throwErrors | Throw an error on error status codes instead of returning null. Response types "Object" and "Response" will return an object that includes the status to make sure the status is always available. Passing an array will set throwErrors to `true` unless it's one of the status codes in the array | boolean / Array\<statusCode> | `false` |
 |options.stringifyBody | Call JSON.stringify() on config.body before passing it to fetch() and set the Content-Type header if a body is specified. You can pass an object with [JsonSettings](../getJsonSettings/getJsonSettings.md#JsonSettings) as well to customize serialization | boolean/JsonSettings | `true` |
@@ -261,6 +261,7 @@ request.fetch('/controller/endpoint/boardId', {}, 'myRequest');
 |----------|-------| ------|
 |Json| `'json'`| response.json()|
 |Blob | `'blob'`| response.blob() |
+|Binary | `'binary'`| response.arrayBuffer() |
 |Response | `'response'` | response |
 |Object(**deprecated**) | `'object'` | `{ status: response.status, data: await response.json() }` |
 |Text | `'text'` | response.text() |
@@ -270,6 +271,7 @@ request.fetch('/controller/endpoint/boardId', {}, 'myRequest');
 |Status.Blob | `'status_blob'` | `{ status: response.status, data: await response.blob() }` |
 |Status.Text | `'status_text'` | `{ status: response.status, data: await response.text() }` |
 |Status.None | `'status_none'` | `{ status: response.status, data: undefined }` |
+|Status.Binary | `'status_binary'` | `{ status: response.status, data: await response.arrayBuffer() }` |
 
 > ResponseType.Object is deprecated and will be removed in a future release.
 

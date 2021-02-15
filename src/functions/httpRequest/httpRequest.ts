@@ -412,6 +412,7 @@ export function httpRequest(
                             case ResponseType.Status.None:
                                 resolve({ status, data: undefined });
                                 break;
+                            case ResponseType.Status.Binary:
                             case ResponseType.Status.Blob:
                             case ResponseType.Status.Json:
                             case ResponseType.Status.Text:
@@ -431,9 +432,12 @@ export function httpRequest(
                             case ResponseType.Response:
                                 resolve(response || { status });
                                 break;
+                            case ResponseType.Binary:
                             case ResponseType.Text:
                             case ResponseType.Blob:
                             case ResponseType.Json:
+                                resolve(null);
+                                break;
                             default:
                                 resolve(response || null);
                                 break;
