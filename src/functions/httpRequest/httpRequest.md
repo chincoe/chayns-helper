@@ -209,6 +209,7 @@ Set a base url as well as defaults for fetch config and request.fetch()-options.
 
 By default, if a field in options or config is set on a specific request it will overwrite the default set with this function entirely.
 There are some important exceptions where defaults and specific options are merged, with the specific taking priority over the default:
+* request.headers
 * options.statusHandlers
 * options.errorHandlers
 * options.logConfig

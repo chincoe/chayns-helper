@@ -35,15 +35,34 @@ import getJwtPayload from '../getJwtPayload';
 export interface HttpRequestConfig {
     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT' | string | typeof HttpMethodEnum;
     useChaynsAuth?: boolean;
-    headers?: object;
+    headers?: Record<string, string> & {
+        Authorization?: string
+            | 'Bearer ${chayns.env.user.tobitAccessToken}'
+            | 'Bearer ${token}'
+            | 'Basic ${credentials}'
+            | 'Basic ${btoa(`${user}:${secret}`).replace(`+`, `-`).replace(`/`, `_`).replace(/=+$/, ``)}';
+        'Content-Type'?: string
+            | 'application/json'
+            | 'text/plain'
+            | 'application/x-www-form-urlencoded'
+            | 'multipart/form-data';
+    };
     body?: object | string | FormData | any;
-    cache?: string;
+    cache?: string | 'default' | 'no-cache' | 'reload' | 'force-cache' | 'only-if-cached';
     referrer?: string;
-    referrerPolicy?: string;
-    mode?: string;
-    redirect?: string;
+    referrerPolicy?: string
+        | 'no-referrer'
+        | 'no-referrer-when-downgrade'
+        | 'same-origin, origin'
+        | 'strict-origin'
+        | 'origin-when-cross-origin'
+        | 'strict-origin-when-cross-origin'
+        | 'unsafe-url';
+    mode?: string | 'cors' | 'no-cors' | 'same-origin';
+    credentials?: string | 'omit' | 'same-origin' | 'include';
+    redirect?: string | 'follow' | 'manual' | 'error';
     integrity?: string;
-    keepalive?: string;
+    keepalive?: boolean;
     window?: Window;
     signal?: AbortSignal;
 }
