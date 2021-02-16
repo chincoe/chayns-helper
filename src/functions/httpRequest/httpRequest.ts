@@ -364,12 +364,13 @@ export function httpRequest(
                     },
                     section: 'httpRequest.js'
                 }, err);
-                console.error(...colorLog.gray(`[HttpRequest<${processName}>]`),
-                    `Request failed:`, err, '\nInput: ', input
-                );
                 err.statusCode = 1;
                 const status = 1;
                 const { statusHandler, errorHandler } = getHandlers(status, err);
+                (statusHandler || errorHandler ? console.warn : console.error)(
+                    ...colorLog.gray(`[HttpRequest<${processName}>]`),
+                    `Request failed:`, err, '\nInput: ', input
+                );
                 if (errorHandler) {
                     callSideEffects(status);
                     await resolveWithHandler(
@@ -508,7 +509,7 @@ export function httpRequest(
             if (response && status < 400) {
                 log({
                     ...logData,
-                    message: `[HttpRequest] http request finished: Status ${status} on ${processName}`
+                    message: `[HttpRequest] HTTP request finished: Status ${status} on ${processName}`
                 });
             } else if (response && status === 401) {
                 const error = chaynsErrorObject
@@ -516,9 +517,10 @@ export function httpRequest(
                     : new RequestError(`Status ${status} on ${processName}`, status);
                 log({
                     ...logData,
-                    message: `[HttpRequest] http request failed: Status ${status} on ${processName}`,
+                    message: `[HttpRequest] HTTP request failed: Status ${status} on ${processName}`,
                 }, error);
-                console.error(
+                const { statusHandler, errorHandler } = getHandlers(status, error);
+                (statusHandler || errorHandler ? console.warn : console.error)(
                     ...colorLog.gray(`[HttpRequest<${processName}>]`),
                     error, '\nInput: ', input
                 );
@@ -554,9 +556,10 @@ export function httpRequest(
                     : new RequestError(`Status ${status} on ${processName}`, status);
                 log({
                     ...logData,
-                    message: `[HttpRequest] http request failed: Status ${status} on ${processName}`
+                    message: `[HttpRequest] HTTP request failed: Status ${status} on ${processName}`
                 }, error);
-                console.error(
+                const { statusHandler, errorHandler } = getHandlers(status, error);
+                (statusHandler || errorHandler ? console.warn : console.error)(
                     ...colorLog.gray(`[HttpRequest<${processName}>]`),
                     error, '\nInput: ', input
                 );
