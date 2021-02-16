@@ -131,6 +131,7 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
                     textStringChildren={children}
                     stringName={stringName}
                     fallback={fallback}
+                    onClick={(children as ReactElement)?.props?.onClick}
                     {...props}
                 />
             }
@@ -146,7 +147,7 @@ interface TextStringReplacerConfig {
     maxReplacements?: number,
     stringName: string,
     fallback: string
-
+    onClick?: (...arg: any) => any;
 }
 
 const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
