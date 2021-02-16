@@ -5,7 +5,7 @@ import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
 import ChaynsError, { ChaynsErrorObject } from './ChaynsError';
 import getChaynsErrorCode from './getChaynsErrorCode';
 import { chaynsErrorCodeRegex } from './isChaynsError';
-import LogLevel, { LogLevelEnum } from './LogLevel';
+import LogLevel, { LogLevelType } from './LogLevel';
 import RequestError from './RequestError';
 import ResponseType, { ResponseTypeList, ResponseTypeValue } from './ResponseType';
 
@@ -21,7 +21,7 @@ export const getMapKeys = (map: Map<string, any>) => {
 
 export async function getLogFunctionByStatus(
     status: number,
-    logConfig: Map<string, typeof LogLevelEnum | string>,
+    logConfig: Map<string, LogLevelType>,
     defaultFunction: (data: object) => any,
     chaynsErrorObject?: ChaynsErrorObject
 ): Promise<(data: object, error?: Error) => any> {
@@ -78,7 +78,7 @@ export function getStatusHandlerByStatusRegex(
         const regExp = stringToRegex(keys[i]);
         if (regExp.test(status?.toString())
             && (typeof (statusHandlers.get(keys[i])) === 'function'
-                || ResponseTypeList.includes(<string><unknown>statusHandlers.get(keys[i]))
+                || ResponseTypeList.includes(<ResponseTypeValue><unknown>statusHandlers.get(keys[i]))
             )
         ) {
             return statusHandlers.get(keys[i]);
@@ -201,7 +201,7 @@ export async function resolveWithHandler(
         resolve(await handler(<Response><unknown>chaynsErrorObject ?? response));
         return true;
     }
-    if (ResponseTypeList.includes(<string>handler)) {
+    if (ResponseTypeList.includes(handler)) {
         switch (handler) {
             case ResponseType.Json:
             case ResponseType.Status.Json:

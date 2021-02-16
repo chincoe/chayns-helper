@@ -6,7 +6,7 @@ import colorLog from '../../utils/colorLog';
 import generateUUID from '../generateUid';
 import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
 import ChaynsError from './ChaynsError';
-import HttpMethod, { HttpMethodEnum } from './HttpMethod';
+import HttpMethod, { HttpMethodType } from './HttpMethod';
 import {
     getLogFunctionByStatus,
     getMapKeys,
@@ -17,9 +17,9 @@ import {
 import { chaynsErrorCodeRegex } from './isChaynsError';
 import RequestError from './RequestError';
 import ResponseType, { ResponseTypeList, ResponseTypeValue } from './ResponseType';
-import LogLevel, { LogLevelEnum, ObjectResponse } from './LogLevel';
+import LogLevel, { LogLevelType, ObjectResponse } from './LogLevel';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
-import { HttpStatusCodeEnum } from './HttpStatusCodes';
+import { HttpStatusCodeType } from './HttpStatusCodes';
 import showWaitCursor from '../waitCursor/waitCursor';
 import getJsonSettings, { JsonSettings } from '../getJsonSettings/getJsonSettings';
 import getJwtPayload from '../getJwtPayload';
@@ -33,7 +33,7 @@ import getJwtPayload from '../getJwtPayload';
  * @param signal - an AbortSignal
  */
 export interface HttpRequestConfig {
-    method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT' | string | typeof HttpMethodEnum;
+    method?: HttpMethodType;
     useChaynsAuth?: boolean;
     headers?: object;
     body?: object | string | FormData | any,
@@ -68,8 +68,8 @@ export interface HttpRequestConfig {
  */
 export interface HttpRequestOptions {
     responseType?: ResponseTypeValue | null;
-    throwErrors?: boolean | Array<typeof HttpStatusCodeEnum | string | number>;
-    logConfig?: { [key: string]: typeof LogLevelEnum | string } | Map<string, typeof LogLevelEnum | string>,
+    throwErrors?: boolean | Array<HttpStatusCodeType>;
+    logConfig?: { [key: string]: LogLevelType } | Map<string, LogLevelType>,
     stringifyBody?: boolean | JsonSettings;
     additionalLogData?: object;
     autoRefreshToken?: boolean;
@@ -200,7 +200,7 @@ export function httpRequest(
 
             // eslint-disable-next-line no-param-reassign
             if (!processName) processName = 'HttpRequest';
-            if (responseType != null && !ResponseTypeList.includes(<string>responseType)) {
+            if (responseType != null && !ResponseTypeList.includes(responseType)) {
                 console.error(
                     ...colorLog.gray(`[HttpRequest<${processName}>]`),
                     `Response type "${responseType}" is not valid. Use ResponseType.[Json|Text|Response|None|Blob|Status.Json] instead.`
@@ -239,12 +239,12 @@ export function httpRequest(
                 ...headers
             };
 
-            // this way rerender config elements like "credentials", "mode", "cache" or "signal" can be passed to fetch()
+            // this way rerender config elements like "credentials", "mode", or "signal" can be passed to fetch()
             const remainingFetchConfig: RequestInit = <RequestInit>{ ...fetchConfig };
             // @ts-expect-error
             delete remainingFetchConfig.useChaynsAuth;
 
-            let requestAddress: string = '';
+            let requestAddress: string;
             if (!isNullOrWhiteSpace(defaultConfig.address)
                 && !/^.+?:\/\//.test(address)
                 && /^.+?:\/\//.test(defaultConfig.address)) {
@@ -271,11 +271,9 @@ export function httpRequest(
                 // get statusHandler if exists
                 const handlerKeys = getMapKeys(statusHandlers);
                 const statusHandlerKey = handlerKeys.find((k) =>
-                    (k === `${status}` || stringToRegex(k)
-                        .test(`${status}`))
+                    (k === `${status}` || stringToRegex(k).test(`${status}`))
                     && (typeof (statusHandlers.get(k)) === 'function'
-                        || ResponseTypeList
-                            .includes(statusHandlers.get(k)))
+                        || ResponseTypeList.includes(statusHandlers.get(k)))
                 );
 
                 // get errorHandler if exists
@@ -283,11 +281,9 @@ export function httpRequest(
                 const isChayns: boolean = !!err && (err instanceof ChaynsError);
                 const chaynsErrorCode: string | null = isChayns ? (<ChaynsError>err).errorCode : null;
                 const errorHandlerKey = errorKeys.find((k) =>
-                    (chaynsErrorCode && (k === chaynsErrorCode || stringToRegex(k)
-                        .test(chaynsErrorCode)))
+                    (chaynsErrorCode && (k === chaynsErrorCode || stringToRegex(k).test(chaynsErrorCode)))
                     && (typeof (errorHandlers.get(k)) === 'function'
-                        || ResponseTypeList
-                            .includes(errorHandlers.get(k)))
+                        || ResponseTypeList.includes(errorHandlers.get(k)))
                 );
                 return {
                     statusHandler: statusHandlers.get(statusHandlerKey),
@@ -339,6 +335,7 @@ export function httpRequest(
                     body: stringifyBody ? jsonBody : body
                 });
                 if (!response) {
+                    // noinspection ExceptionCaughtLocallyJS
                     throw new RequestError(
                         `[HttpRequest] Failed to fetch on ${processName}: Response is not defined`,
                         1
