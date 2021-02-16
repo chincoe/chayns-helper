@@ -35,7 +35,7 @@ import getJwtPayload from '../getJwtPayload';
 export interface HttpRequestConfig {
     method?: HttpMethodType;
     useChaynsAuth?: boolean;
-    headers?: Record<string, string> & {
+    headers?: HeadersInit | Record<string, string> & {
         Authorization?: string
             | 'Bearer ${chayns.env.user.tobitAccessToken}'
             | 'Bearer ${token}'
@@ -259,7 +259,7 @@ export function httpRequest(
             let requestHeaders: HeadersInit = body && stringifyBody ? { 'Content-Type': 'application/json' } : {};
             if (useChaynsAuth) requestHeaders.Authorization = `Bearer ${chayns.env.user.tobitAccessToken}`;
             requestHeaders = {
-                ...requestHeaders,
+                ...(requestHeaders as HeadersInit),
                 ...(defaultConfig?.config?.headers || {}),
                 ...headers
             };
@@ -495,9 +495,11 @@ export function httpRequest(
                         body,
                         headers: {
                             ...requestHeaders,
-                            Authorization: requestHeaders?.Authorization
-                                           && !!getJwtPayload(requestHeaders?.Authorization)
-                                ? `Payload: ${requestHeaders.Authorization.split('.')[1]}`
+                            Authorization: (requestHeaders as { Authorization: string })?.Authorization
+                                           && !!getJwtPayload((requestHeaders as { Authorization: string })
+                                ?.Authorization)
+                                ? `Payload: ${(requestHeaders as { Authorization: string }).Authorization.split(
+                                    '.')[1]}`
                                 : undefined
                         },
                     },
