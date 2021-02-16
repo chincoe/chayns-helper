@@ -1,7 +1,7 @@
 import request, { httpRequest } from '../../../src/functions/httpRequest/httpRequest';
 import fetchMock from 'jest-fetch-mock';
 import ResponseType from '../../../src/functions/httpRequest/ResponseType';
-import generateUUID from '../../../src/functions/generateUid';
+import generateUUID from '../../../src/functions/generateGuid';
 
 describe('functions/httpRequest/httpRequest', () => {
     beforeAll(() => {

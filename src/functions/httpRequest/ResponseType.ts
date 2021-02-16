@@ -20,6 +20,7 @@ const ResponseType: {
 } = {
     Json: 'json',
     Blob: 'blob',
+    Binary: 'binary',
     Response: 'response',
     Text: 'text',
     Object: 'object',
@@ -29,7 +30,8 @@ const ResponseType: {
         Json: 'status_json',
         Blob: 'status_blob',
         Text: 'status_text',
-        None: 'status_none'
+        None: 'status_none',
+        Binary: 'status_binary'
     }
 }
 
