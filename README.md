@@ -79,6 +79,7 @@ This package supports tree-shaking, so each module will only be included in your
 | [addChaynsLoginListener](/src/functions/chaynsCalls/setReloadOnLogin.ts)| Similar to addAccessTokenChangeListener, but prevent reload on login/logout in a pagemaker iframe as well | |
 | [chaynsDialogs](/src/functions/chaynsDialogs/chaynsDialogs.ts)| makes using chayns dialogs much more comfortable | |
 | [copyToClipboard](/src/functions/copyToClipboard.ts)| copy a value to the user's clipboard | |
+| [deepEqual](/src/functions/shallowEqual.ts)| recursive implementation of shallowEqual | |
 | [fnsFormat](/src/functions/timeHelper/fnsFormat.ts)| date-fns format with option to use today/tomorrow/yesterday and add the year if it's not the current year | |
 | [generateRechartsAxis](/src/functions/generateRechartsAxis.ts)| a function to generate a better recharts axis | |
 | [generateGuid](/src/functions/generateGuid.ts)| generate a GUID | |

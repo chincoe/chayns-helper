@@ -38,7 +38,7 @@ export { default as showWaitCursor } from './functions/waitCursor';
 export { default as generateGuid } from './functions/generateGuid';
 export { default as localStorage } from './other/localStorageHelper';
 export { default as getHookState } from './functions/getHookState';
-export { default as shallowEqual } from './functions/shallowEqual';
+export { default as shallowEqual, deepEqual } from './functions/shallowEqual';
 export { default as fnsFormat } from './functions/timeHelper/fnsFormat';
 export { default as roundDate } from './functions/timeHelper/roundDate';
 export { default as stringToColor } from './functions/colors/stringToColor';
