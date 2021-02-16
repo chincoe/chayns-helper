@@ -9,13 +9,11 @@ export const chaynsErrorCodeRegex = /^[a-zA-Z0-9_]+\/[a-zA-Z0-9/_]+$/;
  */
 export function isChaynsErrorObject(obj: { [key: string]: any }): boolean {
     return !!obj
-           && Object.prototype.toString.call(obj) === "[object Object]"
-           && Object.hasOwnProperty.call(obj, 'displayMessage')
-           && Object.hasOwnProperty.call(obj, 'errorCode')
-           && Object.hasOwnProperty.call(obj, 'requestId')
-           && typeof (obj?.errorCode) === 'string'
-           && typeof (obj?.displayMessage) === 'string'
-           && chaynsErrorCodeRegex.test(obj.errorCode);
+        && Object.prototype.toString.call(obj) === "[object Object]"
+        && Object.hasOwnProperty.call(obj, 'errorCode')
+        && Object.hasOwnProperty.call(obj, 'requestId')
+        && typeof (obj?.errorCode) === 'string'
+        && chaynsErrorCodeRegex.test(obj.errorCode);
 }
 
 /**

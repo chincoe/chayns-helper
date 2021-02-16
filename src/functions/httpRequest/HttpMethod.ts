@@ -9,12 +9,20 @@ export enum HttpMethodEnum {
 /**
  * An enum for HTTP methods
  */
-const HttpMethod = {
+const HttpMethod: {
+    Get: 'GET',
+    Post: 'POST',
+    Put: 'PUT',
+    Patch: 'PATCH',
+    Delete: 'DELETE',
+} = {
     Get: 'GET',
     Post: 'POST',
     Put: 'PUT',
     Patch: 'PATCH',
     Delete: 'DELETE',
 }
+
+export type HttpMethodType = typeof HttpMethod[keyof typeof HttpMethod] | string;
 
 export default HttpMethod;
