@@ -34,7 +34,7 @@ function decodeUtf8(utfText: string) {
  * @param tobitAccessToken Tobit Access Token.
  * @returns {{} | *} Json object
  */
-export default function getJwtPayload(tobitAccessToken: string) {
+export default function getJwtPayload(tobitAccessToken: string): { [key: string]: any } | null {
     if (tobitAccessToken && typeof tobitAccessToken === 'string' && tobitAccessToken.length > 0) {
         const spl = tobitAccessToken.split('.');
         if (spl && spl.length === 3) {

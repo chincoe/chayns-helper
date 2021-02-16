@@ -81,12 +81,11 @@ This package supports tree-shaking, so each module will only be included in your
 | [copyToClipboard](/src/functions/copyToClipboard.ts)| copy a value to the user's clipboard | |
 | [fnsFormat](/src/functions/timeHelper/fnsFormat.ts)| date-fns format with option to use today/tomorrow/yesterday and add the year if it's not the current year | |
 | [generateRechartsAxis](/src/functions/generateRechartsAxis.ts)| a function to generate a better recharts axis | |
-| [generateUUID](/src/functions/generateUid.ts)| generate a GUID | |
+| [generateGuid](/src/functions/generateGuid.ts)| generate a GUID | |
 | [getChaynsErrorCode](/src/functions/httpRequest/getChaynsErrorCode.ts)| get the error code of a chayns error response. Can deal with Response, Promise and Object | |
 | [getHookState](/src/functions/getHookState.ts)| get the current state of a hook via the setState function | |
 | [getJsonSettings](/src/functions/getJsonSettings.ts)| pass as second param to JSON.stringify to modify the serialization | [getJsonSettings.md](docs/functions/getJsonSettings.md) |
 | [getJwtPayload](/src/functions/getJwtPayload.ts)| safely get JWT token payload | |
-| [Guid](/src/functions/guid.ts)| a Guid class | |
 | [hexToRgb](/src/functions/colors/hexToRgb.ts)| Convert a hex color to an rgb object which returns a rgba() css function when stringified | |
 | [hideCWFooter](/src/functions/chaynsCalls/hideCwFooter.ts)| hide the chayns web footer | |
 | [isChaynsError](/src/functions/httpRequest/isChaynsError.ts)| determine whether something is a chayns error. Can deal with Response, Promise and Object | |
@@ -102,7 +101,7 @@ This package supports tree-shaking, so each module will only be included in your
 | [stringToColor](/src/functions/colors/stringToColor.ts)| Convert a string to a hex color or rgb color object which returns a rgba() css function when stringified | |
 | [toHslColor](/src/functions/colors/toHslColor.ts)| Convert a string or int to an hsl color object which returns a hsl() css function when stringified | |
 | [types](/src/functions/types.ts)| a collection of helpers for types in general but especially objects and arrays. Includes: mapObject, reduceObject, mapObjectToArray, forEachKey, firstOrDefault, replaceAll, type checking | |
-| [showWaitCursor](/src/functions/waitCursor/waitCursor.ts)| helper for chayns.showWaitCursor with a timeout before displaying | [waitCursor.md](https://github.com/chincoe/chayns-helper/blob/master/src/functions/waitCursor/waitCursor.md) |
+| [showWaitCursor](/src/functions/waitCursor.ts)| helper for chayns.showWaitCursor with a timeout before displaying | [waitCursor.md](https://github.com/chincoe/chayns-helper/blob/master/src/functions/waitCursor/waitCursor.md) |
 | [WebSocketClient](/src/other/WsClient.ts)| custom alternative to tobit-websocket-service-client | |
 
 ### Constants

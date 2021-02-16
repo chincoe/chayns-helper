@@ -3,7 +3,7 @@ import isNullOrWhiteSpace from '../../utils/isNullOrWhiteSpace';
 import logger from 'chayns-logger';
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import colorLog from '../../utils/colorLog';
-import generateUUID from '../generateUid';
+import generateUUID from '../generateGuid';
 import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
 import ChaynsError from './ChaynsError';
 import HttpMethod, { HttpMethodEnum } from './HttpMethod';
@@ -20,7 +20,7 @@ import ResponseType, { ResponseTypeList, ResponseTypeValue } from './ResponseTyp
 import LogLevel, { LogLevelEnum, ObjectResponse } from './LogLevel';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
 import { HttpStatusCodeEnum } from './HttpStatusCodes';
-import showWaitCursor from '../waitCursor/waitCursor';
+import showWaitCursor from '../waitCursor';
 import getJsonSettings, { JsonSettings } from '../getJsonSettings';
 import getJwtPayload from '../getJwtPayload';
 

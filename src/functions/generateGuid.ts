@@ -2,7 +2,7 @@
  * generate a new GUID
  * @return {string} guid
  */
-export default function generateUUID(): string {
+export default function generateGuid(): string {
     let d = Date.now();
     if (typeof window !== 'undefined' && window.performance && typeof window.performance.now === 'function') {
         d += performance.now();

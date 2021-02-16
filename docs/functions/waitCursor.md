@@ -1,4 +1,4 @@
-## [WaitCursor](waitCursor.ts)
+## [WaitCursor](src/functions/waitCursor.ts)
 A small helper to use chayns.showWaitCursor() with a timeout and/or multiple steps.
 ### Usage
 ```javascript

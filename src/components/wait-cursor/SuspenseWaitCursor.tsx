@@ -1,5 +1,5 @@
 import React, { FunctionComponent, ReactNode, Suspense, useEffect } from 'react';
-import showWaitCursor from '../../functions/waitCursor/waitCursor';
+import showWaitCursor from '../../functions/waitCursor';
 import CenteredWaitCursor from './CenteredWaitCursor';
 
 /**

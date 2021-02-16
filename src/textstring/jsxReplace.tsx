@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import parse from 'html-react-parser';
 import stringToRegex, { regexRegex } from '../utils/stringToRegex';
-import generateUUID from '../functions/generateUid';
+import generateUUID from '../functions/generateGuid';
 import colorLog from '../utils/colorLog';
 
 export type JsxReplacementFunction = ((params: { match: string, regexMatch?: RegExpMatchArray, variable: string | RegExp }) => string | ReactElement);

@@ -3,7 +3,7 @@ import React, { FunctionComponent, memo, ReactElement, ReactNode, useEffect, use
 import { TextString } from 'chayns-components';
 // @ts-expect-error
 import isTobitEmployee from 'chayns-components/dist/esm/utils/tobitEmployee.js';
-import generateUUID from '../functions/generateUid';
+import generateUUID from '../functions/generateGuid';
 import jsxReplace, { JsxReplacements } from './jsxReplace';
 import TEXTSTRING_CONFIG from './textstringConfig';
 import isNullOrWhiteSpace from '../utils/isNullOrWhiteSpace';
@@ -156,7 +156,7 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
     maxReplacements,
     stringName,
     fallback,
-    ...elementProps
+    ...props
 }) => {
     // get the string manually if it hasn't been passed by the chayns-components textstring component
     const calculatedString = TextString.getTextString(stringName) || fallback;
@@ -180,7 +180,7 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
     }, [text, replacements, dangerouslySetInnerHTML, guid, maxReplacements]);
 
     return textStringChildren && React.isValidElement(textStringChildren)
-        ? React.cloneElement(textStringChildren, elementProps, content)
+        ? React.cloneElement(textStringChildren, props, content)
         : <span>{content}</span>;
 };
 
