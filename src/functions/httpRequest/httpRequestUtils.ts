@@ -202,6 +202,14 @@ export async function resolveWithHandler(
         return true;
     }
     if (ResponseTypeList.includes(handler)) {
+        // TODO: Remove in future release
+        if (handler === ResponseType.Object) {
+            console.warn(
+                ...colorLog.gray(`[HttpRequest<${processName}>]`),
+                'ResponseType.Object is deprecated and will be removed in the future. Use ResponseType.Status.Json instead.'
+            );
+            handler = ResponseType.Status.Json;
+        }
         switch (handler) {
             case ResponseType.Json:
             case ResponseType.Status.Json:
