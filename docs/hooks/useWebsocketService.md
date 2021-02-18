@@ -1,4 +1,4 @@
-## [useWebsocketService](useWebsocketService.ts)
+## [useWebsocketService](src/hooks/useWebsocketService.ts)
 Use the tobit websocket service client.
 Uses only one client instance for all hooks unless otherwise specified via config.
 
@@ -17,7 +17,7 @@ Uses only one client instance for all hooks unless otherwise specified via confi
 
 Because all wallet items of the same system use the same script, all usages in the wallet need to have either `config.forceOwnConnection = true` or have `config.clientGroup` set to something unique to the wallet item (e.g. the wallet GUID).
 
-#### Example
+### Examples
 This example uses the service `'my_ws_service'` and listens for the websocket event `'send_data'`:
 
 ```javascript

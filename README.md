@@ -54,15 +54,12 @@ This package supports tree-shaking, so each module will only be included in your
 
 | Hook                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------| --------|
-| [useAsyncState](/src/hooks/useAsyncState.ts)| useState hook that can resolve Promises and accepts async setter functions |
 | [useRechartsAxis](/src/functions/generateRechartsAxis.ts)| a hook to generate a better recharts axis |
 | [useClampLines](/src/hooks/useClampLines.ts)| a hook to restrict a text to a maxHeight or max lines | [useClampLines.md](https://github.com/chincoe/chayns-helper/blob/master/src/hooks/useClampLines.md) |
 | [useExtendedState](/src/hooks/useExtendedState.ts)| useState hook with async getter and prevState |
 | [useFullscreenTapp](/src/hooks/useFullscreenTapp.ts)| Hook to create a fullscreen tapp without scrolling | [useFullscreenTapp.md](https://github.com/chincoe/chayns-helper/blob/master/src/hooks/useFullscreenTapp.md) |
-| [useInlineSelector](/src/hooks/useInlineSelector.ts)| useSelector that doesn't use a constant selector without performance issues |
 | [usePrevious](/src/hooks/usePrevious.ts)| access a value from a previous render |
 | [usePreviousEffect](/src/hooks/usePreviousEffect.ts)| useEffect hook that can access the previous values of its dependencies |
-| [usePrevState](/src/hooks/usePrevState.ts)| useState hook that can access its value from a previous render |
 | [useTextStrings](/src/textstring/TextStringComplex.tsx)| get memoized TextStrings from a list of string names |
 | [useTimeoutState](/src/hooks/uniques/useTimeoutState.ts)| useState that calls an onChange method if the value hasn't change for a certain time | [useTimeoutState.md](https://github.com/chincoe/chayns-helper/blob/master/src/hooks/uniques/useTimeoutState.md) |
 | [useUniqueInterval](/src/hooks/uniques/useUniqueInterval.ts)| clears a previous interval when a new one is set |
@@ -70,7 +67,7 @@ This package supports tree-shaking, so each module will only be included in your
 | [useUpdateEffect](/src/hooks/useUpdateEffect.ts)| useEffect() hook that won't run on the first render |
 | [useUser](/src/hooks/useUser.ts)| chayns.getUser() hook |
 | [useWebsocketService](/src/hooks/useWebsocketService.ts)| configure a tobit-websocket-service-client | [useWebsocketService.md](https://github.com/chincoe/chayns-helper/blob/master/src/hooks/useWebsocketService.md) |
-| [useShallowSelector](/src/hooks/useShallowSelector.ts)| a useSelector Hook with shallowEqual |
+| [useComparingSelector](/src/hooks/useComparingSelector.ts)| a useSelector Hook with shallowEqual |
 
 ### Functions
 

@@ -7,7 +7,7 @@ import React, { SetStateAction, useCallback, useEffect, useMemo, useRef, useStat
  * @param deps
  */
 export default function useExtendedState<T>(
-    initialState: T,
+    initialState: T | (() => T),
     deps?: Array<any>
 ): [T, React.Dispatch<SetStateAction<T>>, () => Promise<T>, T | undefined] {
     const [state, setState] = useState<T>(initialState);

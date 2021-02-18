@@ -48,7 +48,7 @@ export { default as getJwtPayload } from './functions/getJwtPayload';
 export { default as getJsonSettings, DateTimeZoneHandling } from './functions/getJsonSettings';
 export { isPagemakerIFrame, isCustomTappIFrame } from './functions/isPagemakerIFrame';
 // functions with deps
-export { default as useShallowSelector } from './hooks/useShallowSelector';
+export { default as useComparingSelector } from './hooks/useComparingSelector';
 export { default as useRechartsAxis, generateRechartsAxis } from './functions/generateRechartsAxis';
 // httpRequest
 export { default as request } from './functions/httpRequest/httpRequest';
@@ -67,13 +67,10 @@ export { default as useUniqueTimeout } from './hooks/uniques/useUniqueTimeout';
 export { default as useFullscreenTapp } from './hooks/useFullscreenTapp';
 export { default as useUser } from './hooks/useUser';
 export { default as useWebsocketService } from './hooks/useWebsocketService';
-export { default as usePrevState } from './hooks/usePrevState';
 export { default as usePrevious } from './hooks/usePrevious';
 export { default as usePreviousEffect } from './hooks/usePreviousEffect';
 export { default as useUpdateEffect } from './hooks/useUpdateEffect';
 export { default as useClampLines, lineClampType } from './hooks/useClampLines';
-export { default as useInlineSelector } from './hooks/useInlineSelector';
-export { default as useAsyncState } from './hooks/useAsyncState';
 export { default as useExtendedState } from './hooks/useExtendedState';
 // textString
 export { default as TextStringComplex } from './textstring/TextStringComplex';

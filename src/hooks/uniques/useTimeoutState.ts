@@ -9,22 +9,22 @@ import useUniqueTimeout from './useUniqueTimeout';
  * @param timeout - time in ms that has to pass without a new setter to call onChange
  */
 const useTimeoutState = <T>(
-    initialValue: T,
+    initialValue: T | any,
     onChange: (value: T) => any,
     timeout: number = 500
 ): [T, React.Dispatch<React.SetStateAction<T>>] => {
     const [state, setState] = useState<T>(initialValue);
     const [previousState, setPreviousState] = useState(initialValue);
-    const setStateTimeout = useUniqueTimeout();
+    const [setStateTimeout] = useUniqueTimeout();
 
     useEffect(() => {
         if (typeof state === 'string' || typeof previousState === 'string'
             ? `${state}` === `${previousState}`
             : shallowEqual(state, previousState)) {
-            const t = setStateTimeout(setTimeout(() => {
+            const t = setStateTimeout(() => {
                 setPreviousState(state);
                 onChange(state);
-            }, (timeout ?? 500)));
+            }, (timeout ?? 500));
             return () => {
                 clearTimeout(t);
             };
