@@ -10,49 +10,27 @@ const websocketClients: { [serviceName: string]: WebSocketClient } = {};
 
 /**
  * A config for the websocket service
- * @property {string} serviceName
- * @property {WebsocketConditions} conditions
- * @property {Object.<string, function(any, MessageEvent?)>} events
- * @property {string} [clientGroup=undefined]
- * @property {boolean} [waitForDefinedConditions=true]
- * @property {boolean} [forceDisconnectOnUnmount=false]
- * @property {boolean} [forceOwnConnection=false]
+ * @property serviceName - name of your websocket service
+ * @property conditions - object with your conditions
+ * @property events - WS Event Listeners. Format: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
+ * @property [clientGroup=undefined] - services of the same client group share a ws connection and their conditions
+ * @property [waitForDefinedConditions=true] - only init the service once all conditions are no longer undefined;
+ *     default: true
+ * @property [forceDisconnectOnUnmount=false] - Disconnect the websocket client if the calling component is unmounted.
+ *     Should be deactivated if the same service is used in multiple components. If set to false, it will disconnect
+ *     once the last component calling this hook has been unmounted. If set to true, it will disconnect once the first
+ *     component calling this hook has been unmounted. default: false
+ * @property [forceOwnConnection=false] - don't use any existing client from rerender hooks. required for wallet items
+ *     to work properly. default: false
  */
 export interface WebsocketServiceConfig {
-    /**
-     * name of your websocket service
-     */
-    serviceName: string
-    /**
-     * object with your conditions
-     */
-    conditions: WebsocketConditions
-    /**
-     * Format: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
-     */
-    events: { [topic: string]: (data: { [key: string]: string } | any, wsEvent?: MessageEvent) => void | any }
-    /**
-     * services of the same client group share a ws connection and their conditions
-     */
-    clientGroup?: string
-    /**
-     * only init the service once all conditions are no longer undefined
-     * default: true
-     */
-    waitForDefinedConditions?: boolean
-    /**
-     *  Disconnect the websocket client if the calling component is unmounted.
-     *  Should be deactivated if the same service is used in multiple components
-     *  If set to false, it will disconnect once the last component calling this hook has been unmounted.
-     *  If set to true, it will disconnect once the first component calling this hook has been unmounted.
-     *  default: false
-     */
-    forceDisconnectOnUnmount?: boolean,
-    /**
-     * don't use any existing client from rerender hooks. required for wallet items to work properly
-     * default: false
-     */
-    forceOwnConnection?: boolean
+    serviceName: string;
+    conditions: WebsocketConditions;
+    events: { [topic: string]: (data: { [key: string]: string } | any, wsEvent?: MessageEvent) => void | any };
+    clientGroup?: string;
+    waitForDefinedConditions?: boolean;
+    forceDisconnectOnUnmount?: boolean;
+    forceOwnConnection?: boolean;
 }
 
 /**
@@ -81,8 +59,7 @@ const useWebsocketService = (
     // register default events and update conditions
     useEffect(() => {
         if (waitForDefinedConditions
-            && Object.values(conditions)
-                .reduce((total, current) => total && current !== undefined, true)
+            && Object.values(conditions).reduce((total, current) => total && current !== undefined, true)
         ) {
             const isInit = ownConnection ? !ownClient : !Object.prototype.hasOwnProperty.call(
                 websocketClients,

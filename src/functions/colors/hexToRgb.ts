@@ -1,8 +1,15 @@
-export type RGBAObject = { r: number, g: number, b: number, a: number | null, readonly toString: () => string };
+export type RGBAObject = {
+    r: number;
+    g: number;
+    b: number;
+    a: number | null;
+    readonly toString: () => string;
+};
 
 /**
  * Convert a hex string to RGB. The resulting object will have the properties r, g, b and a.
  * The .toString() method of the result will format the object as a css rgb() / rgba() string.
+ * @param hex
  */
 const hexToRgb = (hex: string): (RGBAObject | string) => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);

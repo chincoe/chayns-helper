@@ -41,8 +41,7 @@ const safeFirst = <T>(arr: Array<T>, callback?: (value: T, index: number, array:
     if (!isArray(arr)) return null;
     const relevantArray = (arr || []);
     if (!isFunction(callback)) return relevantArray[0] || null;
-    // @ts-expect-error
-    return relevantArray.filter(callback)[0] || null;
+    return relevantArray.filter<T>(callback as (value: T, index: number, array: Array<T>) => value is T)[0] || null;
 };
 
 /**
@@ -147,28 +146,12 @@ const mapObject = <T, TResult>(
 };
 
 /**
- * Map object to an array
- */
-const mapObjectToArray = <T, TResult>(
-    obj: { [key: string]: T },
-    callback: (key: string, value: T, index: number, source: { [key: string]: T }) => TResult
-): TResult[] => {
-    if (!isObject(obj) || !isFunction(callback)) return [];
-    const keys = Object.keys(obj);
-    const arr = [];
-    for (let i = 0; i < length(keys); i += 1) {
-        arr[i] = callback(keys[i], obj[keys[i]], i, obj);
-    }
-    return arr;
-};
-
-/**
  * like Array.reduce but for objects
  */
 const reduceObject = (
     obj: { [key: string]: any },
-    callback: (total: object, key: string, value: any, index: number, source: { [key: string]: any }) => any,
-    initialValue: object = {}
+    callback: (total: any, key: string, value: any, index: number, source: { [key: string]: any }) => any,
+    initialValue: any = {}
 ): any => {
     if (!isObject(obj) || !isFunction(callback)) return {};
     const keys = Object.keys(obj);
@@ -237,7 +220,6 @@ const types = {
     isNullOrEmpty,
     forEachKey,
     mapObject,
-    mapObjectToArray,
     reduceObject,
     replaceAll,
     regex

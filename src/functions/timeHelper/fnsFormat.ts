@@ -9,7 +9,7 @@ import time from '../../constants/time';
  * @param formatString
  * @param options
  */
-const fnsFormat = (date: Date|string|number, formatString: string, options?: {
+const fnsFormat = (date: Date | string | number, formatString: string, options?: {
     useToday?: boolean,
     appendYear?: boolean,
     locale?: Locale

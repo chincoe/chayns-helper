@@ -3,7 +3,10 @@ import hexToRgb, { RGBAObject } from './hexToRgb';
 /**
  * Hash a string and turn it into an RGB color to get predictable colors out of strings.
  */
-const stringToColor = (str: string, rgb?: boolean): (RGBAObject|{toRgb: (a?: number) => (RGBAObject | string)}|String) => {
+const stringToColor = (
+    str: string,
+    rgb?: boolean
+): (RGBAObject | { toRgb: (a?: number) => (RGBAObject | string) } | String) => {
     /* eslint-disable no-bitwise */
     let hash = 0;
     for (let i = 0; i < str.length; i += 1) {
@@ -19,7 +22,7 @@ const stringToColor = (str: string, rgb?: boolean): (RGBAObject|{toRgb: (a?: num
     // eslint-disable-next-line no-new-wrappers
     const result = new String(color);
     // @ts-expect-error
-    result.toRgb = function(a?: number) {
+    result.toRgb = function (a?: number) {
         const rgbValue = hexToRgb(<string>this);
         if (a) (<RGBAObject>rgbValue).a = a;
         return rgbValue;

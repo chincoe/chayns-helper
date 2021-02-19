@@ -11,7 +11,7 @@ class WebSocketClient {
 
     private readonly application: string | null = null;
 
-    conditions: WebsocketConditions | null = null;
+    public conditions: WebsocketConditions | null = null;
 
     private socket: WebSocket | null = null;
 
@@ -163,7 +163,10 @@ class WebSocketClient {
      * Registers a new event handler for the given event name.
      * Overrides any previous event handler for this event.
      */
-    public on = (event: string, listener: (data: { [key: string]: number | string | null }, wsEvent: MessageEvent) => any) => {
+    public on = (
+        event: string,
+        listener: (data: { [key: string]: number | string | null }, wsEvent: MessageEvent) => any
+    ) => {
         this.listener[event] = listener;
     };
 

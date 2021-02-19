@@ -7,8 +7,8 @@ export default class RequestError extends Error {
     statusCode = 0;
 
     /**
-     * @param {string} message - Error message
-     * @param {number} statusCode - Response status code
+     * @param message - Error message
+     * @param statusCode - Response status code
      */
     constructor(message: string, statusCode: number) {
         super(message);

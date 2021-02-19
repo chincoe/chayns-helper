@@ -1,8 +1,8 @@
 /**
  * Decodes a utf 8 text
  *
- * @param {string} utfText Utf encoded text
- * @returns {string} Decoded Text
+ * @param utfText Utf encoded text
+ * @returns Decoded Text
  */
 function decodeUtf8(utfText: string) {
     let result = '',
@@ -31,10 +31,10 @@ function decodeUtf8(utfText: string) {
 /**
  * Returns the JWT payload as JSON.
  *
- * @param {string} tobitAccessToken Tobit Access Token.
+ * @param tobitAccessToken Tobit Access Token.
  * @returns {{} | *} Json object
  */
-export default function getJwtPayload(tobitAccessToken: string) {
+export default function getJwtPayload(tobitAccessToken: string): { [key: string]: any } | null {
     if (tobitAccessToken && typeof tobitAccessToken === 'string' && tobitAccessToken.length > 0) {
         const spl = tobitAccessToken.split('.');
         if (spl && spl.length === 3) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, SetStateAction, DOMElement } from 'react';
+import React, { SetStateAction, useEffect, useState } from 'react';
 
 // capture group 1: tag name (e.g. "p")
 const unclosedHtmlTagRegex = /<([a-zA-Z]{0,10}|(?:h[0-9]))(?: (?:(?: ?[a-zA-Z-]+=".*?")*))?>(?!.*?<\/\1>)/g;
@@ -42,41 +42,31 @@ export function formatShortString(str: string, ellipsisLiteral = ''): string {
     return `${shortString}${ellipsisLiteral}`;
 }
 
-export enum lineClampTypeEnum {
-    HEIGHT = 'height',
-    LINES = 'lines'
-}
-
-export const lineClampType = {
+export const lineClampType: {
+    HEIGHT: 'height',
+    LINES: 'lines'
+} = {
     HEIGHT: 'height',
     LINES: 'lines'
 }
 
+export type lineClampTypeType = typeof lineClampType[keyof typeof lineClampType]
+
+/**
+ * @property ellipsis - the string appended after the cut
+ * @property appendEllipsis - whether the ellipsis should be added to the text or just factored  in for calculation
+ * @property limit - limit type depends on options.type, either height in px or max lines goes here
+ * @property type - type of the limit: 'lines' or 'height'
+ * @property html - use html strings with innerHTML
+ * @property replacer - a function that receives the result string and returns a potentially modified result
+ */
 export interface ClampLinesConfig {
-    /**
-     * the string appended after the cut
-     */
-    ellipsis?: string,
-    /**
-     * whether the ellipsis should be added to the text or just factored  in for calculation
-     */
-    appendEllipsis?: boolean
-    /**
-     * limit type depends on options.type, either height in px or max lines goes here
-     */
-    limit?: number
-    /**
-     * type of the limit: 'lines' or 'height'
-     */
-    type?: 'lines'|'height'|typeof lineClampTypeEnum,
-    /**
-     * use html strings with innerHTML
-     */
-    html?: boolean
-    /**
-     * a function that receives the result string and returns a potentially modified result
-     */
-    replacer?: (value: string) => string
+    ellipsis?: string;
+    appendEllipsis?: boolean;
+    limit?: number;
+    type?: lineClampTypeType;
+    html?: boolean;
+    replacer?: (value: string) => string;
 }
 
 /**
@@ -137,8 +127,8 @@ const useClampLines = (input: string, options?: ClampLinesConfig): [string, Reac
                 }
             }
             let t = html
-                    ? formatShortString(originalText.slice(0, middle - 2))
-                    : originalText.slice(0, middle - 2) + (appendEllipsis ? ellipsis : '');
+                ? formatShortString(originalText.slice(0, middle - 2))
+                : originalText.slice(0, middle - 2) + (appendEllipsis ? ellipsis : '');
             if (replacer) {
                 t = replacer(t);
             }

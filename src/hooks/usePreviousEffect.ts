@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 /**
  * A useEffect hook that receives the previous render's dependencies as argument

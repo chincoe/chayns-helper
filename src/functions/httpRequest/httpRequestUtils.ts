@@ -5,7 +5,7 @@ import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
 import ChaynsError, { ChaynsErrorObject } from './ChaynsError';
 import getChaynsErrorCode from './getChaynsErrorCode';
 import { chaynsErrorCodeRegex } from './isChaynsError';
-import LogLevel, { LogLevelEnum } from './LogLevel';
+import LogLevel, { LogLevelType } from './LogLevel';
 import RequestError from './RequestError';
 import ResponseType, { ResponseTypeList, ResponseTypeValue } from './ResponseType';
 
@@ -21,7 +21,7 @@ export const getMapKeys = (map: Map<string, any>) => {
 
 export async function getLogFunctionByStatus(
     status: number,
-    logConfig: Map<string, typeof LogLevelEnum | string>,
+    logConfig: Map<string, LogLevelType>,
     defaultFunction: (data: object) => any,
     chaynsErrorObject?: ChaynsErrorObject
 ): Promise<(data: object, error?: Error) => any> {
@@ -78,7 +78,7 @@ export function getStatusHandlerByStatusRegex(
         const regExp = stringToRegex(keys[i]);
         if (regExp.test(status?.toString())
             && (typeof (statusHandlers.get(keys[i])) === 'function'
-                || ResponseTypeList.includes(<string><unknown>statusHandlers.get(keys[i]))
+                || ResponseTypeList.includes(<ResponseTypeValue><unknown>statusHandlers.get(keys[i]))
             )
         ) {
             return statusHandlers.get(keys[i]);
@@ -101,11 +101,37 @@ export const jsonResolve = async (
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
-            data: { internalRequestGuid }
+            data: { internalRequestGuid },
+            section: '[chayns-helper]httpRequest.js',
         }, err);
         console.warn(
             ...colorLog.gray(`[HttpRequest<${processName}>]`),
             `Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
+            { statusHandlers: { [status]: ResponseType.None } }, '\n', err
+        );
+        resolve(null);
+    }
+};
+
+export const binaryResolve = async (
+    response: Response,
+    addStatus: boolean,
+    processName: string,
+    resolve: (value: any) => void,
+    internalRequestGuid: string | null = null
+): Promise<void> => {
+    const { status } = response;
+    try {
+        const data = await response.arrayBuffer();
+        resolve(addStatus ? { status, data } : data);
+    } catch (err) {
+        logger.warning({
+            message: `[HttpRequest] Getting Binary body failed on Status ${status} on ${processName}`,
+            data: { internalRequestGuid },
+            section: '[chayns-helper]httpRequest.js',
+        }, err);
+        console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
+            `Getting Binary body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.None } }, '\n', err
         );
         resolve(null);
@@ -126,7 +152,8 @@ export const blobResolve = async (
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
-            data: { internalRequestGuid }
+            data: { internalRequestGuid },
+            section: '[chayns-helper]httpRequest.js',
         }, err);
         console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
             `Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
@@ -150,7 +177,8 @@ export const textResolve = async (
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting TEXT body failed on Status ${status} on ${processName}`,
-            data: { internalRequestGuid }
+            data: { internalRequestGuid },
+            section: '[chayns-helper]httpRequest.js',
         }, err);
         console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
             `Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
@@ -173,7 +201,8 @@ export const objectResolve = async (
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`,
-            data: { internalRequestGuid }
+            data: { internalRequestGuid },
+            section: '[chayns-helper]httpRequest.js',
         }, err);
         console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
             `Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
@@ -201,7 +230,15 @@ export async function resolveWithHandler(
         resolve(await handler(<Response><unknown>chaynsErrorObject ?? response));
         return true;
     }
-    if (ResponseTypeList.includes(<string>handler)) {
+    if (ResponseTypeList.includes(handler)) {
+        // TODO: Remove in future release
+        if (handler === ResponseType.Object) {
+            console.warn(
+                ...colorLog.gray(`[HttpRequest<${processName}>]`),
+                'ResponseType.Object is deprecated and will be removed in the future. Use ResponseType.Status.Json instead.'
+            );
+            handler = ResponseType.Status.Json;
+        }
         switch (handler) {
             case ResponseType.Json:
             case ResponseType.Status.Json:
@@ -233,6 +270,16 @@ export async function resolveWithHandler(
                     internalRequestGuid
                 );
                 return true;
+            case ResponseType.Binary:
+            case ResponseType.Status.Binary:
+                await binaryResolve(
+                    response,
+                    handler === ResponseType.Status.Binary,
+                    processName,
+                    resolve,
+                    internalRequestGuid
+                );
+                return true;
             case ResponseType.None:
                 resolve();
                 return true;
@@ -259,7 +306,8 @@ export async function resolveWithHandler(
             status,
             internalRequestGuid,
             processName
-        }
+        },
+        section: '[chayns-helper]httpRequest.js',
     });
     return false;
 }

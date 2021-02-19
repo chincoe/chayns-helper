@@ -1,5 +1,5 @@
 import DialogPromise from '../DialogPromise';
-import {createDialogResult, DialogButton} from '../utils';
+import { createDialogResult, DialogButton } from '../utils';
 
 export enum selectTypeEnum {
     DEFAULT = 0,
@@ -31,7 +31,7 @@ export interface SelectDialogConfig {
     title?: string;
     multiselect?: boolean;
     quickfind?: boolean;
-    type?: typeof selectTypeEnum|number;
+    type?: typeof selectTypeEnum | number;
     preventCloseOnClick?: boolean;
     selectAllButton?: string;
 }
@@ -41,7 +41,10 @@ export interface SelectDialogConfig {
  * @param options
  * @param buttons
  */
-export default function select(options: SelectDialogConfig, buttons?: DialogButton[]): DialogPromise<SelectDialogResult | SelectDialogResult[]> {
+export default function select(
+    options: SelectDialogConfig,
+    buttons?: DialogButton[]
+): DialogPromise<SelectDialogResult | SelectDialogResult[]> {
     return new DialogPromise<SelectDialogResult | SelectDialogResult[]>((resolve) => {
         const {
             message = '',
@@ -65,10 +68,10 @@ export default function select(options: SelectDialogConfig, buttons?: DialogButt
             selectAllButton
         })
             .then((result: any) => {
-                const {buttonType: bType, selection} = result;
+                const { buttonType: bType, selection } = result;
                 if (!multiselect && selection && selection?.length === 1) {
-                    const {name, value} = selection[0];
-                    resolve(createDialogResult(bType, {name, value}));
+                    const { name, value } = selection[0];
+                    resolve(createDialogResult(bType, { name, value }));
                 } else if (!multiselect) {
                     resolve(createDialogResult(bType, null));
                 }
@@ -81,4 +84,4 @@ export default function select(options: SelectDialogConfig, buttons?: DialogButt
     });
 }
 
-select.type = {...selectType};
+select.type = { ...selectType };

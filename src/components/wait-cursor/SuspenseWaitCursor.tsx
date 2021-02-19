@@ -1,5 +1,5 @@
-import React, {FunctionComponent, Suspense, useEffect} from 'react';
-import showWaitCursor from '../../functions/waitCursor/waitCursor';
+import React, { FunctionComponent, ReactNode, Suspense, useEffect } from 'react';
+import showWaitCursor from '../../functions/waitCursor';
 import CenteredWaitCursor from './CenteredWaitCursor';
 
 /**
@@ -12,8 +12,9 @@ import CenteredWaitCursor from './CenteredWaitCursor';
  * @constructor
  */
 const SuspenseWaitCursor: FunctionComponent<{
-    inline?: boolean
-}> = ({children, inline = false}) => (
+    inline?: boolean;
+    children: ReactNode;
+}> = ({ children, inline = false }) => (
     <Suspense fallback={(<SuspenseWaitCursorFallback inline={inline}/>)}>
         {children}
     </Suspense>
@@ -24,8 +25,8 @@ SuspenseWaitCursor.displayName = 'SuspenseWaitCursor';
 export default SuspenseWaitCursor;
 
 const SuspenseWaitCursorFallback: FunctionComponent<{
-    inline?: boolean
-}> = ({inline = false}) => {
+    inline?: boolean;
+}> = ({ inline = false }) => {
     useEffect(() => {
         if (!inline) {
             return showWaitCursor({ action: "Suspense for React.lazy" });

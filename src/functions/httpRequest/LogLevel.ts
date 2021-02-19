@@ -3,23 +3,23 @@ export interface ObjectResponse {
     data: object
 }
 
-export enum LogLevelEnum {
-    info = 'info',
-    warning = 'warning',
-    error = 'error',
-    critical = 'critical',
-    none = 'none',
-}
-
 /**
  * An enum for request.fetch logLevels
  */
-const LogLevel = {
+const LogLevel: {
+    info: 'info',
+    warning: 'warning',
+    error: 'error',
+    critical: 'critical',
+    none: 'none',
+} = {
     info: 'info',
     warning: 'warning',
     error: 'error',
     critical: 'critical',
     none: 'none',
 }
+
+export type LogLevelType = typeof LogLevel[keyof typeof LogLevel]
 
 export default LogLevel;
