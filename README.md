@@ -31,80 +31,81 @@ This package supports tree-shaking, so each module will only be included in your
 > **_NOTE:_** This package may lack documentations and examples. If you would like me to add examples and a readme to a feature, let me know, and I'll add them.
 
 ## Contents
-
+https://github.com/chincoe/chayns-helper/blob/master/
 ### Components
 
-| Component                                                                | Description                 | Readme |
-|--------------------------------------------------------------------------|-----------------------------| -------|
-| [CenteredContainer](/src/components/containers/CenteredContainer.tsx)| Container to center its children with or without a gap between them | [CenteredContainer.md](docs/components/CenteredContainer.md) |
-| [CenteredWaitCursor](/src/components/wait-cursor/CenteredWaitCursor.tsx)| Inline-waitCursor, centered and with padding | [CenteredWaitCursor.md](docs/components/CenteredWaitCursor.md) |
-| [DataRow](/src/components/containers/DataRow.tsx)| Container for a row with a label and e.g. a button | [DataRow.md](docs/components/DataRow.md) |
-| [ErrorBoundary](/src/components/error-boundary/ErrorBoundary.tsx)| Customizable ErrorBoundary to catch errors during render | [ErrorBoundary.md](docs/components/ErrorBoundary.md) |
-| [RechartsAxis](/src/components/recharts-axis/RechartsAxis.tsx)| Wrapper for recharts' XAxis or YAxis to create better label intervals | [RechartsAxis.md](docs/components/RechartsAxis.md) |
-| [refresh](/src/components/rerender/refresh.tsx)| HOC to rerender a Component in an interval | [refresh.md](docs/components/refresh.md) |
-| [Refresh](/src/components/rerender/RefreshComponent.tsx)| Component to rerender its children in an interval | [Refresh.md](docs/components/RefreshComponent.md) |
-| [rerender](/src/components/rerender/rerender.tsx)| HOC that passes a rerenderSelf function to a component | [rerender.md](docs/components/rerender.md) |
-| [ResizableWaitCursor](/src/components/wait-cursor/ResizableWaitCursor.tsx)| chayns SmallWaitCursor but resizable | [ResizableWaitCursor.md](docs/components/ResizableWaitCursor.md) |
-| [RestrictedAccordion](/src/components/restricted-accordion/RestrictedAccordion.tsx)| Accordion with lock-icon for admins | [RestrictedAccordion.md](docs/components/RestrictedAccordion.md) |
-| [SuspenseWaitCursor](/src/components/wait-cursor/SuspenseWaitCursor.tsx)| Suspense-Component that provides a fallback for React lazy loading | [SuspenseWaitCursor.md](docs/components/SuspenseWaitCursor.md) |
-| [TextStringComplex](/src/textstring/TextStringComplex.tsx)| Memoized Textstring Component, adds prefix. Allows complex replacements with JSX, autoCreation and CTRL+Click to edit | [TextString.md](https://github.com/chincoe/chayns-helper/blob/master/src/textstring/TextString.md) |
-| [UACGroupChooseButton](/src/components/buttons/UACGroupChooseButton.tsx)| ChooseButton for UAC groups | [UACGroupChooseButton.md](docs/components/UACGroupChooseButton.md) |
+| Component                                                                | Description                 |
+|--------------------------------------------------------------------------|-----------------------------|
+| [CenteredContainer](docs/components/CenteredContainer.md)| Container to center its children with or without a gap between them |
+| [CenteredWaitCursor](docs/components/CenteredWaitCursor.md)| Inline-waitCursor, centered and with padding |
+| [DataRow](docs/components/DataRow.md)| Container for a row with a label and e.g. a button |
+| [ErrorBoundary](docs/components/ErrorBoundary.md)| Customizable ErrorBoundary to catch errors during render |
+| [RechartsAxis](docs/components/RechartsAxis.md)| Wrapper for recharts' XAxis or YAxis to create better label intervals |
+| [refresh](docs/components/refresh.md)| HOC to rerender a Component in an interval |
+| [RefreshComponent](docs/components/RefreshComponent.md)| Component to rerender its children in an interval |
+| [rerender](docs/components/rerender.md)| HOC that passes a rerenderSelf function to a component |
+| [ResizableWaitCursor](docs/components/ResizableWaitCursor.md)| chayns SmallWaitCursor but resizable |
+| [RestrictedAccordion](docs/components/RestrictedAccordion.md)| Accordion with lock-icon for admins |
+| [SuspenseWaitCursor](docs/components/SuspenseWaitCursor.md)| Suspense-Component that provides a fallback for React lazy loading |
+| [TextStringComplex](docs/textstring/TextString.md)| Memoized Textstring Component, adds prefix. Allows complex replacements with JSX, autoCreation and CTRL+Click to edit |
+| [UACGroupChooseButton](docs/components/UACGroupChooseButton.md)| ChooseButton for UAC groups |
 
 ### Hooks
 
-| Hook                                                                 | Description                   | Readme |
-|----------------------------------------------------------------------|-------------------------------| --------|
-| [useRechartsAxis](/src/functions/generateRechartsAxis.ts)| a hook to generate a better recharts axis |
-| [useClampLines](/src/hooks/useClampLines.ts)| a hook to restrict a text to a maxHeight or max lines | [useClampLines.md](https://github.com/chincoe/chayns-helper/blob/master/src/hooks/useClampLines.md) |
-| [useExtendedState](/src/hooks/useExtendedState.ts)| useState hook with async getter and prevState |
-| [useFullscreenTapp](/src/hooks/useFullscreenTapp.ts)| Hook to create a fullscreen tapp without scrolling | [useFullscreenTapp.md](https://github.com/chincoe/chayns-helper/blob/master/src/hooks/useFullscreenTapp.md) |
-| [usePrevious](/src/hooks/usePrevious.ts)| access a value from a previous render |
-| [usePreviousEffect](/src/hooks/usePreviousEffect.ts)| useEffect hook that can access the previous values of its dependencies |
-| [useTextStrings](/src/textstring/TextStringComplex.tsx)| get memoized TextStrings from a list of string names |
-| [useTimeoutState](/src/hooks/uniques/useTimeoutState.ts)| useState that calls an onChange method if the value hasn't change for a certain time | [useTimeoutState.md](https://github.com/chincoe/chayns-helper/blob/master/src/hooks/uniques/useTimeoutState.md) |
-| [useUniqueInterval](/src/hooks/uniques/useUniqueInterval.ts)| clears a previous interval when a new one is set |
-| [useUniqueTimeout](/src/hooks/uniques/useUniqueTimeout.ts)| clears a previous timeout when a new one is set |
-| [useUpdateEffect](/src/hooks/useUpdateEffect.ts)| useEffect() hook that won't run on the first render |
-| [useUser](/src/hooks/useUser.ts)| chayns.getUser() hook |
-| [useWebsocketService](/src/hooks/useWebsocketService.ts)| configure a tobit-websocket-service-client | [useWebsocketService.md](https://github.com/chincoe/chayns-helper/blob/master/src/hooks/useWebsocketService.md) |
-| [useComparingSelector](/src/hooks/useComparingSelector.ts)| a useSelector Hook with shallowEqual |
+| Hook                                                                 | Description                   |
+|----------------------------------------------------------------------|-------------------------------|
+| [useRechartsAxis](docs/functions/generateRechartsAxis.md#userechartsaxis)| a hook to generate a better recharts axis |
+| [useClampLines](docs/hooks/useClampLines.md)| a hook to restrict a text to a maxHeight or max lines |
+| [useComparingSelector](docs/hooks/useComparingSelector.md)| a useSelector Hook with shallowEqual/deepEqual |
+| [useExtendedState](docs/hooks/useExtendedState.md)| useState hook with async getter and prevState |
+| [useFullscreenTapp](docs/hooks/useFullscreenTapp.md)| Hook to create a fullscreen tapp without scrolling |
+| [usePrevious](docs/hooks/usePrevious.md)| access a value from a previous render |
+| [usePreviousEffect](docs/hooks/usePreviousEffect.md)| useEffect hook that can access the previous values of its dependencies |
+| [useTextStrings](docs/textstring/TextString.md#usetextstrings)| get memoized TextStrings from a list of string names |
+| [useTimeoutState](docs/hooks/useTimeoutState.md)| useState that calls an onChange method if the value hasn't change for a certain time |
+| [useUniqueInterval](docs/hooks/useTimeoutState.md#useuniqueinterval)| clears a previous interval when a new one is set |
+| [useUniqueTimeout](docs/hooks/useTimeoutState.md#useuniquetimeout)| clears a previous timeout when a new one is set |
+| [useUpdateEffect](docs/hooks/useUpdateEffect.md)| useEffect() hook that won't run on the first render |
+| [useUser](docs/hooks/useUser.md)| chayns.getUser() hook |
+| [useWebsocketService](docs/hooks/useWebsocketService.md)| configure a tobit-websocket-service-client |
 
 ### Functions
 
 | Function                                                                 | Description                   | Readme |
 |----------------------------------------------------------------------|-------------------------------|----- |
-| [addChaynsLoginListener](/src/functions/chaynsCalls/setReloadOnLogin.ts)| Similar to addAccessTokenChangeListener, but prevent reload on login/logout in a pagemaker iframe as well | |
-| [chaynsDialogs](/src/functions/chaynsDialogs/chaynsDialogs.ts)| makes using chayns dialogs much more comfortable | |
-| [copyToClipboard](/src/functions/copyToClipboard.ts)| copy a value to the user's clipboard | |
-| [deepEqual](/src/functions/shallowEqual.ts)| recursive implementation of shallowEqual | |
-| [fnsFormat](/src/functions/timeHelper/fnsFormat.ts)| date-fns format with option to use today/tomorrow/yesterday and add the year if it's not the current year | |
-| [generateRechartsAxis](/src/functions/generateRechartsAxis.ts)| a function to generate a better recharts axis | |
-| [generateGuid](/src/functions/generateGuid.ts)| generate a GUID | |
-| [getChaynsErrorCode](/src/functions/httpRequest/getChaynsErrorCode.ts)| get the error code of a chayns error response. Can deal with Response, Promise and Object | |
-| [getHookState](/src/functions/getHookState.ts)| get the current state of a hook via the setState function | |
-| [getJsonSettings](/src/functions/getJsonSettings.ts)| pass as second param to JSON.stringify to modify the serialization | [getJsonSettings.md](docs/functions/getJsonSettings.md) |
-| [getJwtPayload](/src/functions/getJwtPayload.ts)| safely get JWT token payload | |
-| [hexToRgb](/src/functions/colors/hexToRgb.ts)| Convert a hex color to an rgb object which returns a rgba() css function when stringified | |
-| [hideCWFooter](/src/functions/chaynsCalls/hideCwFooter.ts)| hide the chayns web footer | |
-| [isChaynsError](/src/functions/httpRequest/isChaynsError.ts)| determine whether something is a chayns error. Can deal with Response, Promise and Object | |
-| [isCustomTappIFrame](/src/functions/isPagemakerIFrame.ts)| check if application is in custom tapp iframe | |
-| [isPagemakerIFrame](/src/functions/isPagemakerIFrame.ts)| check if application is in pagemaker iframe | |
-| [jsxReplace](/src/textstring/jsxReplace.tsx)| replace strings or regex matches in a string with other strings or jsx | [TextString.md](https://github.com/chincoe/chayns-helper/blob/master/src/textstring/TextString.md) |
-| [request](/src/functions/httpRequest/httpRequest.ts)| fetch helper with loads of options, constants and a try/catch wrapper | [httpRequest.md](https://github.com/chincoe/chayns-helper/blob/master/src/functions/httpRequest/httpRequest.md) |
-| [localStorage](/src/other/localStorageHelper.ts)| helper to cache httpRequest JSON strings in local storage | |
-| [removeChaynsLoginListener](/src/functions/chaynsCalls/setReloadOnLogin.ts)| remove the chaynsLoginListener | |
-| [setReloadOnLogin](/src/functions/chaynsCalls/setReloadOnLogin.ts)| enable/disable reload on login/logout for pagemaker iframes | |
-| [setViewMode](/src/functions/chaynsCalls/setViewMode.ts)| toggle exclusive mode | |
-| [shallowEqual](/src/functions/shallowEqual.ts)| check 2 values for equality | |
-| [stringToColor](/src/functions/colors/stringToColor.ts)| Convert a string to a hex color or rgb color object which returns a rgba() css function when stringified | |
-| [toHslColor](/src/functions/colors/toHslColor.ts)| Convert a string or int to an hsl color object which returns a hsl() css function when stringified | |
-| [types](/src/functions/types.ts)| a collection of helpers for types in general but especially objects and arrays. Includes: mapObject, reduceObject, mapObjectToArray, forEachKey, firstOrDefault, replaceAll, type checking | |
-| [showWaitCursor](/src/functions/waitCursor.ts)| helper for chayns.showWaitCursor with a timeout before displaying | [waitCursor.md](https://github.com/chincoe/chayns-helper/blob/master/src/functions/waitCursor/waitCursor.md) |
-| [WebSocketClient](/src/other/WsClient.ts)| custom alternative to tobit-websocket-service-client | |
+| [addChaynsLoginListener](docs/functions/chaynsCalls/setReloadOnLogin.md)| Similar to addAccessTokenChangeListener, but prevent reload on login/logout in a pagemaker iframe as well | 
+| [chaynsDialogs](docs/functions/chaynsDialogs.md)| makes using chayns dialogs much more comfortable | 
+| [copyToClipboard](docs/functions/copyToClipboard.md)| copy a value to the user's clipboard | 
+| [deepEqual](docs/functions/shallowEqual.md#deepequal)| recursive implementation of shallowEqual | 
+| [fnsFormat](docs/functions/fnsFormat.md)| date-fns format with option to use today/tomorrow/yesterday and add the year if it's not the current year | 
+| [generateRechartsAxis](docs/functions/generateRechartsAxis.md)| a function to generate a better recharts axis | 
+| [generateGuid](docs/functions/generateGuid.md)| generate a GUID | 
+| [getChaynsErrorCode](docs/functions/httpRequest/getChaynsErrorCode.md)| get the error code of a chayns error response. Can deal with Response, Promise and Object | 
+| [getHookState](docs/functions/getHookState.md)| get the current state of a hook via the setState function | 
+| [getJsonSettings](docs/functions/getJsonSettings.md)| pass as second param to JSON.stringify to modify the serialization |
+| [getJwtPayload](docs/functions/getJwtPayload.md)| safely get JWT token payload | 
+| [getTextStrings](docs/textstring/TextString.md#gettextstrings)| get one or more text strings with fallbacks and prefix | 
+| [hexToRgb](docs/functions/hexToRgb.md)| Convert a hex color to an rgb object which returns a rgba() css function when stringified | 
+| [hideCWFooter](docs/functions/chaynsCalls/hideCwFooter.md)| hide the chayns web footer | 
+| [isChaynsError](docs/functions/httpRequest/isChaynsError.md)| determine whether something is a chayns error. Can deal with Response, Promise and Object | 
+| [isCustomTappIFrame](docs/functions/isPagemakerIFrame.md)| check if application is in custom tapp iframe | 
+| [isPagemakerIFrame](docs/functions/isPagemakerIFrame.md)| check if application is in pagemaker iframe | 
+| [jsxReplace](docs/textstring/TextString.md#jsxreplace)| replace strings or regex matches in a string with other strings or jsx |
+| [request](docs/functions/httpRequest.md)| fetch helper with loads of options, constants and a try/catch wrapper |
+| [localStorage](docs/other/localStorageHelper.md)| helper to cache httpRequest JSON strings in local storage | 
+| [removeChaynsLoginListener](docs/functions/chaynsCalls/setReloadOnLogin.md)| remove the chaynsLoginListener | 
+| [setReloadOnLogin](docs/functions/chaynsCalls/setReloadOnLogin.md)| enable/disable reload on login/logout for pagemaker iframes | 
+| [setViewMode](docs/functions/chaynsCalls/setViewMode.md)| toggle exclusive mode | 
+| [shallowEqual](docs/functions/shallowEqual.md)| check 2 values for equality | 
+| [stringToColor](docs/functions/stringToColor.md)| Convert a string to a hex color or rgb color object which returns a rgba() css function when stringified | 
+| [toHslColor](docs/functions/toHslColor.md)| Convert a string or int to an hsl color object which returns a hsl() css function when stringified | 
+| [types](docs/functions/types.md)| a collection of helpers for types in general but especially objects and arrays. Includes: mapObject, reduceObject, mapObjectToArray, forEachKey, firstOrDefault, replaceAll, type checking | 
+| [showWaitCursor](docs/functions/waitCursor.md)| helper for chayns.showWaitCursor with a timeout before displaying |
+| [WebSocketClient](docs/other/WsClient.md)| custom alternative to tobit-websocket-service-client | 
 
 ### Constants
 
 | Constant                                                     | Description                   | Readme |
 |--------------------------------------------------------------|-------------------------------|----- |
-| [statusAnimations](/src/constants/statusAnimations.ts) | success and failure animation html string for dialogs | |
-| [time](/src/constants/time.ts)| constant for times based on ms | |
+| [statusAnimations](docs/constants/statusAnimations.ts) | success and failure animation html string for dialogs | 
+| [time](docs/constants/time.ts)| constant for times based on ms | 

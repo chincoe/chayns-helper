@@ -1,9 +1,28 @@
-## [Request](src/functions/httpRequest/httpRequest.ts)
+# [Request](src/functions/httpRequest/httpRequest.ts)
 
 A request helper with customizable defaults that can be used to configure any behavior. Includes the request helper as
 well as enums for http methods, http status codes and more.
 
-### Suggested setup and quick documentation
+## Table of Contents
+- [Suggested setup and quick documentation](#suggested-setup-and-quick-documentation)
+- [request.fetch(address, config, processName, options)](#requestfetch-address--config--processname--options-)
+   * [Response handling priority](#response-handling-priority)
+      + [ThrowError behavior](#throwerror-behavior)
+      + [Handling errors with throwErrors = true](#handling-errors-with-throwerrors---true)
+   * [Examples](#examples)
+   * [Customizing Logging](#customizing-logging)
+- [request.defaults(address, config, options)](#requestdefaults-address--config--options-)
+   * [Example](#example)
+- [ResponseType | request.responseType](#responsetype---requestresponsetype)
+- [LogLevel | request.logLevel](#loglevel---requestloglevel)
+- [HttpMethod | request.method](#httpmethod---requestmethod)
+- [RequestError | request.error extends Error](#requesterror---requesterror-extends-error)
+- [ChaynsError extends RequestError](#chaynserror-extends-requesterror)
+- [isChaynsError(value)](#ischaynserror-value-)
+- [getChaynsErrorCode(value)](#getchaynserrorcode-value-)
+- [HttpStatusCode](#httpstatuscode)
+
+## Suggested setup and quick documentation
 
 If you've never used this helper before and just want a basic fetch helper, I suggest the following setup:
 
@@ -48,7 +67,7 @@ export default async function postData(body) {
 }
 ```
 
-### request.fetch(address, config, processName, options)
+## request.fetch(address, config, processName, options)
 
 A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js`).
 
@@ -63,13 +82,13 @@ A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js
 |options.responseType | expected response format (json/blob/Response/etc.) | ResponseType/string | `'json'` |
 |options.logConfig | Configure the log level of specific status codes | Object\<statusCode/regex, LogLevel> | `{"[1-3][\\d]{2}":'info', 401: 'warning', "[\\d]+": 'error'}`|
 |options.throwErrors | Throw an error on error status codes instead of returning null. Response types "Object" and "Response" will return an object that includes the status to make sure the status is always available. Passing an array will set throwErrors to `true` unless it's one of the status codes in the array | boolean / Array\<statusCode> | `false` |
-|options.stringifyBody | Call JSON.stringify() on config.body before passing it to fetch() and set the Content-Type header if a body is specified. You can pass an object with [JsonSettings](getJsonSettings.md#JsonSettings) as well to customize serialization | boolean/JsonSettings | `true` |
+|options.stringifyBody | Call JSON.stringify() on config.body before passing it to fetch() and set the Content-Type header if a body is specified. You can pass an object with [JsonSettings](https://github.com/chincoe/chayns-helper/blob/master/docs/functions/getJsonSettings.md#JsonSettings) as well to customize serialization | boolean/JsonSettings | `true` |
 |options.additionalLogData | This data will be logged with the request logs. Doesn't affect functionality at all | Object | `{}`|
 |options.autoRefreshToken | Automatically repeat a request with config.useChaynsAuth if it fails due to expired access token after refreshing said access token | boolean | `true` |
 |options.statusHandlers| Handle responses for specific status codes using the codes or regex. Format: <br> 1.`{ [status/regex] : (response) => { my code }, ... }`<br> 2. `{ [status/regex] : responseType, ... }` | Object\<status/regex, responseType/responseHandler> | `{}` |
 |options.errorHandlers| Handle responses for specific ChaynsErrors using the errorCodes or regex. Format: <br> 1.`{ [code/regex] : (response) => { my code }, ... }`<br> 2. `{ [code/regex] : responseType, ... }` | Object\<errorCode/regex, responseType/responseHandler> | `{}` |
 |options.errorDialogs| Array of ChaynsError codes or regexes for codes that should display their respective dialog | Array<string/regex> | `[]` |
-|options.waitCursor | Show a wait cursor during the request. Can be configured like [showWaitCursor()](https://github.com/chincoe/chayns-helper/blob/master/src/functions/waitCursor/waitCursor.md) | boolean/{text: string, timeout: number, textTimeout: number}/{timeout: number, steps: Object\<textTimeout, text> } | `false` |
+|options.waitCursor | Show a wait cursor during the request. Can be configured like [showWaitCursor()](https://github.com/chincoe/chayns-helper/blob/master/docs/functions/waitCursor.md) | boolean/{text: string, timeout: number, textTimeout: number}/{timeout: number, steps: Object\<textTimeout, text> } | `false` |
 |options.replacements | Replacements for the request url | Object<string/regex, string/function> | Object with replacements for `##locationId##`, `##siteId##`, `##tappId##`, `##userId##` and `##personId##`  |
 |options.sideEffects | Side effects for certain status codes, like chayns.login() on status 401. Pass a function to handle all status at once or an object with an effect for each status  | (status: number) => void / Object\<status: number, () => void> | `undefined` |
 | **
@@ -127,7 +146,7 @@ This behavior makes it necessary to wrap a request into `try/catch` or define a 
 To handle side effects of failed requests when throwErrors is enabled, consider using the JS Promise
 functions `.then(successFn, errorFn)`, `.catch(errorFn)` and `.finally(alwaysFn)`.
 
-#### Examples
+### Examples
 
 * Set logLevel for 3xx response status codes to warning, 4xx to error and for 500 to critical
 
@@ -266,7 +285,7 @@ const payload = {
 
 Not all fields will always be available depending on the request data.
 
-### request.defaults(address, config, options)
+## request.defaults(address, config, options)
 
 Set a base url as well as defaults for fetch config and request.fetch()-options.
 
@@ -288,7 +307,7 @@ taking priority over the default:
 * options.sideEffects
 * options.replacements
 
-##### Example
+### Example
 
 ```javascript
 // index.jsx
@@ -325,7 +344,7 @@ request.defaults(
 request.fetch('/controller/endpoint/boardId', {}, 'myRequest');
 ```
 
-### ResponseType | request.responseType - enum
+## ResponseType | request.responseType
 
 > Exported as `ResponseType` and `request.responseType`
 
@@ -347,7 +366,7 @@ request.fetch('/controller/endpoint/boardId', {}, 'myRequest');
 
 > ResponseType.Object is deprecated and will be removed in a future release.
 
-### LogLevel | request.logLevel - enum
+## LogLevel | request.logLevel
 
 > Exported as `LogLevel` and `request.logLevel`
 
@@ -359,7 +378,7 @@ request.fetch('/controller/endpoint/boardId', {}, 'myRequest');
 |critical| `'critical'`|
 |none |`'none'`|
 
-### HttpMethod | request.method - enum
+## HttpMethod | request.method
 
 > Exported as `HttpMethod` and `request.method`
 
@@ -373,7 +392,7 @@ const HttpMethod = {
 };
 ```
 
-### RequestError | request.error extends Error
+## RequestError | request.error extends Error
 
 > Exported as `RequestError` and `request.error`
 
@@ -384,7 +403,7 @@ const HttpMethod = {
 |name | `'HttpRequestError${statusCode}'`|
 |statusCode | `statusCode` |
 
-### ChaynsError extends RequestError
+## ChaynsError extends RequestError
 
 `constructor({ displayMessage, errorCode, parameters, requestId }, processName, status)`
 
@@ -397,11 +416,13 @@ const HttpMethod = {
 |parameters | `parameters` |
 |requestId | `requestId` |
 
-### request.full(address, config, processName, options, errorHandler, handlerOptions)
+## isChaynsError(value)
+Check whether the value (e.g. an object or a Response) is a ChaynsError object
 
-A combined function of request.handle() and request.fetch()
+## getChaynsErrorCode(value)
+Try to get the ChaynsError error code from a value like an object or a Response
 
-### HttpStatusCode
+## HttpStatusCode
 
 An enum of HTTP Status Codes
 

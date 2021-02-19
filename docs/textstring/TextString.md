@@ -133,7 +133,7 @@ const {
 
 ## [useTextStrings](src/textstring/useTextStrings.ts)
 
-A hook version of getTextStrings that wraps [getTextStrings](#gettextstringssrctextstringgettextstringsts) in a `useMemo` hook.
+A hook version of getTextStrings that wraps [getTextStrings](#gettextstrings) in a `useMemo` hook.
 Only Overload 2 and 3 of getTextStrings are available for this hook.
 
 ### Examples
