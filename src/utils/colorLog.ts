@@ -1,9 +1,10 @@
-// @ts-expect-error
+// @ts-expect-error no types available
 const isChromeBased = !!window.chrome;
-// @ts-expect-error
+// @ts-expect-error no types available
 const isFirefox = typeof InstallTrigger !== 'undefined';
+
 // eslint-disable-next-line no-console
-export function createColorLog(elements: {[message: string]: string}): string[] {
+export function createColorLog(elements: { [message: string]: string }): string[] {
     if (!isChromeBased && !isFirefox) return [Object.keys(elements).join(' ')];
     const logs = [];
     const styles = [];
@@ -16,16 +17,16 @@ export function createColorLog(elements: {[message: string]: string}): string[] 
     return [logs.join(' '), ...styles];
 }
 
-export interface colorLog {
-    create: (elements: {[message: string]: string}) => string[],
-    gray: (v: string) => string[],
-    color: (color: string, v: string) => string[]
+export interface ColorLog {
+    create: (elements: { [message: string]: string }) => string[];
+    gray: (v: string) => string[];
+    color: (color: string, v: string) => string[];
 }
 
-const colorLog: colorLog = {
+const colorLog: ColorLog = {
     create: createColorLog,
-    gray: (v: string) => createColorLog({[v]: 'color:#aaaaaa'}),
-    color: (color: string, v: string) => createColorLog({[v]: `color:${color}`})
-}
+    gray: (v: string) => createColorLog({ [v]: 'color:#aaaaaa' }),
+    color: (color: string, v: string) => createColorLog({ [v]: `color:${color}` })
+};
 
 export default colorLog;

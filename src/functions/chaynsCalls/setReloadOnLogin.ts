@@ -1,4 +1,4 @@
-const loginListeners: { listeners: Array<() => void>, globalReloadOnLogin: boolean, noReloadOnLogin: number } = {
+const loginListeners: { listeners: Array<() => void>; globalReloadOnLogin: boolean; noReloadOnLogin: number } = {
     listeners: [],
     globalReloadOnLogin: true,
     noReloadOnLogin: 0
@@ -12,7 +12,8 @@ function setReload(reload: boolean = false) {
 }
 
 /**
- * For pagemakerV2 iframes, prevent reload on user login/logout, otherwise handled by adding an accessTokenChangeListener.
+ * For pagemakerV2 iframes, prevent reload on user login/logout, otherwise handled by adding an
+ * accessTokenChangeListener.
  * @param reload
  */
 export default function setReloadOnLogin(reload: boolean = false): void {

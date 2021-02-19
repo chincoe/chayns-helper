@@ -1,5 +1,5 @@
-import React, {JSXElementConstructor, useCallback, useState} from 'react';
-import generateUUID from "../../functions/generateUid";
+import React, { JSXElementConstructor, useCallback, useState } from 'react';
+import generateUUID from "../../functions/generateGuid";
 
 /**
  * passes a 'rerenderSelf()' function that allows a function component to trigger a re-render.

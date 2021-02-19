@@ -1,4 +1,4 @@
-import React, {FunctionComponent, JSXElementConstructor, memo, ReactNode} from 'react';
+import React, { FunctionComponent, JSXElementConstructor, memo, ReactNode } from 'react';
 import useRefresh from '../../utils/useRefresh';
 
 /**
@@ -10,9 +10,9 @@ import useRefresh from '../../utils/useRefresh';
  * @constructor
  */
 const Refresh: FunctionComponent<{
-    interval?: number,
+    interval?: number;
     children?: ReactNode;
-    elementType?: string|JSXElementConstructor<any>
+    elementType?: string | JSXElementConstructor<any>;
 }> = (
     {
         interval = 10000,

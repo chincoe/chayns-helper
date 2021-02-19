@@ -1,22 +1,22 @@
+import React, { FunctionComponent, memo, ReactElement, ReactNode, useEffect, useMemo } from 'react';
 // @ts-expect-error
 import { TextString } from 'chayns-components';
-import React, { FunctionComponent, memo, ReactNode, ReactElement, useEffect, useMemo } from 'react';
 // @ts-expect-error
 import isTobitEmployee from 'chayns-components/dist/esm/utils/tobitEmployee.js';
-import generateUUID from '../functions/generateUid';
+import generateUUID from '../functions/generateGuid';
 import jsxReplace, { JsxReplacements } from './jsxReplace';
 import TEXTSTRING_CONFIG from './textstringConfig';
 import isNullOrWhiteSpace from '../utils/isNullOrWhiteSpace';
 
 export interface TextStringComplexConfig {
-    stringName: string,
-    fallback: string,
-    replacements?: JsxReplacements,
-    children?: React.ReactNode | null,
-    maxReplacements?: number,
-    useDangerouslySetInnerHTML?: boolean,
-    language?: string,
-    autoCreation?: boolean
+    stringName: string;
+    fallback: string;
+    replacements?: JsxReplacements;
+    children?: React.ReactNode | null;
+    maxReplacements?: number;
+    useDangerouslySetInnerHTML?: boolean;
+    language?: string;
+    autoCreation?: boolean;
 }
 
 /**
@@ -33,19 +33,17 @@ export interface TextStringComplexConfig {
  * @param props
  * @constructor
  */
-const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
-    {
-        stringName,
-        fallback,
-        replacements = {},
-        children = null,
-        maxReplacements = 20,
-        useDangerouslySetInnerHTML = false,
-        language = undefined,
-        autoCreation = process.env.NODE_ENV === 'production',
-        ...props
-    }
-) => {
+const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
+    stringName,
+    fallback,
+    replacements = {},
+    children = null,
+    maxReplacements = 20,
+    useDangerouslySetInnerHTML = false,
+    language = undefined,
+    autoCreation = process.env.NODE_ENV === 'production',
+    ...props
+}) => {
     // create missing textStrings in QA/Production if opened by an authorized developer
     useEffect(() => {
         (async () => {
@@ -66,7 +64,7 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
                                 cache: 'no-cache',
                                 headers: new Headers({
                                     Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`
-                                }),
+                                })
                             }
                         );
                         const libContent = await libResponse.json();
@@ -105,7 +103,8 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
                                         'pt',
                                         'es',
                                         'tr'
-                                    ].join(', ')}.`);
+                                    ].join(', ')}.`
+                                );
                             }
                         }
                     });
@@ -140,13 +139,13 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = (
 };
 
 interface TextStringReplacerConfig {
-    children: string | ReactNode,
-    textStringChildren?: ReactNode | null,
-    replacements: JsxReplacements,
-    dangerouslySetInnerHTML?: boolean,
-    maxReplacements?: number,
-    stringName: string,
-    fallback: string
+    children: string | ReactNode;
+    textStringChildren?: ReactNode | null;
+    replacements: JsxReplacements;
+    dangerouslySetInnerHTML?: boolean;
+    maxReplacements?: number;
+    stringName: string;
+    fallback: string;
     onClick?: (...arg: any) => any;
 }
 
@@ -158,7 +157,7 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
     maxReplacements,
     stringName,
     fallback,
-    ...elementProps
+    ...props
 }) => {
     // get the string manually if it hasn't been passed by the chayns-components textstring component
     const calculatedString = TextString.getTextString(stringName) || fallback;
@@ -179,10 +178,10 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
             useDangerouslySetInnerHTML: dangerouslySetInnerHTML,
             guid,
         });
-    }, [text, replacements]);
+    }, [text, replacements, dangerouslySetInnerHTML, guid, maxReplacements]);
 
     return textStringChildren && React.isValidElement(textStringChildren)
-        ? React.cloneElement(textStringChildren, elementProps, content)
+        ? React.cloneElement(textStringChildren, props, content)
         : <span>{content}</span>;
 };
 

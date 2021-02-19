@@ -1,4 +1,4 @@
-import getJsonSettings, { DateTimeZoneHandlingEnum } from '../../src/functions/getJsonSettings/getJsonSettings';
+import getJsonSettings, { DateTimeZoneHandlingEnum } from '../../src/functions/getJsonSettings';
 
 describe('functions/getJsonSettings', () => {
     const foo = {

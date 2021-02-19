@@ -1,6 +1,5 @@
-import {isChaynsErrorObject} from './isChaynsError';
+import { isChaynsErrorObject } from './isChaynsError';
 import RequestError from './RequestError';
-
 
 export interface ChaynsErrorObject {
     displayMessage: string,
@@ -29,10 +28,10 @@ export default class ChaynsError extends RequestError {
     static async getChaynsErrorObject(value: object | Response | Promise<any>): Promise<ChaynsErrorObject | null> {
         if (value instanceof Response) {
             const response = value.clone();
-            let obj: {[key: string]: any}|ChaynsErrorObject = {};
+            let obj: { [key: string]: any } | ChaynsErrorObject = {};
             try {
                 obj = await response.json();
-            } catch(e) { /* ignored */ }
+            } catch (e) { /* ignored */ }
             if (isChaynsErrorObject(obj)) {
                 return <ChaynsErrorObject>obj;
             }

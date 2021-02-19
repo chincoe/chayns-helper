@@ -8,10 +8,10 @@ import ResizableWaitCursor from '../wait-cursor/ResizableWaitCursor';
 import colorLog from '../../utils/colorLog';
 
 declare interface UACGroupChooseButton {
-    value: number | number[],
-    onChange: (param: any) => any,
-    multiSelect?: boolean,
-    disabled?: boolean
+    value: number | number[];
+    onChange: (param: any) => any;
+    multiSelect?: boolean;
+    disabled?: boolean;
 }
 
 /**

@@ -6,11 +6,12 @@ import { createDialogResult } from '../utils';
  * @param message
  * @param options
  */
-const alert = (message: string, options?: { title?: string }): DialogPromise<undefined> => new DialogPromise<undefined>((resolve: (value?: any) => any) => {
-    chayns.dialog.alert(options?.title || '', message ?? '')
-        .then((type: any) => {
-            resolve(createDialogResult(type));
-        });
-});
+const alert = (message: string, options?: { title?: string }): DialogPromise<undefined> => new DialogPromise<undefined>(
+    (resolve: (value?: any) => any) => {
+        chayns.dialog.alert(options?.title || '', message ?? '')
+            .then((type: any) => {
+                resolve(createDialogResult(type));
+            });
+    });
 
 export default alert;

@@ -1,18 +1,18 @@
 import React, { ReactElement } from 'react';
 import parse from 'html-react-parser';
 import stringToRegex, { regexRegex } from '../utils/stringToRegex';
-import generateUUID from '../functions/generateUid';
+import generateUUID from '../functions/generateGuid';
 import colorLog from '../utils/colorLog';
 
 export type JsxReplacementFunction = ((params: { match: string, regexMatch?: RegExpMatchArray, variable: string | RegExp }) => string | ReactElement);
 export type JsxReplacements = { [stringOrRegex: string]: ReactElement | string | JsxReplacementFunction };
 
 export interface JsxReplaceConfig {
-    text: string,
-    replacements: JsxReplacements,
-    maxReplacements?: number
-    guid?: string,
-    useDangerouslySetInnerHTML?: boolean
+    text: string;
+    replacements: JsxReplacements;
+    maxReplacements?: number;
+    guid?: string;
+    useDangerouslySetInnerHTML?: boolean;
 }
 
 // eslint-disable-next-line max-len

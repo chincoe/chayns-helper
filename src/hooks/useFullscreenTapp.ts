@@ -1,6 +1,4 @@
-import React, {
-    useState, useEffect, useReducer, useMemo, SetStateAction
-} from 'react';
+import React, { SetStateAction, useEffect, useMemo, useReducer, useState } from 'react';
 import hideCwFooter from '../functions/chaynsCalls/hideCwFooter';
 import setViewMode from '../functions/chaynsCalls/setViewMode';
 import shallowEqual from '../functions/shallowEqual';
@@ -47,9 +45,7 @@ const windowDataReducer = (
  */
 const correctWindowData = (
     data: { [key: string]: number }
-): {
-    pageYOffset: number, windowHeight: number, frameY: number | any
-} | any => {
+): { pageYOffset: number, windowHeight: number, frameY: number | any } | any => {
     if (!data) return data;
     return {
         ...data,

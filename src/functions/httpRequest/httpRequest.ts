@@ -3,7 +3,7 @@ import isNullOrWhiteSpace from '../../utils/isNullOrWhiteSpace';
 import logger from 'chayns-logger';
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import colorLog from '../../utils/colorLog';
-import generateUUID from '../generateUid';
+import generateUUID from '../generateGuid';
 import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
 import ChaynsError from './ChaynsError';
 import HttpMethod, { HttpMethodType } from './HttpMethod';
@@ -20,8 +20,8 @@ import ResponseType, { ResponseTypeList, ResponseTypeValue } from './ResponseTyp
 import LogLevel, { LogLevelType, ObjectResponse } from './LogLevel';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
 import { HttpStatusCodeType } from './HttpStatusCodes';
-import showWaitCursor from '../waitCursor/waitCursor';
-import getJsonSettings, { JsonSettings } from '../getJsonSettings/getJsonSettings';
+import showWaitCursor from '../waitCursor';
+import getJsonSettings, { JsonSettings } from '../getJsonSettings';
 import getJwtPayload from '../getJwtPayload';
 
 /**
@@ -35,15 +35,34 @@ import getJwtPayload from '../getJwtPayload';
 export interface HttpRequestConfig {
     method?: HttpMethodType;
     useChaynsAuth?: boolean;
-    headers?: object;
-    body?: object | string | FormData | any,
-    cache?: string;
+    headers?: HeadersInit | Record<string, string> & {
+        Authorization?: string
+            | 'Bearer ${chayns.env.user.tobitAccessToken}'
+            | 'Bearer ${token}'
+            | 'Basic ${credentials}'
+            | 'Basic ${btoa(`${user}:${secret}`).replace(`+`, `-`).replace(`/`, `_`).replace(/=+$/, ``)}';
+        'Content-Type'?: string
+            | 'application/json'
+            | 'text/plain'
+            | 'application/x-www-form-urlencoded'
+            | 'multipart/form-data';
+    };
+    body?: object | string | FormData | any;
+    cache?: string | 'default' | 'no-cache' | 'reload' | 'force-cache' | 'only-if-cached';
     referrer?: string;
-    referrerPolicy?: string;
-    mode?: string;
-    redirect?: string;
+    referrerPolicy?: string
+        | 'no-referrer'
+        | 'no-referrer-when-downgrade'
+        | 'same-origin, origin'
+        | 'strict-origin'
+        | 'origin-when-cross-origin'
+        | 'strict-origin-when-cross-origin'
+        | 'unsafe-url';
+    mode?: string | 'cors' | 'no-cors' | 'same-origin';
+    credentials?: string | 'omit' | 'same-origin' | 'include';
+    redirect?: string | 'follow' | 'manual' | 'error';
     integrity?: string;
-    keepalive?: string;
+    keepalive?: boolean;
     window?: Window;
     signal?: AbortSignal;
 }
@@ -69,22 +88,22 @@ export interface HttpRequestConfig {
 export interface HttpRequestOptions {
     responseType?: ResponseTypeValue | null;
     throwErrors?: boolean | Array<HttpStatusCodeType>;
-    logConfig?: { [key: string]: LogLevelType } | Map<string, LogLevelType>,
+    logConfig?: { [key: string]: LogLevelType } | Map<string, LogLevelType>;
     stringifyBody?: boolean | JsonSettings;
     additionalLogData?: object;
     autoRefreshToken?: boolean;
     waitCursor?: boolean
         | { text?: string, textTimeout?: number, timeout?: number, }
-        | { timeout?: number, steps?: { [timeout: number]: string }; },
+        | { timeout?: number, steps?: { [timeout: number]: string }; };
     statusHandlers?: { [key: string]: ResponseTypeValue | ((response: Response) => any) } | Map<string, ResponseTypeValue | ((response: Response) => any)>;
     errorHandlers?: { [key: string]: ResponseTypeValue | ((response: Response) => any) } | Map<string, ResponseTypeValue | ((response: Response) => any)>;
     errorDialogs?: Array<string | RegExp>;
     replacements?: { [key: string]: string | ((substring: string, ...args: any[]) => string) };
-    sideEffects?: ((status: number) => void) | { [status: string]: () => void } | {}
-    internalRequestGuid?: string
+    sideEffects?: ((status: number) => void) | { [status: string]: () => void } | {};
+    internalRequestGuid?: string;
 }
 
-export type httpRequestResult = Response | ObjectResponse | Blob | Object | string | RequestError | ChaynsError | any
+export type httpRequestResult = Response | ObjectResponse | Blob | Object | string | RequestError | ChaynsError | any;
 
 /**
  * Extensive and highly customizable fetch helper. Consult httpRequest.md for usage.
@@ -216,6 +235,12 @@ export function httpRequest(
                 ...(defaultConfig.config || {}),
                 ...(config || {})
             };
+            if (fetchConfig.mode === 'no-cors') {
+                console.warn(
+                    ...colorLog.gray(`[HttpRequest<${processName}>]`),
+                    '`mode:\'no-cors\'` will remove your authorization header and return an opaque response with status code 0. Please check if `credentials: \'omit\' yields the desired result first.`'
+                );
+            }
             const {
                 method,
                 useChaynsAuth,
@@ -234,7 +259,7 @@ export function httpRequest(
             let requestHeaders: HeadersInit = body && stringifyBody ? { 'Content-Type': 'application/json' } : {};
             if (useChaynsAuth) requestHeaders.Authorization = `Bearer ${chayns.env.user.tobitAccessToken}`;
             requestHeaders = {
-                ...requestHeaders,
+                ...(requestHeaders as HeadersInit),
                 ...(defaultConfig?.config?.headers || {}),
                 ...headers
             };
@@ -298,7 +323,8 @@ export function httpRequest(
                     data: {
                         resolveValue: value,
                         internalRequestGuid
-                    }
+                    },
+                    section: '[chayns-helper]httpRequest.js',
                 });
             };
 
@@ -347,22 +373,28 @@ export function httpRequest(
                 failedToFetchLog({
                     message: `[HttpRequest] Failed to fetch on ${processName}`,
                     data: {
-                        address: requestAddress,
-                        method,
-                        body,
-                        additionalLogData,
-                        headers: {
-                            ...requestHeaders,
-                            Authorization: undefined
+                        processName,
+                        request: {
+                            address: requestAddress,
+                            method,
+                            body,
+                            headers: {
+                                ...requestHeaders,
+                                Authorization: undefined
+                            }
                         },
+                        response: {
+                            status: 1
+                        },
+                        input,
                         // @ts-expect-error
                         online: `${navigator?.onLine}, ${navigator?.connection?.effectiveType}`,
-                        processName,
                         requestDuration: `${Date.now() - fetchStartTime} ms`,
                         requestTime: new Date(fetchStartTime).toISOString(),
-                        internalRequestGuid
+                        internalRequestGuid,
+                        additionalLogData: additionalLogData === {} ? undefined : additionalLogData
                     },
-                    section: 'httpRequest.js'
+                    section: '[chayns-helper]httpRequest.js',
                 }, err);
                 err.statusCode = 1;
                 const status = 1;
@@ -405,6 +437,7 @@ export function httpRequest(
                             case ResponseType.Status.None:
                                 resolve({ status, data: undefined });
                                 break;
+                            case ResponseType.Status.Binary:
                             case ResponseType.Status.Blob:
                             case ResponseType.Status.Json:
                             case ResponseType.Status.Text:
@@ -424,9 +457,12 @@ export function httpRequest(
                             case ResponseType.Response:
                                 resolve(response || { status });
                                 break;
+                            case ResponseType.Binary:
                             case ResponseType.Text:
                             case ResponseType.Blob:
                             case ResponseType.Json:
+                                resolve(null);
+                                break;
                             default:
                                 resolve(response || null);
                                 break;
@@ -466,16 +502,21 @@ export function httpRequest(
                         body,
                         headers: {
                             ...requestHeaders,
-                            Authorization: requestHeaders?.Authorization
-                                           && !!getJwtPayload(requestHeaders?.Authorization)
-                                ? `Payload: ${requestHeaders.Authorization.split('.')[1]}`
+                            Authorization: (requestHeaders as { Authorization: string })?.Authorization
+                                           && !!getJwtPayload((requestHeaders as { Authorization: string })
+                                ?.Authorization)
+                                ? `Payload: ${(requestHeaders as { Authorization: string }).Authorization.split(
+                                    '.')[1]}`
                                 : undefined
                         },
                     },
                     response: {
                         status,
+                        statusText: response.statusText,
+                        type: response.type,
                         requestUid,
                         body: responseBody,
+                        url: response.url
                     },
                     input,
                     // @ts-expect-error
@@ -485,7 +526,7 @@ export function httpRequest(
                     internalRequestGuid,
                     additionalLogData: additionalLogData === {} ? undefined : additionalLogData
                 },
-                section: 'httpRequest.js',
+                section: '[chayns-helper]httpRequest.js',
                 req_guid: requestUid
             };
 

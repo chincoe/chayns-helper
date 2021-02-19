@@ -3,15 +3,15 @@ import clsx from 'clsx';
 import './data-row.scss';
 
 export interface DataRow {
-    className?: string,
-    style?: object,
-    children?: ReactNode,
-    elementType?: string | JSXElementConstructor<any>
+    className?: string;
+    style?: object;
+    children?: ReactNode;
+    elementType?: string | JSXElementConstructor<any>;
 }
 
 /**
- * Container to display its children as label with value(s). The first child will be positioned on the left, all rerender
- * children to the right.
+ * Container to display its children as label with value(s). The first child will be positioned on the left, all
+ * rerender children to the right.
  * @param className
  * @param style
  * @param children

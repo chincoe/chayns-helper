@@ -1,15 +1,12 @@
-import React, {FunctionComponent, JSXElementConstructor} from 'react';
+import React, { FunctionComponent, JSXElementConstructor } from 'react';
 import clsx from 'clsx';
 import './centered-container.scss';
 
 export interface CenteredContainer {
-    className?: string,
-    style?: object,
-    /**
-     * leave a gap between children, ideal for buttons
-     */
-    gap?: boolean,
-    elementType?: string|JSXElementConstructor<any>
+    className?: string;
+    style?: object;
+    gap?: boolean;
+    elementType?: string | JSXElementConstructor<any>;
 }
 
 /**

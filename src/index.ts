@@ -12,7 +12,6 @@ export { default as RestrictedAccordion } from './components/restricted-accordio
 export { default as rerender } from './components/rerender/rerender';
 export { default as RechartsAxis } from './components/recharts-axis/RechartsAxis';
 // chaynsCall
-export { default as chaynsCall } from './functions/chaynsCalls/chaynsCalls';
 export { default as setViewMode } from './functions/chaynsCalls/setViewMode';
 export { default as hideCwFooter } from './functions/chaynsCalls/hideCwFooter';
 export {
@@ -31,26 +30,25 @@ export {
 export { default as mediaSelectDialog } from './functions/chaynsDialogs/dialogs/mediaSelect';
 export { default as fileSelectDialog } from './functions/chaynsDialogs/dialogs/fileSelect';
 export { default as iFrameDialog } from './functions/chaynsDialogs/dialogs/iFrame';
+export { default as statusDialog, dialogType, dialogStatusType } from './functions/chaynsDialogs/statusDialog';
 // general functions
-export { default as copyToClipboard } from './functions/copy';
+export { default as copyToClipboard } from './functions/copyToClipboard';
 export { default as types } from './functions/types';
-export { default as showWaitCursor } from './functions/waitCursor/waitCursor';
-export { default as generateUUID } from './functions/generateUid';
-export { default as localStorage } from './other/localStorageHelper';
+export { default as showWaitCursor } from './functions/waitCursor';
+export { default as generateGuid } from './functions/generateGuid';
 export { default as getHookState } from './functions/getHookState';
-export { default as shallowEqual } from './functions/shallowEqual';
+export { default as shallowEqual, deepEqual } from './functions/shallowEqual';
 export { default as fnsFormat } from './functions/timeHelper/fnsFormat';
 export { default as roundDate } from './functions/timeHelper/roundDate';
-export { default as Guid } from './functions/guid';
 export { default as stringToColor } from './functions/colors/stringToColor';
 export { default as hexToRgb } from './functions/colors/hexToRgb';
 export { default as toHslColor } from './functions/colors/toHslColor';
 export { default as getJwtPayload } from './functions/getJwtPayload';
-export { default as getJsonSettings, DateTimeZoneHandling } from './functions/getJsonSettings/getJsonSettings';
+export { default as getJsonSettings, DateTimeZoneHandling } from './functions/getJsonSettings';
 export { isPagemakerIFrame, isCustomTappIFrame } from './functions/isPagemakerIFrame';
 // functions with deps
-export { default as useShallowSelector } from './hooks/useShallowSelector';
-export { default as useRechartsAxis, generateRechartsAxis } from './functions/recharts/useRechartsAxis';
+export { default as useComparingSelector } from './hooks/useComparingSelector';
+export { default as useRechartsAxis, generateRechartsAxis } from './functions/generateRechartsAxis';
 // httpRequest
 export { default as request } from './functions/httpRequest/httpRequest';
 export { default as HttpStatusCode } from './functions/httpRequest/HttpStatusCodes';
@@ -68,13 +66,10 @@ export { default as useUniqueTimeout } from './hooks/uniques/useUniqueTimeout';
 export { default as useFullscreenTapp } from './hooks/useFullscreenTapp';
 export { default as useUser } from './hooks/useUser';
 export { default as useWebsocketService } from './hooks/useWebsocketService';
-export { default as usePrevState } from './hooks/usePrevState';
 export { default as usePrevious } from './hooks/usePrevious';
 export { default as usePreviousEffect } from './hooks/usePreviousEffect';
 export { default as useUpdateEffect } from './hooks/useUpdateEffect';
 export { default as useClampLines, lineClampType } from './hooks/useClampLines';
-export { default as useInlineSelector } from './hooks/useInlineSelector';
-export { default as useAsyncState } from './hooks/useAsyncState';
 export { default as useExtendedState } from './hooks/useExtendedState';
 // textString
 export { default as TextStringComplex } from './textstring/TextStringComplex';

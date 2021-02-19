@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useEffect} from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import './resizable-wait-cursor.scss';
 // @ts-expect-error
 import { SmallWaitCursor } from 'chayns-components';
@@ -16,15 +16,13 @@ import clsx from 'clsx';
 const ResizableWaitCursor: FunctionComponent<{
     size?: number;
     className?: string;
-    style?: object
-}> = (
-    {
-        size = 32,
-        className = '',
-        style = {},
-        ...props
-    }
-) => {
+    style?: object;
+}> = ({
+    size = 32,
+    className = '',
+    style = {},
+    ...props
+}) => {
     useEffect(() => {
         if (size % 3 !== 0) {
             // eslint-disable-next-line no-console
