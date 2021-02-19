@@ -99,7 +99,7 @@ const useWebsocketService = (
                             { serviceName, conditions, clientGroup }
                         );
                     }
-                    logger.info({
+                    logger.info(JSON.parse(JSON.stringify({
                         message: '[Websocket] client registered',
                         data: {
                             data,
@@ -107,7 +107,7 @@ const useWebsocketService = (
                             serviceName,
                             clientGroup
                         }
-                    });
+                    })));
                 });
 
                 // WS client default: WS register error (e.g. WSS webhook didn't work out)
@@ -115,14 +115,14 @@ const useWebsocketService = (
                     // eslint-disable-next-line no-console
                     console.error(
                         ...colorLog.gray(`[Websocket<${serviceName}>]`), 'register error', data);
-                    logger.error({
+                    logger.error(JSON.parse(JSON.stringify({
                         message: '[Websocket] registration failed',
                         data: {
                             conditions,
                             serviceName,
                             clientGroup
                         }
-                    }, data);
+                    })), data);
                 });
 
                 // WS client default: WS connection closed
@@ -134,7 +134,7 @@ const useWebsocketService = (
                             'connection closed', data
                         );
                     }
-                    logger.info({
+                    logger.info(JSON.parse(JSON.stringify({
                         message: '[Websocket] connection closed',
                         data: {
                             data,
@@ -142,21 +142,21 @@ const useWebsocketService = (
                             serviceName,
                             clientGroup
                         }
-                    });
+                    })));
                 });
 
                 // WS client default: WS connection error
                 webSocketClient.on('ERROR', (error) => {
                     // eslint-disable-next-line no-console
                     console.error(...colorLog.gray(`[Websocket<${serviceName}>]`), 'error', error);
-                    logger.warning({
+                    logger.warning(JSON.parse(JSON.stringify({
                         message: '[Websocket] error',
                         data: {
                             conditions,
                             serviceName,
                             clientGroup
                         }
-                    }, error);
+                    })), error);
                 });
             }
         }
