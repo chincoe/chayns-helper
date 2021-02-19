@@ -34,12 +34,20 @@ This component wraps the `TextString` chayns-component and adds prefix usage, js
     stringName="string_name"
     fallback="This is a ##LINK##GREAT##LINK## ##NAME##"
     replacements={{
-        '##NAME##': nameString, // simple version
-        [/##LINK##(.*?)##LINK##/]: ({ // complex version
-            match, // the matching part of the string, here: '##LINK##GREAT##LINK##' 
-            regexMatch, // the result of string.match(regex), here: ['##LINK##GREAT##LINK##', 'GREAT', index: 10, input: 'This is a ##LINK##GREAT##LINK## ##NAME##', groups: undefined]
-            variable // the original variable, as string or regex. here: /##LINK##(.*?)##LINK##/
-        }) => (<a href="https://google.com">{regexMatch[1]}</a>) // access regexMatch[1] for the value of the first regex capture group, here: 'GREAT'
+        // simple version
+        '##NAME##': nameString,
+        // complex version
+        [/##LINK##(.*?)##LINK##/]: ({
+            // the matching part of the string, here: '##LINK##GREAT##LINK##' 
+            match,
+            // the result of string.match(regex), here: ['##LINK##GREAT##LINK##', 'GREAT', index: 10, input: 'This is a ##LINK##GREAT##LINK## ##NAME##']
+            regexMatch,
+            // the original variable, as string or regex. here: /##LINK##(.*?)##LINK##/
+            variable
+        }) => (
+            // access regexMatch[1] for the value of the first regex capture group, here: 'GREAT'
+            <a href="https://google.com">{regexMatch[1]}</a>
+        ) 
     }}
 >
     <p/>
