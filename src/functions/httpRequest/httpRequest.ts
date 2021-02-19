@@ -323,7 +323,8 @@ export function httpRequest(
                     data: {
                         resolveValue: value,
                         internalRequestGuid
-                    }
+                    },
+                    section: '[chayns-helper]httpRequest.js',
                 });
             };
 
@@ -372,22 +373,28 @@ export function httpRequest(
                 failedToFetchLog({
                     message: `[HttpRequest] Failed to fetch on ${processName}`,
                     data: {
-                        address: requestAddress,
-                        method,
-                        body,
-                        additionalLogData,
-                        headers: {
-                            ...requestHeaders,
-                            Authorization: undefined
+                        processName,
+                        request: {
+                            address: requestAddress,
+                            method,
+                            body,
+                            headers: {
+                                ...requestHeaders,
+                                Authorization: undefined
+                            }
                         },
+                        response: {
+                            status: 1
+                        },
+                        input,
                         // @ts-expect-error
                         online: `${navigator?.onLine}, ${navigator?.connection?.effectiveType}`,
-                        processName,
                         requestDuration: `${Date.now() - fetchStartTime} ms`,
                         requestTime: new Date(fetchStartTime).toISOString(),
-                        internalRequestGuid
+                        internalRequestGuid,
+                        additionalLogData: additionalLogData === {} ? undefined : additionalLogData
                     },
-                    section: 'httpRequest.js'
+                    section: '[chayns-helper]httpRequest.js',
                 }, err);
                 err.statusCode = 1;
                 const status = 1;
@@ -519,7 +526,7 @@ export function httpRequest(
                     internalRequestGuid,
                     additionalLogData: additionalLogData === {} ? undefined : additionalLogData
                 },
-                section: 'httpRequest.js',
+                section: '[chayns-helper]httpRequest.js',
                 req_guid: requestUid
             };
 

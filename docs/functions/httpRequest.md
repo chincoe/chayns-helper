@@ -1,6 +1,7 @@
 ## [Request](src/functions/httpRequest/httpRequest.ts)
-A request helper with customizable defaults that can be used to configure any behavior. 
-Includes the request helper as well as enums for http methods, http status codes and more.
+
+A request helper with customizable defaults that can be used to configure any behavior. Includes the request helper as
+well as enums for http methods, http status codes and more.
 
 ### Suggested setup and quick documentation
 
@@ -71,7 +72,8 @@ A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js
 |options.waitCursor | Show a wait cursor during the request. Can be configured like [showWaitCursor()](https://github.com/chincoe/chayns-helper/blob/master/src/functions/waitCursor/waitCursor.md) | boolean/{text: string, timeout: number, textTimeout: number}/{timeout: number, steps: Object\<textTimeout, text> } | `false` |
 |options.replacements | Replacements for the request url | Object<string/regex, string/function> | Object with replacements for `##locationId##`, `##siteId##`, `##tappId##`, `##userId##` and `##personId##`  |
 |options.sideEffects | Side effects for certain status codes, like chayns.login() on status 401. Pass a function to handle all status at once or an object with an effect for each status  | (status: number) => void / Object\<status: number, () => void> | `undefined` |
-| **@returns** | Promise of: Response specified via response type or throws an error | Promise\<Json/String/Object/Blob/Response/null> | |
+| **
+@returns** | Promise of: Response specified via response type or throws an error | Promise\<Json/String/Object/Blob/Response/null> | |
 
 > **Note**: A "Failed to fetch" Error will be treated as a status code `1` regarding options.statusHandlers, options.logConfig as well as the return values if options.throwErrors is false
 
@@ -101,12 +103,12 @@ priority:
 If several statusHandlers or errorHandlers match the response, the priority within those handlers will be as following:
 
 1. handlers passed to request.fetch()
-   1. exact status/error code
-   2. regex matching status/error code
+    1. exact status/error code
+    2. regex matching status/error code
 2. handlers passed to request.defaults()
-   1. exact status/error code
-   2. regex matching status/error code
-   
+    1. exact status/error code
+    2. regex matching status/error code
+
 Otherwise, the priority is based on the order in which the handlers are specified.
 
 #### ThrowError behavior
@@ -121,7 +123,9 @@ If throwErrors is set to true (or an array), this helper works with the followin
 This behavior makes it necessary to wrap a request into `try/catch` or define a `.catch` on the promise.
 
 #### Handling errors with throwErrors = true
-To handle side effects of failed requests when throwErrors is enabled, consider using the JS Promise functions `.then(successFn, errorFn)`, `.catch(errorFn)` and `.finally(alwaysFn)`.
+
+To handle side effects of failed requests when throwErrors is enabled, consider using the JS Promise
+functions `.then(successFn, errorFn)`, `.catch(errorFn)` and `.finally(alwaysFn)`.
 
 #### Examples
 
@@ -197,6 +201,71 @@ const result = await (getExample(data).catch((ex) => {
 }));
 ```
 
+### Customizing Logging
+
+This helper offers extensive request logging. In case your application deals with sensitive data, you can filter out
+that data in a logger middleware in your `chayns-logger`.
+
+A chayns-logger middleware can be passed in the chaynsLogger.init function and looks like this:
+
+```javascript
+chaynsLogger.init({
+    // ...
+    middleware(payload) {
+        // modify payload
+        return true; // return false to prevent this log entirely
+    }
+})
+```
+
+For the purposes of this helper, your can identify every log like this:
+
+```javascript
+function middleware(payload) {
+    if (payload.section === '[chayns-helper]httpRequest.js') {
+        // deal with any log by the request helper
+    }
+}
+```
+
+Not all logs are request logs, but only really request logs contain information that could be considered sensitive (call
+parameters, headers, request and response bodies, authorization header). To enable you to target specific fields to
+remove from your log, the structure of a request log payload always looks like this:
+```javascript
+const payload = {
+    data: {
+        processName,
+        request: {
+            address: "https://...",
+            method: "GET",
+            body: requestBody,
+            headers: {
+                // all custom set request headers
+                Authorization: "..."
+            }
+        },
+        response: {
+            status,
+            statusText,
+            type, // the js Response type, e.g. "basic", "cors" or "opaque"
+            requestUid, // the "X-Request-Id"-Header,
+            body: responseBody,
+            url: responseUrl
+        },
+        input: { address, config, options }, // the input parameters for this specific request.fetch() call
+        online: `true, 3g`,
+        requestDuration: "300 ms",
+        requestTime: "ISO Format Date string",
+        internalRequestGuid,
+        additionalLogData
+    },
+    section: '[chayns-helper]httpRequest.js',
+    // other non specific meta information
+}
+```
+
+Not all fields will always be available depending on the request data.
+
 ### request.defaults(address, config, options)
 
 Set a base url as well as defaults for fetch config and request.fetch()-options.
@@ -207,8 +276,10 @@ Set a base url as well as defaults for fetch config and request.fetch()-options.
 | config | A fetch config object. See request.fetch() for all properties. Properties that are not specified will keep their default value | Object | `{}` |
 | options | A request.fetch() options object. See request.fetch() for all properties. Properties that are not specified will keep their default value | Object | `{}` |
 
-By default, if a field in options or config is set on a specific request it will overwrite the default set with this function entirely.
-There are some important exceptions where defaults and specific options are merged, with the specific taking priority over the default:
+By default, if a field in options or config is set on a specific request it will overwrite the default set with this
+function entirely. There are some important exceptions where defaults and specific options are merged, with the specific
+taking priority over the default:
+
 * request.headers
 * options.statusHandlers
 * options.errorHandlers

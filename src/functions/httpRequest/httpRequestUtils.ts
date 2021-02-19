@@ -101,7 +101,8 @@ export const jsonResolve = async (
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting JSON body failed on Status ${status} on ${processName}`,
-            data: { internalRequestGuid }
+            data: { internalRequestGuid },
+            section: '[chayns-helper]httpRequest.js',
         }, err);
         console.warn(
             ...colorLog.gray(`[HttpRequest<${processName}>]`),
@@ -126,7 +127,8 @@ export const binaryResolve = async (
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting Binary body failed on Status ${status} on ${processName}`,
-            data: { internalRequestGuid }
+            data: { internalRequestGuid },
+            section: '[chayns-helper]httpRequest.js',
         }, err);
         console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
             `Getting Binary body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
@@ -150,7 +152,8 @@ export const blobResolve = async (
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting BLOB body failed on Status ${status} on ${processName}`,
-            data: { internalRequestGuid }
+            data: { internalRequestGuid },
+            section: '[chayns-helper]httpRequest.js',
         }, err);
         console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
             `Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
@@ -174,7 +177,8 @@ export const textResolve = async (
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting TEXT body failed on Status ${status} on ${processName}`,
-            data: { internalRequestGuid }
+            data: { internalRequestGuid },
+            section: '[chayns-helper]httpRequest.js',
         }, err);
         console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
             `Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
@@ -197,7 +201,8 @@ export const objectResolve = async (
     } catch (err) {
         logger.warning({
             message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`,
-            data: { internalRequestGuid }
+            data: { internalRequestGuid },
+            section: '[chayns-helper]httpRequest.js',
         }, err);
         console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
             `Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
@@ -301,7 +306,8 @@ export async function resolveWithHandler(
             status,
             internalRequestGuid,
             processName
-        }
+        },
+        section: '[chayns-helper]httpRequest.js',
     });
     return false;
 }
