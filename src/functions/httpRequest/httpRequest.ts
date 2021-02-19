@@ -318,14 +318,14 @@ export function httpRequest(
 
             const resolve = (value?: any) => {
                 globalResolve(value);
-                logger.info({
+                logger.info(JSON.parse(JSON.stringify({
                     message: `[HttpRequest] ${processName} resolved`,
                     data: {
                         resolveValue: value,
                         internalRequestGuid
                     },
                     section: '[chayns-helper]httpRequest.js',
-                });
+                })));
             };
 
             const tryReject = (
@@ -370,7 +370,7 @@ export function httpRequest(
             } catch (err) {
 // HANDLE FAILED TO FETCH START
                 const failedToFetchLog = await getLogFunctionByStatus(1, logConfig, logger.warning);
-                failedToFetchLog({
+                failedToFetchLog(JSON.parse(JSON.stringify({
                     message: `[HttpRequest] Failed to fetch on ${processName}`,
                     data: {
                         processName,
@@ -395,7 +395,7 @@ export function httpRequest(
                         additionalLogData: additionalLogData === {} ? undefined : additionalLogData
                     },
                     section: '[chayns-helper]httpRequest.js',
-                }, err);
+                })), err);
                 err.statusCode = 1;
                 const status = 1;
                 const { statusHandler, errorHandler } = getHandlers(status, err);
@@ -493,7 +493,7 @@ export function httpRequest(
                 // ignored
             }
 
-            const logData = {
+            const logData = JSON.parse(JSON.stringify({
                 data: {
                     processName,
                     request: {
@@ -528,7 +528,7 @@ export function httpRequest(
                 },
                 section: '[chayns-helper]httpRequest.js',
                 req_guid: requestUid
-            };
+            }));
 
             let defaultLog = logger.error;
             if (status < 400) defaultLog = logger.info;
