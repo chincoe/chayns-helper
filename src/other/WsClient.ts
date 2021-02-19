@@ -11,7 +11,7 @@ class WebSocketClient {
 
     private readonly application: string | null = null;
 
-    conditions: WebsocketConditions | null = null;
+    public conditions: WebsocketConditions | null = null;
 
     private socket: WebSocket | null = null;
 
