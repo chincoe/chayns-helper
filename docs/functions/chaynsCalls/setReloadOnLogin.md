@@ -13,7 +13,7 @@ Add a login listener. As long as a listener is active, reload on login/logout wi
 | once | if set to true the listener will be removed after being called once | boolean | `false` |
 | **@returns** | the listener that was set. This value is necessary to remove the listener | function | |
 
-### addChaynsLoginListener(callback, once)
+### removeChaynsLoginListener(callback)
 Remove a login listener. As long as a listener is active, reload on login/logout will be disabled. If a login/logout occurs, the listener will be called.
 
 | Parameter | Description | Type | Required/Default |
