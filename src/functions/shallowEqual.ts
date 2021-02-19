@@ -6,13 +6,16 @@ function is(x: any, y: any): boolean {
     return x !== x && y !== y;
 }
 
-function checkSimpleEquality(objA: any, objB: any): boolean {
+function checkSimpleEquality(objA: any, objB: any): boolean | null {
     if (is(objA, objB)) return true;
 
-    return !(typeof objA !== 'object'
+    if (typeof objA !== 'object'
              || objA === null
              || typeof objB !== 'object'
-             || objB === null);
+             || objB === null) {
+        return false;
+    }
+    return null
 
 }
 
@@ -22,11 +25,11 @@ function checkSimpleEquality(objA: any, objB: any): boolean {
  * @param objB
  */
 export default function shallowEqual(objA: any, objB: any): boolean {
-    if (!checkSimpleEquality(objA, objB)) return false;
+    const simple = checkSimpleEquality(objA, objB);
+    if(simple !== null) return simple;
 
     const keysA = Object.keys(objA);
     const keysB = Object.keys(objB);
-
     if (keysA.length !== keysB.length) return false;
 
     for (let i = 0; i < keysA.length; i++) {
@@ -42,11 +45,11 @@ export default function shallowEqual(objA: any, objB: any): boolean {
 }
 
 export function deepEqual(objA: any, objB: any): boolean {
-    if (!checkSimpleEquality(objA, objB)) return false;
+    const simple = checkSimpleEquality(objA, objB);
+    if(simple !== null) return simple;
 
     const keysA = Object.keys(objA);
     const keysB = Object.keys(objB);
-
     if (keysA.length !== keysB.length) return false;
 
     for (let i = 0; i < keysA.length; i++) {
