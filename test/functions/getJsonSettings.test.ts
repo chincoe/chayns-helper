@@ -29,6 +29,6 @@ describe('functions/getJsonSettings', () => {
             ignoreNullValues: true,
             includeNotSerializable: true,
             includeUndefined: true
-        }))).toMatch(`{"a":1,"d":null,"e":"1970-01-01T01:00:00.000+01:00","f":"function () { }"}`)
+        }))).toMatch(/{"a":1,"d":null,"e":"1970-01-01T([0-9]+):00:00.000\+\1:00","f":"function \(\) { }"}/)
     })
 })
