@@ -105,7 +105,8 @@ const useWebsocketService = (
                             conditions,
                             serviceName,
                             clientGroup
-                        }
+                        },
+                        section: '[chayns-helper]useWebsocketService.js'
                     })));
                 });
 
@@ -120,7 +121,8 @@ const useWebsocketService = (
                             conditions,
                             serviceName,
                             clientGroup
-                        }
+                        },
+                        section: '[chayns-helper]useWebsocketService.js'
                     })), data as Error);
                 });
 
@@ -140,7 +142,8 @@ const useWebsocketService = (
                             conditions,
                             serviceName,
                             clientGroup
-                        }
+                        },
+                        section: '[chayns-helper]useWebsocketService.js'
                     })));
                 });
 
@@ -154,7 +157,8 @@ const useWebsocketService = (
                             conditions,
                             serviceName,
                             clientGroup
-                        }
+                        },
+                        section: '[chayns-helper]useWebsocketService.js'
                     })), error as Error);
                 });
             }
