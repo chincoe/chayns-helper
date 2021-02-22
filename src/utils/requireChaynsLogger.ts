@@ -25,7 +25,6 @@ export interface ChaynsLogger {
     critical: (logObject: ErrorObject, err?: Error, applicationUid?: string) => any;
 }
 
-// eslint-disable-next-line import/no-mutable-exports
 let chaynsLogger: ChaynsLogger = {
     debug: console.debug,
     info: console.log,
@@ -51,8 +50,9 @@ export function setCustomLogger(logger: ChaynsLogger) {
 }
 
 try {
-    // eslint-disable-next-line global-require
-    chaynsLogger = require('chayns-logger/lib/logging');
+    chaynsLogger = {
+        ...require('chayns-logger/lib/logging')
+    };
 } catch (e) {
     /* ignored */
 }
