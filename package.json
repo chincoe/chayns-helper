@@ -52,7 +52,7 @@
       "optional": false
     },
     "chayns-logger": {
-      "optional": false
+      "optional": true
     },
     "chayns-components": {
       "optional": false
@@ -101,7 +101,6 @@
     "babel-plugin-typescript-iife-enum": "^0.2.1",
     "chayns-components": "^4.20.17",
     "chayns-doc": "^1.2.1",
-    "chayns-logger": "^2.8.6",
     "cssnano": "^4.1.10",
     "eslint": "^7.18.0",
     "eslint-config-airbnb": "^18.2.0",

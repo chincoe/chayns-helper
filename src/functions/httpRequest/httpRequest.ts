@@ -1,6 +1,5 @@
 import isNullOrWhiteSpace from '../../utils/isNullOrWhiteSpace';
-// @ts-expect-error
-import logger from 'chayns-logger';
+import logger from '../../utils/requireChaynsLogger';
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import colorLog from '../../utils/colorLog';
 import generateUUID from '../generateGuid';
@@ -531,7 +530,7 @@ export function httpRequest(
             }));
 
             let defaultLog = logger.error;
-            if (status < 400) defaultLog = logger.info;
+            if (status < 400) defaultLog = (logger.info as (data: Record<string, any>, error?: Error) => any);
             if (status === 401) defaultLog = logger.warning;
             const log = await getLogFunctionByStatus(status, logConfig, defaultLog, responseBody);
 

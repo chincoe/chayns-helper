@@ -14,7 +14,7 @@ export type LogObject = {
 };
 
 export type ErrorObject = LogObject & {
-    ex: Error
+    ex?: Error
 };
 
 export interface ChaynsLogger {
