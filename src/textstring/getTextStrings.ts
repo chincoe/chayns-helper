@@ -47,8 +47,8 @@ function getTextStrings(
     language?: string
 ): string | Array<string> & Record<string, string> {
     const returnList = [];
-    const isObject = Object.prototype.toString.call(textStrings) !== "[object Object]";
-    const isArray = Object.prototype.toString.call(textStrings) !== "[object Array]";
+    const isObject = Object.prototype.toString.call(textStrings) === "[object Object]";
+    const isArray = Object.prototype.toString.call(textStrings) === "[object Array]";
     const strings: string[] = <string[]>(isArray
         ? textStrings
         : isObject
