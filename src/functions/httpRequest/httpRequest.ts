@@ -320,7 +320,7 @@ export function httpRequest(
                 logger.info(JSON.parse(JSON.stringify({
                     message: `[HttpRequest] ${processName} resolved`,
                     data: {
-                        resolveValue: JSON.parse(JSON.stringify(value).substring(0, 500)),
+                        resolveValue: value ? JSON.parse(JSON.stringify(value).substring(0, 500)) : value,
                         internalRequestGuid
                     },
                     section: '[chayns-helper]httpRequest.js',
@@ -376,7 +376,7 @@ export function httpRequest(
                         request: {
                             address: requestAddress,
                             method,
-                            body,
+                            body: body ? JSON.parse(JSON.stringify(body).substring(0, 500)) : body,
                             headers: {
                                 ...requestHeaders,
                                 Authorization: undefined
@@ -498,7 +498,7 @@ export function httpRequest(
                     request: {
                         address: requestAddress,
                         method,
-                        body: JSON.parse(JSON.stringify(body).substring(0, 500)),
+                        body: body ? JSON.parse(JSON.stringify(body).substring(0, 500)) : body,
                         headers: {
                             ...requestHeaders,
                             Authorization: (requestHeaders as { Authorization: string })?.Authorization
@@ -514,7 +514,7 @@ export function httpRequest(
                         statusText: response.statusText,
                         type: response.type,
                         requestUid,
-                        body: JSON.parse(JSON.stringify(responseBody).substring(0, 500)),
+                        body: responseBody ? JSON.parse(JSON.stringify(responseBody).substring(0, 500)) : responseBody,
                         url: response.url
                     },
                     input,
