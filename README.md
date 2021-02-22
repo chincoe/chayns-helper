@@ -24,13 +24,16 @@ npm install chayns-helper
 ```
 
 #### Dependencies
-  * `react`
-  * `chayns-components` 
-  * `chayns-logger`
 
-This package supports tree-shaking, so each module will only be included in your bundle if it is imported by you or another module.
+* `react`
+* `chayns-components`
+* `chayns-logger`
+
+This package supports tree-shaking, so each module will only be included in your bundle if it is imported by you or
+another module.
 
 ## Contents
+
 * [Essentials](#essentials)
 * [Chayns Services and Utilities](#chayns-services-and-utilities)
 * [UI and Forms](#ui-and-forms)
@@ -126,3 +129,32 @@ Large or complicated helpers are marked with a `+` to make it easier to look the
 | [time](https://github.com/chincoe/chayns-helper/blob/master/docs/constants/time.md)| constant for times based on ms | Constant |
 | [toHslColor](https://github.com/chincoe/chayns-helper/blob/master/docs/functions/toHslColor.md)| Convert a string or int to an hsl color object which returns a hsl() css function when stringified | Function |
 | + [types](https://github.com/chincoe/chayns-helper/blob/master/docs/functions/types.md)| a collection of helpers for types in general but especially objects and arrays. Includes: mapObject, reduceObject, mapObjectToArray, forEachKey, firstOrDefault, replaceAll, type checking | Functions |
+
+## Other
+
+### Custom Logger
+
+By default, this package will use the private `chayns-logger` package for logging. If you want to use a custom logger,
+you can specify a custom logger:
+
+```javascript
+// init
+setCustomLogger({
+    debug(data) { },
+    info(data) { },
+    warning(data, error) { },
+    error(data, error) { },
+    critical(data, error) { }
+})
+```
+Regular log data will look like this:
+```typescript
+const logData = {
+    message: 'Log message',
+    data: { /* object with custom log data */ },
+    section: 'file.js' 
+}
+```
+
+If any of these functions is not defined it will use the default value of `console.debug|log|warn|error`, depending on
+log level.
