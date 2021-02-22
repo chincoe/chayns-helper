@@ -165,7 +165,7 @@ class WebSocketClient {
      */
     public on = (
         event: string,
-        listener: (data: { [key: string]: number | string | null }, wsEvent: MessageEvent) => any
+        listener: (data: Record<string, number | string | null> | Error, wsEvent: MessageEvent) => any
     ) => {
         this.listener[event] = listener;
     };

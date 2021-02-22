@@ -1,5 +1,4 @@
-// @ts-expect-error
-import logger from 'chayns-logger';
+import logger from '../../utils/requireChaynsLogger';
 import { isChaynsErrorObject } from './isChaynsError';
 import { ChaynsErrorObject } from "./ChaynsError";
 

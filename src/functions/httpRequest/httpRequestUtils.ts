@@ -1,5 +1,4 @@
-// @ts-expect-error
-import logger from 'chayns-logger';
+import logger from '../../utils/requireChaynsLogger';
 import colorLog from '../../utils/colorLog';
 import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
 import ChaynsError, { ChaynsErrorObject } from './ChaynsError';
@@ -22,9 +21,9 @@ export const getMapKeys = (map: Map<string, any>) => {
 export async function getLogFunctionByStatus(
     status: number,
     logConfig: Map<string, LogLevelType>,
-    defaultFunction: (data: object) => any,
+    defaultFunction: (data: Record<string, any>) => any,
     chaynsErrorObject?: ChaynsErrorObject
-): Promise<(data: object, error?: Error) => any> {
+): Promise<(data: Record<string, any>, error?: Error) => any> {
     const logKeys: string[] = [];
     const mapKeys = getMapKeys(logConfig);
     logKeys.push(...(mapKeys.filter((k) => !/^[0-9]+$/.test(k)
@@ -49,7 +48,7 @@ export async function getLogFunctionByStatus(
     if (levelKey && logConfig.get(levelKey)) {
         switch (logConfig.get(levelKey)) {
             case LogLevel.info:
-                return logger.info;
+                return (logger.info as (data: Record<string, any>, error?: Error) => any);
             case LogLevel.warning:
                 return logger.warning;
             case LogLevel.error:

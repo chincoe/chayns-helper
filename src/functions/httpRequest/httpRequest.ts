@@ -1,6 +1,5 @@
 import isNullOrWhiteSpace from '../../utils/isNullOrWhiteSpace';
-// @ts-expect-error
-import logger from 'chayns-logger';
+import logger from '../../utils/requireChaynsLogger';
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import colorLog from '../../utils/colorLog';
 import generateUUID from '../generateGuid';
@@ -321,7 +320,7 @@ export function httpRequest(
                 logger.info(JSON.parse(JSON.stringify({
                     message: `[HttpRequest] ${processName} resolved`,
                     data: {
-                        resolveValue: value,
+                        resolveValue: value ? JSON.parse(JSON.stringify(value).substring(0, 500)) : value,
                         internalRequestGuid
                     },
                     section: '[chayns-helper]httpRequest.js',
@@ -377,7 +376,7 @@ export function httpRequest(
                         request: {
                             address: requestAddress,
                             method,
-                            body,
+                            body: body ? JSON.parse(JSON.stringify(body).substring(0, 500)) : body,
                             headers: {
                                 ...requestHeaders,
                                 Authorization: undefined
@@ -499,7 +498,7 @@ export function httpRequest(
                     request: {
                         address: requestAddress,
                         method,
-                        body,
+                        body: body ? JSON.parse(JSON.stringify(body).substring(0, 500)) : body,
                         headers: {
                             ...requestHeaders,
                             Authorization: (requestHeaders as { Authorization: string })?.Authorization
@@ -515,7 +514,7 @@ export function httpRequest(
                         statusText: response.statusText,
                         type: response.type,
                         requestUid,
-                        body: responseBody,
+                        body: responseBody ? JSON.parse(JSON.stringify(responseBody).substring(0, 500)) : responseBody,
                         url: response.url
                     },
                     input,
@@ -531,7 +530,7 @@ export function httpRequest(
             }));
 
             let defaultLog = logger.error;
-            if (status < 400) defaultLog = logger.info;
+            if (status < 400) defaultLog = (logger.info as (data: Record<string, any>, error?: Error) => any);
             if (status === 401) defaultLog = logger.warning;
             const log = await getLogFunctionByStatus(status, logConfig, defaultLog, responseBody);
 

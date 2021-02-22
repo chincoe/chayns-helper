@@ -1,3 +1,5 @@
+// config
+export { setCustomLogger } from './utils/requireChaynsLogger';
 // components
 export { default as UACGroupChooseButton } from './components/buttons/UACGroupChooseButton';
 export { default as CenteredContainer } from './components/containers/CenteredContainer';

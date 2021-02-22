@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-// @ts-expect-error
-import logger from 'chayns-logger';
+import logger from '../utils/requireChaynsLogger';
 import shallowEqual from '../functions/shallowEqual';
 import WsClient from '../other/WsClient';
 import WebSocketClient, { WebsocketConditions } from '../other/WsClient';
@@ -122,7 +121,7 @@ const useWebsocketService = (
                             serviceName,
                             clientGroup
                         }
-                    })), data);
+                    })), data as Error);
                 });
 
                 // WS client default: WS connection closed
@@ -156,7 +155,7 @@ const useWebsocketService = (
                             serviceName,
                             clientGroup
                         }
-                    })), error);
+                    })), error as Error);
                 });
             }
         }
