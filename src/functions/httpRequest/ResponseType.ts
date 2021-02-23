@@ -35,6 +35,17 @@ const ResponseType: {
     }
 }
 
+export enum ResponseTypeEnum {
+    Json = 'json',
+    Blob = 'blob',
+    Binary = 'binary',
+    Response = 'response',
+    Text = 'text',
+    Object = 'object',
+    None = 'none',
+    ThrowError = 'error',
+}
+
 export type ResponseTypeValue = (typeof ResponseType)[(keyof Omit<typeof ResponseType, 'Status'>)]
     | (typeof ResponseType.Status)[(keyof typeof ResponseType.Status)] | string;
 
