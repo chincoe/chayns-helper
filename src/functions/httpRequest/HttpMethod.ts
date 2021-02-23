@@ -8,5 +8,3 @@ export enum HttpMethod {
     Patch = 'PATCH',
     Delete = 'DELETE',
 }
-
-export default HttpMethod;

@@ -8,5 +8,3 @@ export enum LogLevel {
     critical = 'critical',
     none = 'none',
 }
-
-export default LogLevel;

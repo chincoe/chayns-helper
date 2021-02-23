@@ -23,5 +23,3 @@ export enum ResponseType {
 }
 
 export const ResponseTypeList: Array<ResponseType> = (Object.values(ResponseType).slice(0, -1) as Array<ResponseType>)
-
-export default ResponseType;

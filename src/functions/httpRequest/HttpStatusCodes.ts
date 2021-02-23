@@ -401,6 +401,3 @@ export enum HttpStatusCode {
      */
     NetworkAuthenticationRequired = 511,
 }
-
-export default HttpStatusCode;
-

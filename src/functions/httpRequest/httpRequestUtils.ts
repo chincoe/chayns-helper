@@ -4,9 +4,9 @@ import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
 import ChaynsError, { ChaynsErrorObject } from './ChaynsError';
 import getChaynsErrorCode from './getChaynsErrorCode';
 import { chaynsErrorCodeRegex } from './isChaynsError';
-import LogLevel from './LogLevel';
+import { LogLevel } from './LogLevel';
 import RequestError from './RequestError';
-import ResponseType, { ResponseTypeList } from './ResponseType';
+import { ResponseTypeList, ResponseType } from './ResponseType';
 
 export const getMapKeys = (map: Map<string, any>) => {
     const result = [];

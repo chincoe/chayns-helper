@@ -5,7 +5,7 @@ import colorLog from '../../utils/colorLog';
 import generateUUID from '../generateGuid';
 import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
 import ChaynsError from './ChaynsError';
-import HttpMethod from './HttpMethod';
+import { HttpMethod } from './HttpMethod';
 import {
     getLogFunctionByStatus,
     getMapKeys,
@@ -15,8 +15,8 @@ import {
 } from './httpRequestUtils';
 import { chaynsErrorCodeRegex } from './isChaynsError';
 import RequestError from './RequestError';
-import ResponseType, { ResponseTypeList, ObjectResponse } from './ResponseType';
-import LogLevel from './LogLevel';
+import { ObjectResponse, ResponseType, ResponseTypeList } from './ResponseType';
+import { LogLevel } from './LogLevel';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
 import { HttpStatusCode } from './HttpStatusCodes';
 import showWaitCursor from '../waitCursor';
