@@ -6,7 +6,7 @@ import generateUUID from '../../../src/functions/generateGuid';
 describe('functions/httpRequest/httpRequest', () => {
     beforeAll(() => {
         request.defaults("https://httpRequestTest.com/", {}, {
-            responseType: ResponseType.Status.Json
+            responseType: ResponseType.JsonWithStatus
         });
 
         fetchMock.mockIf(/^https?:\/\/httpRequestTest\.com.*$/i, (req) => {

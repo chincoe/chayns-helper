@@ -1,23 +1,17 @@
 import time from '../constants/time';
 
-export enum DateTimeZoneHandlingEnum {
+export enum DateTimeZoneHandling {
     Default = 'default',
     Utc = 'utc',
     LocalOffset = 'localoffset'
 }
-
-export const DateTimeZoneHandling = {
-    Default: 'default',
-    Utc: 'utc',
-    LocalOffset: 'localoffset'
-};
 
 export interface JsonSettings {
     ignoreNullValues?: boolean;
     includeUndefined?: boolean;
     includeNotSerializable?: boolean;
     excludeKeys?: string[];
-    dateTimeZoneHandling?: typeof DateTimeZoneHandlingEnum | string;
+    dateTimeZoneHandling?: DateTimeZoneHandling | string;
 }
 
 /**

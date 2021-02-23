@@ -42,15 +42,10 @@ export function formatShortString(str: string, ellipsisLiteral = ''): string {
     return `${shortString}${ellipsisLiteral}`;
 }
 
-export const lineClampType: {
-    HEIGHT: 'height',
-    LINES: 'lines'
-} = {
-    HEIGHT: 'height',
-    LINES: 'lines'
+export enum lineClampType {
+    HEIGHT= 'height',
+    LINES='lines'
 }
-
-export type lineClampTypeType = typeof lineClampType[keyof typeof lineClampType]
 
 /**
  * @property ellipsis - the string appended after the cut
@@ -64,7 +59,7 @@ export interface ClampLinesConfig {
     ellipsis?: string;
     appendEllipsis?: boolean;
     limit?: number;
-    type?: lineClampTypeType;
+    type?: lineClampType;
     html?: boolean;
     replacer?: (value: string) => string;
 }

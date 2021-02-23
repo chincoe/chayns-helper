@@ -56,7 +56,7 @@ export { default as request } from './functions/httpRequest/httpRequest';
 export { default as HttpStatusCode } from './functions/httpRequest/HttpStatusCodes';
 export { default as HttpMethod } from './functions/httpRequest/HttpMethod';
 export { default as RequestError } from './functions/httpRequest/RequestError';
-export { default as ResponseType, ResponseTypeEnum } from './functions/httpRequest/ResponseType';
+export { default as ResponseType } from './functions/httpRequest/ResponseType';
 export { default as LogLevel } from './functions/httpRequest/LogLevel';
 export { default as getChaynsErrorCode } from './functions/httpRequest/getChaynsErrorCode';
 export { default as isChaynsError } from './functions/httpRequest/isChaynsError';

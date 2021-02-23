@@ -4,9 +4,9 @@ import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
 import ChaynsError, { ChaynsErrorObject } from './ChaynsError';
 import getChaynsErrorCode from './getChaynsErrorCode';
 import { chaynsErrorCodeRegex } from './isChaynsError';
-import LogLevel, { LogLevelType } from './LogLevel';
+import LogLevel from './LogLevel';
 import RequestError from './RequestError';
-import ResponseType, { ResponseTypeList, ResponseTypeValue } from './ResponseType';
+import ResponseType, { ResponseTypeList } from './ResponseType';
 
 export const getMapKeys = (map: Map<string, any>) => {
     const result = [];
@@ -20,7 +20,7 @@ export const getMapKeys = (map: Map<string, any>) => {
 
 export async function getLogFunctionByStatus(
     status: number,
-    logConfig: Map<string, LogLevelType>,
+    logConfig: Map<string, LogLevel>,
     defaultFunction: (data: Record<string, any>) => any,
     chaynsErrorObject?: ChaynsErrorObject
 ): Promise<(data: Record<string, any>, error?: Error) => any> {
@@ -77,7 +77,7 @@ export function getStatusHandlerByStatusRegex(
         const regExp = stringToRegex(keys[i]);
         if (regExp.test(status?.toString())
             && (typeof (statusHandlers.get(keys[i])) === 'function'
-                || ResponseTypeList.includes(<ResponseTypeValue><unknown>statusHandlers.get(keys[i]))
+                || ResponseTypeList.includes(<ResponseType><unknown>statusHandlers.get(keys[i]))
             )
         ) {
             return statusHandlers.get(keys[i]);
@@ -215,7 +215,7 @@ export const objectResolve = async (
 };
 
 export async function resolveWithHandler(
-    handler: ResponseTypeValue | ((response: Response) => any),
+    handler: ResponseType | ((response: Response) => any),
     response: Response,
     status: number,
     processName: string,
@@ -234,46 +234,46 @@ export async function resolveWithHandler(
         if (handler === ResponseType.Object) {
             console.warn(
                 ...colorLog.gray(`[HttpRequest<${processName}>]`),
-                'ResponseType.Object is deprecated and will be removed in the future. Use ResponseType.Status.Json instead.'
+                'ResponseType.Object is deprecated and will be removed in the future. Use ResponseType.JsonWithStatus instead.'
             );
-            handler = ResponseType.Status.Json;
+            handler = ResponseType.JsonWithStatus;
         }
         switch (handler) {
             case ResponseType.Json:
-            case ResponseType.Status.Json:
+            case ResponseType.JsonWithStatus:
                 await jsonResolve(
                     response,
-                    handler === ResponseType.Status.Json,
+                    handler === ResponseType.JsonWithStatus,
                     processName,
                     resolve,
                     internalRequestGuid
                 );
                 return true;
             case ResponseType.Blob:
-            case ResponseType.Status.Blob:
+            case ResponseType.BlobWithStatus:
                 await blobResolve(
                     response,
-                    handler === ResponseType.Status.Blob,
+                    handler === ResponseType.BlobWithStatus,
                     processName,
                     resolve,
                     internalRequestGuid
                 );
                 return true;
             case ResponseType.Text:
-            case ResponseType.Status.Text:
+            case ResponseType.TextWithStatus:
                 await textResolve(
                     response,
-                    handler === ResponseType.Status.Text,
+                    handler === ResponseType.TextWithStatus,
                     processName,
                     resolve,
                     internalRequestGuid
                 );
                 return true;
             case ResponseType.Binary:
-            case ResponseType.Status.Binary:
+            case ResponseType.BinaryWithStatus:
                 await binaryResolve(
                     response,
-                    handler === ResponseType.Status.Binary,
+                    handler === ResponseType.BinaryWithStatus,
                     processName,
                     resolve,
                     internalRequestGuid
@@ -282,7 +282,7 @@ export async function resolveWithHandler(
             case ResponseType.None:
                 resolve();
                 return true;
-            case ResponseType.Status.None:
+            case ResponseType.NoneWithStatus:
                 resolve({ status, data: undefined })
                 return true;
             case ResponseType.ThrowError:
