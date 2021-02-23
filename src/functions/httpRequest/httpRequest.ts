@@ -1,12 +1,11 @@
 import isNullOrWhiteSpace from '../../utils/isNullOrWhiteSpace';
-// @ts-expect-error
-import logger from 'chayns-logger';
+import logger from '../../utils/requireChaynsLogger';
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import colorLog from '../../utils/colorLog';
 import generateUUID from '../generateGuid';
 import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
 import ChaynsError from './ChaynsError';
-import HttpMethod, { HttpMethodType } from './HttpMethod';
+import { HttpMethod } from './HttpMethod';
 import {
     getLogFunctionByStatus,
     getMapKeys,
@@ -16,10 +15,10 @@ import {
 } from './httpRequestUtils';
 import { chaynsErrorCodeRegex } from './isChaynsError';
 import RequestError from './RequestError';
-import ResponseType, { ResponseTypeList, ResponseTypeValue } from './ResponseType';
-import LogLevel, { LogLevelType, ObjectResponse } from './LogLevel';
+import { ObjectResponse, ResponseType, ResponseTypeList } from './ResponseType';
+import { LogLevel } from './LogLevel';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
-import { HttpStatusCodeType } from './HttpStatusCodes';
+import { HttpStatusCode } from './HttpStatusCodes';
 import showWaitCursor from '../waitCursor';
 import getJsonSettings, { JsonSettings } from '../getJsonSettings';
 import getJwtPayload from '../getJwtPayload';
@@ -33,7 +32,7 @@ import getJwtPayload from '../getJwtPayload';
  * @param signal - an AbortSignal
  */
 export interface HttpRequestConfig {
-    method?: HttpMethodType;
+    method?: HttpMethod | string;
     useChaynsAuth?: boolean;
     headers?: HeadersInit | Record<string, string> & {
         Authorization?: string
@@ -86,17 +85,17 @@ export interface HttpRequestConfig {
  * @param internalRequestGuid - internal guid to group logs for the same request together
  */
 export interface HttpRequestOptions {
-    responseType?: ResponseTypeValue | null;
-    throwErrors?: boolean | Array<HttpStatusCodeType>;
-    logConfig?: { [key: string]: LogLevelType } | Map<string, LogLevelType>;
+    responseType?: ResponseType | null;
+    throwErrors?: boolean | Array<HttpStatusCode | number>;
+    logConfig?: { [key: string]: LogLevel } | Map<string, LogLevel>;
     stringifyBody?: boolean | JsonSettings;
     additionalLogData?: object;
     autoRefreshToken?: boolean;
     waitCursor?: boolean
         | { text?: string, textTimeout?: number, timeout?: number, }
         | { timeout?: number, steps?: { [timeout: number]: string }; };
-    statusHandlers?: { [key: string]: ResponseTypeValue | ((response: Response) => any) } | Map<string, ResponseTypeValue | ((response: Response) => any)>;
-    errorHandlers?: { [key: string]: ResponseTypeValue | ((response: Response) => any) } | Map<string, ResponseTypeValue | ((response: Response) => any)>;
+    statusHandlers?: { [key: string]: ResponseType | ((response: Response) => any) } | Map<string, ResponseType | ((response: Response) => any)>;
+    errorHandlers?: { [key: string]: ResponseType | ((response: Response) => any) } | Map<string, ResponseType | ((response: Response) => any)>;
     errorDialogs?: Array<string | RegExp>;
     replacements?: { [key: string]: string | ((substring: string, ...args: any[]) => string) };
     sideEffects?: ((status: number) => void) | { [status: string]: () => void } | {};
@@ -150,9 +149,9 @@ export function httpRequest(
     if (responseType === ResponseType.Object) {
         console.warn(
             ...colorLog.gray(`[HttpRequest<${processName}>]`),
-            'ResponseType.Object is deprecated and will be removed in the future. Use ResponseType.Status.Json instead.'
+            'ResponseType.Object is deprecated and will be removed in the future. Use ResponseType.JsonWithStatus instead.'
         );
-        responseType = ResponseType.Status.Json;
+        responseType = ResponseType.JsonWithStatus;
     }
 
     if (waitCursor) {
@@ -321,7 +320,7 @@ export function httpRequest(
                 logger.info(JSON.parse(JSON.stringify({
                     message: `[HttpRequest] ${processName} resolved`,
                     data: {
-                        resolveValue: value,
+                        resolveValue: value ? JSON.parse(JSON.stringify(value).substring(0, 500)) : value,
                         internalRequestGuid
                     },
                     section: '[chayns-helper]httpRequest.js',
@@ -377,7 +376,7 @@ export function httpRequest(
                         request: {
                             address: requestAddress,
                             method,
-                            body,
+                            body: body ? JSON.parse(JSON.stringify(body).substring(0, 500)) : body,
                             headers: {
                                 ...requestHeaders,
                                 Authorization: undefined
@@ -434,13 +433,13 @@ export function httpRequest(
                             case ResponseType.None:
                                 resolve();
                                 break;
-                            case ResponseType.Status.None:
+                            case ResponseType.NoneWithStatus:
                                 resolve({ status, data: undefined });
                                 break;
-                            case ResponseType.Status.Binary:
-                            case ResponseType.Status.Blob:
-                            case ResponseType.Status.Json:
-                            case ResponseType.Status.Text:
+                            case ResponseType.BinaryWithStatus:
+                            case ResponseType.BlobWithStatus:
+                            case ResponseType.JsonWithStatus:
+                            case ResponseType.TextWithStatus:
                                 resolve({
                                     status,
                                     data: null
@@ -499,7 +498,7 @@ export function httpRequest(
                     request: {
                         address: requestAddress,
                         method,
-                        body,
+                        body: body ? JSON.parse(JSON.stringify(body).substring(0, 500)) : body,
                         headers: {
                             ...requestHeaders,
                             Authorization: (requestHeaders as { Authorization: string })?.Authorization
@@ -515,7 +514,7 @@ export function httpRequest(
                         statusText: response.statusText,
                         type: response.type,
                         requestUid,
-                        body: responseBody,
+                        body: responseBody ? JSON.parse(JSON.stringify(responseBody).substring(0, 500)) : responseBody,
                         url: response.url
                     },
                     input,
@@ -531,7 +530,7 @@ export function httpRequest(
             }));
 
             let defaultLog = logger.error;
-            if (status < 400) defaultLog = logger.info;
+            if (status < 400) defaultLog = (logger.info as (data: Record<string, any>, error?: Error) => any);
             if (status === 401) defaultLog = logger.warning;
             const log = await getLogFunctionByStatus(status, logConfig, defaultLog, responseBody);
 

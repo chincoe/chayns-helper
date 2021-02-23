@@ -26,12 +26,15 @@ export const fileType = {
     ]
 };
 
+export type fileTypeType = (typeof fileType)[(keyof Omit<typeof fileType, 'DOCUMENT'>)]
+    | (typeof fileType.DOCUMENT)[(keyof typeof fileType.DOCUMENT)] | string;
+
 export interface FileSelectDialogConfig {
     title?: string;
     message?: string;
     multiselect?: boolean;
-    contentType?: string[];
-    exclude?: string[];
+    contentType?: fileTypeType[];
+    exclude?: fileTypeType[];
     directory?: boolean;
 }
 

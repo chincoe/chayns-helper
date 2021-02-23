@@ -1,5 +1,4 @@
-// @ts-expect-error
-import logger from 'chayns-logger';
+import logger from '../../utils/requireChaynsLogger';
 import { isChaynsErrorObject } from './isChaynsError';
 import { ChaynsErrorObject } from "./ChaynsError";
 
@@ -38,7 +37,8 @@ export default async function getChaynsErrorCode(value: any): Promise<string | n
             message: '[GetChaynsErrorCode] Failed to read value',
             data: {
                 value
-            }
+            },
+            section: '[chayns-helper]getChaynsErrorCode.js'
         });
         return null;
     }

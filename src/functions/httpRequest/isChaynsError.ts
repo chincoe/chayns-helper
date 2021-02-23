@@ -1,5 +1,4 @@
-// @ts-expect-error
-import logger from 'chayns-logger';
+import logger from '../../utils/requireChaynsLogger';
 
 export const chaynsErrorCodeRegex = /^[a-zA-Z0-9_]+\/[a-zA-Z0-9/_]+$/;
 
@@ -40,7 +39,8 @@ export default async function isChaynsError(value: any): Promise<boolean> {
             message: '[IsChaynsError] Failed to read value',
             data: {
                 value
-            }
+            },
+            section: '[chayns-helper]isChaynsError.js'
         })));
         return false;
     }

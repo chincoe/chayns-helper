@@ -1,4 +1,4 @@
-import getJsonSettings, { DateTimeZoneHandlingEnum } from '../../src/functions/getJsonSettings';
+import getJsonSettings, { DateTimeZoneHandling } from '../../src/functions/getJsonSettings';
 
 describe('functions/getJsonSettings', () => {
     const foo = {
@@ -12,7 +12,7 @@ describe('functions/getJsonSettings', () => {
     it('runs without crashing', () => {
         JSON.stringify(foo, getJsonSettings({}));
         JSON.stringify(foo, getJsonSettings({
-            dateTimeZoneHandling: DateTimeZoneHandlingEnum.LocalOffset,
+            dateTimeZoneHandling: DateTimeZoneHandling.LocalOffset,
             excludeKeys: ["b"],
             ignoreNullValues: true,
             includeNotSerializable: true,
@@ -24,11 +24,11 @@ describe('functions/getJsonSettings', () => {
     });
     it('calculates the right values', () => {
         expect(JSON.stringify(foo, getJsonSettings({
-            dateTimeZoneHandling: DateTimeZoneHandlingEnum.LocalOffset,
+            dateTimeZoneHandling: DateTimeZoneHandling.LocalOffset,
             excludeKeys: ["b"],
             ignoreNullValues: true,
             includeNotSerializable: true,
             includeUndefined: true
-        }))).toMatch(`{"a":1,"d":null,"e":"1970-01-01T01:00:00.000+01:00","f":"function () { }"}`)
+        }))).toMatch(/{"a":1,"d":null,"e":"1970-01-01T([0-9]+):00:00.000\+\1:00","f":"function \(\) { }"}/)
     })
 })

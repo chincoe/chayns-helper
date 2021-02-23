@@ -2,8 +2,7 @@ import React, { ErrorInfo, FunctionComponent, JSXElementConstructor, ReactNode }
 import './error-boundary.scss';
 // @ts-expect-error
 import { Button } from 'chayns-components';
-// @ts-expect-error
-import logger from 'chayns-logger';
+import logger from '../../utils/requireChaynsLogger';
 import CenteredContainer from '../containers/CenteredContainer';
 
 /**
