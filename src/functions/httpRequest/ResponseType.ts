@@ -22,7 +22,6 @@ export enum ResponseType {
     BinaryWithStatus = 'status_binary'
 }
 
-export const ResponseTypeList: Array<ResponseType> =
-    [...(Object.values(ResponseType).slice(0, -1) as Array<ResponseType>)]
+export const ResponseTypeList: Array<ResponseType> = (Object.values(ResponseType).slice(0, -1) as Array<ResponseType>)
 
 export default ResponseType;
