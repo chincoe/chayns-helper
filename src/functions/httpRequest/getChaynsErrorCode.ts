@@ -37,7 +37,8 @@ export default async function getChaynsErrorCode(value: any): Promise<string | n
             message: '[GetChaynsErrorCode] Failed to read value',
             data: {
                 value
-            }
+            },
+            section: '[chayns-helper]getChaynsErrorCode.js'
         });
         return null;
     }

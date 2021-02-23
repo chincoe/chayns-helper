@@ -53,11 +53,11 @@ export { default as useComparingSelector } from './hooks/useComparingSelector';
 export { default as useRechartsAxis, generateRechartsAxis } from './functions/generateRechartsAxis';
 // httpRequest
 export { default as request } from './functions/httpRequest/httpRequest';
-export { default as HttpStatusCode } from './functions/httpRequest/HttpStatusCodes';
-export { default as HttpMethod } from './functions/httpRequest/HttpMethod';
+export { HttpStatusCode } from './functions/httpRequest/HttpStatusCodes';
+export { HttpMethod } from './functions/httpRequest/HttpMethod';
 export { default as RequestError } from './functions/httpRequest/RequestError';
-export { default as ResponseType } from './functions/httpRequest/ResponseType';
-export { default as LogLevel } from './functions/httpRequest/LogLevel';
+export { ResponseType } from './functions/httpRequest/ResponseType';
+export { LogLevel } from './functions/httpRequest/LogLevel';
 export { default as getChaynsErrorCode } from './functions/httpRequest/getChaynsErrorCode';
 export { default as isChaynsError } from './functions/httpRequest/isChaynsError';
 export { default as ChaynsError } from './functions/httpRequest/ChaynsError';
