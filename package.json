@@ -19,7 +19,8 @@
   },
   "scripts": {
     "start": "tsdx watch",
-    "test": "tsdx test --passWithNoTests",
+    "test": "tsdx test",
+    "test:coverage": "tsdx test --coverage",
     "build": "tsdx build",
     "install:all": "npm install -reg http://repo.tobit.ag:8081/repository/npm/",
     "pub:beta": "npm version prerelease --preid=beta --no-git-tag-version && npm publish && node scripts.js -d \"%name%@%version% is unstable, please install a stable version\"",
