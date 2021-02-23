@@ -1,21 +1,13 @@
 import DialogPromise from '../DialogPromise';
 import { createDialogResult, DialogButton } from '../utils';
 
-export enum inputTypeEnum {
+export enum inputType {
     DEFAULT = 0,
     PASSWORD = 1,
     TEXTAREA = 2,
     INPUT = 2,
     NUMBER = 3
-};
-
-export const inputType = {
-    DEFAULT: 0,
-    PASSWORD: 1,
-    TEXTAREA: 2,
-    INPUT: 2,
-    NUMBER: 3
-};
+}
 
 export interface InputDialogConfig {
     title?: string;
@@ -23,7 +15,7 @@ export interface InputDialogConfig {
     placeholderText?: string;
     text?: string;
     textColor?: string;
-    type?: typeof inputTypeEnum | number;
+    type?: inputType | number;
     regex?: string;
     formatter?: (value: any) => any;
     pattern?: string;

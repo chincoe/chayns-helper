@@ -1,4 +1,4 @@
-import getJsonSettings, { DateTimeZoneHandlingEnum } from '../../src/functions/getJsonSettings';
+import getJsonSettings, { DateTimeZoneHandling } from '../../src/functions/getJsonSettings';
 
 describe('functions/getJsonSettings', () => {
     const foo = {
@@ -12,7 +12,7 @@ describe('functions/getJsonSettings', () => {
     it('runs without crashing', () => {
         JSON.stringify(foo, getJsonSettings({}));
         JSON.stringify(foo, getJsonSettings({
-            dateTimeZoneHandling: DateTimeZoneHandlingEnum.LocalOffset,
+            dateTimeZoneHandling: DateTimeZoneHandling.LocalOffset,
             excludeKeys: ["b"],
             ignoreNullValues: true,
             includeNotSerializable: true,
@@ -24,7 +24,7 @@ describe('functions/getJsonSettings', () => {
     });
     it('calculates the right values', () => {
         expect(JSON.stringify(foo, getJsonSettings({
-            dateTimeZoneHandling: DateTimeZoneHandlingEnum.LocalOffset,
+            dateTimeZoneHandling: DateTimeZoneHandling.LocalOffset,
             excludeKeys: ["b"],
             ignoreNullValues: true,
             includeNotSerializable: true,

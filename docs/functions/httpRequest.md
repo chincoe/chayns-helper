@@ -35,7 +35,7 @@ async function init() {
         {
             // your default fetch config, e.g. header
         }, {
-            responseType: ResponseType.Status.Json // configures reques.fetch to return an object with the status and json body
+            responseType: ResponseType.JsonWithStatus // configures reques.fetch to return an object with the status and json body
         }
     )
     // render goes here
@@ -321,7 +321,7 @@ request.defaults(
     },
     {
         // always get Object with json body and status unless otherwise specified
-        responseType: ResponseType.Status.Json,
+        responseType: ResponseType.JsonWithStatus,
         // log 2xx as info, 3xx as warning, 401 as warning and anything else as error
         logConfig: {
             [/2[\d]{2}/]: LogLevel.info,
@@ -358,11 +358,11 @@ request.fetch('/controller/endpoint/boardId', {}, 'myRequest');
 |Text | `'text'` | response.text() |
 |None | `'none'` | `undefined`|
 |ThrowError | `'error'` | RequestError/ChaynsError |
-|Status.Json | `'status_json'` | `{ status: response.status, data: await response.json() }` |
-|Status.Blob | `'status_blob'` | `{ status: response.status, data: await response.blob() }` |
-|Status.Text | `'status_text'` | `{ status: response.status, data: await response.text() }` |
-|Status.None | `'status_none'` | `{ status: response.status, data: undefined }` |
-|Status.Binary | `'status_binary'` | `{ status: response.status, data: await response.arrayBuffer() }` |
+|JsonWithStatus | `'status_json'` | `{ status: response.status, data: await response.json() }` |
+|BlobWithStatus | `'status_blob'` | `{ status: response.status, data: await response.blob() }` |
+|TextWithStatus | `'status_text'` | `{ status: response.status, data: await response.text() }` |
+|NoneWithStatus | `'status_none'` | `{ status: response.status, data: undefined }` |
+|BinaryWithStatus | `'status_binary'` | `{ status: response.status, data: await response.arrayBuffer() }` |
 
 > ResponseType.Object is deprecated and will be removed in a future release.
 
