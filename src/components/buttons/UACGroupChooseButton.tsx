@@ -2,8 +2,8 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 // @ts-expect-error
 import { ChooseButton } from 'chayns-components';
 import request from '../../functions/httpRequest/httpRequest';
-import LogLevel from '../../functions/httpRequest/LogLevel';
-import ResponseType from '../../functions/httpRequest/ResponseType';
+import { LogLevel } from '../../functions/httpRequest/LogLevel';
+import { ResponseType } from '../../functions/httpRequest/ResponseType';
 import ResizableWaitCursor from '../wait-cursor/ResizableWaitCursor';
 import colorLog from '../../utils/colorLog';
 

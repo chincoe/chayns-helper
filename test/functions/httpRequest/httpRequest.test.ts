@@ -1,6 +1,6 @@
 import request, { httpRequest } from '../../../src/functions/httpRequest/httpRequest';
 import fetchMock from 'jest-fetch-mock';
-import ResponseType from '../../../src/functions/httpRequest/ResponseType';
+import { ResponseType } from '../../../src/functions/httpRequest/ResponseType';
 import generateUUID from '../../../src/functions/generateGuid';
 
 describe('functions/httpRequest/httpRequest', () => {
@@ -18,7 +18,7 @@ describe('functions/httpRequest/httpRequest', () => {
                             foo: 1,
                             bar: 2
                         })
-                    })
+                    });
                 } else if (req.url.endsWith('/failedToFetch')) {
                     reject(new TypeError("Test Error"))
                 } else if (req.url.endsWith('/chaynsError1')) {
@@ -28,7 +28,7 @@ describe('functions/httpRequest/httpRequest', () => {
                             errorCode: "test_api/code",
                             requestId: generateUUID()
                         })
-                    })
+                    });
                 } else if (req.url.endsWith('/chaynsError2')) {
                     resolve({
                         status: 403,
@@ -36,7 +36,7 @@ describe('functions/httpRequest/httpRequest', () => {
                             errorCode: "test_api/p_code",
                             requestId: generateUUID()
                         })
-                    })
+                    });
                 }
             })
         })
