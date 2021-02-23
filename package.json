@@ -33,7 +33,7 @@
     "size": "size-limit",
     "size:analyze": "size-limit --why",
     "prepare": "npm run build",
-    "preversion": "npm run install:all && npm run test && npm run size",
+    "preversion": "npm run install:all && npm run test:coverage && npm run size",
     "postpublish": "node scripts.js -commit"
   },
   "publishConfig": {
