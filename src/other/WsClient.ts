@@ -1,4 +1,6 @@
-export type WebsocketConditions = { [key: string]: string | number | boolean };
+export type WebsocketConditions =
+    Record<string, string | number | boolean>
+    & Partial<{ tobitAccessToken: string, tappId: number, boardId: number }>;
 
 /**
  * This websocket client works exactly like the tobit-websocket-service-client but has additional null value handling
