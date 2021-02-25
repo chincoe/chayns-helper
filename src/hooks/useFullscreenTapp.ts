@@ -118,7 +118,7 @@ const useFullscreenTapp = (
         chayns.hideTitleImage();
         hideCwFooter()
         if (forceExclusive) setViewMode(isFullscreenActive ? true : !!defaultExclusive, false);
-        let interval: NodeJS.Timeout = setTimeout(v => v, 0);
+        let interval: number = <number><unknown>setTimeout(() => null, 0);
         clearInterval(resizeInterval);
         const tapp = <TappElement>document.querySelector('.tapp');
         if (tapp) {
@@ -127,7 +127,7 @@ const useFullscreenTapp = (
                 getWindowData(0);
                 tapp.style.width = '100vw';
                 tapp.style.height = '100vh';
-                interval = setInterval(() => {
+                interval = <number><unknown>setInterval(() => {
                     getWindowData(0, false);
                 }, 2000);
                 if (chayns.env.isMobile) chayns.addOnActivateListener(() => getWindowData(0, false));
