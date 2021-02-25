@@ -5,18 +5,18 @@ import { useState } from 'react';
  * @param initialValue
  */
 const useUniqueInterval = (
-    initialValue: NodeJS.Timeout = setTimeout(v => v, 0)
-): [(fn: () => any, interval: number) => NodeJS.Timeout, (interval: NodeJS.Timeout) => NodeJS.Timeout] => {
-    const [customInterval, setCustomInterval] = useState<NodeJS.Timeout>(initialValue);
+    initialValue: number = <number><unknown>setTimeout(() => null, 0)
+): [(fn: () => any, interval: number) => number, (interval: number) => number] => {
+    const [customInterval, setCustomInterval] = useState<number>(initialValue);
 
-    const setter = (interval: NodeJS.Timeout) => {
+    const setter = (interval: number): number => {
         clearInterval(customInterval);
         setCustomInterval(interval);
         return interval;
     };
 
     const wrappedSetter = (fn: () => any, interval: number) => {
-        return setter(setInterval(fn, interval));
+        return setter(<number><unknown>setInterval(fn, interval));
     }
 
     return [wrappedSetter, setter];
