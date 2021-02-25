@@ -17,9 +17,9 @@ class WebSocketClient {
 
     private socket: WebSocket | null = null;
 
-    private checkConnectionInterval: NodeJS.Timeout | null = null;
+    private checkConnectionInterval: number | null = null;
 
-    private reconnectTimeout: NodeJS.Timeout | null = null;
+    private reconnectTimeout: number | null = null;
 
     private answeredPing = false;
 
@@ -50,7 +50,7 @@ class WebSocketClient {
      * @private
      */
     private onOpen = () => {
-        clearTimeout(<NodeJS.Timeout>this.reconnectTimeout);
+        clearTimeout(<number>this.reconnectTimeout);
 
         this.send('register', {
             application: this.application,
@@ -58,8 +58,9 @@ class WebSocketClient {
         });
 
         this.answeredPing = true;
-        clearInterval(<NodeJS.Timeout>this.checkConnectionInterval);
-        this.checkConnectionInterval = setInterval(this.checkConnection, this.checkConnectionIntervalTime);
+        clearInterval(<number>this.checkConnectionInterval);
+        this.checkConnectionInterval = <number><unknown>setInterval(
+            this.checkConnection, this.checkConnectionIntervalTime);
 
         this.emit('OPEN');
     };
@@ -89,7 +90,7 @@ class WebSocketClient {
      * @private
      */
     private onClose = (event?: CloseEvent) => {
-        clearInterval(<NodeJS.Timeout>this.checkConnectionInterval);
+        clearInterval(<number>this.checkConnectionInterval);
         if (this.socket) {
             this.socket.onopen = () => {
             };
@@ -101,8 +102,11 @@ class WebSocketClient {
             };
         }
         this.socket = null;
-        clearTimeout(<NodeJS.Timeout>this.reconnectTimeout);
-        if (this.shouldReconnect) this.reconnectTimeout = setTimeout(this.createConnection, this.reconnectTimeoutTime);
+        clearTimeout(<number>this.reconnectTimeout);
+        if (this.shouldReconnect) {
+            this.reconnectTimeout = <number><unknown>setTimeout(
+                this.createConnection, this.reconnectTimeoutTime);
+        }
 
         this.emit('CLOSED', event, event);
     };
