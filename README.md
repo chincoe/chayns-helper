@@ -23,11 +23,11 @@
 npm install chayns-helper
 ```
 
-#### Dependencies
+#### Peer Dependencies
 
 * `react`
 * `chayns-components`
-* `chayns-logger`
+* `chayns-logger` (optional)
 
 This package supports tree-shaking, so each module will only be included in your bundle if it is imported by you or
 another module.
