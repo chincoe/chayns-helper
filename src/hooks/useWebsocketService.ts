@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import logger from '../utils/requireChaynsLogger';
-import shallowEqual from '../functions/shallowEqual';
+import { deepEqual } from '../functions/shallowEqual';
 import WsClient from '../other/WsClient';
 import WebSocketClient, { WebsocketConditions } from '../other/WsClient';
 import colorLog from '../utils/colorLog';
@@ -47,9 +47,9 @@ const useWebsocketService = (
         events,
         clientGroup = '',
         waitForDefinedConditions = true,
-        forceDisconnectOnUnmount = false,
-        forceOwnConnection = chayns.env.site.tapp.id === 250357
+        forceDisconnectOnUnmount = false
     } = config || {};
+    const forceOwnConnection = config?.forceOwnConnection ?? chayns.env.site.tapp.id === 250357
     // events pattern: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
     const [ownClient, setOwnClient] = useState<WebSocketClient>();
     const ownConnection = useMemo(() => forceOwnConnection, []);
@@ -81,7 +81,7 @@ const useWebsocketService = (
                 webSocketClient = <WebSocketClient>(ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`]);
             }
 
-            if (!shallowEqual(webSocketClient.conditions, { ...webSocketClient.conditions, ...conditions })) {
+            if (!deepEqual(webSocketClient.conditions, { ...webSocketClient.conditions, ...conditions })) {
                 webSocketClient.updateConditions({ ...webSocketClient.conditions, ...conditions });
             }
 
