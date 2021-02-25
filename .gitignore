@@ -5,6 +5,8 @@ node_modules
 dist
 .npmrc
 
+coverage/
+
 .idea/
 node_modules/
 build/
