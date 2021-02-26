@@ -1,6 +1,6 @@
 import logger from '../../utils/requireChaynsLogger';
 import colorLog from '../../utils/colorLog';
-import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
+import { regexRegex, stringToRegexStrict } from '../../utils/stringToRegex';
 import ChaynsError, { ChaynsErrorObject } from './ChaynsError';
 import getChaynsErrorCode from './getChaynsErrorCode';
 import { chaynsErrorCodeRegex } from './isChaynsError';
@@ -39,11 +39,9 @@ export async function getLogFunctionByStatus(
     const levelKey = logKeys
         .find((key) => (
             (/^[\d]$/.test(key) && parseInt(key, 10) === status)
-            || stringToRegex(key)
-                .test(`${status}`)
+            || stringToRegexStrict(key).test(`${status}`)
             || (chaynsErrorCode && key === chaynsErrorCode)
-            || (chaynsErrorCode && stringToRegex(key)
-                .test(chaynsErrorCode))
+            || (chaynsErrorCode && stringToRegexStrict(key).test(chaynsErrorCode))
         ));
     if (levelKey && logConfig.get(levelKey)) {
         switch (logConfig.get(levelKey)) {
@@ -74,7 +72,7 @@ export function getStatusHandlerByStatusRegex(
 ): ((value?: any) => any) | ResponseType | null | undefined {
     const keys = getMapKeys(statusHandlers);
     for (let i = 0; i < keys.length; i += 1) {
-        const regExp = stringToRegex(keys[i]);
+        const regExp = stringToRegexStrict(keys[i]);
         if (regExp.test(status?.toString())
             && (typeof (statusHandlers.get(keys[i])) === 'function'
                 || ResponseTypeList.includes(<ResponseType><unknown>statusHandlers.get(keys[i]))

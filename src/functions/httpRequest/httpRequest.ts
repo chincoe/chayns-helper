@@ -3,7 +3,7 @@ import logger from '../../utils/requireChaynsLogger';
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import colorLog from '../../utils/colorLog';
 import generateUUID from '../generateGuid';
-import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
+import stringToRegex, { regexRegex, stringToRegexStrict } from '../../utils/stringToRegex';
 import ChaynsError, { ChaynsErrorObject } from './ChaynsError';
 import { HttpMethod } from './HttpMethod';
 import {
@@ -304,8 +304,8 @@ export function httpRequest(
                         sideEffects as Record<string, (chaynsErrorObject?: ChaynsErrorObject) => void>
                     ).filter(k => k === `${status}`
                                   || (chaynsErrorObject && k === chaynsErrorObject.errorCode)
-                                  || stringToRegex(k).test(`${status}`)
-                                  || (chaynsErrorObject && stringToRegex(k).test(chaynsErrorObject.errorCode))
+                                  || stringToRegexStrict(k).test(`${status}`)
+                                  || (chaynsErrorObject && stringToRegexStrict(k).test(chaynsErrorObject.errorCode))
                     );
                     for (let i = 0; i < sideEffectList.length; ++i) {
                         sideEffect[sideEffectList[i]](chaynsErrorObject);
@@ -317,7 +317,7 @@ export function httpRequest(
                 // get statusHandler if exists
                 const handlerKeys = getMapKeys(statusHandlers);
                 const statusHandlerKey = handlerKeys.find((k) =>
-                    (k === `${status}` || stringToRegex(k).test(`${status}`))
+                    (k === `${status}` || stringToRegexStrict(k).test(`${status}`))
                     && (typeof (statusHandlers.get(k)) === 'function'
                         || ResponseTypeList.includes(statusHandlers.get(k)))
                 );
@@ -327,7 +327,7 @@ export function httpRequest(
                 const isChayns: boolean = !!err && (err instanceof ChaynsError);
                 const chaynsErrorCode: string | null = isChayns ? (<ChaynsError>err).errorCode : null;
                 const errorHandlerKey = errorKeys.find((k) =>
-                    (chaynsErrorCode && (k === chaynsErrorCode || stringToRegex(k).test(chaynsErrorCode)))
+                    (chaynsErrorCode && (k === chaynsErrorCode || stringToRegexStrict(k).test(chaynsErrorCode)))
                     && (typeof (errorHandlers.get(k)) === 'function'
                         || ResponseTypeList.includes(errorHandlers.get(k)))
                 );
@@ -664,11 +664,7 @@ export function httpRequest(
                 // 1.2 errorHandlers[chaynsErrorRegex]
                 if (errorHandlers && errorHandlers.size > 0) {
                     const errorKeys = getMapKeys(errorHandlers);
-                    const key: string = errorKeys.find((k) => (
-                        chaynsErrorCodeRegex.test(k)
-                        && stringToRegex(key)
-                            .test(errorCode)
-                    ));
+                    const key: string = errorKeys.find((k) => (stringToRegexStrict(k).test(errorCode)));
                     const handler = errorHandlers.get(key);
                     if (handler) {
                         const result = await resolveWithHandler(
