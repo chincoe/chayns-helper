@@ -1,3 +1,6 @@
+import colorLog from '../utils/colorLog';
+import logger from '../utils/requireChaynsLogger';
+
 export type WebsocketConditions =
     Record<string, string | number | boolean>
     & Partial<{ tobitAccessToken: string, tappId: number, boardId: number }>;
@@ -29,16 +32,86 @@ class WebSocketClient {
 
     public connections: number = 0;
 
+    public clientGroup: string;
+
     constructor(
         application: string,
         conditions: WebsocketConditions,
         options: {
             reconnectTimeout?: number,
-            checkConnectionInterval?: number
+            checkConnectionInterval?: number,
+            clientGroup?: string
         } = {}
     ) {
         this.application = application;
         this.conditions = conditions;
+        this.clientGroup = options.clientGroup || "";
+
+        // set default listeners for the default events
+        this.listener = {
+            registered(data) {
+                if (process.env.NODE_ENV === 'development') {
+                    console.log(
+                        ...colorLog.gray(`[Websocket<${application}>]`),
+                        'client registered',
+                        { serviceName: application, conditions, clientGroup: options.clientGroup }
+                    );
+                }
+                logger.info(JSON.parse(JSON.stringify({
+                    message: '[Websocket] client registered',
+                    data: {
+                        data,
+                        conditions,
+                        serviceName: application,
+                        clientGroup: options.clientGroup
+                    },
+                    section: '[chayns-helper]WebSocketClient.js'
+                })));
+            },
+            register_error: (data) => {
+                console.error(...colorLog.gray(`[Websocket<${application}>]`), 'register error', data);
+                logger.error(JSON.parse(JSON.stringify({
+                    message: '[Websocket] registration failed',
+                    data: {
+                        conditions,
+                        serviceName: application,
+                        clientGroup: options.clientGroup
+                    },
+                    section: '[chayns-helper]WebSocketClient.js'
+                })), data as Error);
+            },
+            CLOSED: (data) => {
+                if (process.env.NODE_ENV === 'development') {
+                    console.log(
+                        ...colorLog.gray(`[Websocket<${application}>]`),
+                        'connection closed', data
+                    );
+                }
+                logger.info(JSON.parse(JSON.stringify({
+                    message: '[Websocket] connection closed',
+                    data: {
+                        data,
+                        conditions,
+                        serviceName: application,
+                        clientGroup: options.clientGroup
+                    },
+                    section: '[chayns-helper]WebSocketClient.js'
+                })));
+            },
+            ERROR: (error) => {
+                console.error(...colorLog.gray(`[Websocket<${application}>]`), 'error', error);
+                logger.warning(JSON.parse(JSON.stringify({
+                    message: '[Websocket] error',
+                    data: {
+                        conditions,
+                        serviceName: application,
+                        clientGroup: options.clientGroup
+                    },
+                    section: '[chayns-helper]WebSocketClient.js'
+                })), error as Error);
+            },
+            ...this.listener
+        }
 
         this.reconnectTimeoutTime = options.reconnectTimeout || 5000;
         this.checkConnectionIntervalTime = options.checkConnectionInterval || 2000;

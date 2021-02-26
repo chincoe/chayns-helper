@@ -13,7 +13,7 @@ Uses only one client instance for all hooks unless otherwise specified via confi
 |config.forceDisconnectOnUnmount | Disconnect the websocket when this component unmounts. Affects all hooks using with the same clientGroup. Disconnects after the last hook unmounts if set to false. | boolean | false |
 |config.forceOwnConnection | Use a separate WS client instance for this hook. Overrides clientGroup. | boolean | `false` (`true` if in Wallet) |
 |dependencies | dependencies for updating event listeners | Array\<any> | [] |
-| **@returns** | The used WebsocketClient instance | WsClient | |
+| **@returns** | The used WebsocketClient instance | WebSocketClient | |
 
 > NOTE: Because all wallet items of the same system use the same script, all usages in the wallet need to have either `config.forceOwnConnection = true` or have `config.clientGroup` set to something unique to the wallet item (e.g. the wallet GUID).
 

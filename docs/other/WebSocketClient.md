@@ -1,4 +1,4 @@
-## [WsClient](src/other/WsClient.ts)
+## [WebSocketClient](src/other/WebSocketClient.ts)
 A websocket client for the tobit websocket service. Should usually be used with [useWebsocketService](docs/hooks/useWebsocketService.md).
 
 #### Constructor

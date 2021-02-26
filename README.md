@@ -71,7 +71,7 @@ Large or complicated helpers are marked with a `+` to make it easier to look the
 | [useTextStrings](https://github.com/chincoe/chayns-helper/blob/master/docs/textstring/TextString.md#usetextstrings)| get memoized TextStrings from a list of string names | Hook |
 | [useUser](https://github.com/chincoe/chayns-helper/blob/master/docs/hooks/useUser.md)| chayns.getUser() hook | Hook |
 | + [useWebsocketService](https://github.com/chincoe/chayns-helper/blob/master/docs/hooks/useWebsocketService.md)| configure a tobit-websocket-service-client | Hook |
-| [WebSocketClient](https://github.com/chincoe/chayns-helper/blob/master/docs/other/WsClient.md)| custom alternative to tobit-websocket-service-client | Class |
+| [WebSocketClient](https://github.com/chincoe/chayns-helper/blob/master/docs/other/WebSocketClient.md)| custom alternative to tobit-websocket-service-client | Class |
 
 ### UI and Forms
 

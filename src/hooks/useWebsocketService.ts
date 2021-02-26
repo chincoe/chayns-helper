@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import logger from '../utils/requireChaynsLogger';
 import { deepEqual } from '../functions/shallowEqual';
-import WsClient from '../other/WsClient';
-import WebSocketClient, { WebsocketConditions } from '../other/WsClient';
+import WebSocketClient, { WebsocketConditions } from '../other/WebSocketClient';
 import colorLog from '../utils/colorLog';
 
 const websocketClients: { [serviceName: string]: WebSocketClient } = {};
@@ -68,9 +67,12 @@ const useWebsocketService = (
             let webSocketClient: WebSocketClient;
 
             if (isInit) {
-                webSocketClient = new WsClient(
+                webSocketClient = new WebSocketClient(
                     serviceName,
-                    { ...conditions }
+                    { ...conditions },
+                    {
+                        clientGroup
+                    }
                 );
                 if (ownConnection) {
                     setOwnClient(webSocketClient);
@@ -86,82 +88,6 @@ const useWebsocketService = (
             }
 
             webSocketClient.connections++;
-
-            if (isInit) {
-                // WS client default: WS registered successfully
-                webSocketClient.on('registered', (data) => {
-                    if (process.env.NODE_ENV === 'development') {
-                        // eslint-disable-next-line no-console
-                        console.log(
-                            ...colorLog.gray(`[Websocket<${serviceName}>]`),
-                            'client registered',
-                            { serviceName, conditions, clientGroup }
-                        );
-                    }
-                    logger.info(JSON.parse(JSON.stringify({
-                        message: '[Websocket] client registered',
-                        data: {
-                            data,
-                            conditions,
-                            serviceName,
-                            clientGroup
-                        },
-                        section: '[chayns-helper]useWebsocketService.js'
-                    })));
-                });
-
-                // WS client default: WS register error (e.g. WSS webhook didn't work out)
-                webSocketClient.on('register_error', (data) => {
-                    // eslint-disable-next-line no-console
-                    console.error(
-                        ...colorLog.gray(`[Websocket<${serviceName}>]`), 'register error', data);
-                    logger.error(JSON.parse(JSON.stringify({
-                        message: '[Websocket] registration failed',
-                        data: {
-                            conditions,
-                            serviceName,
-                            clientGroup
-                        },
-                        section: '[chayns-helper]useWebsocketService.js'
-                    })), data as Error);
-                });
-
-                // WS client default: WS connection closed
-                webSocketClient.on('CLOSED', (data) => {
-                    // eslint-disable-next-line no-console
-                    if (process.env.NODE_ENV === 'development') {
-                        console.log(
-                            ...colorLog.gray(`[Websocket<${serviceName}>]`),
-                            'connection closed', data
-                        );
-                    }
-                    logger.info(JSON.parse(JSON.stringify({
-                        message: '[Websocket] connection closed',
-                        data: {
-                            data,
-                            conditions,
-                            serviceName,
-                            clientGroup
-                        },
-                        section: '[chayns-helper]useWebsocketService.js'
-                    })));
-                });
-
-                // WS client default: WS connection error
-                webSocketClient.on('ERROR', (error) => {
-                    // eslint-disable-next-line no-console
-                    console.error(...colorLog.gray(`[Websocket<${serviceName}>]`), 'error', error);
-                    logger.warning(JSON.parse(JSON.stringify({
-                        message: '[Websocket] error',
-                        data: {
-                            conditions,
-                            serviceName,
-                            clientGroup
-                        },
-                        section: '[chayns-helper]useWebsocketService.js'
-                    })), error as Error);
-                });
-            }
         }
         return () => {
             const webSocketClient = ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`];
