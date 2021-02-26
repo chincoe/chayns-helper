@@ -66,6 +66,8 @@ export interface HttpRequestConfig {
     signal?: AbortSignal;
 }
 
+// TODO: Combine errorHandlers and statusHandlers into handlers
+
 /**
  * Additional request options. Consult documentation for details
  * @param responseType - default: 'json' - the data format this helper should return
