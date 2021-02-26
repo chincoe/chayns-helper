@@ -19,7 +19,7 @@ const websocketClients: { [serviceName: string]: WebSocketClient } = {};
  *     Should be deactivated if the same service is used in multiple components. If set to false, it will disconnect
  *     once the last component calling this hook has been unmounted. If set to true, it will disconnect once the first
  *     component calling this hook has been unmounted. default: false
- * @property [forceOwnConnection=false] - don't use any existing client from rerender hooks. required for wallet items
+ * @property [forceOwnConnection=false] - don't use any existing client from other hooks. required for wallet items
  *     to work properly. default: false
  */
 export interface WebsocketServiceConfig {

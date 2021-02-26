@@ -54,7 +54,7 @@ export default async function postData(body) {
         {
             // only worry about these options if you want to:
             // * customize the helper's behavior 
-            // * use something rerender than json in your request or response bodies
+            // * use something other than json in your request or response bodies
             // * adjust the logLevel for request logs depending on status code
             // * get the response body from requests without success status code
             // * handle ChaynsErrors
@@ -157,9 +157,9 @@ const response = request.fetch(
     'getExample',
     {
         logConfig: {
-            [/3[0-9]{2}/]: request.LogLevel.warning,
+            [/^3[0-9]{2}$/]: request.LogLevel.warning,
             // computed property names using regex are viable as well
-            [/4[\d]/]: request.LogLevel.error,
+            [/^4[\d]$/]: request.LogLevel.error,
             500: request.LogLevel.critical
         }
     }
@@ -175,7 +175,7 @@ const response = request.fetch(
     'getExample',
     {
         statusHandlers: {
-            [/(204)|3[0-9]{2}/]: (response) => null,
+            [/^((204)|3[0-9]{2})$/]: (response) => null,
             400: request.responseType.Json
         },
         sideEffects: {
@@ -230,23 +230,23 @@ request.fetch(
             // simple, using exact status and response type
             204: ResponseType.None,
             // advanced, using regex and custom function
-            [/4[0-9]{2}/]: (response) => {
+            [/^4[0-9]{2}$/]: (response) => {
                 // ...
                 return response.status; // return value is the result of request.fetch()
             },
-            [/5[0-9]{2}/]: ResponseType.ThrowError
+            [/^5[0-9]{2}$/]: ResponseType.ThrowError
         },
         errorHandlers: {
             // simple, using exact errorCode and response type
             'global/unknown_error': ResponseType.JsonWithStatus,
             // advanced, using regex and custom function
-            [/global\/.*/]: (response) => {
+            [/^global\/.*$/]: (response) => {
                 return response.status; // return value is the result of request.fetch()
             }
         },
         errorDialogs: [
             'global/unknown_error', // simple, using exact error code
-            /global\/.*/ // advanced, using regex to match multiple
+            /^global\/.*$/ // advanced, using regex to match multiple
         ],
         sideEffects: {
             // simple, using exact status
@@ -256,7 +256,7 @@ request.fetch(
                 chayns.dialog.alert("Oh no!", chaynsErrorObject.displayMessage) ;
             },
             // complex, using regex to match status and/or error code
-            [/5[0-9]{2}|global\/.*/]: (chaynsErrorObject) => { 
+            [/^(5[0-9]{2}|global\/.*)$/]: (chaynsErrorObject) => { 
                 if (chaynsErrorObject) {
                     console.error('Global chayns error occurred');
                 } else {
@@ -372,10 +372,10 @@ request.defaults(
         responseType: ResponseType.JsonWithStatus,
         // log 2xx as info, 3xx as warning, 401 as warning and anything else as error
         logConfig: {
-            [/2[\d]{2}/]: LogLevel.info,
-            [/3[\d]{2}/]: LogLevel.warning,
+            [/^2[\d]{2}$/]: LogLevel.info,
+            [/^3[\d]{2}$/]: LogLevel.warning,
             401: LogLevel.warning,
-            [/[\d]+/]: LogLevel.error
+            [/^[\d]+$/]: LogLevel.error
         },
         // don't try to get json body on 204
         statusHandlers: {
