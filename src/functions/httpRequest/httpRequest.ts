@@ -4,7 +4,7 @@ import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import colorLog from '../../utils/colorLog';
 import generateUUID from '../generateGuid';
 import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
-import ChaynsError from './ChaynsError';
+import ChaynsError, { ChaynsErrorObject } from './ChaynsError';
 import { HttpMethod } from './HttpMethod';
 import {
     getLogFunctionByStatus,
@@ -98,7 +98,9 @@ export interface HttpRequestOptions {
     errorHandlers?: { [key: string]: ResponseType | ((response: Response) => any) } | Map<string, ResponseType | ((response: Response) => any)>;
     errorDialogs?: Array<string | RegExp>;
     replacements?: { [key: string]: string | ((substring: string, ...args: any[]) => string) };
-    sideEffects?: ((status: number) => void) | { [status: string]: () => void } | {};
+    sideEffects?: ((status: number, chaynsErrorObject?: ChaynsErrorObject) => void)
+        | Record<string, (chaynsErrorObject?: ChaynsErrorObject) => void>
+        | {};
     internalRequestGuid?: string;
 }
 
@@ -171,21 +173,25 @@ export function httpRequest(
 
             // properly merge the status handlers and log config of options and default options. The function returns a
             // map to have a reliable key order to ensure that all options have a higher priority than default options
+
+            // merge status handlers
             const statusHandlers = mergeOptions(
                 (options?.statusHandlers || {}),
                 (defaultConfig?.options?.statusHandlers || {})
             );
+            // merge chayns error handlers
             const errorHandlers = mergeOptions(
                 (options?.errorHandlers || {}),
                 (defaultConfig?.options?.errorHandlers || {})
             );
+            // merge log config
             const logConfig = mergeOptions((options?.logConfig || {}), (defaultConfig?.options?.logConfig || {}));
-
+            // merge json settings if applicable
             const stringifyBody = typeof defaultConfig.options.stringifyBody === 'object'
                                   && typeof options.stringifyBody === 'object'
                 ? { ...defaultConfig.options.stringifyBody, ...options.stringifyBody }
                 : defaultStringify
-
+            // merge url replacements
             const replacements = {
                 [/##locationId##/ig.toString()]: `${chayns.env.site.locationId}`,
                 [/##siteId##/ig.toString()]: `${chayns.env.site.id}`,
@@ -195,7 +201,7 @@ export function httpRequest(
                 ...(defaultConfig?.options?.replacements || {}),
                 ...(options?.replacements || {})
             }
-
+            // merge side effects
             const optionEffects = options?.sideEffects;
             const defaultEffects = defaultConfig?.options?.sideEffects;
             let sideEffects = options.sideEffects;
@@ -207,17 +213,13 @@ export function httpRequest(
             } else if (!optionEffects && defaultEffects) {
                 sideEffects = defaultEffects;
             }
-            const sideEffect: (((status: number) => void) | { [status: number]: () => void }) = sideEffects || (() => {
+            const sideEffect: ((status: number, chaynsErrorObject?: ChaynsErrorObject) => void)
+                | Record<string, (chaynsErrorObject?: ChaynsErrorObject) => void> = sideEffects || (() => {
             });
-            const callSideEffects = typeof sideEffect === 'function'
-                // @ts-expect-error
-                ? (status: number) => { sideEffect(status); }
-                : (status: number) => {
-                    (sideEffect[status] || (() => {}))();
-                };
 
-            // eslint-disable-next-line no-param-reassign
+            // set default for process name
             if (!processName) processName = 'HttpRequest';
+            // validate responseType
             if (responseType != null && !ResponseTypeList.includes(responseType)) {
                 console.error(
                     ...colorLog.gray(`[HttpRequest<${processName}>]`),
@@ -227,13 +229,14 @@ export function httpRequest(
                 return;
             }
 
-            // read config object
+            // read fetch config object
             const fetchConfig: HttpRequestConfig = {
                 method: HttpMethod.Get,
                 useChaynsAuth: chayns.env.user.isAuthenticated,
                 ...(defaultConfig.config || {}),
                 ...(config || {})
             };
+            // log warning due to unreliability with opaque responses
             if (fetchConfig.mode === 'no-cors') {
                 console.warn(
                     ...colorLog.gray(`[HttpRequest<${processName}>]`),
@@ -246,11 +249,10 @@ export function httpRequest(
                 body,
                 headers
             } = fetchConfig;
-
+            // create json body
             const jsonSettings = typeof stringifyBody !== 'boolean' && typeof stringifyBody === 'object'
                 ? getJsonSettings(stringifyBody)
                 : null;
-
             // @ts-expect-error
             const jsonBody: string | null = body && stringifyBody ? JSON.stringify(body, jsonSettings) : null;
 
@@ -263,11 +265,12 @@ export function httpRequest(
                 ...headers
             };
 
-            // this way rerender config elements like "credentials", "mode", or "signal" can be passed to fetch()
+            // this way fetch config elements like "credentials", "mode", or "signal" can be passed to fetch()
             const remainingFetchConfig: RequestInit = <RequestInit>{ ...fetchConfig };
             // @ts-expect-error
             delete remainingFetchConfig.useChaynsAuth;
 
+            // create request address
             let requestAddress: string;
             if (!isNullOrWhiteSpace(defaultConfig.address)
                 && !/^.+?:\/\//.test(address)
@@ -291,6 +294,25 @@ export function httpRequest(
                 }
             }
 // INPUT HANDLING END
+            // define side effects call
+            const callSideEffects = (status: number, chaynsErrorObject?: ChaynsErrorObject) => {
+                if (typeof sideEffect === 'function') {
+                    (sideEffect as (status: number, chaynsErrorObject?: ChaynsErrorObject) => void)(
+                        status, chaynsErrorObject)
+                } else {
+                    const sideEffectList = Object.keys(
+                        sideEffects as Record<string, (chaynsErrorObject?: ChaynsErrorObject) => void>
+                    ).filter(k => k === `${status}`
+                                  || (chaynsErrorObject && k === chaynsErrorObject.errorCode)
+                                  || stringToRegex(k).test(`${status}`)
+                                  || (chaynsErrorObject && stringToRegex(k).test(chaynsErrorObject.errorCode))
+                    );
+                    for (let i = 0; i < sideEffectList.length; ++i) {
+                        sideEffect[sideEffectList[i]](chaynsErrorObject);
+                    }
+                }
+            }
+            // define error/status handler getter
             const getHandlers = (status: number, err?: Error | RequestError | ChaynsError) => {
                 // get statusHandler if exists
                 const handlerKeys = getMapKeys(statusHandlers);
@@ -314,7 +336,7 @@ export function httpRequest(
                     errorHandler: errorHandlers.get(errorHandlerKey)
                 };
             };
-
+            // define resolve wrapper
             const resolve = (value?: any) => {
                 globalResolve(value);
                 logger.info(JSON.parse(JSON.stringify({
@@ -326,7 +348,7 @@ export function httpRequest(
                     section: '[chayns-helper]httpRequest.js',
                 })));
             };
-
+            // define reject wrapper
             const tryReject = (
                 err: Error | RequestError | ChaynsError,
                 status: number
@@ -341,7 +363,7 @@ export function httpRequest(
                     if (!throwErrors || (status && Array.isArray(throwErrors) && throwErrors.includes(status))) {
                         return false;
                     } else {
-                        callSideEffects(status);
+                        callSideEffects(status, (err as ChaynsError)?.errorObject);
                         reject(err);
                         return true;
                     }
@@ -349,7 +371,6 @@ export function httpRequest(
             };
 
             const fetchStartTime = Date.now();
-
 // REQUEST
             let response;
             try {
@@ -569,7 +590,7 @@ export function httpRequest(
                         let jRes: { [key: string]: any } = {};
                         try { jRes = await response.json(); } catch (e) { /* ignored */ }
                         if (jRes.message === 'token_expired') {
-                            callSideEffects(<number>status);
+                            callSideEffects(<number>status, chaynsErrorObject || undefined);
                             resolve(httpRequest(address, config, processName, {
                                 responseType,
                                 logConfig,
@@ -636,7 +657,7 @@ export function httpRequest(
                         chaynsErrorObject
                     );
                     if (result) {
-                        callSideEffects(<number>status);
+                        callSideEffects(<number>status, chaynsErrorObject || undefined);
                         return;
                     }
                 }
@@ -661,7 +682,7 @@ export function httpRequest(
                             chaynsErrorObject
                         );
                         if (result) {
-                            callSideEffects(<number>status);
+                            callSideEffects(<number>status, chaynsErrorObject || undefined);
                             return;
                         }
                     }
@@ -681,7 +702,7 @@ export function httpRequest(
                     internalRequestGuid
                 );
                 if (result) {
-                    callSideEffects(<number>status);
+                    callSideEffects(<number>status, chaynsErrorObject || undefined);
                     return;
                 }
             }
@@ -699,14 +720,14 @@ export function httpRequest(
                         internalRequestGuid
                     );
                     if (result) {
-                        callSideEffects(<number>status);
+                        callSideEffects(<number>status, chaynsErrorObject || undefined);
                         return;
                     }
                 }
             }
 
             // 3. responseType
-            callSideEffects(<number>status);
+            callSideEffects(<number>status, chaynsErrorObject || undefined);
             await resolveWithHandler(
                 responseType || ResponseType.Json,
                 response,

@@ -91,7 +91,7 @@ A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js
 |options.errorDialogs| Array of ChaynsError codes or regexes for codes that should display their respective dialog | Array<string/regex> | `[]` |
 |options.waitCursor | Show a wait cursor during the request. Can be configured like [showWaitCursor()](docs/functions/waitCursor.md) | boolean / [{text,timeout,textTimeout} / {timeout,steps}](docs/functions/waitCursor.md) | `false` |
 |options.replacements | Replacements for the request url | Object<string/regex, string/function> | Object with replacements for `##locationId##`, `##siteId##`, `##tappId##`, `##userId##` and `##personId##`  |
-|options.sideEffects | Side effects for certain status codes, like chayns.login() on status 401. Pass a function to handle all status at once or an object with an effect for each status  | function(status) / Object\<status: number, function> | `undefined` |
+|options.sideEffects | Side effects for certain status codes or chayns error codes, like chayns.login() on status 401. Pass a function to handle all status at once or an object with an effect for each status  | function(status, chaynsErrorObject?) / Object\<number/string, function(chaynsErrorObject?)> | `undefined` |
 | **@returns** | Promise of: Response specified via response type or throws an error | Promise\<Json/String/Object/Blob/Response/null> | |
 
 > **Note**: A "Failed to fetch" Error will be treated as a status code `1` regarding options.statusHandlers, options.logConfig as well as the return values if options.throwErrors is false
