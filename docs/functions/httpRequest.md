@@ -188,36 +188,84 @@ const response = request.fetch(
 * Handling failed requests with options.throwErrors = true
 
 ```javascript
-// getExample.js
-const getExample = (data) => {
+// postExample.js
+const postExample = (data) => {
     return request.fetch(
         'https://www.example.com',
         {
             method: HttpMethod.Post,
             body: data
         },
-        'getExample'
+        'postExample'
     );
 }
 // OR:
-const getExample = async (data) => {
+const postExample = async (data) => {
     const result = await request.fetch(
         'https://www.example.com',
         {
             method: HttpMethod.Post,
             body: data
         },
-        'getExample'
+        'postExample'
     );
     // do stuff with the result here ...
     return result;
 }
 
-// calling getExample:
-const result = await (getExample(data).catch((ex) => {
+// calling postExample:
+const result = await (postExample(data).catch((ex) => {
     // handle error for your application
     throw ex;
 }));
+```
+ * Using statusHandlers, errorHandlers, errorDialogs and sideEffects
+```javascript
+request.fetch(
+    'https://www.example.com',
+    {},
+    'getExample',
+    {
+        statusHandlers: {
+            // simple, using exact status and response type
+            204: ResponseType.None,
+            // advanced, using regex and custom function
+            [/4[0-9]{2}/]: (response) => {
+                // ...
+                return response.status; // return value is the result of request.fetch()
+            },
+            [/5[0-9]{2}/]: ResponseType.ThrowError
+        },
+        errorHandlers: {
+            // simple, using exact errorCode and response type
+            'global/unknown_error': ResponseType.JsonWithStatus,
+            // advanced, using regex and custom function
+            [/global\/.*/]: (response) => {
+                return response.status; // return value is the result of request.fetch()
+            }
+        },
+        errorDialogs: [
+            'global/unknown_error', // simple, using exact error code
+            /global\/.*/ // advanced, using regex to match multiple
+        ],
+        sideEffects: {
+            // simple, using exact status
+            401: () => { chayns.login(); },
+            // simple, using exact error code
+            'global/unknown_error': (chaynsErrorObject) => { 
+                chayns.dialog.alert("Oh no!", chaynsErrorObject.displayMessage) ;
+            },
+            // complex, using regex to match status and/or error code
+            [/5[0-9]{2}|global\/.*/]: (chaynsErrorObject) => { 
+                if (chaynsErrorObject) {
+                    console.error('Global chayns error occurred');
+                } else {
+                    console.error('Status 5xx response');
+                }
+            }
+        }
+    }
+)
 ```
 
 ### Customizing Logging
