@@ -43,8 +43,8 @@ export function formatShortString(str: string, ellipsisLiteral = ''): string {
 }
 
 export enum lineClampType {
-    HEIGHT= 'height',
-    LINES='lines'
+    HEIGHT = 'height',
+    LINES = 'lines'
 }
 
 /**

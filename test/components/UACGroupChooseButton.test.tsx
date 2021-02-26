@@ -5,20 +5,33 @@ import UACGroupChooseButton from '../../src/components/buttons/UACGroupChooseBut
 import { act } from 'react-dom/test-utils';
 
 describe('components/UACGroupChooseButton', () => {
+    let div: HTMLDivElement;
+    beforeAll(() => {
+        div = document.createElement('div');
+    })
     it('renders without crashing', () => {
         request.default.fetch = () => {
             return new Promise<Array<{ id: number, showName: string }>>((res) => {
                 res([{ id: 1, showName: 'Manager' }])
             })
         }
-        const div = document.createElement('div');
         act(() => {
             ReactDOM.render(<UACGroupChooseButton value={1} onChange={console.log}/>, div);
         });
-        return act(async () => {
-            await new Promise(res => setTimeout(res, 100));
-            ReactDOM.unmountComponentAtNode(div);
-            request.default.fetch = request.httpRequest;
-        });
     });
+    it('can deal with a failed UAC Group fetch', () => {
+        request.default.fetch = () => {
+            return new Promise<Array<{ id: number, showName: string }>>((res, rej) => {
+                rej(new TypeError("Failed to fetch"))
+            })
+        }
+        act(() => {
+            ReactDOM.render(<UACGroupChooseButton value={1} onChange={console.log}/>, div);
+        });
+    })
+    afterEach(async () => {
+        await new Promise(res => setTimeout(res, 100));
+        ReactDOM.unmountComponentAtNode(div);
+        request.default.fetch = request.httpRequest;
+    })
 });
