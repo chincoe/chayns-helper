@@ -170,7 +170,13 @@ export function httpRequest(
                 config,
                 options
             };
-            console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Starting Request', input)
+            console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Starting Request', {
+                input,
+                defaults: {
+                    options: defaultConfig.options,
+                    config: defaultConfig.config
+                }
+            })
             // properly merge the status handlers and log config of options and default options. The function returns a
             // map to have a reliable key order to ensure that all options have a higher priority than default options
 
@@ -301,7 +307,14 @@ export function httpRequest(
                 logConfig,
                 sideEffect,
                 remainingFetchConfig,
-                stringifyBody
+                stringifyBody,
+                throwErrors,
+                additionalLogData,
+                autoRefreshToken,
+                waitCursor,
+                internalRequestGuid,
+                errorDialogs,
+                responseType
             })
 // INPUT HANDLING END
             // define side effects call
@@ -764,7 +777,8 @@ export function httpRequest(
             }
 
             console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolve with default response type', {
-                responseType
+                responseType: responseType,
+                fallback: ResponseType.Json
             })
             // 3. responseType
             callSideEffects(<number>status, chaynsErrorObject || undefined);
