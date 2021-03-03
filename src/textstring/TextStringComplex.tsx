@@ -19,6 +19,24 @@ export interface TextStringComplexConfig {
     autoCreation?: boolean;
 }
 
+const searchTextString = (
+    searchKey: string,
+    stringContainer: string
+        | Record<string, string>
+        | Record<string, Record<string, string>>
+        | Record<string, Record<string, Record<string, string>>>
+): boolean => {
+    const keys = Object.keys(stringContainer);
+    if (keys.includes(searchKey)) return true;
+    return (keys as unknown[] as boolean[])
+        .reduce(
+            (total, current) =>
+                total ||
+                searchTextString(searchKey, (stringContainer as Record<string, any>)[current as unknown as string]),
+            false
+        );
+}
+
 /**
  * An improved version of chayns-components TextString that features automatic prefixing, jsx replacements and
  * automatic text string creation for missing texts. Consult TextString.md for usage
@@ -56,58 +74,60 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
                     && !isNullOrWhiteSpace(TEXTSTRING_CONFIG.prefix)
                     && chayns.env.user.isAuthenticated
                 ) {
-                    isTobitEmployee().then(async () => {
-                        const libResponse = await fetch(
-                            `https://webapi.tobit.com/TextStringService/v1.0/V2/LangLibs/${TEXTSTRING_CONFIG.libName}`,
-                            {
-                                method: 'GET',
-                                cache: 'no-cache',
-                                headers: new Headers({
-                                    Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`
-                                })
-                            }
-                        );
-                        const libContent = await libResponse.json();
-                        if (libResponse.status === 200 && libContent && Array.isArray(libContent)
-                            && !libContent.find(s => s.stringName === `${TEXTSTRING_CONFIG.prefix}${stringName}`)) {
-                            const response = await fetch(
-                                `https://webapi.tobit.com/TextStringService/v1.0/V2/LangStrings?libName=${TEXTSTRING_CONFIG.libName}`,
+                    if (!searchTextString(`${TEXTSTRING_CONFIG.prefix}${stringName}`, TextString.textStrings)) {
+                        isTobitEmployee().then(async () => {
+                            const libResponse = await fetch(
+                                `https://webapi.tobit.com/TextStringService/v1.0/V2/LangLibs/${TEXTSTRING_CONFIG.libName}`,
                                 {
-                                    method: 'PUT',
+                                    method: 'GET',
+                                    cache: 'no-cache',
                                     headers: new Headers({
-                                        Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`,
-                                        'Content-Type': 'application/json'
-                                    }),
-                                    body: JSON.stringify({
-                                        description: '',
-                                        stringName: `${TEXTSTRING_CONFIG.prefix}${stringName}`,
-                                        textEng: '',
-                                        textFra: '',
-                                        textGer: fallback,
-                                        textIt: '',
-                                        textNl: '',
-                                        textES: '',
-                                        textPT: '',
-                                        textTR: '',
-                                        toTranslate: ['en', 'nl', 'it', 'fr', 'pt', 'es', 'tr']
+                                        Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`
                                     })
                                 }
                             );
-                            if (response && response.status === 201) {
-                                console.warn(
-                                    `[TextString] Created string '${TEXTSTRING_CONFIG.prefix}${stringName}' as '${fallback}'. Translated to: ${[
-                                        'en',
-                                        'nl',
-                                        'it',
-                                        'fr',
-                                        'pt',
-                                        'es',
-                                        'tr'
-                                    ].join(', ')}.`
+                            const libContent = await libResponse.json();
+                            if (libResponse.status === 200 && libContent && Array.isArray(libContent)
+                                && !libContent.find(s => s.stringName === `${TEXTSTRING_CONFIG.prefix}${stringName}`)) {
+                                const response = await fetch(
+                                    `https://webapi.tobit.com/TextStringService/v1.0/V2/LangStrings?libName=${TEXTSTRING_CONFIG.libName}`,
+                                    {
+                                        method: 'PUT',
+                                        headers: new Headers({
+                                            Authorization: `Bearer ${chayns.env.user.tobitAccessToken}`,
+                                            'Content-Type': 'application/json'
+                                        }),
+                                        body: JSON.stringify({
+                                            description: '',
+                                            stringName: `${TEXTSTRING_CONFIG.prefix}${stringName}`,
+                                            textEng: '',
+                                            textFra: '',
+                                            textGer: fallback,
+                                            textIt: '',
+                                            textNl: '',
+                                            textES: '',
+                                            textPT: '',
+                                            textTR: '',
+                                            toTranslate: ['en', 'nl', 'it', 'fr', 'pt', 'es', 'tr']
+                                        })
+                                    }
                                 );
+                                if (response && response.status === 201) {
+                                    console.warn(
+                                        `[TextString] Created string '${TEXTSTRING_CONFIG.prefix}${stringName}' as '${fallback}'. Translated to: ${[
+                                            'en',
+                                            'nl',
+                                            'it',
+                                            'fr',
+                                            'pt',
+                                            'es',
+                                            'tr'
+                                        ].join(', ')}.`
+                                    );
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             } catch (e) {
                 // ignored
