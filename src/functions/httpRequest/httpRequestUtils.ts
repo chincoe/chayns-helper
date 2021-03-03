@@ -224,6 +224,12 @@ export async function resolveWithHandler(
     internalRequestGuid: string,
     chaynsErrorObject: ChaynsErrorObject | null = null,
 ): Promise<boolean> {
+    console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolving with handler', {
+        handler,
+        response,
+        status,
+        chaynsErrorObject
+    })
     if (typeof (handler) === 'function') {
         // eslint-disable-next-line no-await-in-loop
         resolve(await handler(<Response><unknown>chaynsErrorObject ?? response));

@@ -170,7 +170,7 @@ export function httpRequest(
                 config,
                 options
             };
-
+            console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Starting Request', input)
             // properly merge the status handlers and log config of options and default options. The function returns a
             // map to have a reliable key order to ensure that all options have a higher priority than default options
 
@@ -293,9 +293,21 @@ export function httpRequest(
                     }
                 }
             }
+            console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Input handling finished', {
+                address: requestAddress,
+                headers: requestHeaders,
+                statusHandlers,
+                errorHandlers,
+                logConfig,
+                sideEffect,
+                remainingFetchConfig,
+                stringifyBody
+            })
 // INPUT HANDLING END
             // define side effects call
             const callSideEffects = (status: number, chaynsErrorObject?: ChaynsErrorObject) => {
+                console.debug(
+                    ...colorLog.gray(`[HttpRequest<${processName}>]`), `Calling sideEffect for status ${status}`);
                 if (typeof sideEffect === 'function') {
                     (sideEffect as (status: number, chaynsErrorObject?: ChaynsErrorObject) => void)(
                         status, chaynsErrorObject)
@@ -339,6 +351,7 @@ export function httpRequest(
             // define resolve wrapper
             const resolve = (value?: any) => {
                 globalResolve(value);
+                console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolved with value:', value);
                 logger.info(jsonLog({
                     message: `[HttpRequest] ${processName} resolved`,
                     data: {
@@ -357,6 +370,12 @@ export function httpRequest(
                     statusHandler,
                     errorHandler
                 } = getHandlers(status, err);
+                console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Trying to reject', {
+                    err,
+                    errorHandler,
+                    status,
+                    statusHandler,
+                })
                 if (errorHandler || statusHandler) {
                     return false;
                 } else {
@@ -388,6 +407,7 @@ export function httpRequest(
                     );
                 }
             } catch (err) {
+                console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Failed to fetch', err);
 // HANDLE FAILED TO FETCH START
                 const failedToFetchLog = await getLogFunctionByStatus(1, logConfig, logger.warning);
                 failedToFetchLog(jsonLog({
@@ -550,6 +570,8 @@ export function httpRequest(
                 req_guid: requestUid
             });
 
+            console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Handling Logs', logData);
+
             let defaultLog = logger.error;
             if (status < 400) defaultLog = (logger.info as (data: Record<string, any>, error?: Error) => any);
             if (status === 401) defaultLog = logger.warning;
@@ -646,6 +668,10 @@ export function httpRequest(
                 // 1.1 errorHandlers[chaynsErrorCode]
                 if (errorHandlers.has(errorCode)) {
                     const handler = errorHandlers.get(errorCode);
+                    console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolving with errorHandler', {
+                        errorCode,
+                        handler
+                    })
                     const result = await resolveWithHandler(
                         handler,
                         response,
@@ -667,6 +693,12 @@ export function httpRequest(
                     const key: string = errorKeys.find((k) => (stringToRegexStrict(k).test(errorCode)));
                     const handler = errorHandlers.get(key);
                     if (handler) {
+                        console.debug(
+                            ...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolving with regex errorHandler', {
+                                errorCode,
+                                handler,
+                                key
+                            })
                         const result = await resolveWithHandler(
                             handler,
                             response,
@@ -688,6 +720,10 @@ export function httpRequest(
             // 2.1 statusHandlers[status]
             if (statusHandlers && statusHandlers.has(`${status}`)) {
                 const handler = statusHandlers.get(`${status}`);
+                console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolving with statusHandler', {
+                    handler,
+                    status
+                })
                 const result = await resolveWithHandler(
                     handler,
                     response,
@@ -706,6 +742,11 @@ export function httpRequest(
             if (statusHandlers && statusHandlers.size > 0) {
                 const handler = getStatusHandlerByStatusRegex(status, statusHandlers);
                 if (handler) {
+                    console.debug(
+                        ...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolving with regex statusHandler', {
+                            status,
+                            handler
+                        })
                     const result = await resolveWithHandler(
                         handler,
                         response,
@@ -722,9 +763,12 @@ export function httpRequest(
                 }
             }
 
+            console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolve with default response type', {
+                responseType
+            })
             // 3. responseType
             callSideEffects(<number>status, chaynsErrorObject || undefined);
-            await resolveWithHandler(
+            const result = await resolveWithHandler(
                 responseType || ResponseType.Json,
                 response,
                 status,
@@ -733,6 +777,9 @@ export function httpRequest(
                 reject,
                 internalRequestGuid
             );
+            if (result) return;
+            console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Failed to resolve, using fallback')
+            resolve(response);
         })();
     });
     if (waitCursor) {
