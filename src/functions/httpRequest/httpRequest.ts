@@ -3,8 +3,8 @@ import logger from '../../utils/requireChaynsLogger';
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import colorLog from '../../utils/colorLog';
 import generateUUID from '../generateGuid';
-import stringToRegex, { regexRegex } from '../../utils/stringToRegex';
-import ChaynsError from './ChaynsError';
+import stringToRegex, { regexRegex, stringToRegexStrict } from '../../utils/stringToRegex';
+import ChaynsError, { ChaynsErrorObject } from './ChaynsError';
 import { HttpMethod } from './HttpMethod';
 import {
     getLogFunctionByStatus,
@@ -13,7 +13,6 @@ import {
     mergeOptions,
     resolveWithHandler,
 } from './httpRequestUtils';
-import { chaynsErrorCodeRegex } from './isChaynsError';
 import RequestError from './RequestError';
 import { ObjectResponse, ResponseType, ResponseTypeList } from './ResponseType';
 import { LogLevel } from './LogLevel';
@@ -22,6 +21,7 @@ import { HttpStatusCode } from './HttpStatusCodes';
 import showWaitCursor from '../waitCursor';
 import getJsonSettings, { JsonSettings } from '../getJsonSettings';
 import getJwtPayload from '../getJwtPayload';
+import jsonLog from '../../utils/jsonLog';
 
 /**
  * The fetch config. Contains all parameters viable for the window.fetch init object including the following:
@@ -98,7 +98,9 @@ export interface HttpRequestOptions {
     errorHandlers?: { [key: string]: ResponseType | ((response: Response) => any) } | Map<string, ResponseType | ((response: Response) => any)>;
     errorDialogs?: Array<string | RegExp>;
     replacements?: { [key: string]: string | ((substring: string, ...args: any[]) => string) };
-    sideEffects?: ((status: number) => void) | { [status: string]: () => void } | {};
+    sideEffects?: ((status: number, chaynsErrorObject?: ChaynsErrorObject) => void)
+        | Record<string, (chaynsErrorObject?: ChaynsErrorObject) => void>
+        | {};
     internalRequestGuid?: string;
 }
 
@@ -168,24 +170,34 @@ export function httpRequest(
                 config,
                 options
             };
-
+            console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Starting Request', {
+                input,
+                defaults: {
+                    options: defaultConfig.options,
+                    config: defaultConfig.config
+                }
+            })
             // properly merge the status handlers and log config of options and default options. The function returns a
             // map to have a reliable key order to ensure that all options have a higher priority than default options
+
+            // merge status handlers
             const statusHandlers = mergeOptions(
                 (options?.statusHandlers || {}),
                 (defaultConfig?.options?.statusHandlers || {})
             );
+            // merge chayns error handlers
             const errorHandlers = mergeOptions(
                 (options?.errorHandlers || {}),
                 (defaultConfig?.options?.errorHandlers || {})
             );
+            // merge log config
             const logConfig = mergeOptions((options?.logConfig || {}), (defaultConfig?.options?.logConfig || {}));
-
+            // merge json settings if applicable
             const stringifyBody = typeof defaultConfig.options.stringifyBody === 'object'
                                   && typeof options.stringifyBody === 'object'
                 ? { ...defaultConfig.options.stringifyBody, ...options.stringifyBody }
                 : defaultStringify
-
+            // merge url replacements
             const replacements = {
                 [/##locationId##/ig.toString()]: `${chayns.env.site.locationId}`,
                 [/##siteId##/ig.toString()]: `${chayns.env.site.id}`,
@@ -195,7 +207,7 @@ export function httpRequest(
                 ...(defaultConfig?.options?.replacements || {}),
                 ...(options?.replacements || {})
             }
-
+            // merge side effects
             const optionEffects = options?.sideEffects;
             const defaultEffects = defaultConfig?.options?.sideEffects;
             let sideEffects = options.sideEffects;
@@ -207,17 +219,13 @@ export function httpRequest(
             } else if (!optionEffects && defaultEffects) {
                 sideEffects = defaultEffects;
             }
-            const sideEffect: (((status: number) => void) | { [status: number]: () => void }) = sideEffects || (() => {
+            const sideEffect: ((status: number, chaynsErrorObject?: ChaynsErrorObject) => void)
+                | Record<string, (chaynsErrorObject?: ChaynsErrorObject) => void> = sideEffects || (() => {
             });
-            const callSideEffects = typeof sideEffect === 'function'
-                // @ts-expect-error
-                ? (status: number) => { sideEffect(status); }
-                : (status: number) => {
-                    (sideEffect[status] || (() => {}))();
-                };
 
-            // eslint-disable-next-line no-param-reassign
+            // set default for process name
             if (!processName) processName = 'HttpRequest';
+            // validate responseType
             if (responseType != null && !ResponseTypeList.includes(responseType)) {
                 console.error(
                     ...colorLog.gray(`[HttpRequest<${processName}>]`),
@@ -227,13 +235,14 @@ export function httpRequest(
                 return;
             }
 
-            // read config object
+            // read fetch config object
             const fetchConfig: HttpRequestConfig = {
                 method: HttpMethod.Get,
                 useChaynsAuth: chayns.env.user.isAuthenticated,
                 ...(defaultConfig.config || {}),
                 ...(config || {})
             };
+            // log warning due to unreliability with opaque responses
             if (fetchConfig.mode === 'no-cors') {
                 console.warn(
                     ...colorLog.gray(`[HttpRequest<${processName}>]`),
@@ -246,11 +255,10 @@ export function httpRequest(
                 body,
                 headers
             } = fetchConfig;
-
+            // create json body
             const jsonSettings = typeof stringifyBody !== 'boolean' && typeof stringifyBody === 'object'
                 ? getJsonSettings(stringifyBody)
                 : null;
-
             // @ts-expect-error
             const jsonBody: string | null = body && stringifyBody ? JSON.stringify(body, jsonSettings) : null;
 
@@ -263,11 +271,12 @@ export function httpRequest(
                 ...headers
             };
 
-            // this way rerender config elements like "credentials", "mode", or "signal" can be passed to fetch()
+            // this way fetch config elements like "credentials", "mode", or "signal" can be passed to fetch()
             const remainingFetchConfig: RequestInit = <RequestInit>{ ...fetchConfig };
             // @ts-expect-error
             delete remainingFetchConfig.useChaynsAuth;
 
+            // create request address
             let requestAddress: string;
             if (!isNullOrWhiteSpace(defaultConfig.address)
                 && !/^.+?:\/\//.test(address)
@@ -290,12 +299,50 @@ export function httpRequest(
                     }
                 }
             }
+            console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Input handling finished', {
+                address: requestAddress,
+                headers: requestHeaders,
+                statusHandlers,
+                errorHandlers,
+                logConfig,
+                sideEffect,
+                remainingFetchConfig,
+                stringifyBody,
+                throwErrors,
+                additionalLogData,
+                autoRefreshToken,
+                waitCursor,
+                internalRequestGuid,
+                errorDialogs,
+                responseType
+            })
 // INPUT HANDLING END
+            // define side effects call
+            const callSideEffects = (status: number, chaynsErrorObject?: ChaynsErrorObject) => {
+                console.debug(
+                    ...colorLog.gray(`[HttpRequest<${processName}>]`), `Calling sideEffect for status ${status}`);
+                if (typeof sideEffect === 'function') {
+                    (sideEffect as (status: number, chaynsErrorObject?: ChaynsErrorObject) => void)(
+                        status, chaynsErrorObject)
+                } else {
+                    const sideEffectList = Object.keys(
+                        sideEffects as Record<string, (chaynsErrorObject?: ChaynsErrorObject) => void>
+                    ).filter(k => k === `${status}`
+                                  || (chaynsErrorObject && k === chaynsErrorObject.errorCode)
+                                  || stringToRegexStrict(k).test(`${status}`)
+                                  || (chaynsErrorObject && stringToRegexStrict(k).test(chaynsErrorObject.errorCode))
+                    );
+                    for (let i = 0; i < sideEffectList.length; ++i) {
+                        sideEffect[sideEffectList[i]](chaynsErrorObject);
+                    }
+                }
+            }
+            // define error/status handler getter
             const getHandlers = (status: number, err?: Error | RequestError | ChaynsError) => {
                 // get statusHandler if exists
                 const handlerKeys = getMapKeys(statusHandlers);
                 const statusHandlerKey = handlerKeys.find((k) =>
-                    (k === `${status}` || stringToRegex(k).test(`${status}`))
+                    (k === `${status}` || stringToRegexStrict(k).test(`${status}`))
                     && (typeof (statusHandlers.get(k)) === 'function'
                         || ResponseTypeList.includes(statusHandlers.get(k)))
                 );
@@ -305,7 +352,7 @@ export function httpRequest(
                 const isChayns: boolean = !!err && (err instanceof ChaynsError);
                 const chaynsErrorCode: string | null = isChayns ? (<ChaynsError>err).errorCode : null;
                 const errorHandlerKey = errorKeys.find((k) =>
-                    (chaynsErrorCode && (k === chaynsErrorCode || stringToRegex(k).test(chaynsErrorCode)))
+                    (chaynsErrorCode && (k === chaynsErrorCode || stringToRegexStrict(k).test(chaynsErrorCode)))
                     && (typeof (errorHandlers.get(k)) === 'function'
                         || ResponseTypeList.includes(errorHandlers.get(k)))
                 );
@@ -314,19 +361,20 @@ export function httpRequest(
                     errorHandler: errorHandlers.get(errorHandlerKey)
                 };
             };
-
+            // define resolve wrapper
             const resolve = (value?: any) => {
                 globalResolve(value);
-                logger.info(JSON.parse(JSON.stringify({
+                console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolved with value:', value);
+                logger.info(jsonLog({
                     message: `[HttpRequest] ${processName} resolved`,
                     data: {
-                        resolveValue: value ? JSON.parse(JSON.stringify(value).substring(0, 500)) : value,
+                        resolveValue: jsonLog(value, 1000),
                         internalRequestGuid
                     },
                     section: '[chayns-helper]httpRequest.js',
-                })));
+                }));
             };
-
+            // define reject wrapper
             const tryReject = (
                 err: Error | RequestError | ChaynsError,
                 status: number
@@ -335,13 +383,19 @@ export function httpRequest(
                     statusHandler,
                     errorHandler
                 } = getHandlers(status, err);
+                console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Trying to reject', {
+                    err,
+                    errorHandler,
+                    status,
+                    statusHandler,
+                })
                 if (errorHandler || statusHandler) {
                     return false;
                 } else {
                     if (!throwErrors || (status && Array.isArray(throwErrors) && throwErrors.includes(status))) {
                         return false;
                     } else {
-                        callSideEffects(status);
+                        callSideEffects(status, (err as ChaynsError)?.errorObject);
                         reject(err);
                         return true;
                     }
@@ -349,7 +403,6 @@ export function httpRequest(
             };
 
             const fetchStartTime = Date.now();
-
 // REQUEST
             let response;
             try {
@@ -367,16 +420,17 @@ export function httpRequest(
                     );
                 }
             } catch (err) {
+                console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Failed to fetch', err);
 // HANDLE FAILED TO FETCH START
                 const failedToFetchLog = await getLogFunctionByStatus(1, logConfig, logger.warning);
-                failedToFetchLog(JSON.parse(JSON.stringify({
+                failedToFetchLog(jsonLog({
                     message: `[HttpRequest] Failed to fetch on ${processName}`,
                     data: {
                         processName,
                         request: {
                             address: requestAddress,
                             method,
-                            body: body ? JSON.parse(JSON.stringify(body).substring(0, 500)) : body,
+                            body: jsonLog(body, 1000),
                             headers: {
                                 ...requestHeaders,
                                 Authorization: undefined
@@ -394,7 +448,7 @@ export function httpRequest(
                         additionalLogData: additionalLogData === {} ? undefined : additionalLogData
                     },
                     section: '[chayns-helper]httpRequest.js',
-                })), err);
+                }), err);
                 err.statusCode = 1;
                 const status = 1;
                 const { statusHandler, errorHandler } = getHandlers(status, err);
@@ -492,13 +546,13 @@ export function httpRequest(
                 // ignored
             }
 
-            const logData = JSON.parse(JSON.stringify({
+            const logData = jsonLog({
                 data: {
                     processName,
                     request: {
                         address: requestAddress,
                         method,
-                        body: body ? JSON.parse(JSON.stringify(body).substring(0, 500)) : body,
+                        body: jsonLog(body, 1000),
                         headers: {
                             ...requestHeaders,
                             Authorization: (requestHeaders as { Authorization: string })?.Authorization
@@ -514,7 +568,7 @@ export function httpRequest(
                         statusText: response.statusText,
                         type: response.type,
                         requestUid,
-                        body: responseBody ? JSON.parse(JSON.stringify(responseBody).substring(0, 500)) : responseBody,
+                        body: jsonLog(responseBody, 1000),
                         url: response.url
                     },
                     input,
@@ -527,7 +581,9 @@ export function httpRequest(
                 },
                 section: '[chayns-helper]httpRequest.js',
                 req_guid: requestUid
-            }));
+            });
+
+            console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Handling Logs', logData);
 
             let defaultLog = logger.error;
             if (status < 400) defaultLog = (logger.info as (data: Record<string, any>, error?: Error) => any);
@@ -569,7 +625,7 @@ export function httpRequest(
                         let jRes: { [key: string]: any } = {};
                         try { jRes = await response.json(); } catch (e) { /* ignored */ }
                         if (jRes.message === 'token_expired') {
-                            callSideEffects(<number>status);
+                            callSideEffects(<number>status, chaynsErrorObject || undefined);
                             resolve(httpRequest(address, config, processName, {
                                 responseType,
                                 logConfig,
@@ -625,6 +681,10 @@ export function httpRequest(
                 // 1.1 errorHandlers[chaynsErrorCode]
                 if (errorHandlers.has(errorCode)) {
                     const handler = errorHandlers.get(errorCode);
+                    console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolving with errorHandler', {
+                        errorCode,
+                        handler
+                    })
                     const result = await resolveWithHandler(
                         handler,
                         response,
@@ -636,20 +696,22 @@ export function httpRequest(
                         chaynsErrorObject
                     );
                     if (result) {
-                        callSideEffects(<number>status);
+                        callSideEffects(<number>status, chaynsErrorObject || undefined);
                         return;
                     }
                 }
                 // 1.2 errorHandlers[chaynsErrorRegex]
                 if (errorHandlers && errorHandlers.size > 0) {
                     const errorKeys = getMapKeys(errorHandlers);
-                    const key: string = errorKeys.find((k) => (
-                        chaynsErrorCodeRegex.test(k)
-                        && stringToRegex(key)
-                            .test(errorCode)
-                    ));
+                    const key: string = errorKeys.find((k) => (stringToRegexStrict(k).test(errorCode)));
                     const handler = errorHandlers.get(key);
                     if (handler) {
+                        console.debug(
+                            ...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolving with regex errorHandler', {
+                                errorCode,
+                                handler,
+                                key
+                            })
                         const result = await resolveWithHandler(
                             handler,
                             response,
@@ -661,7 +723,7 @@ export function httpRequest(
                             chaynsErrorObject
                         );
                         if (result) {
-                            callSideEffects(<number>status);
+                            callSideEffects(<number>status, chaynsErrorObject || undefined);
                             return;
                         }
                     }
@@ -671,6 +733,10 @@ export function httpRequest(
             // 2.1 statusHandlers[status]
             if (statusHandlers && statusHandlers.has(`${status}`)) {
                 const handler = statusHandlers.get(`${status}`);
+                console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolving with statusHandler', {
+                    handler,
+                    status
+                })
                 const result = await resolveWithHandler(
                     handler,
                     response,
@@ -681,7 +747,7 @@ export function httpRequest(
                     internalRequestGuid
                 );
                 if (result) {
-                    callSideEffects(<number>status);
+                    callSideEffects(<number>status, chaynsErrorObject || undefined);
                     return;
                 }
             }
@@ -689,6 +755,11 @@ export function httpRequest(
             if (statusHandlers && statusHandlers.size > 0) {
                 const handler = getStatusHandlerByStatusRegex(status, statusHandlers);
                 if (handler) {
+                    console.debug(
+                        ...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolving with regex statusHandler', {
+                            status,
+                            handler
+                        })
                     const result = await resolveWithHandler(
                         handler,
                         response,
@@ -699,15 +770,19 @@ export function httpRequest(
                         internalRequestGuid
                     );
                     if (result) {
-                        callSideEffects(<number>status);
+                        callSideEffects(<number>status, chaynsErrorObject || undefined);
                         return;
                     }
                 }
             }
 
+            console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolve with default response type', {
+                responseType: responseType,
+                fallback: ResponseType.Json
+            })
             // 3. responseType
-            callSideEffects(<number>status);
-            await resolveWithHandler(
+            callSideEffects(<number>status, chaynsErrorObject || undefined);
+            const result = await resolveWithHandler(
                 responseType || ResponseType.Json,
                 response,
                 status,
@@ -716,6 +791,9 @@ export function httpRequest(
                 reject,
                 internalRequestGuid
             );
+            if (result) return;
+            console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Failed to resolve, using fallback')
+            resolve(response);
         })();
     });
     if (waitCursor) {

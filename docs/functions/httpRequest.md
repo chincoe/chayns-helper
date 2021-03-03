@@ -54,7 +54,7 @@ export default async function postData(body) {
         {
             // only worry about these options if you want to:
             // * customize the helper's behavior 
-            // * use something rerender than json in your request or response bodies
+            // * use something other than json in your request or response bodies
             // * adjust the logLevel for request logs depending on status code
             // * get the response body from requests without success status code
             // * handle ChaynsErrors
@@ -91,7 +91,7 @@ A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js
 |options.errorDialogs| Array of ChaynsError codes or regexes for codes that should display their respective dialog | Array<string/regex> | `[]` |
 |options.waitCursor | Show a wait cursor during the request. Can be configured like [showWaitCursor()](docs/functions/waitCursor.md) | boolean / [{text,timeout,textTimeout} / {timeout,steps}](docs/functions/waitCursor.md) | `false` |
 |options.replacements | Replacements for the request url | Object<string/regex, string/function> | Object with replacements for `##locationId##`, `##siteId##`, `##tappId##`, `##userId##` and `##personId##`  |
-|options.sideEffects | Side effects for certain status codes, like chayns.login() on status 401. Pass a function to handle all status at once or an object with an effect for each status  | function(status) / Object\<status: number, function> | `undefined` |
+|options.sideEffects | Side effects for certain status codes or chayns error codes, like chayns.login() on status 401. Pass a function to handle all status at once or an object with an effect for each status  | function(status, chaynsErrorObject?) / Object\<number/string, function(chaynsErrorObject?)> | `undefined` |
 | **@returns** | Promise of: Response specified via response type or throws an error | Promise\<Json/String/Object/Blob/Response/null> | |
 
 > **Note**: A "Failed to fetch" Error will be treated as a status code `1` regarding options.statusHandlers, options.logConfig as well as the return values if options.throwErrors is false
@@ -157,9 +157,9 @@ const response = request.fetch(
     'getExample',
     {
         logConfig: {
-            [/3[0-9]{2}/]: request.LogLevel.warning,
+            [/^3[0-9]{2}$/]: request.LogLevel.warning,
             // computed property names using regex are viable as well
-            [/4[\d]/]: request.LogLevel.error,
+            [/^4[\d]$/]: request.LogLevel.error,
             500: request.LogLevel.critical
         }
     }
@@ -175,7 +175,7 @@ const response = request.fetch(
     'getExample',
     {
         statusHandlers: {
-            [/(204)|3[0-9]{2}/]: (response) => null,
+            [/^((204)|3[0-9]{2})$/]: (response) => null,
             400: request.responseType.Json
         },
         sideEffects: {
@@ -188,36 +188,84 @@ const response = request.fetch(
 * Handling failed requests with options.throwErrors = true
 
 ```javascript
-// getExample.js
-const getExample = (data) => {
+// postExample.js
+const postExample = (data) => {
     return request.fetch(
         'https://www.example.com',
         {
             method: HttpMethod.Post,
             body: data
         },
-        'getExample'
+        'postExample'
     );
 }
 // OR:
-const getExample = async (data) => {
+const postExample = async (data) => {
     const result = await request.fetch(
         'https://www.example.com',
         {
             method: HttpMethod.Post,
             body: data
         },
-        'getExample'
+        'postExample'
     );
     // do stuff with the result here ...
     return result;
 }
 
-// calling getExample:
-const result = await (getExample(data).catch((ex) => {
+// calling postExample:
+const result = await (postExample(data).catch((ex) => {
     // handle error for your application
     throw ex;
 }));
+```
+ * Using statusHandlers, errorHandlers, errorDialogs and sideEffects
+```javascript
+request.fetch(
+    'https://www.example.com',
+    {},
+    'getExample',
+    {
+        statusHandlers: {
+            // simple, using exact status and response type
+            204: ResponseType.None,
+            // advanced, using regex and custom function
+            [/^4[0-9]{2}$/]: (response) => {
+                // ...
+                return response.status; // return value is the result of request.fetch()
+            },
+            [/^5[0-9]{2}$/]: ResponseType.ThrowError
+        },
+        errorHandlers: {
+            // simple, using exact errorCode and response type
+            'global/unknown_error': ResponseType.JsonWithStatus,
+            // advanced, using regex and custom function
+            [/^global\/.*$/]: (response) => {
+                return response.status; // return value is the result of request.fetch()
+            }
+        },
+        errorDialogs: [
+            'global/unknown_error', // simple, using exact error code
+            /^global\/.*$/ // advanced, using regex to match multiple
+        ],
+        sideEffects: {
+            // simple, using exact status
+            401: () => { chayns.login(); },
+            // simple, using exact error code
+            'global/unknown_error': (chaynsErrorObject) => { 
+                chayns.dialog.alert("Oh no!", chaynsErrorObject.displayMessage) ;
+            },
+            // complex, using regex to match status and/or error code
+            [/^(5[0-9]{2}|global\/.*)$/]: (chaynsErrorObject) => { 
+                if (chaynsErrorObject) {
+                    console.error('Global chayns error occurred');
+                } else {
+                    console.error('Status 5xx response');
+                }
+            }
+        }
+    }
+)
 ```
 
 ### Customizing Logging
@@ -324,10 +372,10 @@ request.defaults(
         responseType: ResponseType.JsonWithStatus,
         // log 2xx as info, 3xx as warning, 401 as warning and anything else as error
         logConfig: {
-            [/2[\d]{2}/]: LogLevel.info,
-            [/3[\d]{2}/]: LogLevel.warning,
+            [/^2[\d]{2}$/]: LogLevel.info,
+            [/^3[\d]{2}$/]: LogLevel.warning,
             401: LogLevel.warning,
-            [/[\d]+/]: LogLevel.error
+            [/^[\d]+$/]: LogLevel.error
         },
         // don't try to get json body on 204
         statusHandlers: {

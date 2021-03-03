@@ -8,6 +8,7 @@ setCustomLogger({
     error: () => {},
 })
 global.chayns = require('./chaynsMock');
+global.console.debug = jest.fn();
 global.console.log = jest.fn();
 global.console.warn = jest.fn();
 global.console.error = jest.fn();

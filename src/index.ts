@@ -80,6 +80,6 @@ export { default as useTextStrings } from './textstring/useTextStrings';
 export { default as getTextStrings } from './textstring/getTextStrings';
 export { initTextStrings } from './textstring/textstringConfig';
 // rerender
-export { default as WebsocketClient } from './other/WsClient';
+export { default as WebsocketClient } from './other/WebSocketClient';
 export { default as statusAnimations } from './constants/statusAnimations';
 export { default as time } from './constants/time';

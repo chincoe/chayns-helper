@@ -23,11 +23,11 @@
 npm install chayns-helper
 ```
 
-#### Dependencies
+#### Peer Dependencies
 
 * `react`
 * `chayns-components`
-* `chayns-logger`
+* `chayns-logger` (optional)
 
 This package supports tree-shaking, so each module will only be included in your bundle if it is imported by you or
 another module.
@@ -71,7 +71,7 @@ Large or complicated helpers are marked with a `+` to make it easier to look the
 | [useTextStrings](https://github.com/chincoe/chayns-helper/blob/master/docs/textstring/TextString.md#usetextstrings)| get memoized TextStrings from a list of string names | Hook |
 | [useUser](https://github.com/chincoe/chayns-helper/blob/master/docs/hooks/useUser.md)| chayns.getUser() hook | Hook |
 | + [useWebsocketService](https://github.com/chincoe/chayns-helper/blob/master/docs/hooks/useWebsocketService.md)| configure a tobit-websocket-service-client | Hook |
-| [WebSocketClient](https://github.com/chincoe/chayns-helper/blob/master/docs/other/WsClient.md)| custom alternative to tobit-websocket-service-client | Class |
+| [WebSocketClient](https://github.com/chincoe/chayns-helper/blob/master/docs/other/WebSocketClient.md)| custom alternative to tobit-websocket-service-client | Class |
 
 ### UI and Forms
 

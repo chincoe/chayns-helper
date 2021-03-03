@@ -29,7 +29,7 @@ export default function getJsonSettings(options: JsonSettings): (key: string, va
     return function replacer(key, val) {
         // if a value implements a toJSON() method like a Date, the value passed to this method is already stringified
         // @ts-expect-error
-        const value = typeof this === 'object' ? this[key] : val;
+        const value = key && typeof this === 'object' ? this[key] : val;
         if (excludeKeys.includes(key)) {
             return undefined;
         }
@@ -38,9 +38,6 @@ export default function getJsonSettings(options: JsonSettings): (key: string, va
         }
         if (includeUndefined && value === undefined) {
             return null;
-        }
-        if (Array.isArray(value)) {
-            return value.map((v: any): any => replacer(key, v));
         }
         if (dateTimeZoneHandling === DateTimeZoneHandling.LocalOffset
             && "[object Date]" === Object.prototype.toString.call(value)
@@ -55,6 +52,7 @@ export default function getJsonSettings(options: JsonSettings): (key: string, va
             if (!(typeof (value) === 'number')
                 && !(typeof (value) === 'string')
                 && !(typeof (value) === 'boolean')
+                && "[object Array]" !== Object.prototype.toString.call(value)
                 && "[object Object]" !== Object.prototype.toString.call(value)
                 && "[object Date]" !== Object.prototype.toString.call(value)
                 && value !== null

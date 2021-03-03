@@ -11,7 +11,7 @@ export interface DataRow {
 
 /**
  * Container to display its children as label with value(s). The first child will be positioned on the left, all
- * rerender children to the right.
+ * other children to the right.
  * @param className
  * @param style
  * @param children
