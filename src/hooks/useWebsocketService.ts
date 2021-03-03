@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import logger from '../utils/requireChaynsLogger';
 import { deepEqual } from '../functions/shallowEqual';
 import WebSocketClient, { WebsocketConditions } from '../other/WebSocketClient';
-import colorLog from '../utils/colorLog';
 
 const websocketClients: { [serviceName: string]: WebSocketClient } = {};
 

@@ -1,5 +1,6 @@
 import colorLog from '../utils/colorLog';
 import logger from '../utils/requireChaynsLogger';
+import jsonLog from '../utils/jsonLog';
 
 export type WebsocketConditions =
     Record<string, string | number | boolean>
@@ -57,7 +58,7 @@ class WebSocketClient {
                         { serviceName: application, conditions, clientGroup: options.clientGroup }
                     );
                 }
-                logger.info(JSON.parse(JSON.stringify({
+                logger.info(jsonLog({
                     message: '[Websocket] client registered',
                     data: {
                         data,
@@ -66,11 +67,11 @@ class WebSocketClient {
                         clientGroup: options.clientGroup
                     },
                     section: '[chayns-helper]WebSocketClient.js'
-                })));
+                }));
             },
             register_error: (data) => {
                 console.error(...colorLog.gray(`[Websocket<${application}>]`), 'register error', data);
-                logger.error(JSON.parse(JSON.stringify({
+                logger.error(jsonLog({
                     message: '[Websocket] registration failed',
                     data: {
                         conditions,
@@ -78,7 +79,7 @@ class WebSocketClient {
                         clientGroup: options.clientGroup
                     },
                     section: '[chayns-helper]WebSocketClient.js'
-                })), data as Error);
+                }), data as Error);
             },
             CLOSED: (data) => {
                 if (process.env.NODE_ENV === 'development') {
@@ -87,7 +88,7 @@ class WebSocketClient {
                         'connection closed', data
                     );
                 }
-                logger.info(JSON.parse(JSON.stringify({
+                logger.info(jsonLog({
                     message: '[Websocket] connection closed',
                     data: {
                         data,
@@ -96,11 +97,11 @@ class WebSocketClient {
                         clientGroup: options.clientGroup
                     },
                     section: '[chayns-helper]WebSocketClient.js'
-                })));
+                }));
             },
             ERROR: (error) => {
                 console.error(...colorLog.gray(`[Websocket<${application}>]`), 'error', error);
-                logger.warning(JSON.parse(JSON.stringify({
+                logger.warning(jsonLog({
                     message: '[Websocket] error',
                     data: {
                         conditions,
@@ -108,7 +109,7 @@ class WebSocketClient {
                         clientGroup: options.clientGroup
                     },
                     section: '[chayns-helper]WebSocketClient.js'
-                })), error as Error);
+                }), error as Error);
             },
             ...this.listener
         }

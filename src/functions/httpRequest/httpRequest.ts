@@ -13,7 +13,6 @@ import {
     mergeOptions,
     resolveWithHandler,
 } from './httpRequestUtils';
-import { chaynsErrorCodeRegex } from './isChaynsError';
 import RequestError from './RequestError';
 import { ObjectResponse, ResponseType, ResponseTypeList } from './ResponseType';
 import { LogLevel } from './LogLevel';
@@ -22,6 +21,7 @@ import { HttpStatusCode } from './HttpStatusCodes';
 import showWaitCursor from '../waitCursor';
 import getJsonSettings, { JsonSettings } from '../getJsonSettings';
 import getJwtPayload from '../getJwtPayload';
+import jsonLog from '../../utils/jsonLog';
 
 /**
  * The fetch config. Contains all parameters viable for the window.fetch init object including the following:
@@ -339,14 +339,14 @@ export function httpRequest(
             // define resolve wrapper
             const resolve = (value?: any) => {
                 globalResolve(value);
-                logger.info(JSON.parse(JSON.stringify({
+                logger.info(jsonLog({
                     message: `[HttpRequest] ${processName} resolved`,
                     data: {
-                        resolveValue: value ? JSON.parse(JSON.stringify(value).substring(0, 500)) : value,
+                        resolveValue: jsonLog(value, 1000),
                         internalRequestGuid
                     },
                     section: '[chayns-helper]httpRequest.js',
-                })));
+                }));
             };
             // define reject wrapper
             const tryReject = (
@@ -390,14 +390,14 @@ export function httpRequest(
             } catch (err) {
 // HANDLE FAILED TO FETCH START
                 const failedToFetchLog = await getLogFunctionByStatus(1, logConfig, logger.warning);
-                failedToFetchLog(JSON.parse(JSON.stringify({
+                failedToFetchLog(jsonLog({
                     message: `[HttpRequest] Failed to fetch on ${processName}`,
                     data: {
                         processName,
                         request: {
                             address: requestAddress,
                             method,
-                            body: body ? JSON.parse(JSON.stringify(body).substring(0, 500)) : body,
+                            body: jsonLog(body, 1000),
                             headers: {
                                 ...requestHeaders,
                                 Authorization: undefined
@@ -415,7 +415,7 @@ export function httpRequest(
                         additionalLogData: additionalLogData === {} ? undefined : additionalLogData
                     },
                     section: '[chayns-helper]httpRequest.js',
-                })), err);
+                }), err);
                 err.statusCode = 1;
                 const status = 1;
                 const { statusHandler, errorHandler } = getHandlers(status, err);
@@ -513,13 +513,13 @@ export function httpRequest(
                 // ignored
             }
 
-            const logData = JSON.parse(JSON.stringify({
+            const logData = jsonLog({
                 data: {
                     processName,
                     request: {
                         address: requestAddress,
                         method,
-                        body: body ? JSON.parse(JSON.stringify(body).substring(0, 500)) : body,
+                        body: jsonLog(body, 1000),
                         headers: {
                             ...requestHeaders,
                             Authorization: (requestHeaders as { Authorization: string })?.Authorization
@@ -535,7 +535,7 @@ export function httpRequest(
                         statusText: response.statusText,
                         type: response.type,
                         requestUid,
-                        body: responseBody ? JSON.parse(JSON.stringify(responseBody).substring(0, 500)) : responseBody,
+                        body: jsonLog(responseBody, 1000),
                         url: response.url
                     },
                     input,
@@ -548,7 +548,7 @@ export function httpRequest(
                 },
                 section: '[chayns-helper]httpRequest.js',
                 req_guid: requestUid
-            }));
+            });
 
             let defaultLog = logger.error;
             if (status < 400) defaultLog = (logger.info as (data: Record<string, any>, error?: Error) => any);

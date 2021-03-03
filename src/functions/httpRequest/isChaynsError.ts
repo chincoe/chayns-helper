@@ -1,4 +1,5 @@
 import logger from '../../utils/requireChaynsLogger';
+import jsonLog from '../../utils/jsonLog';
 
 export const chaynsErrorCodeRegex = /^[a-zA-Z0-9_]+\/[a-zA-Z0-9/_]+$/;
 
@@ -35,13 +36,13 @@ export default async function isChaynsError(value: any): Promise<boolean> {
         }
         return isChaynsErrorObject(value);
     } catch (e) {
-        logger.warning(JSON.parse(JSON.stringify({
+        logger.warning(jsonLog({
             message: '[IsChaynsError] Failed to read value',
             data: {
                 value
             },
             section: '[chayns-helper]isChaynsError.js'
-        })));
+        }));
         return false;
     }
 }

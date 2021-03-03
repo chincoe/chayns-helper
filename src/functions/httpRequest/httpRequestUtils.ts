@@ -6,7 +6,9 @@ import getChaynsErrorCode from './getChaynsErrorCode';
 import { chaynsErrorCodeRegex } from './isChaynsError';
 import { LogLevel } from './LogLevel';
 import RequestError from './RequestError';
-import { ResponseTypeList, ResponseType } from './ResponseType';
+import { ResponseType, ResponseTypeList } from './ResponseType';
+
+
 
 export const getMapKeys = (map: Map<string, any>) => {
     const result = [];
