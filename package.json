@@ -25,7 +25,6 @@
     "install:all": "npm install --ignore-scripts && npm install chayns-logger -reg http://repo.tobit.ag:8081/repository/npm/ --no-save",
     "pub:beta": "npm version prerelease --preid=beta --no-git-tag-version && npm publish && node scripts.js -d \"%name%@%version% is unstable, please install a stable version\"",
     "pub:patch": "npm version patch --no-git-tag-version && npm publish",
-    "pub:patch:deprecate": "node scripts.js -d \"%name%@%version% contains errors, please update to @latest\" && npm version patch --no-git-tag-version && npm publish",
     "pub:minor": "npm version minor --no-git-tag-version && npm publish",
     "pub:major": "npm version major --no-git-tag-version && npm publish",
     "git:postpublish": "node scripts.js -pushtags",
