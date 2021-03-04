@@ -33,6 +33,14 @@ export async function getLogFunctionByStatus(
                                            && chaynsErrorCodeRegex.test(k))));
     logKeys.push(...(mapKeys.filter((k) => !logKeys.includes(k))));
 
+    console.debug(...colorLog.gray(`[HttpRequest] Getting log level by status`), {
+        status,
+        defaultFunction,
+        chaynsErrorObject,
+        logConfig,
+        logKeys
+    })
+
     let chaynsErrorCode: string | null = null;
     if (chaynsErrorObject) {
         chaynsErrorCode = await getChaynsErrorCode(chaynsErrorObject);
@@ -45,6 +53,11 @@ export async function getLogFunctionByStatus(
             || (chaynsErrorCode && key === chaynsErrorCode)
             || (chaynsErrorCode && stringToRegexStrict(key).test(chaynsErrorCode))
         ));
+    console.debug(...colorLog.gray(`[HttpRequest] Found log key for status`), {
+        status,
+        levelKey,
+        level: logConfig.get(levelKey || "")
+    })
     if (levelKey && logConfig.get(levelKey)) {
         switch (logConfig.get(levelKey)) {
             case LogLevel.info:
