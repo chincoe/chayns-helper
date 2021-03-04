@@ -48,7 +48,7 @@ export async function getLogFunctionByStatus(
 
     const levelKey = logKeys
         .find((key) => (
-            (/^[\d]$/.test(key) && parseInt(key, 10) === status)
+            (/^[\d]+$/.test(key) && parseInt(key, 10) === status)
             || stringToRegexStrict(key).test(`${status}`)
             || (chaynsErrorCode && key === chaynsErrorCode)
             || (chaynsErrorCode && stringToRegexStrict(key).test(chaynsErrorCode))
