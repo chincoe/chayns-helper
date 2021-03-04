@@ -8,7 +8,11 @@ import { createDialogResult } from '../utils';
  */
 const alert = (message: string, options?: { title?: string }): DialogPromise<undefined> => new DialogPromise<undefined>(
     (resolve: (value?: any) => any) => {
-        chayns.dialog.alert(options?.title || '', message ?? '')
+        chayns.dialog.confirm(
+            options?.title || '',
+            message ?? '',
+            [{ text: chayns.dialog.buttonText.OK, type: chayns.dialog.buttonType.POSITIVE }]
+        )
             .then((type: any) => {
                 resolve(createDialogResult(type));
             });
