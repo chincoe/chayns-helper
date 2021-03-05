@@ -55,6 +55,14 @@ const correctWindowData = (
     };
 };
 
+const setStyles = (element: HTMLElement, style: Partial<CSSStyleDeclaration> & Record<string, string>) => {
+    const keys = Object.keys(style);
+    for (let i = 0; i < keys.length; ++i) {
+        // @ts-expect-error
+        element.style[keys[i]] = style[keys[i]];
+    }
+}
+
 export interface WindowMetrics {
     pageYOffset: number,
     windowHeight: number,
@@ -64,20 +72,21 @@ export interface WindowMetrics {
     height: number
 }
 
-interface TappElement extends Element {
-    style: { [key: string]: string | null }
-}
-
 /**
  * Hook to maintain a fullscreen tapp without scrolling, title image and footer. Does not work in pagemaker iframes
  * @param initialValue - fullscreen initially active or not, default: true
- * @param forceExclusive - force a page to exclusive mode, default: false
+ * @param config
  * @returns [windowData, isFullscreenActive, setIsFullscreenActive]
  */
 const useFullscreenTapp = (
     initialValue: boolean = true,
-    forceExclusive?: boolean
+    config?: {
+        forceExclusive?: boolean,
+        activeStyle?: Partial<CSSStyleDeclaration> & Record<string, string>
+        inactiveStyle?: Partial<CSSStyleDeclaration> & Record<string, string>
+    }
 ): [WindowMetrics, boolean, React.Dispatch<SetStateAction<boolean>>] => {
+    const { forceExclusive, activeStyle, inactiveStyle } = config || {}
     const [isFullscreenActive, setIsFullscreenActive] = useState(initialValue ?? true);
     const [windowData, setWindowData] = useReducer(windowDataReducer, undefined);
     const [resizeInterval, setResizeInterval] = <any>useState(0);
@@ -120,13 +129,14 @@ const useFullscreenTapp = (
         if (forceExclusive) setViewMode(isFullscreenActive ? true : !!defaultExclusive, false);
         let interval: number = <number><unknown>setTimeout(() => null, 0);
         clearInterval(resizeInterval);
-        const tapp = <TappElement>document.querySelector('.tapp');
+        const tapp = <HTMLDivElement>document.querySelector('.tapp');
         if (tapp) {
             if (isFullscreenActive) {
                 chayns.scrollToY(-1000);
                 getWindowData(0);
                 tapp.style.width = '100vw';
                 tapp.style.height = '100vh';
+                setStyles(tapp, activeStyle || {})
                 interval = <number><unknown>setInterval(() => {
                     getWindowData(0, false);
                 }, 2000);
@@ -135,9 +145,9 @@ const useFullscreenTapp = (
                 chayns.addWindowMetricsListener(getWindowData);
             } else {
                 chayns.removeWindowMetricsListener(getWindowData);
-                tapp.style.padding = null;
-                tapp.style.width = null;
-                tapp.style.height = null;
+                tapp.style.width = "";
+                tapp.style.height = "";
+                setStyles(tapp, inactiveStyle || {})
                 chayns.setHeight({
                     height: window.innerHeight,
                     forceHeight: false,
@@ -146,9 +156,9 @@ const useFullscreenTapp = (
             return () => {
                 clearInterval(interval);
                 chayns.removeWindowMetricsListener(getWindowData);
-                tapp.style.padding = null;
-                tapp.style.width = null;
-                tapp.style.height = null;
+                tapp.style.width = "";
+                tapp.style.height = "";
+                setStyles(tapp, inactiveStyle || {})
                 chayns.setHeight({
                     height: window.innerHeight,
                     forceHeight: false,
