@@ -19,7 +19,7 @@ class WebSocketClient {
 
     public conditions: WebsocketConditions | null = null;
 
-    private socket: WebSocket | null = null;
+    public socket: WebSocket | null = null;
 
     private checkConnectionInterval: number | null = null;
 
@@ -100,7 +100,7 @@ class WebSocketClient {
                 }));
             },
             ERROR: (error) => {
-                console.error(...colorLog.gray(`[Websocket<${application}>]`), 'error', error);
+                console.warn(...colorLog.gray(`[Websocket<${application}>]`), 'error', error);
                 logger.warning(jsonLog({
                     message: '[Websocket] error',
                     data: {

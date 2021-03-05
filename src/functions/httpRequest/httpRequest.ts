@@ -501,7 +501,7 @@ export function httpRequest(
                                 break;
                             case ResponseType.ThrowError:
                                 const error = new RequestError(`Status ${status} on ${processName}`, status);
-                                console.error(
+                                console.warn(
                                     ...colorLog.gray(`[HttpRequest<${processName}>]`),
                                     'ResponseType \'error\':', error, '\nInput: ', input
                                 );
@@ -616,7 +616,9 @@ export function httpRequest(
                     message: `[HttpRequest] HTTP request failed: Status ${status} on ${processName}`,
                 }, error);
                 const { statusHandler, errorHandler } = getHandlers(status, error);
-                (statusHandler || errorHandler ? console.warn : console.error)(
+                (statusHandler || errorHandler || ![logger.critical, logger.error].includes(log)
+                    ? console.warn
+                    : console.error)(
                     ...colorLog.gray(`[HttpRequest<${processName}>]`),
                     error, '\nInput: ', input
                 );
@@ -655,7 +657,9 @@ export function httpRequest(
                     message: `[HttpRequest] HTTP request failed: Status ${status} on ${processName}`
                 }, error);
                 const { statusHandler, errorHandler } = getHandlers(status, error);
-                (statusHandler || errorHandler ? console.warn : console.error)(
+                (statusHandler || errorHandler || ![logger.critical, logger.error].includes(log)
+                    ? console.warn
+                    : console.error)(
                     ...colorLog.gray(`[HttpRequest<${processName}>]`),
                     error, '\nInput: ', input
                 );
