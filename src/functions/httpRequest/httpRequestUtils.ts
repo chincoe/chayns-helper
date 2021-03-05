@@ -308,7 +308,7 @@ export async function resolveWithHandler(
                 const error = chaynsErrorObject
                     ? new ChaynsError(chaynsErrorObject, processName, status)
                     : new RequestError(`Status ${status} on ${processName}`, status);
-                console.error(...colorLog.gray(`[HttpRequest<${processName}>]`), 'ResponseType \'error\':', error);
+                console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`), 'ResponseType \'error\':', error);
                 reject(error);
                 return true;
             case ResponseType.Response:

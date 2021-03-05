@@ -501,7 +501,7 @@ export function httpRequest(
                                 break;
                             case ResponseType.ThrowError:
                                 const error = new RequestError(`Status ${status} on ${processName}`, status);
-                                console.error(
+                                console.warn(
                                     ...colorLog.gray(`[HttpRequest<${processName}>]`),
                                     'ResponseType \'error\':', error, '\nInput: ', input
                                 );
