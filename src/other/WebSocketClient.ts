@@ -19,7 +19,7 @@ class WebSocketClient {
 
     public conditions: WebsocketConditions | null = null;
 
-    private socket: WebSocket | null = null;
+    public socket: WebSocket | null = null;
 
     private checkConnectionInterval: number | null = null;
 
