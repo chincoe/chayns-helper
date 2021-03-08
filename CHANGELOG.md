@@ -1,3 +1,11 @@
+<a name="2.13.8"></a>
+## [2.13.8](https://github.com/chincoe/chayns-helper/compare/v2.13.7...v2.13.8) (2021-03-08)
+
+### Changes
+
+* httpRequest
+  * increase the character for request body, response body and resolve value to 5000
+
 <a name="2.13.7"></a>
 ## [2.13.7](https://github.com/chincoe/chayns-helper/compare/v2.13.6...v2.13.7) (2021-03-08)
 
