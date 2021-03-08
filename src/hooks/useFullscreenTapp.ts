@@ -111,7 +111,7 @@ const useFullscreenTapp = (
                         ? (data.frameY + data.pageYOffset)
                         : 45
                 ),
-                forceHeight: true,
+                force: true,
             });
         });
     };
@@ -150,7 +150,7 @@ const useFullscreenTapp = (
                 setStyles(tapp, inactiveStyle || {})
                 chayns.setHeight({
                     height: window.innerHeight,
-                    forceHeight: false,
+                    force: false,
                 });
             }
             return () => {
@@ -161,7 +161,7 @@ const useFullscreenTapp = (
                 setStyles(tapp, inactiveStyle || {})
                 chayns.setHeight({
                     height: window.innerHeight,
-                    forceHeight: false,
+                    force: false,
                 });
             };
         } else {
