@@ -8,8 +8,6 @@ import { LogLevel } from './LogLevel';
 import RequestError from './RequestError';
 import { ResponseType, ResponseTypeList } from './ResponseType';
 
-
-
 export const getMapKeys = (map: Map<string, any>) => {
     const result = [];
     const keys = map.keys();
