@@ -1,3 +1,11 @@
+<a name="2.13.7"></a>
+## [2.13.7](https://github.com/chincoe/chayns-helper/compare/v2.13.6...v2.13.7) (2021-03-08)
+
+### Bug fixes
+
+* useFullscreenTapp
+  * fix setHeight "force" parameter
+
 <a name="2.13.6"></a>
 ## [2.13.6](https://github.com/chincoe/chayns-helper/compare/v2.13.5...v2.13.6) (2021-03-05)
 
@@ -16,4 +24,5 @@
 
 ### Bug fixes
 
-* Fix request.fetch logConfig not working with an exact status code due to a faulty RegEx
+* httpRequest
+  * Fix request.fetch logConfig not working with an exact status code due to a faulty RegEx
