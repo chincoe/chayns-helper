@@ -5,6 +5,7 @@ import shallowEqual from '../functions/shallowEqual';
 import getHookState from '../functions/getHookState';
 import { isPagemakerIFrame } from '../functions/isPagemakerIFrame';
 import colorLog from '../utils/colorLog';
+import enableBodyScroll from '../functions/chaynsCalls/enableBodyScroll';
 
 /**
  * Reducer to update the windowData state
@@ -143,6 +144,7 @@ const useFullscreenTapp = (
                 if (chayns.env.isMobile) chayns.addOnActivateListener(() => getWindowData(0, false));
                 setResizeInterval(interval);
                 chayns.addWindowMetricsListener(getWindowData);
+                // enableBodyScroll(false);
             } else {
                 chayns.removeWindowMetricsListener(getWindowData);
                 tapp.style.width = "";
@@ -152,6 +154,7 @@ const useFullscreenTapp = (
                     height: window.innerHeight,
                     force: false,
                 });
+                // enableBodyScroll(true);
             }
             return () => {
                 clearInterval(interval);
@@ -163,6 +166,7 @@ const useFullscreenTapp = (
                     height: window.innerHeight,
                     force: false,
                 });
+                // enableBodyScroll(true);
             };
         } else {
             console.error("[useFullscreenTapp] Cannot find element with class '.tapp'")
