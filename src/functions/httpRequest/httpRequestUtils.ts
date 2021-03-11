@@ -53,6 +53,7 @@ export async function getLogFunctionByStatus(
         ));
     console.debug(...colorLog.gray(`[HttpRequest] Found log key for status`), {
         status,
+        chaynsErrorCode,
         levelKey,
         level: logConfig.get(levelKey || "")
     })

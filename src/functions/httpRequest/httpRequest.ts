@@ -586,8 +586,12 @@ export function httpRequest(
             console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Handling Logs', logData);
 
             let defaultLog = logger.error;
-            if (status < 400) defaultLog = (logger.info as (data: Record<string, any>, error?: Error) => any);
-            if (status === 401) defaultLog = logger.warning;
+            if (status < 400) {
+                defaultLog = (logger.info as (data: Record<string, any>, error?: Error) => any);
+            }
+            if (status === 401) {
+                defaultLog = logger.warning;
+            }
             const log = await getLogFunctionByStatus(status, logConfig, defaultLog, responseBody);
 
             const chaynsErrorObject = await ChaynsError.getChaynsErrorObject(responseBody);
