@@ -85,10 +85,17 @@ const useFullscreenTapp = (
         forceExclusive?: boolean;
         activeStyle?: Partial<CSSStyleDeclaration> & Record<string, string>;
         inactiveStyle?: Partial<CSSStyleDeclaration> & Record<string, string>;
-        disableBodyScrolling?: boolean
+        disableBodyScrolling?: boolean;
+        rootElement?: string | '.tapp';
     }
 ): [WindowMetrics, boolean, React.Dispatch<SetStateAction<boolean>>] => {
-    const { forceExclusive, activeStyle, inactiveStyle, disableBodyScrolling: disableScrolling = true } = config || {}
+    const {
+        forceExclusive,
+        activeStyle,
+        inactiveStyle,
+        disableBodyScrolling: disableScrolling = true,
+        rootElement = '.tapp'
+    } = config || {}
     const [isFullscreenActive, setIsFullscreenActive] = useState(initialValue ?? true);
     const [windowData, setWindowData] = useReducer(windowDataReducer, undefined);
     const [resizeInterval, setResizeInterval] = <any>useState(0);
@@ -131,7 +138,7 @@ const useFullscreenTapp = (
         if (forceExclusive) setViewMode(isFullscreenActive ? true : !!defaultExclusive, false);
         let interval: number = <number><unknown>setTimeout(() => null, 0);
         clearInterval(resizeInterval);
-        const tapp = <HTMLDivElement>document.querySelector('.tapp');
+        const tapp = <HTMLDivElement>document.querySelector(rootElement || '.tapp');
         if (tapp) {
             if (isFullscreenActive) {
                 chayns.scrollToY(-1000);
@@ -170,7 +177,7 @@ const useFullscreenTapp = (
                 if (disableScrolling) enableBodyScroll(true);
             };
         } else {
-            console.error("[useFullscreenTapp] Cannot find element with class '.tapp'")
+            console.error(...colorLog.gray('[useFullscreenTapp]'), `Cannot find element for selector '${rootElement}'`)
             return () => null;
         }
 
