@@ -1,3 +1,16 @@
+<a name="2.13.9"></a>
+## [2.13.9](https://github.com/chincoe/chayns-helper/compare/v2.13.8...v2.13.9) (2021-03-12)
+
+### Changes 
+
+* Add chaynsCall enableBodyScroll
+* useFullscreenTapp
+  * use enableBodyScroll in addition to current workflow to disable scrolling. Does not work on iOS yet
+
+### Bug Fixes
+* httpRequest
+  * Fix color in debug logs
+
 <a name="2.13.8"></a>
 ## [2.13.8](https://github.com/chincoe/chayns-helper/compare/v2.13.7...v2.13.8) (2021-03-08)
 

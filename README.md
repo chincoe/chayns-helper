@@ -56,6 +56,7 @@ Large or complicated helpers are marked with a `+` to make it easier to look the
 |--------|-------------|------|
 | [addChaynsLoginListener](https://github.com/chincoe/chayns-helper/blob/master/docs/functions/chaynsCalls/setReloadOnLogin.md#addchaynsloginlistenercallback-once)| Similar to addAccessTokenChangeListener, but prevent reload on login/logout in a pagemaker iframe as well | Function |
 | + [chaynsDialogs](https://github.com/chincoe/chayns-helper/blob/master/docs/functions/chaynsDialogs.md)| makes using chayns dialogs much more comfortable | Functions |
+| [enableBodyScroll](https://github.com/chincoe/chayns-helper/blob/master/docs/functions/chaynsCalls/enableBodyScroll.md)| enable or disable scrolling | Function |
 | [getChaynsErrorCode](https://github.com/chincoe/chayns-helper/blob/master/docs/functions/httpRequest.md#getchaynserrorcodevalue)| get the error code of a chayns error response. Can deal with Response, Promise and Object | Function |
 | [getTextStrings](https://github.com/chincoe/chayns-helper/blob/master/docs/textstring/TextString.md#gettextstrings)| get one or more text strings with fallbacks and prefix | Function |
 | [hideCWFooter](https://github.com/chincoe/chayns-helper/blob/master/docs/functions/chaynsCalls/hideCwFooter.md)| hide the chayns web footer | Function |

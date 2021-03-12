@@ -31,7 +31,7 @@ export async function getLogFunctionByStatus(
                                            && chaynsErrorCodeRegex.test(k))));
     logKeys.push(...(mapKeys.filter((k) => !logKeys.includes(k))));
 
-    console.debug(...colorLog.gray(`[HttpRequest] Getting log level by status`), {
+    console.debug(...colorLog.gray(`[HttpRequest]`), 'Getting log level by status', {
         status,
         defaultFunction,
         chaynsErrorObject,
@@ -51,8 +51,9 @@ export async function getLogFunctionByStatus(
             || (chaynsErrorCode && key === chaynsErrorCode)
             || (chaynsErrorCode && stringToRegexStrict(key).test(chaynsErrorCode))
         ));
-    console.debug(...colorLog.gray(`[HttpRequest] Found log key for status`), {
+    console.debug(...colorLog.gray(`[HttpRequest]`), 'Found log key for status', {
         status,
+        chaynsErrorCode,
         levelKey,
         level: logConfig.get(levelKey || "")
     })

@@ -16,6 +16,7 @@ export { default as RechartsAxis } from './components/recharts-axis/RechartsAxis
 // chaynsCall
 export { default as setViewMode } from './functions/chaynsCalls/setViewMode';
 export { default as hideCwFooter } from './functions/chaynsCalls/hideCwFooter';
+export { default as enableBodyScroll } from './functions/chaynsCalls/enableBodyScroll';
 export {
     default as setReloadOnLogin, addChaynsLoginListener, removeChaynsLoginListener
 } from './functions/chaynsCalls/setReloadOnLogin';
