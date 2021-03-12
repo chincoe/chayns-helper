@@ -84,3 +84,7 @@ export { initTextStrings } from './textstring/textstringConfig';
 export { default as WebsocketClient } from './other/WebSocketClient';
 export { default as statusAnimations } from './constants/statusAnimations';
 export { default as time } from './constants/time';
+// internal utils, not documented
+export { default as stringToRegex } from './utils/stringToRegex';
+export { default as colorLog, createColorLog } from './utils/colorLog';
+export { default as jsonLog } from './utils/jsonLog';
