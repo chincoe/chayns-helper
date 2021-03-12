@@ -82,12 +82,13 @@ export interface WindowMetrics {
 const useFullscreenTapp = (
     initialValue: boolean = true,
     config?: {
-        forceExclusive?: boolean,
-        activeStyle?: Partial<CSSStyleDeclaration> & Record<string, string>
-        inactiveStyle?: Partial<CSSStyleDeclaration> & Record<string, string>
+        forceExclusive?: boolean;
+        activeStyle?: Partial<CSSStyleDeclaration> & Record<string, string>;
+        inactiveStyle?: Partial<CSSStyleDeclaration> & Record<string, string>;
+        disableBodyScrolling?: boolean
     }
 ): [WindowMetrics, boolean, React.Dispatch<SetStateAction<boolean>>] => {
-    const { forceExclusive, activeStyle, inactiveStyle } = config || {}
+    const { forceExclusive, activeStyle, inactiveStyle, disableBodyScrolling: disableScrolling = true } = config || {}
     const [isFullscreenActive, setIsFullscreenActive] = useState(initialValue ?? true);
     const [windowData, setWindowData] = useReducer(windowDataReducer, undefined);
     const [resizeInterval, setResizeInterval] = <any>useState(0);
@@ -144,7 +145,7 @@ const useFullscreenTapp = (
                 if (chayns.env.isMobile) chayns.addOnActivateListener(() => getWindowData(0, false));
                 setResizeInterval(interval);
                 chayns.addWindowMetricsListener(getWindowData);
-                enableBodyScroll(false);
+                if (disableScrolling) enableBodyScroll(false);
             } else {
                 chayns.removeWindowMetricsListener(getWindowData);
                 tapp.style.width = "";
@@ -154,7 +155,7 @@ const useFullscreenTapp = (
                     height: window.innerHeight,
                     force: false,
                 });
-                enableBodyScroll(true);
+                if (disableScrolling) enableBodyScroll(true);
             }
             return () => {
                 clearInterval(interval);
@@ -166,7 +167,7 @@ const useFullscreenTapp = (
                     height: window.innerHeight,
                     force: false,
                 });
-                enableBodyScroll(true);
+                if (disableScrolling) enableBodyScroll(true);
             };
         } else {
             console.error("[useFullscreenTapp] Cannot find element with class '.tapp'")

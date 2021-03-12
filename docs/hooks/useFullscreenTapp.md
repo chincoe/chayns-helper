@@ -14,6 +14,7 @@ It is recommended that you apply the `.tapp` class to your root div to use this 
 |config.forceExclusive| Force the tapp into exclusive mode | boolean |`false`|
 |config.activeStyle| Inline styles to be applied to the tapp element when fullscreen is active. Must be removed manually by setting inactiveStyles | CSSStyleDeclaration |`{ height: "100vh", width: "100vw" }`|
 |config.inactiveStyle| Inline styles to be applied to the tapp element when fullscreen is inactive | CSSStyleDeclaration |`{ height: "", width: "" }`|
+|config.disableBodyScrolling| Whether hook should automatically disable&enable scrolling in the chayns web body | boolean | `true` |
 | **@returns** | `[windowData, isFullscreenActive, setIsFullscreenActive]` | [object, boolean, function(boolean)] | |
 
 #### Example
