@@ -144,7 +144,7 @@ const useFullscreenTapp = (
                 if (chayns.env.isMobile) chayns.addOnActivateListener(() => getWindowData(0, false));
                 setResizeInterval(interval);
                 chayns.addWindowMetricsListener(getWindowData);
-                // enableBodyScroll(false);
+                enableBodyScroll(false);
             } else {
                 chayns.removeWindowMetricsListener(getWindowData);
                 tapp.style.width = "";
@@ -154,7 +154,7 @@ const useFullscreenTapp = (
                     height: window.innerHeight,
                     force: false,
                 });
-                // enableBodyScroll(true);
+                enableBodyScroll(true);
             }
             return () => {
                 clearInterval(interval);
@@ -166,7 +166,7 @@ const useFullscreenTapp = (
                     height: window.innerHeight,
                     force: false,
                 });
-                // enableBodyScroll(true);
+                enableBodyScroll(true);
             };
         } else {
             console.error("[useFullscreenTapp] Cannot find element with class '.tapp'")
