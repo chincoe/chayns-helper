@@ -15,10 +15,10 @@ if (process.argv[2] === '-d' || process.argv[2] === '-deprecate') {
     })
 } else if (process.argv[2] === '-c' || process.argv[2] === '-commit') {
     let commitString = 'Patch';
-    if (/-/.test(commitString)) commitString = 'Prerelease version';
-    if (/^[\d]+\.[\d]+\.0$/.test(commitString)) commitString = 'Minor release';
-    if (/^[\d]+\.0\.0$/.test(commitString)) commitString = 'Major release';
-    if (/-/.test(commitString)) commitString = 'Prerelease version';
+    if (/-/.test(version)) commitString = 'Prerelease version';
+    if (/^[\d]+\.[\d]+\.0$/.test(version)) commitString = 'Minor release';
+    if (/^[\d]+\.0\.0$/.test(version)) commitString = 'Major release';
+    if (/-/.test(version)) commitString = 'Prerelease version';
 
     new Promise((resolve) => {
         (async () => {
