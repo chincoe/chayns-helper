@@ -54,6 +54,7 @@ export { default as useComparingSelector } from './hooks/useComparingSelector';
 export { default as useRechartsAxis, generateRechartsAxis } from './functions/generateRechartsAxis';
 // httpRequest
 export { default as request } from './functions/httpRequest/httpRequest';
+export { default as RequestRegex } from './functions/httpRequest/RequestRegex';
 export { HttpStatusCode } from './functions/httpRequest/HttpStatusCodes';
 export { HttpMethod } from './functions/httpRequest/HttpMethod';
 export { default as RequestError } from './functions/httpRequest/RequestError';
