@@ -1,6 +1,6 @@
 {
   "name": "chayns-helper",
-  "version": "2.13.10-beta.0",
+  "version": "2.13.10-beta.1",
   "author": {
     "name": "Christian Nagel",
     "email": "christian.nagel@tobit.com"
@@ -61,16 +61,16 @@
   "size-limit": [
     {
       "path": "dist/chayns-helper.cjs.production.min.js",
-      "limit": "55KB"
+      "limit": "65KB"
     },
     {
       "path": "dist/chayns-helper.esm.js",
-      "limit": "45KB"
+      "limit": "50KB"
     },
     {
       "path": "dist/chayns-helper.esm.js",
       "import": "{ statusAnimations }",
-      "limit": "19.15KB"
+      "limit": "25.45KB"
     }
   ],
   "prettier": {

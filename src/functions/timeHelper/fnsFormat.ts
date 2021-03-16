@@ -1,7 +1,14 @@
 import { format } from 'date-fns/esm';
 // @ts-expect-error
 import { TextString } from 'chayns-components';
-import { de, enUS, es, fr, it, nl, pt, tr } from 'date-fns/esm/locale';
+import de from 'date-fns/esm/locale/de';
+import enUS from 'date-fns/esm/locale/en-US';
+import es from 'date-fns/esm/locale/es';
+import fr from 'date-fns/esm/locale/fr';
+import it from 'date-fns/esm/locale/it';
+import nl from 'date-fns/esm/locale/nl';
+import pt from 'date-fns/esm/locale/pt';
+import tr from 'date-fns/esm/locale/tr';
 import time from '../../constants/time';
 
 declare type LangOptions = {
