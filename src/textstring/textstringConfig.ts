@@ -1,5 +1,6 @@
 // @ts-expect-error
 import { TextString } from 'chayns-components';
+import colorLog from '../utils/colorLog';
 
 const TEXTSTRING_CONFIG = {
     prefix: '',
@@ -30,23 +31,38 @@ export const initTextStrings = (
         prefix = '',
         libName = ''
     } = config || {};
+    const defaultLang = chayns.env.parameters.translang ||
+                        chayns.env.site.translang ||
+                        chayns.env.language ||
+                        navigator.language ||
+                        'de';
     if (libName) {
-        TextString.loadLibrary(
-            libName,
-            'langRes',
-            chayns.env.parameters.translang ||
-            chayns.env.site.translang ||
-            chayns.env.language ||
-            navigator.language ||
-            'de'
-        );
+        try {
+            TextString.loadLibrary(
+                libName,
+                'langRes',
+                defaultLang
+            );
+        } catch (e) {
+            console.warn(
+                ...colorLog.gray('[TextStringInit]'),
+                `Failed to load TextString library '${libName}' for language '${defaultLang}'`
+            );
+        }
         if (Array.isArray(languages)) {
             for (let i = 0; i < languages.length; ++i) {
-                TextString.loadLibrary(
-                    libName,
-                    'langRes',
-                    languages[i]
-                );
+                try {
+                    TextString.loadLibrary(
+                        libName,
+                        'langRes',
+                        languages[i]
+                    );
+                } catch (e) {
+                    console.warn(
+                        ...colorLog.gray('[TextStringInit]'),
+                        `Failed to load TextString library '${libName}' for language '${languages[i]}'`
+                    );
+                }
             }
         }
     }
