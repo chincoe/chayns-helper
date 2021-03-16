@@ -119,7 +119,7 @@ const fnsFormat = (date: Date | string | number, formatString: string, options?:
     const formatStringRegex = /^[^a-zA-Z]*?(([a-zA-Z]+[^a-zA-Z]? *)*)[^a-zA-Z]*?$/;
     const tFormatString = formatStr
         .replace(/'.*?'/g, '')
-        .replace(/[EWGAaHhmsSZXx]|(?:'.*?')/g, '')
+        .replace(/[EWGAaHhmsSZXxpbPBOtTKo]|(?:'.*?')/g, '')
         .replace(formatStringRegex, '$1')
         .trim();
 
