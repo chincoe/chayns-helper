@@ -216,6 +216,7 @@ const postExample = async (data) => {
 
 // calling postExample:
 const result = await (postExample(data).catch((ex) => {
+    const { statusCode } = ex;
     // handle error for your application
     throw ex;
 }));
