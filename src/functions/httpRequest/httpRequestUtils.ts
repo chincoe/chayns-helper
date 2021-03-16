@@ -120,7 +120,7 @@ export const jsonResolve = async (
             `Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.None } }, '\n', err
         );
-        resolve(null);
+        resolve(addStatus ? { status, data: null } : null);
     }
 };
 
@@ -145,7 +145,7 @@ export const binaryResolve = async (
             `Getting Binary body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.None } }, '\n', err
         );
-        resolve(null);
+        resolve(addStatus ? { status, data: null } : null);
     }
 };
 
@@ -170,7 +170,7 @@ export const blobResolve = async (
             `Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.None } }, '\n', err
         );
-        resolve(null);
+        resolve(addStatus ? { status, data: null } : null);
     }
 };
 
@@ -195,34 +195,7 @@ export const textResolve = async (
             `Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.None } }, '\n', err
         );
-        resolve(null);
-    }
-};
-
-export const objectResolve = async (
-    response: Response, processName: string, resolve: (value: any) => void,
-    internalRequestGuid: string | null = null
-): Promise<void> => {
-    const { status } = response;
-    try {
-        resolve({
-            status,
-            data: await response.json()
-        });
-    } catch (err) {
-        logger.warning({
-            message: `[HttpRequest] Getting JSON body for Object failed on Status ${status} on ${processName}`,
-            data: { internalRequestGuid },
-            section: '[chayns-helper]httpRequest.js',
-        }, err);
-        console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
-            `Getting JSON body for Object failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
-            { statusHandlers: { [status]: ResponseType.Response } }, '\n', err
-        );
-        resolve({
-            status,
-            data: null
-        });
+        resolve(addStatus ? { status, data: null } : null);
     }
 };
 
