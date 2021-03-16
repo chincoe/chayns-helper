@@ -23,55 +23,44 @@ export interface TextStringInit {
  * @param config
  * @param languages
  */
-export const initTextStrings = (
+export const initTextStrings = async (
     config: TextStringInit,
     languages?: Array<string>
-): Promise<any> => {
+) => {
     const {
         prefix = '',
         libName = ''
     } = config || {};
     TEXTSTRING_CONFIG.prefix = prefix;
     TEXTSTRING_CONFIG.libName = libName;
-    const defaultLang = chayns.env.parameters.translang ||
-                        chayns.env.site.translang ||
-                        chayns.env.language ||
-                        navigator.language ||
-                        'de';
+    const defaultLang = chayns.env.parameters.translang
+                        || chayns.env.site.translang
+                        || chayns.env.language
+                        || navigator.language
+                        || 'de';
     const promises = [];
     if (libName) {
-        try {
-            promises.push(TextString.loadLibrary(
-                libName,
-                'langRes',
-                defaultLang
-            ));
-        } catch (e) {
-            console.warn(
-                ...colorLog.gray('[TextStringInit]'),
-                `Failed to load TextString library '${libName}' for language '${defaultLang}'`, e
-            );
-        }
+        promises.push(TextString.loadLibrary(
+            libName,
+            'langRes',
+            defaultLang
+        ));
+
         if (Array.isArray(languages)) {
             for (let i = 0; i < languages.length; ++i) {
-                try {
-                    promises.push(TextString.loadLibrary(
-                        libName,
-                        'langRes',
-                        languages[i]
-                    ));
-                } catch (e) {
-                    console.warn(
-                        ...colorLog.gray('[TextStringInit]'),
-                        `Failed to load TextString library '${libName}' for language '${languages[i]}'`, e
-                    );
-                }
+                promises.push(TextString.loadLibrary(
+                    libName,
+                    'langRes',
+                    languages[i]
+                ));
             }
         }
     }
-    return Promise.all(promises).catch((e) => {
+    try {
+        await Promise.all(promises);
+    } catch (e) {
         console.warn(...colorLog.gray('[TextStringInit]'), `Failed to load TextString library '${libName}'`, e);
-    })
+    }
 };
 
 export default TEXTSTRING_CONFIG;
