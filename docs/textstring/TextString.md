@@ -8,8 +8,16 @@ this package with the required information on initialization:
 // index.jsx
 initTextStrings({
     prefix: 'txt_chayns_myapp_', // necessary to use all textString helpers
-    libName: 'MyTextLib', // necessary for textString auto creation
+    libName: 'MyTextLib', // necessary for textString auto creation and to load the library automatically
 });
+```
+This will automatically load your TextString library as well. If you wish to load multiple languages, pass an array of language strings as second parameter:
+```javascript
+// load multiple languages
+initTextStrings({
+    prefix: 'txt_chayns_myapp_',
+    libName: 'MyTextLib', 
+}, ['de', 'en', 'nl', 'fr']);
 ```
 
 ## [TextStringComplex](src/textstring/TextStringComplex.tsx)

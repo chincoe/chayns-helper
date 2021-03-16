@@ -54,6 +54,7 @@ export { default as useComparingSelector } from './hooks/useComparingSelector';
 export { default as useRechartsAxis, generateRechartsAxis } from './functions/generateRechartsAxis';
 // httpRequest
 export { default as request } from './functions/httpRequest/httpRequest';
+export { default as RequestRegex } from './functions/httpRequest/RequestRegex';
 export { HttpStatusCode } from './functions/httpRequest/HttpStatusCodes';
 export { HttpMethod } from './functions/httpRequest/HttpMethod';
 export { default as RequestError } from './functions/httpRequest/RequestError';
@@ -84,3 +85,7 @@ export { initTextStrings } from './textstring/textstringConfig';
 export { default as WebsocketClient } from './other/WebSocketClient';
 export { default as statusAnimations } from './constants/statusAnimations';
 export { default as time } from './constants/time';
+// internal utils, not documented
+export { default as stringToRegex } from './utils/stringToRegex';
+export { default as colorLog, createColorLog } from './utils/colorLog';
+export { default as jsonLog } from './utils/jsonLog';

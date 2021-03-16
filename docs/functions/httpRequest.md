@@ -22,6 +22,7 @@ well as enums for http methods, http status codes and more.
     * [isChaynsError(value)](#ischaynserrorvalue)
     * [getChaynsErrorCode(value)](#getchaynserrorcodevalue)
     * [HttpStatusCode](#httpstatuscode)
+    * [RequestRegex](#requestregex)
 
 ## Suggested setup and quick documentation
 
@@ -215,6 +216,7 @@ const postExample = async (data) => {
 
 // calling postExample:
 const result = await (postExample(data).catch((ex) => {
+    const { statusCode } = ex;
     // handle error for your application
     throw ex;
 }));
@@ -473,4 +475,20 @@ Try to get the ChaynsError error code from a value like an object or a Response
 ## HttpStatusCode
 
 An enum of HTTP Status Codes
+
+## RequestRegex
+A constant containing several predefined regexes to use as keys for statusHandler, errorHandler und logConfig.
+
+| Name | Matches |
+|------|---------|
+| RequestRegex.Any | Anything |
+| RequestRegex.StatusCode.Any | Any valid status code |
+| RequestRegex.StatusCode.Status4xx | All 4xx status codes |
+| RequestRegex.StatusCode.Status5xx | All 5xx status codes |
+| RequestRegex.StatusCode.Status4xxOr5xx | All 4xx or 5xx status codes |
+| RequestRegex.StatusCode.AnyError | All 4xx or 5xx status codes and status code 1 (failed to fetch) |
+| RequestRegex.StatusCode.Status2xx | All 2xx status codes |
+| RequestRegex.ChaynsError.Any | Any valid chayns error code |
+| RequestRegex.ChaynsError.AnyGlobal | Any valid chayns error code from the `global` namespace |
+| RequestRegex.ChaynsError.createNamespaceRegex(namespace) | Function; creates a regex to match any valid chayns error code from the passed namespace |
 

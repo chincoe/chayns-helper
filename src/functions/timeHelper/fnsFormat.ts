@@ -1,6 +1,82 @@
 import { format } from 'date-fns/esm';
-import deLocale from 'date-fns/esm/locale/de';
+// @ts-expect-error
+import { TextString } from 'chayns-components';
+import de from 'date-fns/esm/locale/de';
+import enUS from 'date-fns/esm/locale/en-US';
+import es from 'date-fns/esm/locale/es';
+import fr from 'date-fns/esm/locale/fr';
+import it from 'date-fns/esm/locale/it';
+import nl from 'date-fns/esm/locale/nl';
+import pt from 'date-fns/esm/locale/pt';
+import tr from 'date-fns/esm/locale/tr';
 import time from '../../constants/time';
+
+declare type LangOptions = {
+    locale: Locale,
+    yesterday: string,
+    today: string,
+    tomorrow: string,
+    at: string
+}
+
+const languages: Record<string, LangOptions> = {
+    de: {
+        locale: de,
+        yesterday: 'Gestern',
+        today: 'Heute',
+        tomorrow: 'Morgen',
+        at: 'um'
+    },
+    en: {
+        locale: enUS,
+        yesterday: 'Yesterday',
+        today: 'Today',
+        tomorrow: 'Tomorrow',
+        at: 'at'
+    },
+    nl: {
+        locale: nl,
+        yesterday: 'Gisteren',
+        today: 'Vandaag',
+        tomorrow: 'Morgen',
+        at: 'om'
+    },
+    it: {
+        locale: it,
+        yesterday: 'Ieri',
+        today: 'Oggi',
+        tomorrow: 'Domani',
+        at: 'alle'
+    },
+    fr: {
+        locale: fr,
+        yesterday: 'Hier',
+        today: 'Aujourd’hui',
+        tomorrow: 'Demain',
+        at: 'à'
+    },
+    pt: {
+        locale: pt,
+        yesterday: 'Ontem',
+        today: 'Hoje',
+        tomorrow: 'Amanhã',
+        at: 'à'
+    },
+    es: {
+        locale: es,
+        yesterday: 'Ayer',
+        today: 'Hoy',
+        tomorrow: 'Mañana',
+        at: 'a la'
+    },
+    tr: {
+        locale: tr,
+        yesterday: 'Dün',
+        today: 'Bugün',
+        tomorrow: 'Yarın',
+        at: 'saat'
+    }
+}
 
 /**
  * date-fns format() function extended with the feature to work with date strings and timestamps, the feature to use
@@ -12,14 +88,20 @@ import time from '../../constants/time';
 const fnsFormat = (date: Date | string | number, formatString: string, options?: {
     useToday?: boolean,
     appendYear?: boolean,
-    locale?: Locale
+    locale?: Locale,
+    language?: string | 'de' | 'en' | 'nl' | 'it' | 'fr' | 'pt' | 'es' | 'tr'
 }): string => {
     const {
         useToday,
-        appendYear,
-        locale
+        appendYear
     } = (options || {});
-    let formatStr = formatString;
+
+    const language = options?.language || TextString.language || 'de';
+    const langOptions = languages[language] || languages.de;
+    const locale = options?.locale || langOptions.locale
+
+    let formatStr = formatString
+        .replace(/(?:^| )#at# /g, ` '${langOptions.at}' `);
     const d = new Date(date);
 
     if (/y+\?/i.test(formatStr)) {
@@ -30,12 +112,12 @@ const fnsFormat = (date: Date | string | number, formatString: string, options?:
         }
     }
 
-    let dateString = format(d, formatStr, { locale: (locale || deLocale) });
+    let dateString = format(d, formatStr, { locale });
 
     if (!useToday || Math.abs(d.getTime() - Date.now()) > time.day * 2) {
         if (appendYear) {
             if (appendYear && d.getFullYear() !== new Date().getFullYear()) {
-                dateString += ` ${format(new Date(date), 'yyyy', { locale: (locale || deLocale) })}`;
+                dateString += ` ${format(new Date(date), 'yyyy', { locale })}`;
             }
         }
         return dateString;
@@ -44,18 +126,19 @@ const fnsFormat = (date: Date | string | number, formatString: string, options?:
     const formatStringRegex = /^[^a-zA-Z]*?(([a-zA-Z]+[^a-zA-Z]? *)*)[^a-zA-Z]*?$/;
     const tFormatString = formatStr
         .replace(/'.*?'/g, '')
-        .replace(/[EWGAaHhmsSZXx]|(?:'.*?')/g, '')
+        .replace(/[EWGAaHhmsSZXxpbPBOtTKo]|(?:'.*?')/g, '')
         .replace(formatStringRegex, '$1')
         .trim();
 
     dateString = dateString
-        .replace(format(new Date(), tFormatString, { locale: (locale || deLocale) }), 'Heute')
-        .replace(format(new Date(Date.now() + time.day), tFormatString, { locale: (locale || deLocale) }), 'Morgen')
-        .replace(format(new Date(Date.now() - time.day), tFormatString, { locale: (locale || deLocale) }), 'Gestern');
-    if (appendYear && !/(Heute)|(Morgen)|(Gestern)/.test(dateString)) {
-        if (appendYear && d.getFullYear() !== new Date().getFullYear()) {
-            dateString += ` ${format(new Date(date), 'yyyy', { locale: (locale || deLocale) })}`;
-        }
+        .replace(format(new Date(), tFormatString, { locale }), langOptions.today)
+        .replace(format(new Date(Date.now() + time.day), tFormatString, { locale }), langOptions.tomorrow)
+        .replace(format(new Date(Date.now() - time.day), tFormatString, { locale }), langOptions.yesterday);
+    if (appendYear &&
+        !new RegExp(`/(${langOptions.today})|(${langOptions.tomorrow})|(${langOptions.yesterday})/`).test(dateString)
+        && d.getFullYear() !== new Date().getFullYear()
+    ) {
+        dateString += ` ${format(new Date(date), 'yyyy', { locale })}`;
     }
     return dateString;
 };
