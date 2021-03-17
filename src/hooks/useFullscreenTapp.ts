@@ -98,30 +98,37 @@ const useFullscreenTapp = (
     } = config || {}
     const [isFullscreenActive, setIsFullscreenActive] = useState(initialValue ?? true);
     const [windowData, setWindowData] = useReducer(windowDataReducer, undefined);
-    const [resizeInterval, setResizeInterval] = <any>useState(0);
+    const [resizeInterval, setResizeInterval] = useState(0);
     const [, setWindowWidth] = useState(0);
+    const [, setWindowHeight] = useState(0);
     const defaultExclusive = useMemo(() => chayns.env.site.tapp.isExclusiveView, []);
 
     const getWindowData = (_height: any, force = true) => {
+        if (force) chayns.scrollToY(-1000);
         Promise.all([
             chayns.getWindowMetrics(),
-            getHookState(setWindowWidth)
-        ]).then(([winData, winWidth]) => {
-            if (chayns.env.isMobile && winWidth === window.innerWidth) return;
-            setWindowWidth(window.innerWidth);
+            getHookState(setWindowWidth),
+            getHookState(setWindowHeight)
+        ]).then(([winData, winWidth, winHeight]) => {
             const data = correctWindowData(winData);
+            const height = data.windowHeight - (
+                typeof (data.frameY) === 'number' && typeof (data.pageYOffset) === 'number'
+                    ? (data.frameY + data.pageYOffset)
+                    : 45
+            );
+            if (chayns.env.isMobile && winWidth === window.innerWidth && Math.abs(height - winHeight) > 70) return;
+            setWindowHeight(height);
+            setWindowWidth(window.innerWidth);
             setWindowData({
                 data,
                 type: force ? 'force' : 'compare',
             });
-            chayns.setHeight({
-                height: data.windowHeight - (
-                    typeof (data.frameY) === 'number' && typeof (data.pageYOffset) === 'number'
-                        ? (data.frameY + data.pageYOffset)
-                        : 45
-                ),
-                force: true,
-            });
+            setTimeout(() => {
+                chayns.setHeight({
+                    height,
+                    force: true
+                });
+            }, winWidth === 0 ? 500 : 1);
         });
     };
 
