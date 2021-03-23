@@ -9,10 +9,14 @@ const setViewMode = (exclusive: boolean, tryFullBrowserWidth?: boolean): Promise
         viewMode = 2;
     }
     return chayns.invokeCall({
-        action: 101,
+        action: 266,
         value: {
-            tappId: chayns.env.site.tapp.id,
-            viewMode,
+            updates: [{
+                type: 'tapp',
+                value: {
+                    viewMode
+                }
+            }]
         },
     });
 };
