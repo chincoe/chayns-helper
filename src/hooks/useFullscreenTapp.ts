@@ -50,9 +50,9 @@ const correctWindowData = (
     if (!data) return data;
     return {
         ...data,
-        windowHeight: data.windowHeight || window.innerHeight,
-        frameY: data.frameY === undefined ? (chayns.env.isChaynsnetRuntime ? 0 : 45) : data.frameY,
-        pageYOffset: data.pageYOffset || 0,
+        windowHeight: data.windowHeight ?? window.innerHeight,
+        frameY: data.frameY ?? (chayns.env.isChaynsnetRuntime ? 0 : 45),
+        pageYOffset: data.pageYOffset ?? 0,
     };
 };
 
