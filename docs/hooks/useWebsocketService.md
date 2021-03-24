@@ -6,7 +6,7 @@ Uses only one client instance for all hooks unless otherwise specified via confi
 |------|--------------|-----------|-------------|
 |config| Configuration object | Object | required |
 |config.serviceName | Name of the websocket service | string | required |
-|config.conditions | WS Service conditions. Changing the conditions causes the client to unregister and register to the new conditions instead | Object<string, string/number/boolean> | required |
+|config.conditions | WS Service conditions. Changing the conditions causes the client to unregister and register to the new conditions instead. Pass an empty object to use pre-existing conditions from other hook calls of the same client group | Object<string, string/number/boolean> | required |
 |config.events | WS event listener. Format: <br>`{ [topic]: (data, messageEvent) => { my code... } }` | Object<string,function> | required|
 |config.clientGroup | All hooks using the same client group and service name use the same WS instance. By default every hook for the same service has the same clientGroup | string | `''` |
 |config.waitForDefinedConditions | Wait with first register until all values of config.conditions are !== undefined | boolean | `true`|
@@ -36,8 +36,26 @@ const App = () => {
         }
     }, [])
 
-    return (<h1>Hello world</h1>)
+    return <Content/>;
 };
+
+// using the same websocket service in a different component
+const MyComponent = () => {
+    const [state, setState] = useState('');
+    
+    useWebsocketService({
+        serviceName: 'my_ws_service',
+        // conditions are already set for this client group in App.jsx, so you can just pass an empty object here
+        conditions: {},
+        events: {
+            save_data(data) {
+                setState(data);
+            }
+        }
+    }, [])
+    
+    return (<p>{JSON.stringify(data)}</p>);
+}
 
 // wallet implementation using own connection
 const App = () => {
