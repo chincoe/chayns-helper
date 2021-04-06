@@ -451,7 +451,8 @@ const HttpMethod = {
 | Class member | value |
 |---------------|---------------|
 |name | `'HttpRequestError${statusCode}'`|
-|statusCode | `statusCode` |
+|statusCode | the status code of the response |
+|status | the status code of the response |
 
 ## ChaynsError extends RequestError
 
@@ -460,7 +461,8 @@ const HttpMethod = {
 | Class member | value |
 |---------------|---------------|
 |name | `'ChaynsError/{errorCode}'`|
-|statusCode | `{status}` |
+|statusCode | the status code of the response |
+|status | the status code of the response |
 |displayMessage | `displayMessage` |
 |errorCode | `errorCode` |
 |parameters | `parameters` |

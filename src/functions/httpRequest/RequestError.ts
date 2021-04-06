@@ -5,6 +5,7 @@
  */
 export default class RequestError extends Error {
     statusCode = 0;
+    status = 0;
 
     /**
      * @param message - Error message
@@ -14,6 +15,7 @@ export default class RequestError extends Error {
         super(message);
         this.name = `HttpRequestError${statusCode}`;
         this.statusCode = statusCode;
+        this.status = statusCode;
         this.stack = `${this.name}: ${this.message}`;
     }
 }
