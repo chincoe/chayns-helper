@@ -1,3 +1,21 @@
+<a name="2.14.1"></a>
+
+## [2.14.1](https://github.com/chincoe/chayns-helper/compare/v2.14.0...v2.14.1) (2021-04-07)
+
+### Changes
+
+* httpRequest
+  * RequestError.statusCode can now be accessed with RequestError.status as well to bring it in line with the JS Response object
+  
+* setViewMode
+  * replace deprecated call 101 with call 266
+  
+* CenteredContainer
+  * set width to 100% by default
+  
+* Websocket
+  * improve useWebsocketService docs for using multiple hooks for the same service
+
 <a name="2.14.0"></a>
 
 ## [2.14.0](https://github.com/chincoe/chayns-helper/compare/v2.13.9...v2.14.0) (2021-03-16)
