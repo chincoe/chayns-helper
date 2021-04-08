@@ -21,7 +21,7 @@ const useTimeoutState = <T>(
         if (typeof state === 'string' || typeof previousState === 'string'
             ? `${state}` !== `${previousState}`
             : !shallowEqual(state, previousState)
-        ) {``
+        ) {
             const t = setStateTimeout(() => {
                 setPreviousState(state);
                 onChange(state);
