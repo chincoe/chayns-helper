@@ -202,7 +202,7 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
 
     return textStringChildren && React.isValidElement(textStringChildren)
         ? React.cloneElement(textStringChildren, props, content)
-        : <span>{content}</span>;
+        : <p {...props}>{content}</p>;
 };
 
 export default memo(TextStringComplex);
