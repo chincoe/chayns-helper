@@ -202,11 +202,12 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
     }, [text, replacements, dangerouslySetInnerHTML, guid, maxReplacements]);
 
     const elementProps = Array.isArray(textStringChildren)
-        ? props : ({
+        ? props
+        : {
             ...props,
             className: `${props?.className ||
                           ''} ${(textStringChildren as { props: { className: string } })?.props?.className || ''}`
-        })
+        }
 
     return textStringChildren && React.isValidElement(textStringChildren)
         ? React.cloneElement(textStringChildren, elementProps, content)
