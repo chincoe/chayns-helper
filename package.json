@@ -1,6 +1,6 @@
 {
   "name": "chayns-helper",
-  "version": "2.14.2-beta.0",
+  "version": "2.14.2-beta.1",
   "author": {
     "name": "Christian Nagel",
     "email": "christian.nagel@tobit.com"
@@ -70,7 +70,7 @@
     {
       "path": "dist/chayns-helper.esm.js",
       "import": "{ statusAnimations }",
-      "limit": "25.45KB"
+      "limit": "25.60KB"
     }
   ],
   "prettier": {
