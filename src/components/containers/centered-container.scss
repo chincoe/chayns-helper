@@ -7,10 +7,18 @@
         padding: 12px;
 
         &-container {
-            &--gap {
+            &--gap:not(&--vertical) {
                 > *:not(:last-child) {
                     margin-right: 15px;
                 }
+            }
+            &--gap.&--vertical {
+                > *:not(:last-child) {
+                    margin-top: 15px;
+                }
+            }
+            &--vertical {
+                flex-direction: column;
             }
         }
     }
