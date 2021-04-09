@@ -1,3 +1,30 @@
+<a name="2.15.0"></a>
+
+## [2.15.0](https://github.com/chincoe/chayns-helper/compare/v2.14.1...v2.15.0) (2021-04-09)
+
+### Changes
+
+* CenteredContainer
+  * Now has a `vertical` property to change its direction
+  
+* DataRow
+  * Improved styles with more padding and better vertical label alignment
+  * Improved multirow structure
+  * Additional `slim` property to revert to the previous style without padding
+  
+* TextString
+  * now uses <p>-tag as default child instead of <span>
+  
+### Bug fixes
+
+* useTimeoutState 
+  * **[critical]** Fixed equality check condition - it was previously inverted, completely breaking this hook
+  
+* TextString
+  * jsx replacements did not work properly with useDangerouslySetInnerHtml, because the html parser could not deal with the self-closing <span>-tag placeholder properly
+  * className set to the children will no longer be overwritten by the className set by the chayns TextString component
+
+
 <a name="2.14.1"></a>
 
 ## [2.14.1](https://github.com/chincoe/chayns-helper/compare/v2.14.0...v2.14.1) (2021-04-07)
