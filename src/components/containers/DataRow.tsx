@@ -4,7 +4,8 @@ import './data-row.scss';
 
 export interface DataRow {
     className?: string;
-    style?: object;
+    style?: Partial<CSSStyleDeclaration> | Record<string, string | number>;
+    slim?: boolean;
     children?: ReactNode;
     elementType?: string | JSXElementConstructor<any>;
 }
@@ -14,6 +15,7 @@ export interface DataRow {
  * other children to the right.
  * @param className
  * @param style
+ * @param slim - remove margins from text children
  * @param children
  * @param elementType - react element type of the container, default: 'div'
  * @param props
@@ -23,6 +25,7 @@ const DataRow: FunctionComponent<DataRow> = (
     {
         className = '',
         style = {},
+        slim = false,
         children = null,
         elementType = 'div',
         ...props
@@ -34,14 +37,27 @@ const DataRow: FunctionComponent<DataRow> = (
             className={clsx(
                 'chayns__utils__container',
                 'chayns__utils__container--datarow',
+                {
+                    'chayns__utils__container--datarow--multiline': Array.isArray(children) && children.length > 2,
+                    'chayns__utils__container--datarow--slim': slim
+                },
                 className
             )}
             style={style}
             {...props}
         >
-            {Array.isArray(children) ? children[0] || null : children}
-            {Array.isArray(children)
-             && <div className="chayns__utils__container--datarow--right">{children.slice(1)}</div>}
+            {
+                Array.isArray(children) && children.length > 2
+                    ? (
+                        <>
+                            <div className="chayns__utils__container--datarow--first-row">
+                                {children[0]}
+                                {children[1]}
+                            </div>
+                            {children.slice(2) || null}
+                        </>
+                    ) : (children || null)
+            }
         </Component>
     );
 };

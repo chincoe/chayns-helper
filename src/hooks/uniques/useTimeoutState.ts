@@ -19,8 +19,9 @@ const useTimeoutState = <T>(
 
     useEffect(() => {
         if (typeof state === 'string' || typeof previousState === 'string'
-            ? `${state}` === `${previousState}`
-            : shallowEqual(state, previousState)) {
+            ? `${state}` !== `${previousState}`
+            : !shallowEqual(state, previousState)
+        ) {
             const t = setStateTimeout(() => {
                 setPreviousState(state);
                 onChange(state);

@@ -4,8 +4,9 @@ import './centered-container.scss';
 
 export interface CenteredContainer {
     className?: string;
-    style?: object;
+    style?: Partial<CSSStyleDeclaration> | Record<string, string | number>;
     gap?: boolean;
+    vertical?: boolean;
     elementType?: string | JSXElementConstructor<any>;
 }
 
@@ -15,6 +16,7 @@ export interface CenteredContainer {
  * @param style
  * @param children
  * @param gap - leave a gap between the children. Useful to display multiple buttons next to each other
+ * @param vertical - align children vertically instead of horizontally
  * @param elementType - react element type of the container, default: 'div'
  * @param props
  * @constructor
@@ -25,6 +27,7 @@ const CenteredContainer: FunctionComponent<CenteredContainer> = (
         style = {},
         children = null,
         gap = false,
+        vertical = false,
         elementType = 'div',
         ...props
     }
@@ -38,7 +41,8 @@ const CenteredContainer: FunctionComponent<CenteredContainer> = (
                 'chayns__utils__container--centered',
                 'chayns__utils__container--centered-container',
                 {
-                    'chayns__utils__container--centered-container--gap': gap
+                    'chayns__utils__container--centered-container--gap': gap,
+                    'chayns__utils__container--centered-container--vertical': vertical
                 },
                 className
             )}

@@ -167,6 +167,7 @@ interface TextStringReplacerConfig {
     stringName: string;
     fallback: string;
     onClick?: (...arg: any) => any;
+    className?: string;
 }
 
 const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
@@ -200,9 +201,17 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
         });
     }, [text, replacements, dangerouslySetInnerHTML, guid, maxReplacements]);
 
+    const elementProps = Array.isArray(textStringChildren)
+        ? props
+        : {
+            ...props,
+            className: `${props?.className ||
+                          ''} ${(textStringChildren as { props: { className: string } })?.props?.className || ''}`
+        }
+
     return textStringChildren && React.isValidElement(textStringChildren)
-        ? React.cloneElement(textStringChildren, props, content)
-        : <span>{content}</span>;
+        ? React.cloneElement(textStringChildren, elementProps, content)
+        : <p {...elementProps}>{content}</p>;
 };
 
 export default memo(TextStringComplex);

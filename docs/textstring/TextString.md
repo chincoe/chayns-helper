@@ -33,7 +33,7 @@ This component wraps the `TextString` chayns-component and adds prefix usage, js
 |useDangerouslySetInnerHTML| render HTML strings as HTML by converting it to react elements | boolean | `false` |
 |language| Set a textString language | string | `undefined` |
 |autoCreation| Automatically create the textString on render for authorized users if it does not exist yet | boolean | `process.env.NODE_ENV === 'production'`|
-|children| An empty, self-closing tag to define the node that the string will be rendered into | ReactElement | `<span/>` |
+|children| An empty, self-closing tag to define the node that the string will be rendered into | ReactElement | `<p/>` |
 
 ### Examples
 

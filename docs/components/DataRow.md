@@ -8,6 +8,7 @@ If more than 2 children are supplied, all children after the second will be rend
 |------|-------------|------|------------------|
 | children | The react nodes to be arranged as a data row | ReactNode | required |
 | elementType | The react element to use as container | string/JSXElementConstructor | `'div'` |
+| slim | Remove some padding from the data row to take up less vertical space | boolean | `false` |
 | ...props | All other props will be directly applied to the container element | | |
 
 ### Example
