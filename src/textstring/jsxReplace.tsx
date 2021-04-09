@@ -100,7 +100,7 @@ export default function jsxReplace(
                             // jsx replacement
                             splitString.substring(0, matchIndex),
                             useDangerouslySetInnerHTML
-                                ? `<span id="${guid}_${jsxReplacements.length - 1}"/>`
+                                ? `<span id="${guid}_${jsxReplacements.length - 1}"></span>`
                                 : React.cloneElement(ReplaceElement, { key: `${guid}:${i}.${j}` }),
                             splitString.substring(matchIndex + matchLength)
                         ] : [
