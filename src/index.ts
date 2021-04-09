@@ -89,3 +89,4 @@ export { default as time } from './constants/time';
 export { default as stringToRegex } from './utils/stringToRegex';
 export { default as colorLog, createColorLog } from './utils/colorLog';
 export { default as jsonLog } from './utils/jsonLog';
+export { default as isNullOrWhiteSpace } from './utils/isNullOrWhiteSpace';

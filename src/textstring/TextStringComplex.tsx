@@ -3,7 +3,7 @@ import React, { FunctionComponent, memo, ReactElement, ReactNode, useEffect, use
 import { TextString } from 'chayns-components';
 // @ts-expect-error
 import isTobitEmployee from 'chayns-components/dist/esm/utils/tobitEmployee.js';
-import generateUUID from '../functions/generateGuid';
+import generateGuid from '../functions/generateGuid';
 import jsxReplace, { JsxReplacements } from './jsxReplace';
 import TEXTSTRING_CONFIG from './textstringConfig';
 import isNullOrWhiteSpace from '../utils/isNullOrWhiteSpace';
@@ -187,7 +187,7 @@ const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
         : calculatedString;
 
     // generate a guid used for react keys
-    const guid = useMemo(() => generateUUID(), []);
+    const guid = useMemo(() => generateGuid(), []);
 
     // calculate the actual content with replacements. To display a mix of strings and react elements this function
     // creates an array of strings and react elements that is split further and further the more jsx replacements occur
