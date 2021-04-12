@@ -12,11 +12,19 @@ It is recommended that you apply the `.tapp` class to your root div to use this 
 |------|--------------|-----------|-------------|
 |initialValue | Whether fullscreen starts active or not | boolean | `true` |
 |config.forceExclusive| Force the tapp into exclusive mode | boolean |`false`|
-|config.tryFullBrowserWidth| Try full browser width when fullscreen is active. Only works for certain site layouts | boolean |`false`|
-|config.activeStyle| Inline styles to be applied to the tapp element when fullscreen is active. Must be removed manually by setting inactiveStyles | CSSStyleDeclaration |`{ height: "100vh", width: "100vw" }`|
-|config.inactiveStyle| Inline styles to be applied to the tapp element when fullscreen is inactive | CSSStyleDeclaration |`{ height: "", width: "" }`|
+|config.tryFullBrowserWidth| Try full browser width. Only works for certain site layouts and if `forceExclusive` is `true` | boolean |`false`|
 |config.disableBodyScrolling| Whether hook should automatically disable&enable scrolling in the chayns web body | boolean | `true` |
 |config.rootElement| A selector for your application's root element | string | `'.tapp'` |
+|config.style| Inline styles to be applied to the tapp element | CSSStyleDeclaration | `{}` |
+|config.active | These settings are applied when fullscreen is active. They override the base settings | FullscreenTappConfig | `undefined` |
+|config.active.forceExclusive| Force the tapp into exclusive mode | boolean |`false`|
+|config.active.tryFullBrowserWidth| Try full browser width. Only works for certain site layouts and if `forceExclusive` is `true` | boolean |`false`|
+|config.active.disableBodyScrolling| Whether hook should automatically disable&enable scrolling in the chayns web body | boolean | `true` |
+|config.active.style| Inline styles to be applied to the tapp element when fullscreen is active. Should be removed manually by setting inactiveStyles | CSSStyleDeclaration |`{ height: "100vh", width: "100vw" }`|
+|config.inactive.style| Inline styles to be applied to the tapp element when fullscreen is inactive. Removes all active styles by default | CSSStyleDeclaration |`{ height: "", width: "" }`|
+|config.inactive.forceExclusive| Force the tapp into exclusive mode | boolean |`false`|
+|config.inactive.tryFullBrowserWidth| Try full browser width. Only works for certain site layouts and if `forceExclusive` is `true` | boolean |`false`|
+|config.inactive.disableBodyScrolling| Whether hook should automatically disable&enable scrolling in the chayns web body | boolean | `true` |
 | **@returns** | `[windowData, isFullscreenActive, setIsFullscreenActive]` | [object, boolean, function(boolean)] | |
 
 #### Example
