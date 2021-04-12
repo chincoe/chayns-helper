@@ -111,7 +111,8 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
                                             textES: '',
                                             textPT: '',
                                             textTR: '',
-                                            toTranslate: ['en', 'nl', 'it', 'fr', 'pt', 'es', 'tr']
+                                            textPL: '',
+                                            toTranslate: ['en', 'nl', 'it', 'fr', 'pt', 'es', 'tr', 'pl']
                                         })
                                     }
                                 );
