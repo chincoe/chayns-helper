@@ -61,16 +61,16 @@
   "size-limit": [
     {
       "path": "dist/chayns-helper.cjs.production.min.js",
-      "limit": "65KB"
+      "limit": "68KB"
     },
     {
       "path": "dist/chayns-helper.esm.js",
-      "limit": "50KB"
+      "limit": "55KB"
     },
     {
       "path": "dist/chayns-helper.esm.js",
       "import": "{ statusAnimations }",
-      "limit": "25.60KB"
+      "limit": "27.30KB"
     }
   ],
   "prettier": {

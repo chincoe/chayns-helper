@@ -9,6 +9,7 @@ import it from 'date-fns/esm/locale/it';
 import nl from 'date-fns/esm/locale/nl';
 import pt from 'date-fns/esm/locale/pt';
 import tr from 'date-fns/esm/locale/tr';
+import pl from 'date-fns/esm/locale/pl';
 import time from '../../constants/time';
 
 declare type LangOptions = {
@@ -75,6 +76,13 @@ const languages: Record<string, LangOptions> = {
         today: 'Bugün',
         tomorrow: 'Yarın',
         at: 'saat'
+    },
+    pl: {
+        locale: pl,
+        yesterday: 'Wczoraj',
+        today: 'Dziś',
+        tomorrow: 'Jutro',
+        at: 'o'
     }
 }
 
@@ -89,7 +97,7 @@ const fnsFormat = (date: Date | string | number, formatString: string, options?:
     useToday?: boolean,
     appendYear?: boolean,
     locale?: Locale,
-    language?: string | 'de' | 'en' | 'nl' | 'it' | 'fr' | 'pt' | 'es' | 'tr'
+    language?: string | 'de' | 'en' | 'nl' | 'it' | 'fr' | 'pt' | 'es' | 'tr' | 'pl'
 }): string => {
     const {
         useToday,
@@ -126,7 +134,7 @@ const fnsFormat = (date: Date | string | number, formatString: string, options?:
     const formatStringRegex = /^[^a-zA-Z]*?(([a-zA-Z]+[^a-zA-Z]? *)*)[^a-zA-Z]*?$/;
     const tFormatString = formatStr
         .replace(/'.*?'/g, '')
-        .replace(/[EWGAaHhmsSZXxpbPBOtTKo]|(?:'.*?')/g, '')
+        .replace(/[EWGAaHhmsSZXxpbPBOtTKo]|'.*?'/g, '')
         .replace(formatStringRegex, '$1')
         .trim();
 
