@@ -83,6 +83,7 @@ const useFullscreenTapp = (
     initialValue: boolean = true,
     config?: {
         forceExclusive?: boolean;
+        tryFullBrowserWidth?: boolean;
         activeStyle?: Partial<CSSStyleDeclaration> & Record<string, string>;
         inactiveStyle?: Partial<CSSStyleDeclaration> & Record<string, string>;
         disableBodyScrolling?: boolean;
@@ -91,6 +92,7 @@ const useFullscreenTapp = (
 ): [WindowMetrics, boolean, React.Dispatch<SetStateAction<boolean>>] => {
     const {
         forceExclusive,
+        tryFullBrowserWidth,
         activeStyle,
         inactiveStyle,
         disableBodyScrolling: disableScrolling = true,
@@ -142,7 +144,7 @@ const useFullscreenTapp = (
         }
         chayns.hideTitleImage();
         hideCwFooter()
-        if (forceExclusive) setViewMode(isFullscreenActive ? true : !!defaultExclusive, false);
+        if (forceExclusive) setViewMode(isFullscreenActive ? true : !!defaultExclusive, isFullscreenActive ? tryFullBrowserWidth : false);
         let interval: number = <number><unknown>setTimeout(() => null, 0);
         clearInterval(resizeInterval);
         const tapp = <HTMLDivElement>document.querySelector(rootElement || '.tapp');
