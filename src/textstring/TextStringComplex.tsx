@@ -77,7 +77,7 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
                     if (!searchTextString(`${TEXTSTRING_CONFIG.prefix}${stringName}`, TextString.textStrings)) {
                         isTobitEmployee().then(async () => {
                             const libResponse = await fetch(
-                                `https://webapi.tobit.com/TextStringService/v1.0/V2/LangLibs/${TEXTSTRING_CONFIG.libName}`,
+                                `https://webapi.tobit.com/TextStringService/v1.0/langstrings/${TEXTSTRING_CONFIG.libName}?language=de`,
                                 {
                                     method: 'GET',
                                     cache: 'no-cache',
@@ -87,8 +87,11 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
                                 }
                             );
                             const libContent = await libResponse.json();
-                            if (libResponse.status === 200 && libContent && Array.isArray(libContent)
-                                && !libContent.find(s => s.stringName === `${TEXTSTRING_CONFIG.prefix}${stringName}`)) {
+                            if (libResponse.status === 200 && libContent &&
+                                Object.prototype.toString.call(libContent) === '[object Object]' &&
+                                Object.keys(libContent)
+                                    .find(name => name === `${TEXTSTRING_CONFIG.prefix}${stringName}`)
+                            ) {
                                 const response = await fetch(
                                     `https://webapi.tobit.com/TextStringService/v1.0/V2/LangStrings?libName=${TEXTSTRING_CONFIG.libName}`,
                                     {
