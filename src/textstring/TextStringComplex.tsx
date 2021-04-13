@@ -59,9 +59,9 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
     maxReplacements = 20,
     useDangerouslySetInnerHTML = false,
     language = undefined,
-    autoCreation = process.env.NODE_ENV === 'production',
     ...props
 }) => {
+    const autoCreation = props.autoCreation ?? TEXTSTRING_CONFIG.autoCreation;
     // create missing textStrings in QA/Production if opened by an authorized developer
     useEffect(() => {
         (async () => {

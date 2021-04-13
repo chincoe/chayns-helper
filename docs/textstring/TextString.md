@@ -9,6 +9,7 @@ this package with the required information on initialization:
 initTextStrings({
     prefix: 'txt_chayns_myapp_', // necessary to use all textString helpers
     libName: 'MyTextLib', // necessary for textString auto creation and to load the library automatically
+    autoCreation: process.env.NODE_ENV === 'production' // globally enable or disable automatically creating missing textstrings
 });
 ```
 This will automatically load your TextString library as well. If you wish to load multiple languages, pass an array of language strings as second parameter:
@@ -16,7 +17,8 @@ This will automatically load your TextString library as well. If you wish to loa
 // load multiple languages
 initTextStrings({
     prefix: 'txt_chayns_myapp_',
-    libName: 'MyTextLib', 
+    libName: 'MyTextLib',
+    autoCreation: process.env.NODE_ENV === 'production'
 }, ['de', 'en', 'nl', 'fr']);
 ```
 
