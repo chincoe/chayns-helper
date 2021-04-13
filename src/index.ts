@@ -14,7 +14,7 @@ export { default as RestrictedAccordion } from './components/restricted-accordio
 export { default as rerender } from './components/rerender/rerender';
 export { default as RechartsAxis } from './components/recharts-axis/RechartsAxis';
 // chaynsCall
-export { default as setViewMode } from './functions/chaynsCalls/setViewMode';
+export { default as setViewMode, ViewMode } from './functions/chaynsCalls/setViewMode';
 export { default as hideCwFooter } from './functions/chaynsCalls/hideCwFooter';
 export { default as enableBodyScroll } from './functions/chaynsCalls/enableBodyScroll';
 export {
