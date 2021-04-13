@@ -1,6 +1,6 @@
 import React, { SetStateAction, useEffect, useMemo, useReducer, useState } from 'react';
 import hideCwFooter from '../functions/chaynsCalls/hideCwFooter';
-import setViewMode from '../functions/chaynsCalls/setViewMode';
+import setViewMode, { ViewMode } from '../functions/chaynsCalls/setViewMode';
 import shallowEqual from '../functions/shallowEqual';
 import getHookState from '../functions/getHookState';
 import { isPagemakerIFrame } from '../functions/isPagemakerIFrame';
@@ -74,8 +74,7 @@ export interface WindowMetrics {
 }
 
 export interface FullscreenTappConfig {
-    forceExclusive?: boolean;
-    tryFullBrowserWidth?: boolean;
+    viewMode: ViewMode;
     disableBodyScrolling?: boolean;
     style: Partial<CSSStyleDeclaration> & Record<string, string>;
 }
@@ -102,10 +101,9 @@ const useFullscreenTapp = (
     } = config || {}
     const [isFullscreenActive, setIsFullscreenActive] = useState(initialValue ?? true);
     let {
-        forceExclusive,
-        tryFullBrowserWidth,
+        viewMode = ViewMode.Exclusive,
         disableBodyScrolling: disableScrolling = true,
-    } = (isFullscreenActive ? active : inactive) || config || {};
+    } = {...(config || {}), ...((isFullscreenActive ? active : inactive) || {})};
     const [windowData, setWindowData] = useReducer(windowDataReducer, undefined);
     const [resizeInterval, setResizeInterval] = useState(0);
     const [, setWindowWidth] = useState(0);
@@ -158,12 +156,7 @@ const useFullscreenTapp = (
         }
         chayns.hideTitleImage();
         hideCwFooter()
-        if (forceExclusive) {
-            setViewMode(
-                isFullscreenActive ? true : !!defaultExclusive,
-                isFullscreenActive ? tryFullBrowserWidth : false
-            );
-        }
+        if (viewMode) { setViewMode(viewMode); }
         let interval: number = <number><unknown>setTimeout(() => null, 0);
         clearInterval(resizeInterval);
         const tapp = <HTMLDivElement>document.querySelector(rootElement || '.tapp');
@@ -173,7 +166,7 @@ const useFullscreenTapp = (
                 getWindowData(0);
                 tapp.style.width = '100vw';
                 tapp.style.height = '100vh';
-                setStyles(tapp, active?.style || style || {})
+                setStyles(tapp, {...(style || {}), ...(active?.style || {})})
                 interval = <number><unknown>setInterval(() => {
                     getWindowData(0, false);
                 }, 2000);
