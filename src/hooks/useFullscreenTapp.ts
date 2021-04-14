@@ -74,9 +74,9 @@ export interface WindowMetrics {
 }
 
 export interface FullscreenTappConfig {
-    viewMode: ViewMode;
+    viewMode?: ViewMode;
     disableBodyScrolling?: boolean;
-    style: Partial<CSSStyleDeclaration> & Record<string, string>;
+    style?: Partial<CSSStyleDeclaration> & Record<string, string>;
 }
 
 /**
