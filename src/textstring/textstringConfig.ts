@@ -4,7 +4,8 @@ import colorLog from '../utils/colorLog';
 
 const TEXTSTRING_CONFIG = {
     prefix: '',
-    libName: ''
+    libName: '',
+    autoCreation: process.env.NODE_ENV === 'production'
 };
 
 export interface TextStringInit {
@@ -16,6 +17,10 @@ export interface TextStringInit {
      * LibName for the textstring helpers. Currently only required for the auto creation of text strings.
      */
     libName?: string;
+    /**
+     * Whether autoCreation is globally enabled or disabled
+     */
+    autoCreation?: boolean
 }
 
 /**
@@ -29,10 +34,12 @@ export const initTextStrings = async (
 ) => {
     const {
         prefix = '',
-        libName = ''
+        libName = '',
+        autoCreation = process.env.NODE_ENV === 'production'
     } = config || {};
     TEXTSTRING_CONFIG.prefix = prefix;
     TEXTSTRING_CONFIG.libName = libName;
+    TEXTSTRING_CONFIG.autoCreation = autoCreation;
     const defaultLang = chayns.env.parameters.translang
                         || chayns.env.site.translang
                         || chayns.env.language

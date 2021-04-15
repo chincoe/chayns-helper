@@ -1,6 +1,6 @@
-import React, { SetStateAction, useEffect, useMemo, useReducer, useState } from 'react';
+import React, { SetStateAction, useEffect, useReducer, useState } from 'react';
 import hideCwFooter from '../functions/chaynsCalls/hideCwFooter';
-import setViewMode from '../functions/chaynsCalls/setViewMode';
+import setViewMode, { ViewMode } from '../functions/chaynsCalls/setViewMode';
 import shallowEqual from '../functions/shallowEqual';
 import getHookState from '../functions/getHookState';
 import { isPagemakerIFrame } from '../functions/isPagemakerIFrame';
@@ -73,6 +73,12 @@ export interface WindowMetrics {
     height: number
 }
 
+export interface FullscreenTappConfig {
+    viewMode?: ViewMode;
+    disableBodyScrolling?: boolean;
+    style?: Partial<CSSStyleDeclaration> & Record<string, string>;
+}
+
 /**
  * Hook to maintain a fullscreen tapp without scrolling, title image and footer. Does not work in pagemaker iframes
  * @param initialValue - fullscreen initially active or not, default: true
@@ -81,27 +87,34 @@ export interface WindowMetrics {
  */
 const useFullscreenTapp = (
     initialValue: boolean = true,
-    config?: {
-        forceExclusive?: boolean;
-        activeStyle?: Partial<CSSStyleDeclaration> & Record<string, string>;
-        inactiveStyle?: Partial<CSSStyleDeclaration> & Record<string, string>;
-        disableBodyScrolling?: boolean;
+    config?: FullscreenTappConfig & {
         rootElement?: string | '.tapp';
+        active?: FullscreenTappConfig,
+        inactive?: FullscreenTappConfig
     }
 ): [WindowMetrics, boolean, React.Dispatch<SetStateAction<boolean>>] => {
     const {
-        forceExclusive,
-        activeStyle,
-        inactiveStyle,
-        disableBodyScrolling: disableScrolling = true,
+        active,
+        inactive,
+        style,
         rootElement = '.tapp'
     } = config || {}
     const [isFullscreenActive, setIsFullscreenActive] = useState(initialValue ?? true);
+    let {
+        viewMode = ViewMode.Exclusive,
+        disableBodyScrolling: disableScrolling = true,
+    } = {...(config || {}), ...((isFullscreenActive ? active : inactive) || {})};
     const [windowData, setWindowData] = useReducer(windowDataReducer, undefined);
     const [resizeInterval, setResizeInterval] = useState(0);
     const [, setWindowWidth] = useState(0);
     const [, setWindowHeight] = useState(0);
-    const defaultExclusive = useMemo(() => chayns.env.site.tapp.isExclusiveView, []);
+
+    const getInactiveStyle = (activeStyle: Partial<CSSStyleDeclaration> & Record<string, string> = {}) => {
+        return inactive?.style
+               || (activeStyle
+                ? Object.keys(activeStyle || {}).reduce((total, current) => ({ ...total, [current]: '' }), {})
+                : {})
+    }
 
     const getWindowData = (_height: any, force = true) => {
         if (force) chayns.scrollToY(-1000);
@@ -142,7 +155,7 @@ const useFullscreenTapp = (
         }
         chayns.hideTitleImage();
         hideCwFooter()
-        if (forceExclusive) setViewMode(isFullscreenActive ? true : !!defaultExclusive, false);
+        if (viewMode || viewMode === ViewMode.Regular) { setViewMode(viewMode); }
         let interval: number = <number><unknown>setTimeout(() => null, 0);
         clearInterval(resizeInterval);
         const tapp = <HTMLDivElement>document.querySelector(rootElement || '.tapp');
@@ -152,7 +165,7 @@ const useFullscreenTapp = (
                 getWindowData(0);
                 tapp.style.width = '100vw';
                 tapp.style.height = '100vh';
-                setStyles(tapp, activeStyle || {})
+                setStyles(tapp, {...(style || {}), ...(active?.style || {})})
                 interval = <number><unknown>setInterval(() => {
                     getWindowData(0, false);
                 }, 2000);
@@ -164,7 +177,7 @@ const useFullscreenTapp = (
                 chayns.removeWindowMetricsListener(getWindowData);
                 tapp.style.width = "";
                 tapp.style.height = "";
-                setStyles(tapp, inactiveStyle || {})
+                setStyles(tapp, getInactiveStyle(active?.style))
                 chayns.setHeight({
                     height: window.innerHeight,
                     force: false,
@@ -176,7 +189,7 @@ const useFullscreenTapp = (
                 chayns.removeWindowMetricsListener(getWindowData);
                 tapp.style.width = "";
                 tapp.style.height = "";
-                setStyles(tapp, inactiveStyle || {})
+                setStyles(tapp, getInactiveStyle({ ...(active?.style || {}), ...(style || {}) }))
                 chayns.setHeight({
                     height: window.innerHeight,
                     force: false,

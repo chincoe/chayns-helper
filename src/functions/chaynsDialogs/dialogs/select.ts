@@ -6,22 +6,22 @@ export enum selectType {
     ICON = 1
 }
 
-export interface SelectDialogListItem {
+export interface SelectDialogListItem<T extends string | number | Record<string, any> | boolean> {
     name: string;
-    value: string | number | object;
+    value: T;
     backgroundColor?: string;
     className?: string;
     url?: string;
     isSelected?: boolean;
 }
 
-export interface SelectDialogResult {
+export interface SelectDialogResult<T extends string | number | Record<string, any> | boolean> {
     name: string;
-    value: string | number | object;
+    value: T;
 }
 
-export interface SelectDialogConfig {
-    list: SelectDialogListItem[];
+export interface SelectDialogConfig<T extends string | number | Record<string, any> | boolean> {
+    list: SelectDialogListItem<T>[];
     message?: string;
     title?: string;
     multiselect?: boolean;
@@ -36,11 +36,11 @@ export interface SelectDialogConfig {
  * @param options
  * @param buttons
  */
-export default function select(
-    options: SelectDialogConfig,
+export default function select<T extends string | number | Record<string, any> | boolean>(
+    options: SelectDialogConfig<T>,
     buttons?: DialogButton[]
-): DialogPromise<SelectDialogResult | SelectDialogResult[]> {
-    return new DialogPromise<SelectDialogResult | SelectDialogResult[]>((resolve) => {
+): DialogPromise<SelectDialogResult<T> | SelectDialogResult<T>[]> {
+    return new DialogPromise<SelectDialogResult<T> | SelectDialogResult<T>[]>((resolve) => {
         const {
             message = '',
             title = '',

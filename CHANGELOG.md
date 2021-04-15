@@ -1,3 +1,35 @@
+<a name="2.16.0"></a>
+
+## [2.16.0](https://github.com/chincoe/chayns-helper/compare/v2.15.0...v2.16.0) (2021-04-15)
+
+### Changes
+
+* TextString
+  * Added Polish language support for auto creation
+  * Now uses a different endpoint to check for text strings that has reduced overhead  
+  * initTextStrings
+    * Now accepts a parameter `autoCreation` that can toggle autoCreation globally. This allows for enabling autoCreation for QA only or for specific cases in Development
+
+* fnsFormat
+  * Added Polish language support
+  
+* setViewMode
+  * Added overload using an enum instead of 2 boolean parameters
+  
+* useFullscreenTapp
+  * **[possibly breaking]** Removed parameters `activeStyle`, `inactiveStyle`, `forceExclusive`
+  * Added parameters `style` and `viewMode`
+  * Added the feature to supply a complete config object for `active` and `inactive` including `style` and `viewMode`
+  * The inactive style to remove active styles is now calculated automatically
+  
+### Bug fixes
+
+* TextString
+  * **[critical]** Removed useless recursive text string search that created an infinite loop to check auto creation (since 2.13.4)
+
+* setViewMode
+  * Added null value handling for `chayns.env.site.disposition`
+
 <a name="2.15.0"></a>
 
 ## [2.15.0](https://github.com/chincoe/chayns-helper/compare/v2.14.1...v2.15.0) (2021-04-09)
