@@ -1,4 +1,4 @@
-import React, { SetStateAction, useEffect, useMemo, useReducer, useState } from 'react';
+import React, { SetStateAction, useEffect, useReducer, useState } from 'react';
 import hideCwFooter from '../functions/chaynsCalls/hideCwFooter';
 import setViewMode, { ViewMode } from '../functions/chaynsCalls/setViewMode';
 import shallowEqual from '../functions/shallowEqual';
@@ -108,7 +108,6 @@ const useFullscreenTapp = (
     const [resizeInterval, setResizeInterval] = useState(0);
     const [, setWindowWidth] = useState(0);
     const [, setWindowHeight] = useState(0);
-    const defaultExclusive = useMemo(() => chayns.env.site.tapp.isExclusiveView, []);
 
     const getInactiveStyle = (activeStyle: Partial<CSSStyleDeclaration> & Record<string, string> = {}) => {
         return inactive?.style
@@ -156,7 +155,7 @@ const useFullscreenTapp = (
         }
         chayns.hideTitleImage();
         hideCwFooter()
-        if (viewMode) { setViewMode(viewMode); }
+        if (viewMode || viewMode === ViewMode.Regular) { setViewMode(viewMode); }
         let interval: number = <number><unknown>setTimeout(() => null, 0);
         clearInterval(resizeInterval);
         const tapp = <HTMLDivElement>document.querySelector(rootElement || '.tapp');
