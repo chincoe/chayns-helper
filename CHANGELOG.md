@@ -1,6 +1,6 @@
 <a name="2.16.0"></a>
 
-## [2.16.0](https://gitlab.tobit.com/JuniorTeam/helper/chayns-helper/compare/release%2F2.15.0...release%2Fv2.16.0) (2021-04-15)
+## [2.16.0](https://github.com/chincoe/chayns-helper/compare/v2.15.0...v2.16.0) (2021-04-15)
 
 ### Changes
 
@@ -32,7 +32,7 @@
 
 <a name="2.15.0"></a>
 
-## [2.15.0](https://gitlab.tobit.com/JuniorTeam/helper/chayns-helper/compare/release%2Fv2.14.1...release%2Fv2.15.0) (2021-04-09)
+## [2.15.0](https://github.com/chincoe/chayns-helper/compare/v2.14.1...v2.15.0) (2021-04-09)
 
 ### Changes
 
@@ -59,7 +59,7 @@
 
 <a name="2.14.1"></a>
 
-## [2.14.1](https://gitlab.tobit.com/JuniorTeam/helper/chayns-helper/compare/release%2Fv2.14.0...release%2Fv2.14.1) (2021-04-07)
+## [2.14.1](https://github.com/chincoe/chayns-helper/compare/v2.14.0...v2.14.1) (2021-04-07)
 
 ### Changes
 
@@ -77,7 +77,7 @@
 
 <a name="2.14.0"></a>
 
-## [2.14.0](https://gitlab.tobit.com/JuniorTeam/helper/chayns-helper/compare/release%2Fv2.13.9...release%2Fv2.14.0) (2021-03-16)
+## [2.14.0](https://github.com/chincoe/chayns-helper/compare/v2.13.9...v2.14.0) (2021-03-16)
 
 ### Changes
 
@@ -104,7 +104,7 @@
 
 <a name="2.13.9"></a>
 
-## [2.13.9](https://gitlab.tobit.com/JuniorTeam/helper/chayns-helper/compare/release%2Fv2.13.8...release%2Fv2.13.9) (2021-03-12)
+## [2.13.9](https://github.com/chincoe/chayns-helper/compare/v2.13.8...v2.13.9) (2021-03-12)
 
 ### Changes
 
@@ -119,7 +119,7 @@
 
 <a name="2.13.8"></a>
 
-## [2.13.8](https://gitlab.tobit.com/JuniorTeam/helper/chayns-helper/compare/release%2Fv2.13.7...release%2Fv2.13.8) (2021-03-08)
+## [2.13.8](https://github.com/chincoe/chayns-helper/compare/v2.13.7...v2.13.8) (2021-03-08)
 
 ### Changes
 
@@ -128,7 +128,7 @@
 
 <a name="2.13.7"></a>
 
-## [2.13.7](https://gitlab.tobit.com/JuniorTeam/helper/chayns-helper/compare/release%2Fv2.13.6...release%2Fv2.13.7) (2021-03-08)
+## [2.13.7](https://github.com/chincoe/chayns-helper/compare/v2.13.6...v2.13.7) (2021-03-08)
 
 ### Bug fixes
 
@@ -137,7 +137,7 @@
 
 <a name="2.13.6"></a>
 
-## [2.13.6](https://gitlab.tobit.com/JuniorTeam/helper/chayns-helper/compare/release%2Fv2.13.5...release%2Fv2.13.6) (2021-03-05)
+## [2.13.6](https://github.com/chincoe/chayns-helper/compare/v2.13.5...v2.13.6) (2021-03-05)
 
 ### Changes
 
@@ -152,7 +152,7 @@
 
 <a name="2.13.5"></a>
 
-## [2.13.5](https://gitlab.tobit.com/JuniorTeam/helper/chayns-helper/compare/release%2Fv2.13.4...release%2Fv2.13.5) (2021-03-04)
+## [2.13.5](https://github.com/chincoe/chayns-helper/compare/v2.13.4...v2.13.5) (2021-03-04)
 
 ### Bug fixes
 
