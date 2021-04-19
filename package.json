@@ -135,7 +135,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chincoe/chayns-helper.git"
+    "url": "git+https://gitlab.tobit.com/JuniorTeam/helper/chayns-helper.git"
   },
   "keywords": [
     "chayns",
@@ -143,7 +143,7 @@
     "hooks"
   ],
   "bugs": {
-    "url": "https://github.com/chincoe/chayns-helper/issues"
+    "url": "https://gitlab.tobit.com/JuniorTeam/helper/chayns-helper/issues"
   },
-  "homepage": "https://github.com/chincoe/chayns-helper#readme"
+  "homepage": "https://gitlab.tobit.com/JuniorTeam/helper/chayns-helper#readme"
 }
