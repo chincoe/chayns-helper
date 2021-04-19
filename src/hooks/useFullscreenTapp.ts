@@ -102,8 +102,8 @@ const useFullscreenTapp = (
     const [isFullscreenActive, setIsFullscreenActive] = useState(initialValue ?? true);
     let {
         viewMode = ViewMode.Exclusive,
-        disableBodyScrolling: disableScrolling = true,
-    } = {...(config || {}), ...((isFullscreenActive ? active : inactive) || {})};
+        disableBodyScrolling: disableScrolling,
+    } = { ...(config || {}), ...((isFullscreenActive ? active : inactive) || {}) };
     const [windowData, setWindowData] = useReducer(windowDataReducer, undefined);
     const [resizeInterval, setResizeInterval] = useState(0);
     const [, setWindowWidth] = useState(0);

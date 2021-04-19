@@ -12,7 +12,7 @@ It is recommended that you apply the `.tapp` class to your root div to use this 
 |------|--------------|-----------|-------------|
 |initialValue | Whether fullscreen starts active or not | boolean | `true` |
 |config.viewMode| The viewMode the tapp should have | [ViewMode](docs/functions/chaynsCalls/setViewMode.md#ViewMode) |`ViewMode.Exclusive`|
-|config.disableBodyScrolling| Whether hook should automatically disable&enable scrolling in the chayns web body | boolean | `true` |
+|config.disableBodyScrolling| Whether hook should automatically disable&enable scrolling in the chayns web body | boolean | `false` |
 |config.rootElement| A selector for your application's root element | string | `'.tapp'` |
 |config.style| Inline styles to be applied to the tapp element | CSSStyleDeclaration | `{}` |
 |config.active | These settings are applied when fullscreen is active. They override the base settings | FullscreenTappConfig | `{}` |
