@@ -1,3 +1,13 @@
+<a name="2.16.1"></a>
+
+## [2.16.1](https://github.com/chincoe/chayns-helper/compare/v2.16.0...v2.16.1) (2021-04-19)
+
+### Bug fixes
+
+* useFullscreenTapp
+  * Settings like viewMode had their dependencies fixed to be immediately updated when changed
+
+
 <a name="2.16.0"></a>
 
 ## [2.16.0](https://github.com/chincoe/chayns-helper/compare/v2.15.0...v2.16.0) (2021-04-15)
