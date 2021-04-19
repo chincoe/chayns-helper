@@ -146,6 +146,10 @@ const useFullscreenTapp = (
     };
 
     useEffect(() => {
+        if (viewMode || viewMode === ViewMode.Regular) { setViewMode(viewMode); }
+    }, [viewMode]);
+
+    useEffect(() => {
         if (isPagemakerIFrame()) {
             console.warn(
                 ...colorLog.gray('[useFullscreenTapp]'),
@@ -155,7 +159,6 @@ const useFullscreenTapp = (
         }
         chayns.hideTitleImage();
         hideCwFooter()
-        if (viewMode || viewMode === ViewMode.Regular) { setViewMode(viewMode); }
         let interval: number = <number><unknown>setTimeout(() => null, 0);
         clearInterval(resizeInterval);
         const tapp = <HTMLDivElement>document.querySelector(rootElement || '.tapp');
