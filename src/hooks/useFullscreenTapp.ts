@@ -102,8 +102,8 @@ const useFullscreenTapp = (
     const [isFullscreenActive, setIsFullscreenActive] = useState(initialValue ?? true);
     let {
         viewMode = ViewMode.Exclusive,
-        disableBodyScrolling: disableScrolling = true,
-    } = {...(config || {}), ...((isFullscreenActive ? active : inactive) || {})};
+        disableBodyScrolling: disableScrolling,
+    } = { ...(config || {}), ...((isFullscreenActive ? active : inactive) || {}) };
     const [windowData, setWindowData] = useReducer(windowDataReducer, undefined);
     const [resizeInterval, setResizeInterval] = useState(0);
     const [, setWindowWidth] = useState(0);
@@ -147,60 +147,88 @@ const useFullscreenTapp = (
 
     useEffect(() => {
         if (isPagemakerIFrame()) {
-            console.warn(
-                ...colorLog.gray('[useFullscreenTapp]'),
-                'Pagemaker iFrames cannot be fullscreen tapps'
-            )
-            return () => {};
+            console.warn(...colorLog.gray('[useFullscreenTapp]'), 'Pagemaker iFrames cannot be fullscreen tapps');
         }
         chayns.hideTitleImage();
         hideCwFooter()
+    }, [])
+
+    // viewMode settings
+    useEffect(() => {
+        if (isPagemakerIFrame()) return;
         if (viewMode || viewMode === ViewMode.Regular) { setViewMode(viewMode); }
-        let interval: number = <number><unknown>setTimeout(() => null, 0);
-        clearInterval(resizeInterval);
-        const tapp = <HTMLDivElement>document.querySelector(rootElement || '.tapp');
-        if (tapp) {
+    }, [viewMode, isFullscreenActive]);
+
+    // style settings
+    useEffect(() => {
+        if (isPagemakerIFrame()) return;
+        const tapp = <HTMLDivElement>(document.querySelector(rootElement || '.tapp') ||
+                                      document.querySelector('body')?.firstChild)
+        if (!tapp) {
+            console.error(...colorLog.gray('[useFullscreenTapp]'), `Cannot find element for selector '${rootElement}'`)
+            return;
+        }
+        if (isFullscreenActive) {
+            tapp.style.width = '100vw';
+            tapp.style.height = '100vh';
+            setStyles(tapp, { ...(style || {}), ...(active?.style || {}) })
+        } else {
+            tapp.style.width = "";
+            tapp.style.height = "";
+            setStyles(tapp, getInactiveStyle(active?.style))
+        }
+        return () => {
+            tapp.style.width = "";
+            tapp.style.height = "";
+            setStyles(tapp, getInactiveStyle({ ...(active?.style || {}), ...(style || {}) }))
+        }
+    }, [style, inactive, active, isFullscreenActive])
+
+    // disable body scroll
+    useEffect(() => {
+        if (isPagemakerIFrame()) return;
+        if (disableScrolling) {
             if (isFullscreenActive) {
-                chayns.scrollToY(-1000);
-                getWindowData(0);
-                tapp.style.width = '100vw';
-                tapp.style.height = '100vh';
-                setStyles(tapp, {...(style || {}), ...(active?.style || {})})
-                interval = <number><unknown>setInterval(() => {
-                    getWindowData(0, false);
-                }, 2000);
-                if (chayns.env.isMobile) chayns.addOnActivateListener(() => getWindowData(0, false));
-                setResizeInterval(interval);
-                chayns.addWindowMetricsListener(getWindowData);
-                if (disableScrolling) enableBodyScroll(false);
+                enableBodyScroll(false);
             } else {
-                chayns.removeWindowMetricsListener(getWindowData);
-                tapp.style.width = "";
-                tapp.style.height = "";
-                setStyles(tapp, getInactiveStyle(active?.style))
-                chayns.setHeight({
-                    height: window.innerHeight,
-                    force: false,
-                });
                 if (disableScrolling) enableBodyScroll(true);
             }
-            return () => {
-                clearInterval(interval);
-                chayns.removeWindowMetricsListener(getWindowData);
-                tapp.style.width = "";
-                tapp.style.height = "";
-                setStyles(tapp, getInactiveStyle({ ...(active?.style || {}), ...(style || {}) }))
-                chayns.setHeight({
-                    height: window.innerHeight,
-                    force: false,
-                });
-                if (disableScrolling) enableBodyScroll(true);
-            };
-        } else {
-            console.error(...colorLog.gray('[useFullscreenTapp]'), `Cannot find element for selector '${rootElement}'`)
-            return () => null;
+            return () => { enableBodyScroll(true); }
+        } else if (disableScrolling as boolean | undefined === false) {
+            enableBodyScroll(true);
         }
+        return;
+    }, [isFullscreenActive, disableScrolling])
 
+    // core workflow
+    useEffect(() => {
+        if (isPagemakerIFrame()) return;
+        let interval: number = <number><unknown>setTimeout(() => null, 0);
+        clearInterval(resizeInterval);
+        if (isFullscreenActive) {
+            interval = <number><unknown>setInterval(() => {
+                getWindowData(0, false);
+            }, 2000);
+            setResizeInterval(interval);
+            chayns.scrollToY(-1000);
+            getWindowData(0);
+            if (chayns.env.isMobile) chayns.addOnActivateListener(() => getWindowData(0, false));
+            chayns.addWindowMetricsListener(getWindowData);
+        } else {
+            chayns.removeWindowMetricsListener(getWindowData);
+            chayns.setHeight({
+                height: window.innerHeight,
+                force: false,
+            });
+        }
+        return () => {
+            clearInterval(interval);
+            chayns.removeWindowMetricsListener(getWindowData);
+            chayns.setHeight({
+                height: window.innerHeight,
+                force: false,
+            });
+        };
     }, [isFullscreenActive]);
 
     return [windowData, isFullscreenActive, setIsFullscreenActive];
