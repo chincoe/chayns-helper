@@ -119,6 +119,9 @@ const fnsFormat = (date: Date | string | number, formatString: string, options?:
             formatStr = formatStr.replace(/ ?(y+)\?/i, '');
         }
     }
+    if (language === 'de') {
+        formatStr = formatStr.replace(/^([^']*(?:[^']*'[^']*'[^']*)*)p/g, '$1HH:mm \'Uhr\'')
+    }
 
     let dateString = format(d, formatStr, { locale });
 
