@@ -38,7 +38,7 @@ if (process.argv[2] === '-preversion') {
             const currentRegex = /^\*\s*(.*?)$/;
             const mainRegex = /^(?:\*\s*)?(master|main)$/;
 
-            const result = await exec(`git branch`)
+            const result = await exec(`git branch`);
             releaseData.mainBranchName = result.stdout
                 .split('\n')
                 .map((b) => b.trim())
