@@ -1,6 +1,6 @@
 {
   "name": "chayns-helper",
-  "version": "2.16.1",
+  "version": "2.16.2-beta.2",
   "author": {
     "name": "Christian Nagel",
     "email": "christian.nagel@tobit.com"
@@ -23,17 +23,15 @@
     "test:coverage": "tsdx test --coverage",
     "build": "tsdx build",
     "install:all": "npm install --ignore-scripts && npm install chayns-logger -reg http://repo.tobit.ag:8081/repository/npm/ --no-save",
-    "pub:beta": "npm version prerelease --preid=beta --no-git-tag-version && npm publish && node scripts.js -d \"%name%@%version% is unstable, please install a stable version\"",
-    "pub:patch": "npm version patch --no-git-tag-version && npm publish",
-    "pub:minor": "npm version minor --no-git-tag-version && npm publish",
-    "pub:major": "npm version major --no-git-tag-version && npm publish",
-    "git:postpublish": "node scripts.js -pushtags",
+    "pub:beta": "npm version prerelease --preid=beta --no-git-tag-version && node scripts.js -publish",
+    "pub:patch": "npm version patch --no-git-tag-version && node scripts.js -publish -release",
+    "pub:minor": "npm version minor --no-git-tag-version && node scripts.js -publish -release",
+    "pub:major": "npm version major --no-git-tag-version && node scripts.js -publish -release",
     "lint": "tsdx lint src",
     "size": "npm run build && size-limit",
     "size:analyze": "size-limit --why",
     "prepare": "npm run build",
-    "preversion": "npm run install:all && npm run test:coverage && npm run size",
-    "postpublish": "node scripts.js -commit"
+    "preversion": "node scripts.js -preversion && npm run build && npm run test:coverage && npm run size"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -70,7 +68,7 @@
     {
       "path": "dist/chayns-helper.esm.js",
       "import": "{ statusAnimations }",
-      "limit": "27.35KB"
+      "limit": "28.05KB"
     }
   ],
   "prettier": {
@@ -110,7 +108,6 @@
     "eslint-plugin-react-hooks": "^4.0.4",
     "identity-obj-proxy": "^3.0.0",
     "jest-fetch-mock": "^3.0.3",
-    "jsdoc": "^3.6.6",
     "node-sass": "^4.11.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
