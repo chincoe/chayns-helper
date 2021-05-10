@@ -1,0 +1,78 @@
+default:
+  image: node:latest
+  before_script:
+    - npm run install:all
+    - |
+      {
+        echo "@${CI_PROJECT_ROOT_NAMESPACE}:registry=${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/npm/"
+        echo "${CI_API_V4_URL#https?}/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=\${CI_JOB_TOKEN}"
+      } | tee --append .npmrc
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .npm/
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH
+
+variables:
+  NPM_TOKEN: ${CI_JOB_TOKEN}
+
+stages:
+  - release
+
+publish:
+  stage: release
+  script:
+    - npm publish
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+#install:
+#  stage: build
+#  script:
+#    - npm run install:all
+#
+#build:
+#  stage: build
+#  needs: [install]
+#  trigger:
+#    project: JuniorTeam/Helper/chayns-helper
+#    branch: master
+#  script:
+#    - npm run build
+#
+#test-size:
+#  stage: test
+#  needs: [build]
+#  trigger:
+#    project: JuniorTeam/Helper/chayns-helper
+#    branch: master
+#  script:
+#    - npm run size
+#
+#test-jest:
+#  stage: test
+#  needs: [build]
+#  rules:
+#    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+#  script:
+#    - npm run test
+#
+#publish:
+#  stage: deploy
+#  needs: [build, test-size, test-jest]
+#  rules:
+#    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+#  script:
+#    - npm run publish
+#
+#postpublish:
+#  stage: deploy
+#  needs: [publish]
+#  rules:
+#    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+#  script:
+#    -
+
