@@ -54,7 +54,7 @@ if (process.argv[2] === '-preversion') {
                 .replace(currentRegex, "$1")
                 .trim();
             await exec(`git checkout ${releaseData.mainBranchName}`);
-            await exec(`git merge ${releaseData.currentBranchName}`);
+            await exec(`git merge ${releaseData.currentBranchName} --no-ff`);
             await exec(`git push`).catch(async (err) => {
                 await exec(err.stderr.match(/git push --set-upstream origin [^\\]+/)[0]);
             });
@@ -64,13 +64,13 @@ if (process.argv[2] === '-preversion') {
         if (process.argv[3] === '-release') {
             if (/^(?:release|qa|staging)\/.*$/.test(releaseData.currentBranchName)) {
                 await exec(`git checkout develop`);
-                await exec(`git merge ${releaseData.currentBranchName}`);
+                await exec(`git merge ${releaseData.currentBranchName} --no-ff`);
                 await exec(`git push`).catch(async (err) => {
                     await exec(err.stderr.match(/git push --set-upstream origin [^\\]+/)[0]);
                 });
                 if (/^release\/.*$/.test(releaseData.currentBranchName)) {
                     await exec(`git push origin --delete ${releaseData.currentBranchName}`);
-                    // await exec(`git branch -d ${releaseData.currentBranchName}`);
+                    await exec(`git branch -d ${releaseData.currentBranchName}`);
                 }
             } else {
                 await exec(`git checkout ${releaseData.currentBranchName}`);
