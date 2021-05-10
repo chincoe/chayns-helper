@@ -23,43 +23,45 @@ if (process.argv[2] === '-preversion') {
     if (/^[\d]+\.0\.0$/.test(version)) commitString = 'Major release';
     if (/-/.test(version)) commitString = 'Prerelease version';
 
-    await exec(`git add .`);
-    await exec(`git commit -m ":bookmark: ${commitString} v${version}"`);
-    await exec(`git push`).catch(async (err) => {
-        await exec(err.stderr.match(/git push --set-upstream origin [^\\]+/)[0]);
+    new Promise(async (resolve) => {
+        await exec(`git add .`);
+        await exec(`git commit -m ":bookmark: ${commitString} v${version}"`);
+        await exec(`git push`).catch(async (err) => {
+            await exec(err.stderr.match(/git push --set-upstream origin [^\\]+/)[0]);
+        });
+
+        const releaseData = {
+            currentBranchName: '',
+            mainBranchName: ''
+        }
+        if (process.argv[3] === '-release') {
+            const currentRegex = /^?:\*\s*(.*?)$/;
+            const mainRegex = /^(?:\*\s*)?(master|main)$/;
+
+            const result = await exec(`git branch`)
+            releaseData.mainBranchName = result.stdout
+                .split('\n')
+                .map((b) => b.trim())
+                .find((b) => mainRegex.test(b))
+                .replace(mainRegex, "$1");
+            releaseData.currentBranchName = result.stdout
+                .split('\n')
+                .map((b) => b.trim())
+                .find((b) => currentRegex.test(b))
+                .replace(currentRegex, "$1");
+            await exec(`git checkout ${releaseData.mainBranchName}`);
+            await exec(`git merge ${releaseData.currentBranchName}`);
+            // await exec(`git push`).catch(async (err) => {
+            //     await exec(err.stderr.match(/git push --set-upstream origin [^\\]+/)[0]);
+            // });
+        }
+        await exec(`git tag -a v${version} -m "v${version}"`);
+        // await exec(`git push --tags`);
+        if (process.argv[3] === '-release') {
+            await exec(`git checkout ${releaseData.currentBranchName}`);
+        }
+        resolve();
+    }).then(() => {
+        console.log(`${commitString} v${version}`);
     });
-    console.log(`${commitString} v${version}`)
-
-    const releaseData = {
-        currentBranchName: '',
-        mainBranchName: ''
-    }
-    if (process.argv[3] === '-release') {
-        const currentRegex = /^?:\*\s*(.*?)$/;
-        const mainRegex = /^(?:\*\s*)?(master|main)$/;
-
-        const result = await exec(`git branch`)
-        releaseData.mainBranchName = result.stdout
-            .split('\n')
-            .map((b) => b.trim())
-            .find((b) => mainRegex.test(b))
-            .replace(mainRegex, "$1");
-        releaseData.currentBranchName = result.stdout
-            .split('\n')
-            .map((b) => b.trim())
-            .find((b) => currentRegex.test(b))
-            .replace(currentRegex, "$1");
-        await exec(`git checkout ${releaseData.mainBranchName}`);
-        await exec(`git merge ${releaseData.currentBranchName}`);
-        // await exec(`git push`).catch(async (err) => {
-        //     await exec(err.stderr.match(/git push --set-upstream origin [^\\]+/)[0]);
-        // });
-    }
-    await exec(`git tag -a v${version} -m "v${version}"`);
-    // await exec(`git push --tags`);
-    if (process.argv[3] === '-release') {
-        await exec(`git checkout ${releaseData.currentBranchName}`);
-        console.log(`Released v${version}`);
-    }
-
 }
