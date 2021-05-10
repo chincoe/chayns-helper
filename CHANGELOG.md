@@ -1,6 +1,6 @@
-<a name="2.16.4"></a>
+<a name="2.16.7"></a>
 
-## [2.16.4](https://github.com/chincoe/chayns-helper/compare/v2.16.1...v2.16.4) (2021-05-10)
+## [2.16.7](https://github.com/chincoe/chayns-helper/compare/v2.16.1...v2.16.7) (2021-05-10)
 
 ### Changes
 
