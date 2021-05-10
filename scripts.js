@@ -51,12 +51,12 @@ if (process.argv[2] === '-preversion') {
                 .replace(currentRegex, "$1");
             await exec(`git checkout ${releaseData.mainBranchName}`);
             await exec(`git merge ${releaseData.currentBranchName}`);
-            // await exec(`git push`).catch(async (err) => {
-            //     await exec(err.stderr.match(/git push --set-upstream origin [^\\]+/)[0]);
-            // });
+            await exec(`git push`).catch(async (err) => {
+                await exec(err.stderr.match(/git push --set-upstream origin [^\\]+/)[0]);
+            });
         }
         await exec(`git tag -a v${version} -m "v${version}"`);
-        // await exec(`git push --tags`);
+        await exec(`git push --tags`);
         if (process.argv[3] === '-release') {
             await exec(`git checkout ${releaseData.currentBranchName}`);
         }
