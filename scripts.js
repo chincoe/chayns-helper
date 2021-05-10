@@ -14,6 +14,8 @@ if (process.argv[2] === '-preversion') {
             })()
         }).then(() => {
             console.log(`Deprecated ${name}@${version}: "${deprecationMessage}"`)
+        }).catch(ex => {
+            console.error(ex);
         })
     }
 } else if (process.argv[2] === '-publish') {
@@ -76,5 +78,5 @@ if (process.argv[2] === '-preversion') {
         resolve();
     }).then(() => {
         console.log(`Published ${commitString} v${version}`);
-    });
+    }).catch(console.error);
 }
