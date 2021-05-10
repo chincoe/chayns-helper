@@ -35,7 +35,7 @@ if (process.argv[2] === '-preversion') {
             mainBranchName: ''
         }
         if (process.argv[3] === '-release') {
-            const currentRegex = /^?:\*\s*(.*?)$/;
+            const currentRegex = /^\*\s*(.*?)$/;
             const mainRegex = /^(?:\*\s*)?(master|main)$/;
 
             const result = await exec(`git branch`)
