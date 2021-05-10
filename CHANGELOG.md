@@ -1,3 +1,11 @@
+<a name="2.16.3"></a>
+
+## [2.16.3](https://github.com/chincoe/chayns-helper/compare/v2.16.2...v2.16.3) (2021-05-10)
+
+### Changes
+
+* Updated internal workflow for build and publish
+
 <a name="2.16.2"></a>
 
 ## [2.16.2](https://github.com/chincoe/chayns-helper/compare/v2.16.1...v2.16.2) (2021-05-10)
