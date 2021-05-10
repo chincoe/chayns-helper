@@ -56,8 +56,12 @@ if (process.argv[2] === '-preversion') {
             });
         }
         await exec(`git tag -a v${version} -m "v${version}"`);
-        await exec(`git push --tags`);
+        await exec(`git push origin v${version}`);
         if (process.argv[3] === '-release') {
+            if (/^release\/.*$/.test(releaseData.currentBranchName)) {
+                await exec(`git branch -d ${releaseData.currentBranchName}`);
+                await exec(`git checkout develop`);
+            }
             await exec(`git checkout ${releaseData.currentBranchName}`);
         }
         resolve();
