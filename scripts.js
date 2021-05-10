@@ -70,10 +70,11 @@ if (process.argv[2] === '-preversion') {
                 });
                 if (/^release\/.*$/.test(releaseData.currentBranchName)) {
                     await exec(`git push origin --delete ${releaseData.currentBranchName}`);
-                    await exec(`git branch -d ${releaseData.currentBranchName}`);
+                    // await exec(`git branch -d ${releaseData.currentBranchName}`);
                 }
+            } else {
+                await exec(`git checkout ${releaseData.currentBranchName}`);
             }
-            await exec(`git checkout ${releaseData.currentBranchName}`);
         }
         resolve();
     }).then(() => {
