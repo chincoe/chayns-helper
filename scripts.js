@@ -43,12 +43,14 @@ if (process.argv[2] === '-preversion') {
                 .split('\n')
                 .map((b) => b.trim())
                 .find((b) => mainRegex.test(b))
-                .replace(mainRegex, "$1");
+                .replace(mainRegex, "$1")
+                .trim();
             releaseData.currentBranchName = result.stdout
                 .split('\n')
                 .map((b) => b.trim())
                 .find((b) => currentRegex.test(b))
-                .replace(currentRegex, "$1");
+                .replace(currentRegex, "$1")
+                .trim();
             await exec(`git checkout ${releaseData.mainBranchName}`);
             await exec(`git merge ${releaseData.currentBranchName}`);
             await exec(`git push`).catch(async (err) => {
@@ -58,14 +60,21 @@ if (process.argv[2] === '-preversion') {
         await exec(`git tag -a v${version} -m "v${version}"`);
         await exec(`git push origin v${version}`);
         if (process.argv[3] === '-release') {
-            if (/^release\/.*$/.test(releaseData.currentBranchName)) {
-                await exec(`git branch -d ${releaseData.currentBranchName}`);
+            if (/^(?:release|qa|staging)\/.*$/.test(releaseData.currentBranchName)) {
                 await exec(`git checkout develop`);
+                await exec(`git merge ${releaseData.currentBranchName}`);
+                await exec(`git push`).catch(async (err) => {
+                    await exec(err.stderr.match(/git push --set-upstream origin [^\\]+/)[0]);
+                });
+                if (/^release\/.*$/.test(releaseData.currentBranchName)) {
+                    await exec(`git push origin --delete ${releaseData.currentBranchName}`);
+                    await exec(`git branch -d ${releaseData.currentBranchName}`);
+                }
             }
             await exec(`git checkout ${releaseData.currentBranchName}`);
         }
         resolve();
     }).then(() => {
-        console.log(`${commitString} v${version}`);
+        console.log(`Published ${commitString} v${version}`);
     });
 }
