@@ -1,5 +1,9 @@
 name: CI
-on: [push]
+on:
+  push:
+    branches: [main, master, develop, qa, staging, 'release/**']
+    tags-ignore:
+      - '**'
 jobs:
   build:
     #    name: Build, lint, and test on Node ${{ matrix.node }} and ${{ matrix.os }}
