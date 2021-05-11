@@ -8,7 +8,7 @@ It logs the error using the chayns-logger including the component stack trace.
 | Prop | Description | Type | Required/Default |
 |------|-------------|------|------------------|
 | children | The elements that should be wrapped | ReactNode | required |
-| fallback | A react component that should be rendered as fallback. Receives the error as props.error | JSXElementConstructor | A warning content card with a generic error message and reload button |
+| fallback | A react component that should be rendered as fallback. Receives the error as props.error and a function as props.clearError to retry the render | JSXElementConstructor | A warning content card with a generic error message and reload button |
 
 ### ErrorBoundary.wrap(WrappedComponent, fallback)
 Static function that works High-Order-Component to wrap a component in an error boundary like you would with React.memo().

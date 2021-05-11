@@ -14,7 +14,7 @@ import CenteredContainer from '../containers/CenteredContainer';
  */
 class ErrorBoundary extends React.Component<{
     children: ReactNode;
-    fallback?: JSXElementConstructor<any>;
+    fallback?: JSXElementConstructor<{ error?: Error, clearError?: () => void }>;
 }, { error?: Error | null; hasError: boolean }> {
     constructor(props: any) {
         super(props);
@@ -35,7 +35,10 @@ class ErrorBoundary extends React.Component<{
         };
     }
 
-    static wrap(WrappedComponent: JSXElementConstructor<any>, fallback?: JSXElementConstructor<any>) {
+    static wrap(
+        WrappedComponent: JSXElementConstructor<any>,
+        fallback?: JSXElementConstructor<{ error?: Error, clearError?: () => void }>
+    ) {
         const safeComponent: FunctionComponent<any> = (props: any) => {
             return (
                 <ErrorBoundary fallback={fallback}>
@@ -68,29 +71,27 @@ class ErrorBoundary extends React.Component<{
         if (state.hasError) {
             // You can render any custom fallback UI
             return FallbackComponent
-                ? (<FallbackComponent error={state.error}/>)
+                ? (<FallbackComponent error={state.error as Error}
+                                      clearError={() => {this.setState({ hasError: false })}}/>)
                 : (
                     <div className="ErrorBoundary">
-                        <div className="ErrorBoundary__content__card content__card content__card--warning">
-                            <h2>Es ist ein Fehler aufgetreten</h2>
-                            <p>Wir sind bereits davon informiert und beheben den Fehler so schnell wie möglich.</p>
-                            {process.env.NODE_ENV === 'development' && (
-                                <p>
-                                    {`Fehler: ${(state.error as Error).toString()}`}
-                                </p>
-                            )}
-                            <CenteredContainer>
-                                <Button
-                                    onClick={() => {
-                                        chayns.appendUrlParameter({ nocache: true }, true);
-                                        // eslint-disable-next-line no-restricted-globals
-                                        location.reload();
-                                    }}
-                                >
-                                    Neu Laden
-                                </Button>
-                            </CenteredContainer>
-                        </div>
+                        <p>Es ist ein Fehler aufgetreten. Wir sind bereits davon informiert und beheben den Fehler so
+                            schnell wie möglich.</p>
+                        {process.env.NODE_ENV === 'development' && (
+                            <p>
+                                {`Fehler: ${(state.error as Error).toString()}`}
+                            </p>
+                        )}
+                        <CenteredContainer>
+                            <Button
+                                onClick={() => {
+                                    chayns.appendUrlParameter({ nocache: true }, true);
+                                    window.location.reload();
+                                }}
+                            >
+                                Neu Laden
+                            </Button>
+                        </CenteredContainer>
                     </div>
                 );
         }
