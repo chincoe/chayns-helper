@@ -1,3 +1,12 @@
+<a name="2.17.0"></a>
+
+## [2.17.0](https://github.com/chincoe/chayns-helper/compare/v2.16.7...v2.17.0) (2021-05-11)
+
+### Changes
+
+* ErrorBoundary
+  * Improve default fallback UI
+
 <a name="2.16.7"></a>
 
 ## [2.16.7](https://github.com/chincoe/chayns-helper/compare/v2.16.1...v2.16.7) (2021-05-10)
