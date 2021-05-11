@@ -71,26 +71,23 @@ class ErrorBoundary extends React.Component<{
                 ? (<FallbackComponent error={state.error}/>)
                 : (
                     <div className="ErrorBoundary">
-                        <div className="ErrorBoundary__content__card content__card content__card--warning">
-                            <h2>Es ist ein Fehler aufgetreten</h2>
-                            <p>Wir sind bereits davon informiert und beheben den Fehler so schnell wie möglich.</p>
-                            {process.env.NODE_ENV === 'development' && (
-                                <p>
-                                    {`Fehler: ${(state.error as Error).toString()}`}
-                                </p>
-                            )}
-                            <CenteredContainer>
-                                <Button
-                                    onClick={() => {
-                                        chayns.appendUrlParameter({ nocache: true }, true);
-                                        // eslint-disable-next-line no-restricted-globals
-                                        location.reload();
-                                    }}
-                                >
-                                    Neu Laden
-                                </Button>
-                            </CenteredContainer>
-                        </div>
+                        <p>Es ist ein Fehler aufgetreten. Wir sind bereits davon informiert und beheben den Fehler so
+                            schnell wie möglich.</p>
+                        {process.env.NODE_ENV === 'development' && (
+                            <p>
+                                {`Fehler: ${(state.error as Error).toString()}`}
+                            </p>
+                        )}
+                        <CenteredContainer>
+                            <Button
+                                onClick={() => {
+                                    chayns.appendUrlParameter({ nocache: true }, true);
+                                    window.location.reload();
+                                }}
+                            >
+                                Neu Laden
+                            </Button>
+                        </CenteredContainer>
                     </div>
                 );
         }
