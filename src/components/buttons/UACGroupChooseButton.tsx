@@ -1,5 +1,4 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-// @ts-expect-error chayns-components doesn't have types
 import { ChooseButton } from 'chayns-components';
 import { SelectDialogItem } from 'chayns-doc';
 import request from '../../functions/httpRequest/httpRequest';

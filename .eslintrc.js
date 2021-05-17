@@ -58,7 +58,6 @@ module.exports = {
         'react/no-danger': 'warn',
         'jsx-a11y/no-noninteractive-element-interactions': 'off',
         'jsx-a11y/click-events-have-key-events': 'off',
-        'no-use-before-define': 'warn',
         'react/prefer-stateless-function': 'off',
         'no-cond-assign': 1,
         'no-console': [
@@ -137,6 +136,8 @@ module.exports = {
         'no-restricted-syntax': 1,
         'prefer-const': 1,
         'no-unused-expressions': 1,
+        'no-use-before-define': 'off',
+        '@typescript-eslint/no-use-before-define': ['warn'],
         'no-await-in-loop': 1,
         'object-curly-newline': 1,
         'comma-spacing': 1,

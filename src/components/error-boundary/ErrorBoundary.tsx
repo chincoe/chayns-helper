@@ -1,9 +1,17 @@
-import React, { ErrorInfo, FunctionComponent, JSXElementConstructor, ReactNode } from 'react';
+import React, {
+    ErrorInfo, FunctionComponent, JSXElementConstructor, ReactNode
+} from 'react';
 import './error-boundary.scss';
-// @ts-expect-error
 import { Button } from 'chayns-components';
 import logger from '../../utils/requireChaynsLogger';
 import CenteredContainer from '../containers/CenteredContainer';
+
+export interface ErrorBoundaryProps {
+    children: ReactNode;
+    fallback?: JSXElementConstructor<{ error?: Error, clearError?: () => void }>;
+}
+
+export type ErrorBoundaryState = { error?: Error | null; hasError: boolean }
 
 /**
  * An ErrorBoundary.
@@ -12,20 +20,9 @@ import CenteredContainer from '../containers/CenteredContainer';
  * the error occurred. The default fallback is a warning content card with a generic error message, error details and
  * reload button.
  */
-class ErrorBoundary extends React.Component<{
-    children: ReactNode;
-    fallback?: JSXElementConstructor<{ error?: Error, clearError?: () => void }>;
-}, { error?: Error | null; hasError: boolean }> {
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            hasError: false,
-            error: null
-        };
-    }
-
-    /*#__PURE__*/
-    static getDerivedStateFromError(error: Error) {
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+    /* #__PURE__ */
+    static getDerivedStateFromError(error: Error): ErrorBoundaryState {
         // eslint-disable-next-line no-console
         console.error(error);
         // Update state so the next render will show the fallback UI.
@@ -36,20 +33,25 @@ class ErrorBoundary extends React.Component<{
     }
 
     static wrap(
-        WrappedComponent: JSXElementConstructor<any>,
+        WrappedComponent: JSXElementConstructor<unknown>,
         fallback?: JSXElementConstructor<{ error?: Error, clearError?: () => void }>
-    ) {
-        const safeComponent: FunctionComponent<any> = (props: any) => {
-            return (
-                <ErrorBoundary fallback={fallback}>
-                    <WrappedComponent {...props}/>
-                </ErrorBoundary>
-            )
-        }
-        return safeComponent;
+    ): FunctionComponent<unknown> {
+        return (props: Record<string, unknown>) => (
+            <ErrorBoundary fallback={fallback}>
+                <WrappedComponent {...props}/>
+            </ErrorBoundary>
+        );
     }
 
-    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    constructor(props: ErrorBoundaryProps) {
+        super(props);
+        this.state = {
+            hasError: false,
+            error: null
+        };
+    }
+
+    componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
         // You can also log the error to an error reporting service
         logger.error({
             message: '[ErrorBoundary] Unexpected react error',
@@ -57,7 +59,7 @@ class ErrorBoundary extends React.Component<{
         }, error);
     }
 
-    render() {
+    render(): ReactNode {
         const {
             state,
             props
@@ -71,12 +73,18 @@ class ErrorBoundary extends React.Component<{
         if (state.hasError) {
             // You can render any custom fallback UI
             return FallbackComponent
-                ? (<FallbackComponent error={state.error as Error}
-                                      clearError={() => {this.setState({ hasError: false })}}/>)
+                ? (
+                    <FallbackComponent
+                        error={state.error as Error}
+                        clearError={() => { this.setState({ hasError: false }); }}
+                    />
+                )
                 : (
                     <div className="ErrorBoundary">
-                        <p>Es ist ein Fehler aufgetreten. Wir sind bereits davon informiert und beheben den Fehler so
-                            schnell wie möglich.</p>
+                        <p>
+                            Es ist ein Fehler aufgetreten. Wir sind bereits davon informiert und beheben den Fehler so
+                            schnell wie möglich.
+                        </p>
                         {process.env.NODE_ENV === 'development' && (
                             <p>
                                 {`Fehler: ${(state.error as Error).toString()}`}

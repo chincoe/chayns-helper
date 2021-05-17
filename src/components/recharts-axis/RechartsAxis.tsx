@@ -1,7 +1,7 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, ReactElement } from 'react';
 import useRechartsAxis from '../../functions/generateRechartsAxis';
 
-export interface RechartsAxis<T> {
+export interface RechartsAxisProps<T> {
     start: number | T;
     end: number | T;
     divisor: number | number[];
@@ -36,7 +36,7 @@ export interface RechartsAxis<T> {
  * @param children
  * @constructor
  */
-const RechartsAxis: FunctionComponent<RechartsAxis<number | Date | any>> = ({
+const RechartsAxis: FunctionComponent<RechartsAxisProps<number | Date | unknown>> = ({
     start,
     end,
     divisor,
@@ -53,9 +53,8 @@ const RechartsAxis: FunctionComponent<RechartsAxis<number | Date | any>> = ({
         minTicks,
         tickFormatter
     }, [start, end, divisor, minTicks, maxTicks, children]);
-    const relevantChild: React.ReactNode = (Array.isArray(children) ? children[0] : children)
+    const relevantChild = (Array.isArray(children) ? children[0] : children) as ReactElement;
     return React.cloneElement(
-        // @ts-expect-error
         relevantChild,
         {
             ticks: tickInfo.ticks,
@@ -63,7 +62,7 @@ const RechartsAxis: FunctionComponent<RechartsAxis<number | Date | any>> = ({
             domain: [tickInfo.min, tickInfo.max],
             interval: 'preserveStart'
         }
-    )
-}
+    );
+};
 
 export default RechartsAxis;
