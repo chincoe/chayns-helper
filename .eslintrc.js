@@ -31,7 +31,8 @@ module.exports = {
                     'chayns-components',
                     'chayns-logger',
                     'react-redux',
-                    'react'
+                    'react',
+                    'chayns-doc'
                 ]
             }
         ],
@@ -98,7 +99,6 @@ module.exports = {
         'no-redeclare': 1,
         'no-delete-var': 1,
         'no-undef': 2,
-        'no-unused-vars': 1,
         'no-mixed-spaces-and-tabs': 1,
         'no-trailing-spaces': 'warn',
         'arrow-body-style': 'warn',
@@ -108,10 +108,11 @@ module.exports = {
         'keyword-spacing': 1,
         'brace-style': 1,
         'padded-blocks': 1,
-        'react/prop-types': 2,
+        'react/prop-types': 0,
         'object-curly-spacing': 1,
         'quote-props': 1,
         'react/jsx-closing-bracket-location': 1,
+        'react/jsx-filename-extension': 0,
         'spaced-comment': 1,
         'import/order': 1,
         'react/jsx-boolean-value': 1,

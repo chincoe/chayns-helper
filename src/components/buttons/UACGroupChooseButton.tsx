@@ -1,15 +1,16 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 // @ts-expect-error chayns-components doesn't have types
 import { ChooseButton } from 'chayns-components';
+import { SelectDialogItem } from 'chayns-doc';
 import request from '../../functions/httpRequest/httpRequest';
 import { LogLevel } from '../../functions/httpRequest/LogLevel';
 import { ResponseType } from '../../functions/httpRequest/ResponseType';
 import ResizableWaitCursor from '../wait-cursor/ResizableWaitCursor';
 import colorLog from '../../utils/colorLog';
 
-declare interface UACGroupChooseButton {
+declare interface UACGroupChooseButtonProps {
     value: number | number[];
-    onChange: (param: any) => any;
+    onChange: (param: SelectDialogItem[]) => void;
     multiSelect?: boolean;
     disabled?: boolean;
 }
@@ -23,7 +24,7 @@ declare interface UACGroupChooseButton {
  * @param props
  * @constructor
  */
-const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = ({
+const UACGroupChooseButton: FunctionComponent<UACGroupChooseButtonProps> = ({
     value = null,
     onChange,
     multiSelect = false,
@@ -63,16 +64,7 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = ({
                     multiselect: multiSelect,
                     quickfind: Array.isArray(uacGroups) && uacGroups.length > 5
                 })
-                    .then(({ buttonType, selection }: {
-                        buttonType: number, selection: Array<{
-                            name: string,
-                            value: number,
-                            backgroundColor?: string,
-                            className?: string,
-                            url?: string,
-                            isSelected?: boolean
-                        }>
-                    }) => {
+                    .then(({ buttonType, selection }) => {
                         if (buttonType === 1) {
                             onChange(selection);
                         }
@@ -84,8 +76,8 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = ({
             {
                 Array.isArray(value) && value.length > 1
                     ? `${value.length} Gruppen`
-                    : (uacGroups.find((e) => e.id === (Array.isArray(value) ? value[0] : value)) || {}).showName ||
-                      'Wählen'
+                    : (uacGroups.find((e) => e.id === (Array.isArray(value) ? value[0] : value)) || {}).showName
+                      || 'Wählen'
 
             }
         </ChooseButton>
