@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-// @ts-expect-error
+// @ts-expect-error chayns-components doesn't have types
 import { ChooseButton } from 'chayns-components';
 import request from '../../functions/httpRequest/httpRequest';
 import { LogLevel } from '../../functions/httpRequest/LogLevel';
@@ -23,15 +23,13 @@ declare interface UACGroupChooseButton {
  * @param props
  * @constructor
  */
-const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = (
-    {
-        value = null,
-        onChange,
-        multiSelect = false,
-        disabled = false,
-        ...props
-    }
-) => {
+const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = ({
+    value = null,
+    onChange,
+    multiSelect = false,
+    disabled = false,
+    ...props
+}) => {
     const [uacGroups, setUacGroups] = useState<{ id: number, showName: string }[]>();
     useEffect(() => {
         request.fetch(
@@ -49,7 +47,7 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = (
             .then((res) => setUacGroups(res))
             .catch((ex) => {
                 console.error(...colorLog.gray('[UACGroupChooseButton]'), 'Failed to fetch UAC Groups.', ex);
-            })
+            });
     }, []);
 
     return uacGroups ? (
@@ -86,8 +84,8 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButton> = (
             {
                 Array.isArray(value) && value.length > 1
                     ? `${value.length} Gruppen`
-                    : (uacGroups.find((e) =>
-                    e.id === (Array.isArray(value) ? value[0] : value)) || {}).showName || 'Wählen'
+                    : (uacGroups.find((e) => e.id === (Array.isArray(value) ? value[0] : value)) || {}).showName ||
+                      'Wählen'
 
             }
         </ChooseButton>
