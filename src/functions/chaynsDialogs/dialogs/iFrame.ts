@@ -3,7 +3,7 @@ import { createDialogResult, DialogButton } from '../utils';
 
 export interface IFrameDialogConfig {
     url: string;
-    input?: object | any;
+    input?: Record<string, unknown>;
     seamless?: boolean;
     transparent?: boolean;
     waitCursor?: boolean;
@@ -31,7 +31,7 @@ export default function iFrame(options: IFrameDialogConfig, buttons?: DialogButt
         } = options || {};
         chayns.dialog.iFrame({
             url,
-            input: dialogInput,
+            input: dialogInput as Record<string, unknown>,
             buttons: buttons ?? [],
             seamless,
             transparent,
@@ -39,7 +39,7 @@ export default function iFrame(options: IFrameDialogConfig, buttons?: DialogButt
             maxHeight,
             width,
             customTransitionTimeout
-        }).then((result: any) => {
+        }).then((result: { buttonType: number, value?: unknown }) => {
             resolve(createDialogResult(result.buttonType, result?.value));
         });
     });

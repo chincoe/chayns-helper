@@ -4,8 +4,8 @@ const loginListeners: { listeners: Array<() => void>; globalReloadOnLogin: boole
     noReloadOnLogin: 0
 };
 
-function setReload(reload: boolean = false) {
-    parent.postMessage(JSON.stringify({
+function setReload(reload = false) {
+    window.parent.postMessage(JSON.stringify({
         preventReload: !reload,
         customPluginIframe: window.name,
     }), '*');
@@ -16,7 +16,7 @@ function setReload(reload: boolean = false) {
  * accessTokenChangeListener.
  * @param reload
  */
-export default function setReloadOnLogin(reload: boolean = false): void {
+export default function setReloadOnLogin(reload = false): void {
     loginListeners.globalReloadOnLogin = reload;
     setReload(reload);
 }
@@ -27,7 +27,7 @@ export default function setReloadOnLogin(reload: boolean = false): void {
  * @param once - remove after being called once
  * @returns callback - the reference of the listener callback needed to remove it
  */
-export const addChaynsLoginListener = (callback: () => any, once: boolean = false): (() => void) => {
+export const addChaynsLoginListener = (callback: () => void, once = false): (() => void) => {
     loginListeners.noReloadOnLogin++;
     if (loginListeners.globalReloadOnLogin || loginListeners.noReloadOnLogin === 1) {
         setReload(false);
@@ -54,10 +54,10 @@ export const addChaynsLoginListener = (callback: () => any, once: boolean = fals
  * @param callback
  * @return success
  */
-export const removeChaynsLoginListener = (callback: () => any): boolean => {
-    const listenerIdx = loginListeners.listeners.findIndex(l => l === callback);
+export const removeChaynsLoginListener = (callback: () => void): boolean => {
+    const listenerIdx = loginListeners.listeners.findIndex((l) => l === callback);
     if (listenerIdx >= 0) {
-        loginListeners.listeners.filter((_, index) => index != listenerIdx);
+        loginListeners.listeners.filter((_, index) => index !== listenerIdx);
         loginListeners.noReloadOnLogin--;
         if (!loginListeners.globalReloadOnLogin && !loginListeners.noReloadOnLogin) {
             setReload(true);

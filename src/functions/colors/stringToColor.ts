@@ -6,7 +6,9 @@ import hexToRgb, { RGBAObject } from './hexToRgb';
 const stringToColor = (
     str: string,
     rgb?: boolean
-): (RGBAObject | { toRgb: (a?: number) => (RGBAObject | string) } | String) => {
+// eslint-disable-next-line @typescript-eslint/ban-types
+): (RGBAObject | { toRgb: (a?: number) => (RGBAObject | string) } | String
+    ) => {
     /* eslint-disable no-bitwise */
     let hash = 0;
     for (let i = 0; i < str.length; i += 1) {
@@ -21,12 +23,12 @@ const stringToColor = (
     if (rgb) return hexToRgb(color);
     // eslint-disable-next-line no-new-wrappers
     const result = new String(color);
-    // @ts-expect-error
-    result.toRgb = function (a?: number) {
-        const rgbValue = hexToRgb(<string>this);
+    // @ts-expect-error adding function to string
+    result.toRgb = function toRgb(a?: number) {
+        const rgbValue = hexToRgb(this as string);
         if (a) (<RGBAObject>rgbValue).a = a;
         return rgbValue;
-    }
+    };
     return result;
 };
 

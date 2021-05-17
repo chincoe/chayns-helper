@@ -1,7 +1,8 @@
+import { WeekDayIntervalObject } from 'chayns-doc';
 import DialogPromise from '../DialogPromise';
 import { createDialogResult, DialogButton } from '../utils';
 
-export const validateDate = (param: any | any[], allowMissingValue = true) => {
+export const validateDate = (param: unknown | unknown[], allowMissingValue = true): Date | unknown => {
     if (allowMissingValue && (param === null || param === undefined)) return param;
     if (Object.prototype.toString.call(param) === '[object Date]') {
         return param;
@@ -44,8 +45,9 @@ export const validateDate = (param: any | any[], allowMissingValue = true) => {
     return undefined;
 };
 
-export const validateDateArray = (paramArray: Array<any>) => paramArray?.map(
-    (p) => validateDate(p, false) ?? undefined);
+export const validateDateArray = (paramArray: Array<unknown>): Array<Date | unknown> => paramArray?.map(
+    (p) => validateDate(p, false) ?? undefined
+);
 
 export interface DateIntervalObject {
     start: Date;
@@ -61,7 +63,7 @@ export enum textBlockPosition {
 export interface DialogTextBlock {
     headline: string;
     text: string;
-    textBlockPosition: number | textBlockPosition;
+    position: number | textBlockPosition;
 }
 
 export enum dateType {
@@ -195,56 +197,58 @@ export default function advancedDate(
                                          ? dateSelectType.INTERVAL
                                          : null
                                  ) ?? dateSelectType.SINGLE;
-
+        let preSelectData;
+        if (Array.isArray(preSelect)) {
+            preSelectData = validateDateArray(preSelect) as Date[];
+        } else {
+            preSelectData = Object.prototype.toString.call(preSelect) === '[object Object]'
+                            && (<DateIntervalObject>preSelect)?.start
+                            && (<DateIntervalObject>preSelect)?.end
+                ? {
+                    start: validateDate((<DateIntervalObject>preSelect)?.start) as Date,
+                    end: validateDate((<DateIntervalObject>preSelect)?.end) as Date,
+                }
+                : validateDate(preSelect) as Date;
+        }
         chayns.dialog.advancedDate({
             title,
             message,
             buttons,
             dateType: pDateType,
-            minDate: validateDate(minDate),
-            maxDate: validateDate(maxDate),
+            minDate: validateDate(minDate) as Date,
+            maxDate: validateDate(maxDate) as Date,
             minuteInterval,
-            preSelect: Array.isArray(preSelect)
-                ? validateDateArray(preSelect)
-                : Object.prototype.toString.call(preSelect) === "[object Object]"
-                  && (<DateIntervalObject>preSelect)?.start
-                  && (<DateIntervalObject>preSelect)?.end
-                    ? {
-                        start: validateDate((<DateIntervalObject>preSelect)?.start),
-                        end: validateDate((<DateIntervalObject>preSelect)?.end),
-                    }
-                    : validateDate(preSelect),
-            disabledDates: validateDateArray(<Array<DateInformation>>disabledDates),
-            textBlocks,
+            preSelect: preSelectData,
+            disabledDates: validateDateArray(<Array<DateInformation>>disabledDates) as Date[],
+            textBlocks: textBlocks as DialogTextBlock[],
             yearSelect,
             monthSelect,
             minInterval,
             maxInterval,
             disabledIntervals,
-            disabledWeekDayIntervals,
+            disabledWeekDayIntervals: disabledWeekDayIntervals as WeekDayIntervalObject,
             getLocalTime,
             ...resolveDateSelectType(<number>dialogSelectType)
-        })
-            .then((result: any) => {
-                // result from chayns dialog
-                // single date: { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }] }
-                // multiselect : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, ...] }
-                // interval : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, { isSelected:
-                // true, timestamp: ... in s }] }
-                const { buttonType: type, selectedDates } = result;
+        }).then((result: { buttonType: number, selectedDates?: Array<{ timestamp: number, isSelected: boolean }> }) => {
+            // result from chayns dialog
+            // single date: { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }] }
+            // multiselect : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, ...] }
+            // interval : { buttonType, selectedDates: [{ isSelected: true, timestamp: ... in s }, { isSelected:
+            // true, timestamp: ... in s }] }
+            const { buttonType: type, selectedDates } = result;
 
-                const validDates = (selectedDates || []).map((d: any) => ({
-                    ...(d ?? {}),
-                    timestamp: d?.timestamp ? new Date(d.timestamp * 1000) : d?.timestamp
-                }));
+            const validDates = (selectedDates || []).map((d) => ({
+                ...(d ?? {}),
+                timestamp: d?.timestamp ? new Date(d.timestamp * 1000) : d?.timestamp
+            }));
 
-                if (dialogSelectType === dateSelectType.SINGLE) {
-                    const selectedDate = validDates[0] ?? null;
-                    resolve(createDialogResult(type, selectedDate));
-                } else if (dialogSelectType !== dateSelectType.SINGLE) {
-                    resolve(createDialogResult(type, validDates));
-                }
-            });
+            if (dialogSelectType === dateSelectType.SINGLE) {
+                const selectedDate = validDates[0] ?? null;
+                resolve(createDialogResult(type, selectedDate));
+            } else if (dialogSelectType !== dateSelectType.SINGLE) {
+                resolve(createDialogResult(type, validDates));
+            }
+        });
     });
 }
 

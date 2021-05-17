@@ -17,7 +17,7 @@ export interface InputDialogConfig {
     textColor?: string;
     type?: inputType | number;
     regex?: string;
-    formatter?: (value: any) => any;
+    formatter?: (value: string) => string;
     pattern?: string;
     disableButtonTypes?: number[];
 }

@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /**
  * The checkmark, exclamation mark and failure animations as HTML strings for dialogs
  */

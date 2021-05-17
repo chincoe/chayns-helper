@@ -1,7 +1,7 @@
 /**
  * Hide the page footer
  */
-const hideCwFooter = (): Promise<any> => chayns.invokeCall({
+const hideCwFooter = (): Promise<unknown> => chayns.invokeCall({
     action: 238,
     value: { hide: true }
 });

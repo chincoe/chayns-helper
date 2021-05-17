@@ -20,7 +20,7 @@ const hexToRgb = (hex: string): (RGBAObject | string) => {
         b: parseInt(result[3], 16),
         a: null,
         toString(): string {
-            const rgba: RGBAObject = <RGBAObject>this
+            const rgba: RGBAObject = this as RGBAObject;
             return rgba.a !== null
                 ? `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})` : `rgb(${rgba.r}, ${rgba.g}, ${rgba.b})`;
         }

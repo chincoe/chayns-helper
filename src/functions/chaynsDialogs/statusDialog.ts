@@ -32,14 +32,17 @@ const statusDialog = (
         `<div>${(message || '').trim()}</div>`
     );
 
+    // @ts-expect-error access to chayns.dialog this way is viable and necessary
     if (typeof chayns.dialog[dialog] !== 'function') {
+        // eslint-disable-next-line no-console
         console.warn(
             ...colorLog.gray('[statusDialog]'),
-            `${dialog} is not a valid dialog type. Using ${buttons ? dialogType.CONFIRM : dialogType.ALERT} as fallback.`
+            `${dialog} isn't a valid dialog type. Using ${buttons ? dialogType.CONFIRM : dialogType.ALERT} as fallback.`
         );
-        dialog = buttons ? dialogType.CONFIRM : dialogType.ALERT
+        dialog = buttons ? dialogType.CONFIRM : dialogType.ALERT;
     }
 
+    // @ts-expect-error access to chayns.dialog this way is viable and necessary
     chayns.dialog[dialog]('', dialogHtml, buttons || undefined)
         .then((buttonType: number) => {
             resolve(createDialogResult(buttonType));

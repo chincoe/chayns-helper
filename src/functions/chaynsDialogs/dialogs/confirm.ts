@@ -11,9 +11,9 @@ const confirm = (
     message: string,
     options?: { title?: string },
     buttons?: DialogButton[]
-): DialogPromise<undefined> => new DialogPromise<undefined>((resolve: (value?: any) => any) => {
+): DialogPromise<undefined> => new DialogPromise<undefined>((resolve) => {
     chayns.dialog.confirm(options?.title || '', message ?? '', buttons)
-        .then((type: any) => {
+        .then((type: number) => {
             resolve(createDialogResult(type));
         });
 });

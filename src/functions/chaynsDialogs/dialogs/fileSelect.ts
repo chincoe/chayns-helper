@@ -45,8 +45,8 @@ export interface FileSelectDialogConfig {
  */
 export default function fileSelect(
     options?: FileSelectDialogConfig, buttons?: DialogButton[]
-): DialogPromise<any | File> {
-    return new DialogPromise<any | File>((resolve) => {
+): DialogPromise<unknown | File> {
+    return new DialogPromise<unknown | File>((resolve) => {
         const {
             title = '',
             message = '',
@@ -60,11 +60,11 @@ export default function fileSelect(
             message,
             multiselect,
             buttons,
-            contentType,
-            exclude,
+            contentType: contentType as string[],
+            exclude: exclude as string[],
             directory
         })
-            .then((result: any) => {
+            .then((result: { buttonType: number, selection: unknown }) => {
                 resolve(createDialogResult(result?.buttonType, result?.selection));
             });
     });

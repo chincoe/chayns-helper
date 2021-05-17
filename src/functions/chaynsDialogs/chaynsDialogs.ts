@@ -8,7 +8,7 @@ import select, { selectType } from './dialogs/select';
 import fileSelect, { fileType } from './dialogs/fileSelect';
 import mediaSelect from './dialogs/mediaSelect';
 import alertDialog from './dialogs/alert';
-import status, {dialogStatusType} from './statusDialog';
+import status, { dialogStatusType } from './statusDialog';
 
 /**
  * Collection of improved versions of chayns dialogs and their enums
