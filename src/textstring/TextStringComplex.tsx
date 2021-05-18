@@ -108,22 +108,6 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
                     ...colorLog.gray(`[TextString<${stringName}>]`),
                     `Auto creation ${autoCreation ? 'enabled' : 'disabled'}`
                 );
-                // TODO: Remove
-                console.debug({
-                    autoCreation,
-                    propAutoCreation,
-                    fallbackExists: !isNullOrWhiteSpace(fallback),
-                    stringNameExists: !isNullOrWhiteSpace(stringName),
-                    stringDoesNotExists: (TextString.getTextString(`${TEXTSTRING_CONFIG.prefix}${stringName}`)
-                        ?? null) === null,
-                    germanStringDoesNotExists: (TextString.getTextString(
-                        `${TEXTSTRING_CONFIG.prefix}${stringName}`, 'de'
-                    ) ?? null) === null,
-                    libnameExists: !isNullOrWhiteSpace(TEXTSTRING_CONFIG.libName),
-                    prefixExists: !isNullOrWhiteSpace(TEXTSTRING_CONFIG.prefix),
-                    authenticated: chayns.env.user.isAuthenticated,
-                    config: TEXTSTRING_CONFIG
-                });
                 if (autoCreation
                     && !isNullOrWhiteSpace(fallback)
                     && !isNullOrWhiteSpace(stringName)
@@ -150,14 +134,9 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
                             }
                         );
                         const libContent = await libResponse.json();
-                        // TODO: Remove
-                        console.debug({
-                            libContent,
-                            libResponse,
-                        });
                         if (libResponse.status === 200 && libContent
                             && Object.prototype.toString.call(libContent) === '[object Object]'
-                            && Object.keys(libContent)
+                            && !Object.keys(libContent)
                                 .find((name) => name === `${TEXTSTRING_CONFIG.prefix}${stringName}`)
                         ) {
                             console.debug(
