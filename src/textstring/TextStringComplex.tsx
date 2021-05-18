@@ -7,6 +7,7 @@ import generateGuid from '../functions/generateGuid';
 import jsxReplace, { JsxReplacements } from './jsxReplace';
 import TEXTSTRING_CONFIG from './textstringConfig';
 import isNullOrWhiteSpace from '../utils/isNullOrWhiteSpace';
+import colorLog from '../utils/colorLog';
 
 interface TextStringReplacerConfig {
     children: string | ReactNode;
@@ -103,6 +104,26 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
     useEffect(() => {
         (async () => {
             try {
+                console.debug(
+                    ...colorLog.gray(`[TextString<${stringName}>]`),
+                    `Auto creation ${autoCreation ? 'enabled' : 'disabled'}`
+                );
+                // TODO: Remove
+                console.debug({
+                    autoCreation,
+                    propAutoCreation,
+                    fallbackExists: !isNullOrWhiteSpace(fallback),
+                    stringNameExists: !isNullOrWhiteSpace(stringName),
+                    stringDoesNotExists: (TextString.getTextString(`${TEXTSTRING_CONFIG.prefix}${stringName}`)
+                        ?? null) === null,
+                    germanStringDoesNotExists: (TextString.getTextString(
+                        `${TEXTSTRING_CONFIG.prefix}${stringName}`, 'de'
+                    ) ?? null) === null,
+                    libnameExists: !isNullOrWhiteSpace(TEXTSTRING_CONFIG.libName),
+                    prefixExists: !isNullOrWhiteSpace(TEXTSTRING_CONFIG.prefix),
+                    authenticated: chayns.env.user.isAuthenticated,
+                    config: TEXTSTRING_CONFIG
+                });
                 if (autoCreation
                     && !isNullOrWhiteSpace(fallback)
                     && !isNullOrWhiteSpace(stringName)
@@ -113,6 +134,10 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
                     && chayns.env.user.isAuthenticated
                 ) {
                     isTobitEmployee().then(async () => {
+                        console.debug(
+                            ...colorLog.gray(`[TextString<${stringName}>]`),
+                            'Tobit Employee detected'
+                        );
                         const libResponse = await fetch(
                             // eslint-disable-next-line max-len
                             `https://webapi.tobit.com/TextStringService/v1.0/langstrings/${TEXTSTRING_CONFIG.libName}?language=de`,
@@ -125,11 +150,20 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
                             }
                         );
                         const libContent = await libResponse.json();
+                        // TODO: Remove
+                        console.debug({
+                            libContent,
+                            libResponse,
+                        });
                         if (libResponse.status === 200 && libContent
                             && Object.prototype.toString.call(libContent) === '[object Object]'
                             && Object.keys(libContent)
                                 .find((name) => name === `${TEXTSTRING_CONFIG.prefix}${stringName}`)
                         ) {
+                            console.debug(
+                                ...colorLog.gray(`[TextString<${stringName}>]`),
+                                'TextString not found, creating TextString'
+                            );
                             const response = await fetch(
                                 // eslint-disable-next-line max-len
                                 `https://webapi.tobit.com/TextStringService/v1.0/V2/LangStrings?libName=${TEXTSTRING_CONFIG.libName}`,
@@ -158,15 +192,19 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
                             if (response && response.status === 201) {
                                 // eslint-disable-next-line no-console
                                 console.warn(
+                                    ...colorLog.gray(`[TextString<${stringName}>]`),
                                     // eslint-disable-next-line max-len
-                                    `[TextString] Created string '${TEXTSTRING_CONFIG.prefix}${stringName}' as '${fallback}'. Translated to: en, nl, it, fr, pt, es, tr, pl.`
+                                    `Created string '${TEXTSTRING_CONFIG.prefix}${stringName}' as '${fallback}'. Translated to: en, nl, it, fr, pt, es, tr, pl.`
                                 );
                             }
                         }
                     });
                 }
             } catch (e) {
-                // ignored
+                console.debug(
+                    ...colorLog.gray(`[TextString<${stringName}>]`),
+                    'An error occurred during auto creation:', e
+                );
             }
         })();
     }, []);
