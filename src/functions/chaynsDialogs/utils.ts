@@ -17,7 +17,7 @@ export interface DialogResult<T> {
     value?: T;
 }
 
-export const createDialogResult = (type: ButtonType | number, value?: any) => ({
+export const createDialogResult = <T>(type: ButtonType | number, value?: T): DialogResult<T> => ({
     buttonType: type,
     value
 });

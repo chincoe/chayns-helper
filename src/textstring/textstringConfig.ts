@@ -1,4 +1,3 @@
-// @ts-expect-error
 import { TextString } from 'chayns-components';
 import colorLog from '../utils/colorLog';
 
@@ -31,7 +30,7 @@ export interface TextStringInit {
 export const initTextStrings = async (
     config: TextStringInit,
     languages?: Array<string>
-) => {
+): Promise<void> => {
     const {
         prefix = '',
         libName = '',
@@ -41,10 +40,10 @@ export const initTextStrings = async (
     TEXTSTRING_CONFIG.libName = libName;
     TEXTSTRING_CONFIG.autoCreation = autoCreation;
     const defaultLang = chayns.env.parameters.translang
-                        || chayns.env.site.translang
-                        || chayns.env.language
-                        || navigator.language
-                        || 'de';
+        || chayns.env.site.translang
+        || chayns.env.language
+        || navigator.language
+        || 'de';
     const promises = [];
     if (libName) {
         promises.push(TextString.loadLibrary(
@@ -66,6 +65,7 @@ export const initTextStrings = async (
     try {
         await Promise.all(promises);
     } catch (e) {
+        // eslint-disable-next-line no-console
         console.warn(...colorLog.gray('[TextStringInit]'), `Failed to load TextString library '${libName}'`, e);
     }
 };

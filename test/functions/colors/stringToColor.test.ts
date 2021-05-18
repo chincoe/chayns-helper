@@ -18,8 +18,8 @@ describe('functions/colors/stringToColor', () => {
     });
     it('can convert to rgb properly', () => {
         const color = stringToColor('this is a test string');
-        // @ts-expect-error
+        // @ts-expect-error toRgb() was added to String
         const rgb = <RGBAObject>color.toRgb();
         expect(rgb.toString()).toMatch('rgb(236, 110, 170)');
     });
-})
+});

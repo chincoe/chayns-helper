@@ -2,12 +2,12 @@ import React, { FunctionComponent, JSXElementConstructor, ReactNode } from 'reac
 import clsx from 'clsx';
 import './data-row.scss';
 
-export interface DataRow {
+export interface DataRowProps {
     className?: string;
     style?: Partial<CSSStyleDeclaration> | Record<string, string | number>;
     slim?: boolean;
     children?: ReactNode;
-    elementType?: string | JSXElementConstructor<any>;
+    elementType?: string | JSXElementConstructor<Record<string, unknown>>;
 }
 
 /**
@@ -21,7 +21,7 @@ export interface DataRow {
  * @param props
  * @constructor
  */
-const DataRow: FunctionComponent<DataRow> = (
+const DataRow: FunctionComponent<DataRowProps> = (
     {
         className = '',
         style = {},

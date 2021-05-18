@@ -4,7 +4,9 @@ import stringToRegex, { regexRegex } from '../utils/stringToRegex';
 import generateGuid from '../functions/generateGuid';
 import colorLog from '../utils/colorLog';
 
-export type JsxReplacementFunction = ((params: { match: string, regexMatch?: RegExpMatchArray, variable: string | RegExp }) => string | ReactElement);
+export type JsxReplacementFunction = ((params: {
+    match: string, regexMatch?: RegExpMatchArray, variable: string | RegExp
+}) => string | ReactElement);
 export type JsxReplacements = { [stringOrRegex: string]: ReactElement | string | JsxReplacementFunction };
 
 export interface JsxReplaceConfig {
@@ -47,21 +49,24 @@ export default function jsxReplace(
         const regex = stringToRegex(vars[i]);
         // for every match of the current replacement
         for (let j = 0;
-             j < maxReplacements && result.find((m) =>
-                 (typeof (m) === 'string' && (isRegexKey ? regex.test(m) : m.includes(vars[i]))));
+             j < maxReplacements
+             && result.find((m) => (typeof (m) === 'string' && (isRegexKey ? regex.test(m) : m.includes(vars[i]))));
              j++
         ) {
             if (j >= maxReplacements - 1) {
+                // eslint-disable-next-line no-console
                 console.warn(
                     ...colorLog.gray('[jsxReplace]'),
                     `Reached maximum iterations (${maxReplacements}) for replacing ${vars[i]}.
-                     Please make sure you did not accidentally cause an infinite amount of recursive replacements.
-                     If there are supposed to be more than ${maxReplacements} replacements for ${vars[i]}, please increase 'maxReplacements'.`
-                )
+                    Please make sure you did not accidentally cause an infinite amount of recursive replacements.
+                    If there are supposed to be more than ${maxReplacements} replacements for ${vars[i]},
+                    please increase 'maxReplacements'.`
+                );
             }
             // get the current index in the array to work with
-            const arrayIdx = result.findIndex((m) =>
-                (typeof (m) === 'string' && (isRegexKey ? regex.test(m) : m.includes(vars[i]))));
+            const arrayIdx = result.findIndex(
+                (m) => (typeof (m) === 'string' && (isRegexKey ? regex.test(m) : m.includes(vars[i])))
+            );
             // calculate data like the regex match if it's a regex or whether the replacement is a string or jsx
             let matchValue;
             let matchIndex;
@@ -125,6 +130,7 @@ export default function jsxReplace(
                         return jsxReplacements[+index];
                     }
                 }
+                return undefined;
             }
         }) as Array<ReactElement | string>;
     }

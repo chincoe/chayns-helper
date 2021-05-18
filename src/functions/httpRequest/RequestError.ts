@@ -5,6 +5,7 @@
  */
 export default class RequestError extends Error {
     statusCode = 0;
+
     status = 0;
 
     /**

@@ -1,27 +1,27 @@
-import shallowEqual, { deepEqual } from '../../src/functions/shallowEqual'
+import shallowEqual, { deepEqual } from '../../src/functions/shallowEqual';
 
-describe('functions/shallowEqual', function () {
-    it('runs without crashing', function () {
+describe('functions/shallowEqual', () => {
+    it('runs without crashing', () => {
         shallowEqual(null, null);
     });
     it('checks correctly for shallow equality', () => {
         const arr = [1, 2, 3];
-        const value1 = { a: 1, b: [1, 2, 3] }
-        const value2 = { a: 1, b: [1, 2, 3] }
+        const value1 = { a: 1, b: [1, 2, 3] };
+        const value2 = { a: 1, b: [1, 2, 3] };
         expect(shallowEqual(value1, value2)).toBeFalsy();
         value1.b = arr;
         value2.b = arr;
         expect(shallowEqual(value1, value2)).toBeTruthy();
-    })
+    });
 });
 
-describe('functions/shallowEqual.deepEqual', function () {
-    it('runs without crashing', function () {
-        deepEqual(null, null)
+describe('functions/shallowEqual.deepEqual', () => {
+    it('runs without crashing', () => {
+        deepEqual(null, null);
     });
     it('checks correctly for deep equality', () => {
-        const value1 = { a: 1, b: { arr: [1, 2, 3] } }
-        const value2 = { a: 1, b: { arr: [1, 2, 3] } }
+        const value1 = { a: 1, b: { arr: [1, 2, 3] } };
+        const value2 = { a: 1, b: { arr: [1, 2, 3] } };
         expect(deepEqual(value1, value2)).toBeTruthy();
-    })
+    });
 });

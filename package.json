@@ -1,6 +1,6 @@
 {
   "name": "chayns-helper",
-  "version": "2.17.0",
+  "version": "2.18.0",
   "author": {
     "name": "Christian Nagel",
     "email": "christian.nagel@tobit.com"
@@ -27,11 +27,11 @@
     "pub:patch": "npm version patch --no-git-tag-version && node scripts.js -publish -release",
     "pub:minor": "npm version minor --no-git-tag-version && node scripts.js -publish -release",
     "pub:major": "npm version major --no-git-tag-version && node scripts.js -publish -release",
-    "lint": "tsdx lint src",
-    "size": "npm run build && size-limit",
+    "lint": "eslint src/** --ext ts,tsx",
+    "size": "size-limit",
     "size:analyze": "size-limit --why",
     "prepare": "npm run build",
-    "preversion": "node scripts.js -preversion && npm run build && npm run test:coverage && npm run size"
+    "preversion": "node scripts.js -preversion && npm run build && npm run test:coverage && npm run lint && npm run size"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -97,7 +97,7 @@
     "babel-plugin-transform-rename-import": "^2.3.0",
     "babel-plugin-typescript-iife-enum": "^0.2.1",
     "chayns-components": "^4.20.17",
-    "chayns-doc": "^1.2.1",
+    "chayns-doc": "^1.4.5",
     "cssnano": "^4.1.10",
     "eslint": "^7.18.0",
     "eslint-config-airbnb": "^18.2.0",

@@ -17,7 +17,7 @@ export interface InputDialogConfig {
     textColor?: string;
     type?: inputType | number;
     regex?: string;
-    formatter?: (value: any) => any;
+    formatter?: (value: string) => string;
     pattern?: string;
     disableButtonTypes?: number[];
 }
@@ -41,10 +41,9 @@ export default function input(options?: InputDialogConfig, buttons?: DialogButto
             formatter: options?.formatter,
             pattern: options?.pattern,
             disableButtonTypes: options?.disableButtonTypes
-        })
-            .then(({ buttonType: type, text }: any) => {
-                resolve(createDialogResult(type, text));
-            });
+        }).then(({ buttonType: type, text }: { buttonType: number, text?: string }) => {
+            resolve(createDialogResult(type, text));
+        });
     });
 }
 

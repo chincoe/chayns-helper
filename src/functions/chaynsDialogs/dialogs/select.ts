@@ -1,12 +1,13 @@
+import { SelectDialogItem } from 'chayns-doc';
 import DialogPromise from '../DialogPromise';
-import { createDialogResult, DialogButton } from '../utils';
+import { createDialogResult, DialogButton, DialogResult } from '../utils';
 
 export enum selectType {
     DEFAULT = 0,
     ICON = 1
 }
 
-export interface SelectDialogListItem<T extends string | number | Record<string, any> | boolean> {
+export interface SelectDialogListItem<T extends string | number | Record<string, unknown> | boolean> {
     name: string;
     value: T;
     backgroundColor?: string;
@@ -15,12 +16,12 @@ export interface SelectDialogListItem<T extends string | number | Record<string,
     isSelected?: boolean;
 }
 
-export interface SelectDialogResult<T extends string | number | Record<string, any> | boolean> {
+export interface SelectDialogResult<T extends string | number | Record<string, unknown> | boolean> {
     name: string;
     value: T;
 }
 
-export interface SelectDialogConfig<T extends string | number | Record<string, any> | boolean> {
+export interface SelectDialogConfig<T extends string | number | Record<string, unknown> | boolean> {
     list: SelectDialogListItem<T>[];
     message?: string;
     title?: string;
@@ -36,11 +37,11 @@ export interface SelectDialogConfig<T extends string | number | Record<string, a
  * @param options
  * @param buttons
  */
-export default function select<T extends string | number | Record<string, any> | boolean>(
+export default function select<T extends string | number | Record<string, unknown> | boolean>(
     options: SelectDialogConfig<T>,
     buttons?: DialogButton[]
-): DialogPromise<SelectDialogResult<T> | SelectDialogResult<T>[]> {
-    return new DialogPromise<SelectDialogResult<T> | SelectDialogResult<T>[]>((resolve) => {
+): DialogPromise<SelectDialogResult<T> | SelectDialogResult<T>[] | null> {
+    return new DialogPromise<SelectDialogResult<T> | SelectDialogResult<T>[] | null>((resolve) => {
         const {
             message = '',
             title = '',
@@ -54,28 +55,30 @@ export default function select<T extends string | number | Record<string, any> |
         chayns.dialog.select({
             title,
             message,
-            list,
+            list: list as SelectDialogItem[],
             multiselect,
             quickfind: quickfind === null ? (list || []).length > 5 : quickfind,
             type,
             preventCloseOnClick,
             buttons,
             selectAllButton
-        })
-            .then((result: any) => {
-                const { buttonType: bType, selection } = result;
-                if (!multiselect && selection && selection?.length === 1) {
-                    const { name, value } = selection[0];
-                    resolve(createDialogResult(bType, { name, value }));
-                } else if (!multiselect) {
-                    resolve(createDialogResult(bType, null));
-                }
-                if (multiselect && selection && selection?.length > 0) {
-                    resolve(createDialogResult(bType, selection));
-                } else {
-                    resolve(createDialogResult(bType, []));
-                }
-            });
+        }).then((result: {
+            buttonType: number,
+            selection: Array<SelectDialogResult<string | number | Record<string, unknown> | boolean>>
+        }) => {
+            const { buttonType: bType, selection } = result;
+            if (!multiselect && selection && selection?.length === 1) {
+                const { name, value } = selection[0];
+                resolve(createDialogResult(bType, { name, value }) as DialogResult<SelectDialogResult<T>>);
+            } else if (!multiselect) {
+                resolve(createDialogResult(bType, null) as DialogResult<null>);
+            }
+            if (multiselect && selection && selection?.length > 0) {
+                resolve(createDialogResult(bType, selection) as DialogResult<SelectDialogResult<T>[]>);
+            } else {
+                resolve(createDialogResult(bType, []));
+            }
+        });
     });
 }
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 /**
  * Gets the current state of a hook based on the setter

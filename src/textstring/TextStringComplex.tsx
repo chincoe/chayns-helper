@@ -1,12 +1,67 @@
-import React, { FunctionComponent, memo, ReactElement, ReactNode, useEffect, useMemo } from 'react';
-// @ts-expect-error
+import React, {
+    FunctionComponent, memo, ReactElement, ReactNode, useEffect, useMemo
+} from 'react';
 import { TextString } from 'chayns-components';
-// @ts-expect-error
-import isTobitEmployee from 'chayns-components/dist/esm/utils/tobitEmployee.js';
+import isTobitEmployee from 'chayns-components/dist/esm/utils/tobitEmployee';
 import generateGuid from '../functions/generateGuid';
 import jsxReplace, { JsxReplacements } from './jsxReplace';
 import TEXTSTRING_CONFIG from './textstringConfig';
 import isNullOrWhiteSpace from '../utils/isNullOrWhiteSpace';
+import colorLog from '../utils/colorLog';
+
+interface TextStringReplacerConfig {
+    children: string | ReactNode;
+    textStringChildren?: ReactNode | null;
+    replacements: JsxReplacements;
+    dangerouslySetInnerHTML?: boolean;
+    maxReplacements?: number;
+    stringName: string;
+    fallback: string;
+    onClick?: (...arg: unknown[]) => unknown;
+    className?: string;
+}
+
+const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
+    children,
+    textStringChildren,
+    dangerouslySetInnerHTML,
+    replacements,
+    maxReplacements,
+    stringName,
+    fallback,
+    ...props
+}) => {
+    // get the string manually if it hasn't been passed by the chayns-components textstring component
+    const calculatedString = TextString.getTextString(stringName) || fallback;
+    const text = typeof (children) === 'string'
+        ? children
+        : calculatedString;
+
+    // generate a guid used for react keys
+    const guid = useMemo(() => generateGuid(), []);
+
+    // calculate the actual content with replacements. To display a mix of strings and react elements this function
+    // creates an array of strings and react elements that is split further and further the more jsx replacements occur
+    const content: Array<ReactElement | string> = useMemo(() => jsxReplace({
+        text,
+        replacements: replacements || {},
+        maxReplacements,
+        useDangerouslySetInnerHTML: dangerouslySetInnerHTML,
+        guid,
+    }), [text, replacements, dangerouslySetInnerHTML, guid, maxReplacements]);
+
+    const elementProps = Array.isArray(textStringChildren)
+        ? props
+        : {
+            ...props,
+            className: `${props?.className
+            || ''} ${(textStringChildren as { props: { className: string } })?.props?.className || ''}`
+        };
+
+    return textStringChildren && React.isValidElement(textStringChildren)
+        ? React.cloneElement(textStringChildren, elementProps, content)
+        : <p {...elementProps}>{content}</p>;
+};
 
 export interface TextStringComplexConfig {
     stringName: string;
@@ -49,6 +104,10 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
     useEffect(() => {
         (async () => {
             try {
+                console.debug(
+                    ...colorLog.gray(`[TextString<${stringName}>]`),
+                    `Auto creation ${autoCreation ? 'enabled' : 'disabled'}`
+                );
                 if (autoCreation
                     && !isNullOrWhiteSpace(fallback)
                     && !isNullOrWhiteSpace(stringName)
@@ -59,7 +118,12 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
                     && chayns.env.user.isAuthenticated
                 ) {
                     isTobitEmployee().then(async () => {
+                        console.debug(
+                            ...colorLog.gray(`[TextString<${stringName}>]`),
+                            'Tobit Employee detected'
+                        );
                         const libResponse = await fetch(
+                            // eslint-disable-next-line max-len
                             `https://webapi.tobit.com/TextStringService/v1.0/langstrings/${TEXTSTRING_CONFIG.libName}?language=de`,
                             {
                                 method: 'GET',
@@ -70,12 +134,17 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
                             }
                         );
                         const libContent = await libResponse.json();
-                        if (libResponse.status === 200 && libContent &&
-                            Object.prototype.toString.call(libContent) === '[object Object]' &&
-                            Object.keys(libContent)
-                                .find(name => name === `${TEXTSTRING_CONFIG.prefix}${stringName}`)
+                        if (libResponse.status === 200 && libContent
+                            && Object.prototype.toString.call(libContent) === '[object Object]'
+                            && !Object.keys(libContent)
+                                .find((name) => name === `${TEXTSTRING_CONFIG.prefix}${stringName}`)
                         ) {
+                            console.debug(
+                                ...colorLog.gray(`[TextString<${stringName}>]`),
+                                'TextString not found, creating TextString'
+                            );
                             const response = await fetch(
+                                // eslint-disable-next-line max-len
                                 `https://webapi.tobit.com/TextStringService/v1.0/V2/LangStrings?libName=${TEXTSTRING_CONFIG.libName}`,
                                 {
                                     method: 'PUT',
@@ -100,18 +169,25 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
                                 }
                             );
                             if (response && response.status === 201) {
+                                // eslint-disable-next-line no-console
                                 console.warn(
-                                    `[TextString] Created string '${TEXTSTRING_CONFIG.prefix}${stringName}' as '${fallback}'. Translated to: en, nl, it, fr, pt, es, tr, pl.`
+                                    ...colorLog.gray(`[TextString<${stringName}>]`),
+                                    // eslint-disable-next-line max-len
+                                    `Created string '${TEXTSTRING_CONFIG.prefix}${stringName}' as '${fallback}'. Translated to: en, nl, it, fr, pt, es, tr, pl.`
                                 );
                             }
                         }
                     });
                 }
             } catch (e) {
-                // ignored
+                console.debug(
+                    ...colorLog.gray(`[TextString<${stringName}>]`),
+                    'An error occurred during auto creation:', e
+                );
             }
         })();
     }, []);
+    // noinspection RequiredAttributes
     return (
         <TextString
             stringName={`${TEXTSTRING_CONFIG.prefix}${stringName}`}
@@ -120,7 +196,7 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
             language={language}
         >
             {
-                /* @ts-expect-error */
+                /* @ts-expect-error children are required but set by TextString via React.CloneElement */
                 <TextStringReplacer
                     dangerouslySetInnerHTML={useDangerouslySetInnerHTML}
                     maxReplacements={maxReplacements}
@@ -134,62 +210,6 @@ const TextStringComplex: FunctionComponent<TextStringComplexConfig> = ({
             }
         </TextString>
     );
-};
-
-interface TextStringReplacerConfig {
-    children: string | ReactNode;
-    textStringChildren?: ReactNode | null;
-    replacements: JsxReplacements;
-    dangerouslySetInnerHTML?: boolean;
-    maxReplacements?: number;
-    stringName: string;
-    fallback: string;
-    onClick?: (...arg: any) => any;
-    className?: string;
-}
-
-const TextStringReplacer: FunctionComponent<TextStringReplacerConfig> = ({
-    children,
-    textStringChildren,
-    dangerouslySetInnerHTML,
-    replacements,
-    maxReplacements,
-    stringName,
-    fallback,
-    ...props
-}) => {
-    // get the string manually if it hasn't been passed by the chayns-components textstring component
-    const calculatedString = TextString.getTextString(stringName) || fallback;
-    const text = typeof (children) === 'string'
-        ? children
-        : calculatedString;
-
-    // generate a guid used for react keys
-    const guid = useMemo(() => generateGuid(), []);
-
-    // calculate the actual content with replacements. To display a mix of strings and react elements this function
-    // creates an array of strings and react elements that is split further and further the more jsx replacements occur
-    const content: Array<ReactElement | string> = useMemo(() => {
-        return jsxReplace({
-            text,
-            replacements: replacements || {},
-            maxReplacements,
-            useDangerouslySetInnerHTML: dangerouslySetInnerHTML,
-            guid,
-        });
-    }, [text, replacements, dangerouslySetInnerHTML, guid, maxReplacements]);
-
-    const elementProps = Array.isArray(textStringChildren)
-        ? props
-        : {
-            ...props,
-            className: `${props?.className ||
-                          ''} ${(textStringChildren as { props: { className: string } })?.props?.className || ''}`
-        }
-
-    return textStringChildren && React.isValidElement(textStringChildren)
-        ? React.cloneElement(textStringChildren, elementProps, content)
-        : <p {...elementProps}>{content}</p>;
 };
 
 export default memo(TextStringComplex);

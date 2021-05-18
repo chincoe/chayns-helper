@@ -21,7 +21,10 @@ const toHslColor = (
     stringOrInt: string | number,
     s?: number,
     l?: number
-): { h: number, s: number, l: number, readonly toString: () => string } => {
+): {
+    // eslint-disable-next-line function-paren-newline
+    h: number, s: number, l: number, readonly toString: () => string
+} => {
     const number: number = typeof (stringOrInt) === 'number' ? stringOrInt : getHashCode(stringOrInt);
     const shortened: number = number % 360;
     // const result = `hsl(${shortened},${s ?? 70}%,${l ?? 40}%)`;

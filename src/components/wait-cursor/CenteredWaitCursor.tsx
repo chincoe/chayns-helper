@@ -1,6 +1,5 @@
 import React, { FunctionComponent, JSXElementConstructor } from 'react';
 import clsx from 'clsx';
-// @ts-expect-error
 import { SmallWaitCursor } from 'chayns-components';
 import './centered-wait-cursor.scss';
 
@@ -16,8 +15,8 @@ import './centered-wait-cursor.scss';
  */
 const CenteredWaitCursor: FunctionComponent<{
     className?: string;
-    style?: object;
-    elementType?: string | JSXElementConstructor<any>;
+    style?: Partial<CSSStyleDeclaration> | Record<string, string | number>;
+    elementType?: string | JSXElementConstructor<Record<string, unknown>>;
     delay?: number;
 }> = (
     {

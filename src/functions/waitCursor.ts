@@ -17,7 +17,7 @@ export type WaitCursorSteps = { [timeout: number]: string | null }
  * @param config
  * @param additionalSteps
  */
-export default function showWaitCursor(config?: WaitCursorConfig, additionalSteps?: WaitCursorSteps) {
+export default function showWaitCursor(config?: WaitCursorConfig, additionalSteps?: WaitCursorSteps): () => void {
     const {
         text = undefined, textTimeout = 5000, timeout: initialTimeout = 300, action = 'showWaitCursor'
     } = config || {};
@@ -32,9 +32,9 @@ export default function showWaitCursor(config?: WaitCursorConfig, additionalStep
     }, initialTimeout));
     for (let i = 0; i < timeoutSteps.length; i++) {
         const currentTimeout = timeoutSteps[i];
-        let stepText: string | null = '';
+        let stepText: string | undefined = '';
         if (additionalSteps) {
-            stepText = additionalSteps[currentTimeout];
+            stepText = additionalSteps[currentTimeout] || undefined;
         }
         let timeout: Timeout | number;
         if (stepText !== null) {

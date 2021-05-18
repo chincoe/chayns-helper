@@ -5,13 +5,13 @@ import React, { useEffect, useState } from 'react';
  * @param effect
  * @param deps
  */
-export default function useUpdateEffect(effect: React.EffectCallback, deps?: any[]) {
+export default function useUpdateEffect(effect: React.EffectCallback, deps?: unknown[]): void {
     const [isFirstRender, setIsFirstRender] = useState(true);
     useEffect(() => {
         if (isFirstRender) {
             setIsFirstRender(false);
-            return (() => {});
+            return (() => { /**/ });
         }
-        return (effect()) || (() => {});
+        return (effect()) || (() => { /**/ });
     }, deps);
 }

@@ -9,9 +9,9 @@ import { createDialogResult } from '../utils';
 const alertDialog = (
     message: string,
     options?: { title?: string }
-): DialogPromise<undefined> => new DialogPromise<undefined>((resolve: (value?: any) => any) => {
+): DialogPromise<undefined> => new DialogPromise<undefined>((resolve) => {
     chayns.dialog.alert(options?.title || '', message ?? '')
-        .then((type: any) => {
+        .then((type: number) => {
             resolve(createDialogResult(type));
         });
 });

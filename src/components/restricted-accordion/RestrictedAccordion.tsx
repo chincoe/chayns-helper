@@ -1,5 +1,4 @@
 import React, { FunctionComponent, ReactNode } from 'react';
-// @ts-expect-error
 import { Accordion, Icon } from 'chayns-components';
 import clsx from 'clsx';
 import './restricted-accordion.scss';
@@ -11,8 +10,8 @@ const RestrictedAccordion: FunctionComponent<{
     className?: string;
     head: ReactNode | string;
     children: ReactNode;
-    onSearch?: (value: string) => any;
-    onSearchEnter?: (value: string) => any;
+    onSearch?: (value: string) => unknown;
+    onSearchEnter?: (value: string) => unknown;
     useAdminStyle?: boolean;
 }> = (
     {

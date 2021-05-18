@@ -3,12 +3,10 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 // import { Thing } from '../.';
 
-const App = () => {
-    return (
-        <div>
-            {/*<Thing />*/}
-        </div>
-    );
-};
+const App = () => (
+    <div>
+        {/* <Thing /> */}
+    </div>
+);
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App/>, document.getElementById('root'));

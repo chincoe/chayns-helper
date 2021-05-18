@@ -5,8 +5,12 @@ import { useState } from 'react';
  * @param initialValue
  */
 const useUniqueTimeout = (
-    initialValue: number = 0
-): [(fn: () => any, timeout: number) => number, (timeout: number) => number] => {
+    initialValue = 0
+): [
+    (fn: () => unknown, timeout: number) => number,
+    // eslint-disable-next-line function-paren-newline
+    (timeout: number) => number
+] => {
     const [customTimeout, setCustomTimeout] = useState<number>(initialValue);
 
     const setter = (timeout: number): number => {
@@ -15,9 +19,7 @@ const useUniqueTimeout = (
         return timeout;
     };
 
-    const wrappedSetter = (fn: () => any, timeout: number) => {
-        return setter(<number><unknown>setTimeout(fn, timeout));
-    }
+    const wrappedSetter = (fn: () => unknown, timeout: number) => setter(<number><unknown>setTimeout(fn, timeout));
 
     return [wrappedSetter, setter];
 };

@@ -1,4 +1,6 @@
-import React, { JSXElementConstructor, memo } from 'react';
+import React, {
+    JSXElementConstructor, memo, NamedExoticComponent
+} from 'react';
 import useRefresh from '../../utils/useRefresh';
 
 /**
@@ -7,9 +9,15 @@ import useRefresh from '../../utils/useRefresh';
  * @param WrappedComponent - the component to be wrapped
  * @param interval - interval in ms to rerender, default: 10000
  */
-const refresh = (WrappedComponent: JSXElementConstructor<any>, interval: number = 10000) => memo((props) => {
-    const [refreshId, refreshFn] = useRefresh(interval);
-    return (<WrappedComponent {...props} __refreshId={refreshId} refreshFunction={refreshFn}/>);
-});
+const refresh = (
+    WrappedComponent: JSXElementConstructor<Record<string, unknown>>,
+    interval = 10000
+// eslint-disable-next-line @typescript-eslint/ban-types
+): NamedExoticComponent<object> => memo(
+    (props) => {
+        const [refreshId, refreshFn] = useRefresh(interval);
+        return (<WrappedComponent {...props} __refreshId={refreshId} refreshFunction={refreshFn}/>);
+    }
+);
 
 export default refresh;

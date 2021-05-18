@@ -18,7 +18,11 @@ export interface JsonSettings {
  * Pass the return value of this function as second argument of JSON.stringify to customize the serialization
  * @param options
  */
-export default function getJsonSettings(options: JsonSettings): (key: string, value: any) => any {
+export default function getJsonSettings(options: JsonSettings): (
+    this: unknown,
+    key: string,
+    value: unknown
+) => unknown {
     const {
         ignoreNullValues = false,
         includeUndefined = false,
@@ -26,10 +30,9 @@ export default function getJsonSettings(options: JsonSettings): (key: string, va
         excludeKeys = [],
         dateTimeZoneHandling = DateTimeZoneHandling.Default
     } = options;
-    return function replacer(key, val) {
+    return function replacer(this: unknown, key, val): unknown {
         // if a value implements a toJSON() method like a Date, the value passed to this method is already stringified
-        // @ts-expect-error
-        const value = key && typeof this === 'object' ? this[key] : val;
+        const value = key && typeof this === 'object' ? (this as Record<string, unknown>)[key] : val;
         if (excludeKeys.includes(key)) {
             return undefined;
         }
@@ -40,29 +43,29 @@ export default function getJsonSettings(options: JsonSettings): (key: string, va
             return null;
         }
         if (dateTimeZoneHandling === DateTimeZoneHandling.LocalOffset
-            && "[object Date]" === Object.prototype.toString.call(value)
+            && Object.prototype.toString.call(value) === '[object Date]'
         ) {
             const offset = new Date().getTimezoneOffset();
             const hourOffset = `00${Math.floor(Math.abs(offset) / 60)}`.slice(-2);
             const minuteOffset = `00${Math.floor(Math.abs(offset) % 60)}`.slice(-2);
-            return `${new Date(value - offset * time.minute).toISOString()
+            return `${new Date((value as Date).getTime() - offset * time.minute).toISOString()
                 .replace(/Z$/, '')}${offset <= 0 ? '+' : '-'}${hourOffset}:${minuteOffset}`;
         }
         if (includeNotSerializable) {
             if (!(typeof (value) === 'number')
                 && !(typeof (value) === 'string')
                 && !(typeof (value) === 'boolean')
-                && "[object Array]" !== Object.prototype.toString.call(value)
-                && "[object Object]" !== Object.prototype.toString.call(value)
-                && "[object Date]" !== Object.prototype.toString.call(value)
+                && Object.prototype.toString.call(value) !== '[object Array]'
+                && Object.prototype.toString.call(value) !== '[object Object]'
+                && Object.prototype.toString.call(value) !== '[object Date]'
                 && value !== null
                 && value !== undefined
             ) {
                 return `${value}`;
             }
         }
-        if (value && typeof value === 'object' && value.toJSON && typeof value.toJSON === 'function') {
-            return value.toJSON();
+        if (value && (value as Date)?.toJSON && typeof (value as Date).toJSON === 'function') {
+            return (value as Date).toJSON();
         }
         return value;
     };

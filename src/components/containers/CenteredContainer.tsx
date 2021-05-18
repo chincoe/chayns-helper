@@ -1,13 +1,14 @@
-import React, { FunctionComponent, JSXElementConstructor } from 'react';
+import React, { FunctionComponent, JSXElementConstructor, ReactNode } from 'react';
 import clsx from 'clsx';
 import './centered-container.scss';
 
-export interface CenteredContainer {
+export interface CenteredContainerProps {
     className?: string;
     style?: Partial<CSSStyleDeclaration> | Record<string, string | number>;
     gap?: boolean;
     vertical?: boolean;
-    elementType?: string | JSXElementConstructor<any>;
+    elementType?: string | JSXElementConstructor<Record<string, unknown>>;
+    children: ReactNode;
 }
 
 /**
@@ -21,7 +22,7 @@ export interface CenteredContainer {
  * @param props
  * @constructor
  */
-const CenteredContainer: FunctionComponent<CenteredContainer> = (
+const CenteredContainer: FunctionComponent<CenteredContainerProps> = (
     {
         className = '',
         style = {},

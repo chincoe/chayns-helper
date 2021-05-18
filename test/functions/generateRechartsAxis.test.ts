@@ -1,3 +1,5 @@
+// noinspection ES6PreferShortImport
+
 import { generateRechartsAxis } from '../../src/functions/generateRechartsAxis';
 
 describe('functions/generateRechartsAxis', () => {
@@ -18,7 +20,7 @@ describe('functions/generateRechartsAxis', () => {
             min: 0,
             max: 100,
             ticks: [0, 20, 40, 60, 80]
-        })
+        });
         expect(generateRechartsAxis({
             start: 0, end: 100, divisor: [5, 10, 25], maxTicks: 5, minTicks: 3
         }))
@@ -28,6 +30,6 @@ describe('functions/generateRechartsAxis', () => {
                 min: 0,
                 max: 100,
                 ticks: [0, 25, 50, 75]
-            })
-    })
-})
+            });
+    });
+});
