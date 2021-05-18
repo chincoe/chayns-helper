@@ -27,7 +27,7 @@
     "pub:patch": "npm version patch --no-git-tag-version && node scripts.js -publish -release",
     "pub:minor": "npm version minor --no-git-tag-version && node scripts.js -publish -release",
     "pub:major": "npm version major --no-git-tag-version && node scripts.js -publish -release",
-    "lint": "tsdx lint src",
+    "lint": "eslint src/** --ext ts,tsx",
     "size": "npm run build && size-limit",
     "size:analyze": "size-limit --why",
     "prepare": "npm run build",
