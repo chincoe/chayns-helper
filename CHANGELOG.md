@@ -1,3 +1,22 @@
+<a name="2.18.0"></a>
+
+## [2.18.0](https://github.com/chincoe/chayns-helper/compare/v2.17.0...v2.18.0) (2021-05-18)
+
+### Bug fixes
+
+* TextString
+  * Fix a faulty condition that broke autoCreation
+  
+### Changes
+
+* General
+  * Slightly updated various types to match eslint rules
+
+* eslint
+  * Fix eslint implementation
+  * Fix all eslint warnings
+  * Add lint script to deplyment
+
 <a name="2.17.0"></a>
 
 ## [2.17.0](https://github.com/chincoe/chayns-helper/compare/v2.16.7...v2.17.0) (2021-05-11)
