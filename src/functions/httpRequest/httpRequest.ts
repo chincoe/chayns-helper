@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import isNullOrWhiteSpace from '../../utils/isNullOrWhiteSpace';
 import logger from '../../utils/requireChaynsLogger';
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
@@ -5,7 +6,7 @@ import colorLog from '../../utils/colorLog';
 import generateUUID from '../generateGuid';
 import stringToRegex, { regexRegex, stringToRegexStrict } from '../../utils/stringToRegex';
 import ChaynsError, { ChaynsErrorObject } from './ChaynsError';
-import { HttpMethod } from './HttpMethod';
+import HttpMethod from './HttpMethod';
 import {
     getLogFunctionByStatus,
     getMapKeys,
@@ -15,9 +16,9 @@ import {
 } from './httpRequestUtils';
 import RequestError from './RequestError';
 import { ObjectResponse, ResponseType, ResponseTypeList } from './ResponseType';
-import { LogLevel } from './LogLevel';
+import LogLevel from './LogLevel';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
-import { HttpStatusCode } from './HttpStatusCodes';
+import HttpStatusCode from './HttpStatusCodes';
 import showWaitCursor from '../waitCursor';
 import getJsonSettings, { JsonSettings } from '../getJsonSettings';
 import getJwtPayload from '../getJwtPayload';
@@ -36,17 +37,19 @@ export interface HttpRequestConfig {
     useChaynsAuth?: boolean;
     headers?: HeadersInit | Record<string, string> & {
         Authorization?: string
+            /* eslint-disable no-template-curly-in-string */
             | 'Bearer ${chayns.env.user.tobitAccessToken}'
             | 'Bearer ${token}'
             | 'Basic ${credentials}'
             | 'Basic ${btoa(`${user}:${secret}`).replace(`+`, `-`).replace(`/`, `_`).replace(/=+$/, ``)}';
+        /* eslint-enable no-template-curly-in-string */
         'Content-Type'?: string
             | 'application/json'
             | 'text/plain'
             | 'application/x-www-form-urlencoded'
             | 'multipart/form-data';
     };
-    body?: object | string | FormData | any;
+    body?: Record<string, unknown> | BodyInit;
     cache?: string | 'default' | 'no-cache' | 'reload' | 'force-cache' | 'only-if-cached';
     referrer?: string;
     referrerPolicy?: string
@@ -89,22 +92,32 @@ export interface HttpRequestOptions {
     throwErrors?: boolean | Array<HttpStatusCode | number>;
     logConfig?: { [key: string]: LogLevel } | Map<string, LogLevel>;
     stringifyBody?: boolean | JsonSettings;
-    additionalLogData?: object;
+    additionalLogData?: Record<string, unknown>;
     autoRefreshToken?: boolean;
     waitCursor?: boolean
         | { text?: string, textTimeout?: number, timeout?: number, }
         | { timeout?: number, steps?: { [timeout: number]: string }; };
-    statusHandlers?: { [key: string]: ResponseType | ((response: Response) => any) } | Map<string, ResponseType | ((response: Response) => any)>;
-    errorHandlers?: { [key: string]: ResponseType | ((response: Response) => any) } | Map<string, ResponseType | ((response: Response) => any)>;
+    statusHandlers?: Record<string, ResponseType | ((response: Response) => unknown)>
+        | Map<string, ResponseType | ((response: Response) => unknown)>;
+    errorHandlers?: Record<string, ResponseType | ((response: Response) => unknown)>
+        | Map<string, ResponseType | ((response: Response) => unknown)>;
     errorDialogs?: Array<string | RegExp>;
-    replacements?: { [key: string]: string | ((substring: string, ...args: any[]) => string) };
+    replacements?: { [key: string]: string | ((substring: string, ...args: unknown[]) => string) };
     sideEffects?: ((status: number, chaynsErrorObject?: ChaynsErrorObject) => void)
         | Record<string, (chaynsErrorObject?: ChaynsErrorObject) => void>
-        | {};
+        | Record<string, never>;
     internalRequestGuid?: string;
 }
 
-export type httpRequestResult = Response | ObjectResponse | Blob | Object | string | RequestError | ChaynsError | any;
+export type httpRequestResult =
+    Response
+    | ObjectResponse
+    | Blob
+    | Record<string, unknown>
+    | string
+    | RequestError
+    | ChaynsError
+    | unknown;
 
 /**
  * Extensive and highly customizable fetch helper. Consult httpRequest.md for usage.
@@ -119,7 +132,7 @@ export function httpRequest(
     // fetch config
     config: HttpRequestConfig = {},
     // processName for logs
-    processName: string = 'httpRequest',
+    processName = 'httpRequest',
     // options for this helper
     options: HttpRequestOptions = {},
 ): Promise<httpRequestResult> {
@@ -127,7 +140,7 @@ export function httpRequest(
         responseType: ResponseType.Json,
         ...(defaultConfig.options || {}),
         ...(options || {})
-    }
+    };
     const {
         throwErrors,
         stringifyBody: defaultStringify = true,
@@ -149,8 +162,10 @@ export function httpRequest(
 
     // TODO: Remove in future release
     if (responseType === ResponseType.Object) {
+        // eslint-disable-next-line no-console
         console.warn(
             ...colorLog.gray(`[HttpRequest<${processName}>]`),
+            // eslint-disable-next-line max-len
             'ResponseType.Object is deprecated and will be removed in the future. Use ResponseType.JsonWithStatus instead.'
         );
         responseType = ResponseType.JsonWithStatus;
@@ -176,7 +191,7 @@ export function httpRequest(
                     options: defaultConfig.options,
                     config: defaultConfig.config
                 }
-            })
+            });
             // properly merge the status handlers and log config of options and default options. The function returns a
             // map to have a reliable key order to ensure that all options have a higher priority than default options
 
@@ -196,7 +211,7 @@ export function httpRequest(
             const stringifyBody = typeof defaultConfig.options.stringifyBody === 'object'
                                   && typeof options.stringifyBody === 'object'
                 ? { ...defaultConfig.options.stringifyBody, ...options.stringifyBody }
-                : defaultStringify
+                : defaultStringify;
             // merge url replacements
             const replacements = {
                 [/##locationId##/ig.toString()]: `${chayns.env.site.locationId}`,
@@ -206,11 +221,11 @@ export function httpRequest(
                 [/##personId##/ig.toString()]: `${chayns.env.user.personId}`,
                 ...(defaultConfig?.options?.replacements || {}),
                 ...(options?.replacements || {})
-            }
+            };
             // merge side effects
             const optionEffects = options?.sideEffects;
             const defaultEffects = defaultConfig?.options?.sideEffects;
-            let sideEffects = options.sideEffects;
+            let { sideEffects } = options;
             if (typeof optionEffects === 'object' && typeof defaultEffects === 'object') {
                 sideEffects = {
                     ...defaultConfig.options?.sideEffects,
@@ -220,15 +235,16 @@ export function httpRequest(
                 sideEffects = defaultEffects;
             }
             const sideEffect: ((status: number, chaynsErrorObject?: ChaynsErrorObject) => void)
-                | Record<string, (chaynsErrorObject?: ChaynsErrorObject) => void> = sideEffects || (() => {
-            });
+                | Record<string, (chaynsErrorObject?: ChaynsErrorObject) => void> = sideEffects || (() => undefined);
 
             // set default for process name
+            // eslint-disable-next-line no-param-reassign
             if (!processName) processName = 'HttpRequest';
             // validate responseType
             if (responseType != null && !ResponseTypeList.includes(responseType)) {
                 console.error(
                     ...colorLog.gray(`[HttpRequest<${processName}>]`),
+                    // eslint-disable-next-line max-len
                     `Response type "${responseType}" is not valid. Use ResponseType.[Json|Text|Response|None|Blob|Status.Json] instead.`
                 );
                 reject(new Error('Invalid responseType'));
@@ -246,6 +262,7 @@ export function httpRequest(
             if (fetchConfig.mode === 'no-cors') {
                 console.warn(
                     ...colorLog.gray(`[HttpRequest<${processName}>]`),
+                    // eslint-disable-next-line max-len
                     '`mode:\'no-cors\'` will remove your authorization header and return an opaque response with status code 0. Please check if `credentials: \'omit\' yields the desired result first.`'
                 );
             }
@@ -259,7 +276,7 @@ export function httpRequest(
             const jsonSettings = typeof stringifyBody !== 'boolean' && typeof stringifyBody === 'object'
                 ? getJsonSettings(stringifyBody)
                 : null;
-            // @ts-expect-error
+            // @ts-expect-error JSON.stringify type definition is not correct
             const jsonBody: string | null = body && stringifyBody ? JSON.stringify(body, jsonSettings) : null;
 
             // create request headers
@@ -273,7 +290,7 @@ export function httpRequest(
 
             // this way fetch config elements like "credentials", "mode", or "signal" can be passed to fetch()
             const remainingFetchConfig: RequestInit = <RequestInit>{ ...fetchConfig };
-            // @ts-expect-error
+            // @ts-expect-error .useChaynsAuth is present but not included in type to avoid further issues
             delete remainingFetchConfig.useChaynsAuth;
 
             // create request address
@@ -285,7 +302,7 @@ export function httpRequest(
             } else {
                 requestAddress = address;
             }
-            if (replacements && Object.prototype.toString.call(replacements) === "[object Object]") {
+            if (replacements && Object.prototype.toString.call(replacements) === '[object Object]') {
                 const replacementKeys: Array<string> = Object.keys(replacements);
                 for (let i = 0; i < replacementKeys.length; i++) {
                     if (regexRegex.test(replacementKeys[i])) {
@@ -315,54 +332,55 @@ export function httpRequest(
                 internalRequestGuid,
                 errorDialogs,
                 responseType
-            })
+            });
 // INPUT HANDLING END
             // define side effects call
             const callSideEffects = (status: number, chaynsErrorObject?: ChaynsErrorObject) => {
                 console.debug(
-                    ...colorLog.gray(`[HttpRequest<${processName}>]`), `Calling sideEffect for status ${status}`);
+                    ...colorLog.gray(`[HttpRequest<${processName}>]`), `Calling sideEffect for status ${status}`
+                );
                 if (typeof sideEffect === 'function') {
                     (sideEffect as (status: number, chaynsErrorObject?: ChaynsErrorObject) => void)(
-                        status, chaynsErrorObject)
+                        status, chaynsErrorObject
+                    );
                 } else {
                     const sideEffectList = Object.keys(
                         sideEffects as Record<string, (chaynsErrorObject?: ChaynsErrorObject) => void>
-                    ).filter(k => k === `${status}`
-                                  || (chaynsErrorObject && k === chaynsErrorObject.errorCode)
-                                  || stringToRegexStrict(k).test(`${status}`)
-                                  || (chaynsErrorObject && stringToRegexStrict(k).test(chaynsErrorObject.errorCode))
-                    );
+                    ).filter((k) => k === `${status}`
+                                    || (chaynsErrorObject && k === chaynsErrorObject.errorCode)
+                                    || stringToRegexStrict(k).test(`${status}`)
+                                    || (chaynsErrorObject && stringToRegexStrict(k).test(chaynsErrorObject.errorCode)));
                     for (let i = 0; i < sideEffectList.length; ++i) {
                         sideEffect[sideEffectList[i]](chaynsErrorObject);
                     }
                 }
-            }
+            };
             // define error/status handler getter
             const getHandlers = (status: number, err?: Error | RequestError | ChaynsError) => {
                 // get statusHandler if exists
                 const handlerKeys = getMapKeys(statusHandlers);
-                const statusHandlerKey = handlerKeys.find((k) =>
-                    (k === `${status}` || stringToRegexStrict(k).test(`${status}`))
-                    && (typeof (statusHandlers.get(k)) === 'function'
-                        || ResponseTypeList.includes(statusHandlers.get(k)))
+                const statusHandlerKey = handlerKeys.find(
+                    (k) => (k === `${status}` || stringToRegexStrict(k).test(`${status}`))
+                           && (typeof (statusHandlers.get(k)) === 'function'
+                               || ResponseTypeList.includes(statusHandlers.get(k) as ResponseType))
                 );
 
                 // get errorHandler if exists
                 const errorKeys = getMapKeys(errorHandlers);
                 const isChayns: boolean = !!err && (err instanceof ChaynsError);
                 const chaynsErrorCode: string | null = isChayns ? (<ChaynsError>err).errorCode : null;
-                const errorHandlerKey = errorKeys.find((k) =>
-                    (chaynsErrorCode && (k === chaynsErrorCode || stringToRegexStrict(k).test(chaynsErrorCode)))
-                    && (typeof (errorHandlers.get(k)) === 'function'
-                        || ResponseTypeList.includes(errorHandlers.get(k)))
+                const errorHandlerKey = errorKeys.find(
+                    (k) => (chaynsErrorCode && (k === chaynsErrorCode || stringToRegexStrict(k).test(chaynsErrorCode)))
+                           && (typeof (errorHandlers.get(k)) === 'function'
+                               || ResponseTypeList.includes(errorHandlers.get(k) as ResponseType))
                 );
                 return {
-                    statusHandler: statusHandlers.get(statusHandlerKey),
-                    errorHandler: errorHandlers.get(errorHandlerKey)
+                    statusHandler: statusHandlers.get(statusHandlerKey as string),
+                    errorHandler: errorHandlers.get(errorHandlerKey as string)
                 };
             };
             // define resolve wrapper
-            const resolve = (value?: any) => {
+            const resolve = (value?: unknown) => {
                 globalResolve(value);
                 console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolved with value:', value);
                 logger.info(jsonLog({
@@ -388,18 +406,16 @@ export function httpRequest(
                     errorHandler,
                     status,
                     statusHandler,
-                })
+                });
                 if (errorHandler || statusHandler) {
                     return false;
-                } else {
-                    if (!throwErrors || (status && Array.isArray(throwErrors) && throwErrors.includes(status))) {
-                        return false;
-                    } else {
-                        callSideEffects(status, (err as ChaynsError)?.errorObject);
-                        reject(err);
-                        return true;
-                    }
                 }
+                if (!throwErrors || (status && Array.isArray(throwErrors) && throwErrors.includes(status))) {
+                    return false;
+                }
+                callSideEffects(status, (err as ChaynsError)?.errorObject);
+                reject(err);
+                return true;
             };
 
             const fetchStartTime = Date.now();
@@ -410,7 +426,7 @@ export function httpRequest(
                     ...remainingFetchConfig,
                     method: <string>method,
                     headers: new Headers(requestHeaders),
-                    body: stringifyBody ? jsonBody : body
+                    body: (stringifyBody ? jsonBody : body) as BodyInit
                 });
                 if (!response) {
                     // noinspection ExceptionCaughtLocallyJS
@@ -440,7 +456,7 @@ export function httpRequest(
                             status: 1
                         },
                         input,
-                        // @ts-expect-error
+                        // @ts-expect-error navigator.connection is not typed because it does not exist everywhere
                         online: `${navigator?.onLine}, ${navigator?.connection?.effectiveType}`,
                         requestDuration: `${Date.now() - fetchStartTime} ms`,
                         requestTime: new Date(fetchStartTime).toISOString(),
@@ -454,7 +470,7 @@ export function httpRequest(
                 const { statusHandler, errorHandler } = getHandlers(status, err);
                 (statusHandler || errorHandler ? console.warn : console.error)(
                     ...colorLog.gray(`[HttpRequest<${processName}>]`),
-                    `Request failed:`, err, '\nInput: ', input
+                    'Request failed:', err, '\nInput: ', input
                 );
                 if (errorHandler) {
                     callSideEffects(status);
@@ -468,7 +484,8 @@ export function httpRequest(
                         internalRequestGuid
                     );
                     return;
-                } else if (statusHandler) {
+                }
+                if (statusHandler) {
                     callSideEffects(status);
                     await resolveWithHandler(
                         statusHandler,
@@ -480,53 +497,52 @@ export function httpRequest(
                         internalRequestGuid
                     );
                     return;
-                } else {
-                    if (!throwErrors || (status && Array.isArray(throwErrors) && throwErrors.includes(status))) {
-                        callSideEffects(status);
-                        switch (responseType) {
-                            case ResponseType.None:
-                                resolve();
-                                break;
-                            case ResponseType.NoneWithStatus:
-                                resolve({ status, data: undefined });
-                                break;
-                            case ResponseType.BinaryWithStatus:
-                            case ResponseType.BlobWithStatus:
-                            case ResponseType.JsonWithStatus:
-                            case ResponseType.TextWithStatus:
-                                resolve({
-                                    status,
-                                    data: null
-                                });
-                                break;
-                            case ResponseType.ThrowError:
-                                const error = new RequestError(`Status ${status} on ${processName}`, status);
-                                console.warn(
-                                    ...colorLog.gray(`[HttpRequest<${processName}>]`),
-                                    'ResponseType \'error\':', error, '\nInput: ', input
-                                );
-                                reject(error);
-                                break;
-                            case ResponseType.Response:
-                                resolve(response || { status });
-                                break;
-                            case ResponseType.Binary:
-                            case ResponseType.Text:
-                            case ResponseType.Blob:
-                            case ResponseType.Json:
-                                resolve(null);
-                                break;
-                            default:
-                                resolve(response || null);
-                                break;
-                        }
-                        return;
-                    } else {
-                        callSideEffects(status);
-                        reject(err);
-                        return;
-                    }
                 }
+                if (!throwErrors || (status && Array.isArray(throwErrors) && throwErrors.includes(status))) {
+                    callSideEffects(status);
+                    switch (responseType) {
+                        case ResponseType.None:
+                            resolve();
+                            break;
+                        case ResponseType.NoneWithStatus:
+                            resolve({ status, data: undefined });
+                            break;
+                        case ResponseType.BinaryWithStatus:
+                        case ResponseType.BlobWithStatus:
+                        case ResponseType.JsonWithStatus:
+                        case ResponseType.TextWithStatus:
+                            resolve({
+                                status,
+                                data: null
+                            });
+                            break;
+                        case ResponseType.ThrowError:
+                            const error = new RequestError(`Status ${status} on ${processName}`, status);
+                            console.warn(
+                                ...colorLog.gray(`[HttpRequest<${processName}>]`),
+                                'ResponseType \'error\':', error, '\nInput: ', input
+                            );
+                            reject(error);
+                            break;
+                        case ResponseType.Response:
+                            resolve(response || { status });
+                            break;
+                        case ResponseType.Binary:
+                        case ResponseType.Text:
+                        case ResponseType.Blob:
+                        case ResponseType.Json:
+                            resolve(null);
+                            break;
+                        default:
+                            resolve(response || null);
+                            break;
+                    }
+                    return;
+                }
+                callSideEffects(status);
+                reject(err);
+                return;
+
 // HANDLE FAILED TO FETCH END
             }
             const { status } = response;
@@ -559,7 +575,8 @@ export function httpRequest(
                                            && !!getJwtPayload((requestHeaders as { Authorization: string })
                                 ?.Authorization)
                                 ? `Payload: ${(requestHeaders as { Authorization: string }).Authorization.split(
-                                    '.')[1]}`
+                                    '.'
+                                )[1]}`
                                 : undefined
                         },
                     },
@@ -572,7 +589,7 @@ export function httpRequest(
                         url: response.url
                     },
                     input,
-                    // @ts-expect-error
+                    // @ts-expect-error navigator.connection is not typed because it does not exist everywhere
                     online: `${navigator?.onLine}, ${navigator?.connection?.effectiveType}`,
                     requestDuration: `${Date.now() - fetchStartTime} ms`,
                     requestTime: new Date(fetchStartTime).toISOString(),
@@ -587,7 +604,7 @@ export function httpRequest(
 
             let defaultLog = logger.error;
             if (status < 400) {
-                defaultLog = (logger.info as (data: Record<string, any>, error?: Error) => any);
+                defaultLog = (logger.info as (data: Record<string, unknown>, error?: Error) => void);
             }
             if (status === 401) {
                 defaultLog = logger.warning;
@@ -596,11 +613,13 @@ export function httpRequest(
 
             const chaynsErrorObject = await ChaynsError.getChaynsErrorObject(responseBody);
             if (chaynsErrorObject) {
-                chaynsErrorObject.showDialog = !!errorDialogs.find((e) =>
-                    (e === chaynsErrorObject.errorCode)
-                    || (Object.prototype.toString.call(e) === '[object RegExp]'
-                        && (<RegExp>e).test(chaynsErrorObject.errorCode)
-                    ));
+                chaynsErrorObject.showDialog = !!errorDialogs.find((e) => (e === chaynsErrorObject.errorCode)
+                                                                          || (Object.prototype.toString.call(e)
+                                                                              === '[object RegExp]'
+                                                                              && (<RegExp>e).test(
+                            chaynsErrorObject.errorCode
+                        )
+                                                                          ));
             }
             if (chaynsErrorObject && chaynsErrorObject?.showDialog) {
                 chayns.dialog.alert('', chaynsErrorObject.displayMessage);
@@ -628,7 +647,7 @@ export function httpRequest(
                 );
                 if (useChaynsAuth && autoRefreshToken) {
                     try {
-                        let jRes: { [key: string]: any } = {};
+                        let jRes: Record<string, unknown> = {};
                         try { jRes = await response.json(); } catch (e) { /* ignored */ }
                         if (jRes.message === 'token_expired') {
                             callSideEffects(<number>status, chaynsErrorObject || undefined);
@@ -643,15 +662,11 @@ export function httpRequest(
                                 errorHandlers,
                                 internalRequestGuid
                             }));
-                        } else {
-                            if (tryReject(error, status)) return;
-                        }
+                        } else if (tryReject(error, status)) return;
                     } catch (err) {
                         if (tryReject(error, status)) return;
                     }
-                } else {
-                    if (tryReject(error, status)) return;
-                }
+                } else if (tryReject(error, status)) return;
             } else {
                 const error = chaynsErrorObject
                     ? new ChaynsError(chaynsErrorObject, processName, status)
@@ -692,9 +707,9 @@ export function httpRequest(
                     console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolving with errorHandler', {
                         errorCode,
                         handler
-                    })
+                    });
                     const result = await resolveWithHandler(
-                        handler,
+                        handler as ResponseType | ((response: Response) => unknown),
                         response,
                         status,
                         processName,
@@ -711,7 +726,7 @@ export function httpRequest(
                 // 1.2 errorHandlers[chaynsErrorRegex]
                 if (errorHandlers && errorHandlers.size > 0) {
                     const errorKeys = getMapKeys(errorHandlers);
-                    const key: string = errorKeys.find((k) => (stringToRegexStrict(k).test(errorCode)));
+                    const key: string = errorKeys.find((k) => (stringToRegexStrict(k).test(errorCode))) as string;
                     const handler = errorHandlers.get(key);
                     if (handler) {
                         console.debug(
@@ -719,7 +734,8 @@ export function httpRequest(
                                 errorCode,
                                 handler,
                                 key
-                            })
+                            }
+                        );
                         const result = await resolveWithHandler(
                             handler,
                             response,
@@ -744,9 +760,9 @@ export function httpRequest(
                 console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolving with statusHandler', {
                     handler,
                     status
-                })
+                });
                 const result = await resolveWithHandler(
-                    handler,
+                    handler as ResponseType | ((response: Response) => unknown),
                     response,
                     status,
                     processName,
@@ -767,7 +783,8 @@ export function httpRequest(
                         ...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolving with regex statusHandler', {
                             status,
                             handler
-                        })
+                        }
+                    );
                     const result = await resolveWithHandler(
                         handler,
                         response,
@@ -785,9 +802,9 @@ export function httpRequest(
             }
 
             console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Resolve with default response type', {
-                responseType: responseType,
+                responseType,
                 fallback: ResponseType.Json
-            })
+            });
             // 3. responseType
             callSideEffects(<number>status, chaynsErrorObject || undefined);
             const result = await resolveWithHandler(
@@ -800,7 +817,7 @@ export function httpRequest(
                 internalRequestGuid
             );
             if (result) return;
-            console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Failed to resolve, using fallback')
+            console.debug(...colorLog.gray(`[HttpRequest<${processName}>]`), 'Failed to resolve, using fallback');
             resolve(response);
         })();
     });

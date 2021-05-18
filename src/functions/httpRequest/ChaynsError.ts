@@ -4,7 +4,7 @@ import RequestError from './RequestError';
 export interface ChaynsErrorObject {
     displayMessage: string,
     errorCode: string;
-    parameters: { [key: string]: any };
+    parameters: Record<string, unknown>;
     requestId: string;
     showDialog?: boolean;
 }
@@ -15,20 +15,22 @@ export interface ChaynsErrorObject {
  * @class
  */
 export default class ChaynsError extends RequestError {
-    displayMessage: string = '';
+    displayMessage = '';
 
-    errorCode: string = '';
+    errorCode = '';
 
-    parameters: object = {};
+    parameters: Record<string, unknown> = {};
 
-    requestId: string = '';
+    requestId = '';
 
     errorObject: ChaynsErrorObject;
 
-    static async getChaynsErrorObject(value: object | Response | Promise<any>): Promise<ChaynsErrorObject | null> {
+    static async getChaynsErrorObject(
+        value: Record<string, unknown> | Response | Promise<unknown>
+    ): Promise<ChaynsErrorObject | null> {
         if (value instanceof Response) {
             const response = value.clone();
-            let obj: { [key: string]: any } | ChaynsErrorObject = {};
+            let obj: Record<string, unknown> | ChaynsErrorObject = {};
             try {
                 obj = await response.json();
             } catch (e) { /* ignored */ }
@@ -36,12 +38,12 @@ export default class ChaynsError extends RequestError {
                 return <ChaynsErrorObject>obj;
             }
         }
-        if (value && typeof (<Promise<any>>value)?.then === 'function') {
+        if (value && typeof (<Promise<unknown>>value)?.then === 'function') {
             const result = await Promise.resolve(value);
-            return ChaynsError.getChaynsErrorObject(result);
+            return ChaynsError.getChaynsErrorObject(result as Promise<unknown>);
         }
         if (isChaynsErrorObject(value)) {
-            return value;
+            return value as unknown as ChaynsErrorObject;
         }
         return null;
     }

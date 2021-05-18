@@ -4,11 +4,11 @@ import { regexRegex, stringToRegexStrict } from '../../utils/stringToRegex';
 import ChaynsError, { ChaynsErrorObject } from './ChaynsError';
 import getChaynsErrorCode from './getChaynsErrorCode';
 import { chaynsErrorCodeRegex } from './isChaynsError';
-import { LogLevel } from './LogLevel';
+import LogLevel from './LogLevel';
 import RequestError from './RequestError';
 import { ResponseType, ResponseTypeList } from './ResponseType';
 
-export const getMapKeys = (map: Map<string, any>) => {
+export const getMapKeys = (map: Map<string, unknown>): string[] => {
     const result = [];
     const keys = map.keys();
     for (let i = 0; i < map.size; i++) {
@@ -21,9 +21,9 @@ export const getMapKeys = (map: Map<string, any>) => {
 export async function getLogFunctionByStatus(
     status: number,
     logConfig: Map<string, LogLevel>,
-    defaultFunction: (data: Record<string, any>) => any,
+    defaultFunction: (data: Record<string, unknown>) => unknown,
     chaynsErrorObject?: ChaynsErrorObject
-): Promise<(data: Record<string, any>, error?: Error) => any> {
+): Promise<(data: Record<string, unknown>, error?: Error) => unknown> {
     const logKeys: string[] = [];
     const mapKeys = getMapKeys(logConfig);
     logKeys.push(...(mapKeys.filter((k) => !/^[0-9]+$/.test(k)
@@ -31,13 +31,13 @@ export async function getLogFunctionByStatus(
                                            && chaynsErrorCodeRegex.test(k))));
     logKeys.push(...(mapKeys.filter((k) => !logKeys.includes(k))));
 
-    console.debug(...colorLog.gray(`[HttpRequest]`), 'Getting log level by status', {
+    console.debug(...colorLog.gray('[HttpRequest]'), 'Getting log level by status', {
         status,
         defaultFunction,
         chaynsErrorObject,
         logConfig,
         logKeys
-    })
+    });
 
     let chaynsErrorCode: string | null = null;
     if (chaynsErrorObject) {
@@ -51,12 +51,12 @@ export async function getLogFunctionByStatus(
             || (chaynsErrorCode && key === chaynsErrorCode)
             || (chaynsErrorCode && stringToRegexStrict(key).test(chaynsErrorCode))
         ));
-    console.debug(...colorLog.gray(`[HttpRequest]`), 'Found log key for status', {
+    console.debug(...colorLog.gray('[HttpRequest]'), 'Found log key for status', {
         status,
         chaynsErrorCode,
         levelKey,
-        level: logConfig.get(levelKey || "")
-    })
+        level: logConfig.get(levelKey || '')
+    });
     if (levelKey && logConfig.get(levelKey)) {
         switch (logConfig.get(levelKey)) {
             case LogLevel.info:
@@ -68,6 +68,7 @@ export async function getLogFunctionByStatus(
             case LogLevel.critical:
                 return logger.critical;
             case LogLevel.none:
+                // eslint-disable-next-line no-console
                 return console.warn;
             default:
                 console.error(
@@ -82,8 +83,8 @@ export async function getLogFunctionByStatus(
 
 export function getStatusHandlerByStatusRegex(
     status: number,
-    statusHandlers: Map<string, (response: Response) => any>
-): ((value?: any) => any) | ResponseType | null | undefined {
+    statusHandlers: Map<string, ((response: Response) => unknown) | ResponseType>
+): ((response: Response) => unknown) | ResponseType | null | undefined {
     const keys = getMapKeys(statusHandlers);
     for (let i = 0; i < keys.length; i += 1) {
         const regExp = stringToRegexStrict(keys[i]);
@@ -102,7 +103,7 @@ export const jsonResolve = async (
     response: Response,
     addStatus: boolean,
     processName: string,
-    resolve: (value: any) => void,
+    resolve: (value: unknown) => void,
     internalRequestGuid: string | null = null
 ): Promise<void> => {
     const { status } = response;
@@ -115,8 +116,10 @@ export const jsonResolve = async (
             data: { internalRequestGuid },
             section: '[chayns-helper]httpRequest.js',
         }, err);
+        // eslint-disable-next-line no-console
         console.warn(
             ...colorLog.gray(`[HttpRequest<${processName}>]`),
+            // eslint-disable-next-line max-len
             `Getting JSON body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.None } }, '\n', err
         );
@@ -128,7 +131,7 @@ export const binaryResolve = async (
     response: Response,
     addStatus: boolean,
     processName: string,
-    resolve: (value: any) => void,
+    resolve: (value: unknown) => void,
     internalRequestGuid: string | null = null
 ): Promise<void> => {
     const { status } = response;
@@ -141,7 +144,10 @@ export const binaryResolve = async (
             data: { internalRequestGuid },
             section: '[chayns-helper]httpRequest.js',
         }, err);
-        console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
+        // eslint-disable-next-line no-console
+        console.warn(
+            ...colorLog.gray(`[HttpRequest<${processName}>]`),
+            // eslint-disable-next-line max-len
             `Getting Binary body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.None } }, '\n', err
         );
@@ -153,7 +159,7 @@ export const blobResolve = async (
     response: Response,
     addStatus: boolean,
     processName: string,
-    resolve: (value: any) => void,
+    resolve: (value: unknown) => void,
     internalRequestGuid: string | null = null
 ): Promise<void> => {
     const { status } = response;
@@ -166,7 +172,10 @@ export const blobResolve = async (
             data: { internalRequestGuid },
             section: '[chayns-helper]httpRequest.js',
         }, err);
-        console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
+        // eslint-disable-next-line no-console
+        console.warn(
+            ...colorLog.gray(`[HttpRequest<${processName}>]`),
+            // eslint-disable-next-line max-len
             `Getting BLOB body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.None } }, '\n', err
         );
@@ -178,7 +187,7 @@ export const textResolve = async (
     response: Response,
     addStatus: boolean,
     processName: string,
-    resolve: (value: any) => void,
+    resolve: (value: unknown) => void,
     internalRequestGuid: string | null = null
 ): Promise<void> => {
     const { status } = response;
@@ -191,7 +200,10 @@ export const textResolve = async (
             data: { internalRequestGuid },
             section: '[chayns-helper]httpRequest.js',
         }, err);
-        console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`),
+        // eslint-disable-next-line no-console
+        console.warn(
+            ...colorLog.gray(`[HttpRequest<${processName}>]`),
+            // eslint-disable-next-line max-len
             `Getting text body failed on Status ${status} on ${processName}. If this is expected behavior, consider adding a statusHandler in your request options for this case:`,
             { statusHandlers: { [status]: ResponseType.None } }, '\n', err
         );
@@ -200,12 +212,12 @@ export const textResolve = async (
 };
 
 export async function resolveWithHandler(
-    handler: ResponseType | ((response: Response) => any),
+    handler: ResponseType | ((response: Response) => unknown),
     response: Response,
     status: number,
     processName: string,
-    resolve: (value?: any) => any,
-    reject: (value?: any) => any,
+    resolve: (value?: unknown) => void,
+    reject: (value?: unknown) => void,
     internalRequestGuid: string,
     chaynsErrorObject: ChaynsErrorObject | null = null,
 ): Promise<boolean> {
@@ -214,7 +226,7 @@ export async function resolveWithHandler(
         response,
         status,
         chaynsErrorObject
-    })
+    });
     if (typeof (handler) === 'function') {
         // eslint-disable-next-line no-await-in-loop
         resolve(await handler(<Response><unknown>chaynsErrorObject ?? response));
@@ -223,10 +235,13 @@ export async function resolveWithHandler(
     if (ResponseTypeList.includes(handler)) {
         // TODO: Remove in future release
         if (handler === ResponseType.Object) {
+            // eslint-disable-next-line no-console
             console.warn(
                 ...colorLog.gray(`[HttpRequest<${processName}>]`),
+                // eslint-disable-next-line max-len
                 'ResponseType.Object is deprecated and will be removed in the future. Use ResponseType.JsonWithStatus instead.'
             );
+            // eslint-disable-next-line no-param-reassign
             handler = ResponseType.JsonWithStatus;
         }
         switch (handler) {
@@ -274,12 +289,13 @@ export async function resolveWithHandler(
                 resolve();
                 return true;
             case ResponseType.NoneWithStatus:
-                resolve({ status, data: undefined })
+                resolve({ status, data: undefined });
                 return true;
             case ResponseType.ThrowError:
                 const error = chaynsErrorObject
                     ? new ChaynsError(chaynsErrorObject, processName, status)
                     : new RequestError(`Status ${status} on ${processName}`, status);
+                // eslint-disable-next-line no-console
                 console.warn(...colorLog.gray(`[HttpRequest<${processName}>]`), 'ResponseType \'error\':', error);
                 reject(error);
                 return true;
@@ -303,19 +319,21 @@ export async function resolveWithHandler(
 }
 
 // merge 2 options into a map to keep the right object key order
-export const mergeOptions = (
-    obj1: { [key: string]: any } | Map<string, any>, obj2: { [key: string]: any }): Map<string, any> => {
-    const result: Map<string, any> = obj1 instanceof Map ? obj1 : new Map();
+export const mergeOptions = <T>(
+    obj1: Record<string, T> | Map<string, T>,
+    obj2: Record<string, T> | Map<string, T>
+): Map<string, T> => {
+    const result: Map<string, T> = obj1 instanceof Map ? obj1 : new Map();
     if (!(obj1 instanceof Map)) {
         const keys1 = Object.keys(obj1);
         for (let i = 0; i < keys1.length; i++) {
             result.set(keys1[i], obj1[keys1[i]]);
         }
     }
-    const keys2 = Object.keys(obj2);
+    const keys2 = obj2 instanceof Map ? getMapKeys(obj2 as Map<string, T>) : Object.keys(obj2);
     for (let i = 0; i < keys2.length; i++) {
         if (!result.get(keys2[i])) {
-            result.set(keys2[i], obj2[keys2[i]]);
+            result.set(keys2[i], obj2 instanceof Map ? obj2.get(keys2[i]) as T : obj2[keys2[i]] as T);
         }
     }
     return result;

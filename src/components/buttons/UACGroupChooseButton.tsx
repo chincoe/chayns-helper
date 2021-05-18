@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { ChooseButton } from 'chayns-components';
 import { SelectDialogItem } from 'chayns-doc';
 import request from '../../functions/httpRequest/httpRequest';
-import { LogLevel } from '../../functions/httpRequest/LogLevel';
+import LogLevel from '../../functions/httpRequest/LogLevel';
 import { ResponseType } from '../../functions/httpRequest/ResponseType';
 import ResizableWaitCursor from '../wait-cursor/ResizableWaitCursor';
 import colorLog from '../../utils/colorLog';

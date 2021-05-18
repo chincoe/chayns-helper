@@ -1,10 +1,12 @@
 /**
  * An enum for request.fetch logLevels
  */
-export enum LogLevel {
+declare enum LogLevel {
     info = 'info',
     warning = 'warning',
     error = 'error',
     critical = 'critical',
     none = 'none',
 }
+
+export default LogLevel;

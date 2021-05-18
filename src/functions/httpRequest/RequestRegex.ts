@@ -4,7 +4,7 @@ const RequestRegex = {
         Status4xx: /^4\d{2}$/,
         Status5xx: /^5\d{2}$/,
         Status4xxOr5xx: /^[45]\d{2}$/,
-        AnyError: /^(?:[45]\d{2})|1$/,
+        AnyError: /^[45]\d{2}|1$/,
         Status2xx: /^2\d{2}$/
     },
     ChaynsError: {
@@ -13,6 +13,6 @@ const RequestRegex = {
         createNamespaceRegex: (namespace: string): RegExp => new RegExp(`^${namespace}\\/[a-zA-Z0-9/_]+$`)
     },
     Any: /^.*$/
-}
+};
 
 export default RequestRegex;

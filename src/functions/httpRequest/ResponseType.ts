@@ -1,6 +1,6 @@
 export interface ObjectResponse {
     status: number,
-    data: object
+    data: Record<string, unknown>
 }
 
 /**

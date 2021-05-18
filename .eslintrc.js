@@ -64,6 +64,7 @@ module.exports = {
             1,
             {
                 allow: [
+                    'debug',
                     'error',
                     'group',
                     'groupCollapsed',
@@ -98,7 +99,6 @@ module.exports = {
         'no-shadow': 'off',
         '@typescript-eslint/no-shadow': 'error',
         'no-delete-var': 1,
-        'no-undef': 2,
         'no-mixed-spaces-and-tabs': 1,
         'no-trailing-spaces': 'warn',
         'arrow-body-style': 'warn',
