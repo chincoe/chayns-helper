@@ -30,7 +30,7 @@ export default function getJsonSettings(options: JsonSettings): (
         excludeKeys = [],
         dateTimeZoneHandling = DateTimeZoneHandling.Default
     } = options;
-    return function replacer(this: unknown, key, val) : unknown {
+    return function replacer(this: unknown, key, val): unknown {
         // if a value implements a toJSON() method like a Date, the value passed to this method is already stringified
         const value = key && typeof this === 'object' ? (this as Record<string, unknown>)[key] : val;
         if (excludeKeys.includes(key)) {

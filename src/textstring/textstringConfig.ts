@@ -40,10 +40,10 @@ export const initTextStrings = async (
     TEXTSTRING_CONFIG.libName = libName;
     TEXTSTRING_CONFIG.autoCreation = autoCreation;
     const defaultLang = chayns.env.parameters.translang
-                        || chayns.env.site.translang
-                        || chayns.env.language
-                        || navigator.language
-                        || 'de';
+        || chayns.env.site.translang
+        || chayns.env.language
+        || navigator.language
+        || 'de';
     const promises = [];
     if (libName) {
         promises.push(TextString.loadLibrary(

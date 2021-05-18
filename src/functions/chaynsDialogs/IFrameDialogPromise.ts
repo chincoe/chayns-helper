@@ -9,7 +9,7 @@ export default class IframeDialogPromise extends DialogPromise<unknown> {
      * Add a dialogResultListener for the duration of this dialog
      * @param resolveFn
      */
-    result(resolveFn: (value?: unknown) => unknown) : IframeDialogPromise {
+    result(resolveFn: (value?: unknown) => unknown): IframeDialogPromise {
         chayns.dialog.addDialogResultListener(resolveFn);
         this.then(() => {
             chayns.dialog.removeDialogResultListener(resolveFn);
@@ -22,7 +22,7 @@ export default class IframeDialogPromise extends DialogPromise<unknown> {
      * @param resolveFn
      * @param getApiEvents
      */
-    data(resolveFn: (value?: unknown) => unknown, getApiEvents?: boolean) : IframeDialogPromise {
+    data(resolveFn: (value?: unknown) => unknown, getApiEvents?: boolean): IframeDialogPromise {
         chayns.dialog.addDialogDataListener(resolveFn, getApiEvents);
         this.then(() => {
             chayns.dialog.removeDialogDataListener(resolveFn, getApiEvents);

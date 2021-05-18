@@ -76,7 +76,7 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButtonProps> = ({
                 Array.isArray(value) && value.length > 1
                     ? `${value.length} Gruppen`
                     : (uacGroups.find((e) => e.id === (Array.isArray(value) ? value[0] : value)) || {}).showName
-                      || 'Wählen'
+                    || 'Wählen'
 
             }
         </ChooseButton>

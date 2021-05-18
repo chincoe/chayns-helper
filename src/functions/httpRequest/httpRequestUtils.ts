@@ -27,8 +27,8 @@ export async function getLogFunctionByStatus(
     const logKeys: string[] = [];
     const mapKeys = getMapKeys(logConfig);
     logKeys.push(...(mapKeys.filter((k) => !/^[0-9]+$/.test(k)
-                                           && !regexRegex.test(k)
-                                           && chaynsErrorCodeRegex.test(k))));
+        && !regexRegex.test(k)
+        && chaynsErrorCodeRegex.test(k))));
     logKeys.push(...(mapKeys.filter((k) => !logKeys.includes(k))));
 
     console.debug(...colorLog.gray('[HttpRequest]'), 'Getting log level by status', {

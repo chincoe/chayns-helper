@@ -1,7 +1,7 @@
 /**
  * Constant for time based on ms
  */
-const time : {
+const time: {
     second: 1000,
     minute: 60000,
     hour: 3600000,

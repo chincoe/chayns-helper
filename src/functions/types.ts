@@ -15,7 +15,7 @@ const isNumber = (num: unknown): boolean => (typeof (num) === 'number' && !isNaN
 const isFiniteNumber = (num: unknown): boolean => (typeof (num) === 'number' && num !== Infinity && !(isNaN(num)));
 // eslint-disable-next-line no-restricted-globals
 const isInteger = (int: unknown): boolean => (typeof (int) === 'number' && int !== Infinity && !(isNaN(int)) && int % 1
-                                              === 0);
+    === 0);
 // eslint-disable-next-line no-prototype-builtins,@typescript-eslint/ban-types
 const isPromise = (prom: unknown): boolean => Promise.prototype.isPrototypeOf(prom as Object);
 
