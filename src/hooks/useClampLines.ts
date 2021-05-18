@@ -1,8 +1,8 @@
 import React, { SetStateAction, useEffect, useState } from 'react';
 
 // capture group 1: tag name (e.g. "p")
-const unclosedHtmlTagRegex = /<([a-zA-Z]{0,10}|(?:h[0-9]))(?: (?:(?: ?[a-zA-Z-]+=".*?")*))?>(?!.*?<\/\1>)/g;
-const htmlOpeningTagRegexWithStyles = /<([a-zA-Z]{0,10}|(?:h[0-9]))(?: (?:(?: ?[a-zA-Z-]+=".*?")*))?>/;
+const unclosedHtmlTagRegex = /<([a-zA-Z]{0,10}|h[0-9])(?: (?: ?[a-zA-Z-]+=".*?")*)?>(?!.*?<\/\1>)/g;
+const htmlOpeningTagRegexWithStyles = /<([a-zA-Z]{0,10}|h[0-9])(?: (?: ?[a-zA-Z-]+=".*?")*)?>/;
 
 // complete all opening tags with their respective closing tag while leaving styles intact
 export const completeOpenTags = (str: string): string => {
@@ -16,7 +16,7 @@ export const completeOpenTags = (str: string): string => {
 
 // this regex is so long because it needs to consider the tag being split anywhere, even in the middle of its attributes
 // eslint-disable-next-line max-len
-const splitHtmlTagRegex = /<\/?(?:(?:[a-zA-Z]{0,10}|(?:h[0-9]))(?:\s(?:\s*[a-zA-Z-]+(?:=(?:["'](?:[^"']+(?:["'])?)?)?)?)*)?\/?>?)?$/;
+const splitHtmlTagRegex = /<\/?(?:(?:[a-zA-Z]{0,10}|h[0-9])(?:\s(?:\s*[a-zA-Z-]+(?:=(?:["'](?:[^"']+["']?)?)?)?)*)?\/?>?)?$/;
 // removes html tags at the end of a html string section that were split to the point that they can no longer be
 // interpreted as html
 export const removeSplitTags = (stringPart: string): string => {
@@ -70,7 +70,10 @@ export interface ClampLinesConfig {
  * @param input
  * @param options
  */
-const useClampLines = (input: string, options?: ClampLinesConfig): [string, React.Dispatch<SetStateAction<any>>] => {
+const useClampLines = (
+    input: string,
+    options?: ClampLinesConfig
+): [string, React.Dispatch<SetStateAction<HTMLElement>>] => {
     const {
         ellipsis = '...',
         appendEllipsis = true,
@@ -132,7 +135,7 @@ const useClampLines = (input: string, options?: ClampLinesConfig): [string, Reac
         }
     }, [element, input, limit, type, replacer]);
 
-    return [text, setElement];
+    return [text, setElement as React.Dispatch<SetStateAction<HTMLElement>>];
 };
 
 export default useClampLines;

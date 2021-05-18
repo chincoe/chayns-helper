@@ -1,4 +1,9 @@
-import React, { SetStateAction, useEffect, useReducer, useState } from 'react';
+import React, {
+    Reducer,
+    ReducerStateWithoutAction,
+    ReducerWithoutAction,
+    SetStateAction, useEffect, useReducer, useState
+} from 'react';
 import hideCwFooter from '../functions/chaynsCalls/hideCwFooter';
 import setViewMode, { ViewMode } from '../functions/chaynsCalls/setViewMode';
 import shallowEqual from '../functions/shallowEqual';
@@ -10,21 +15,13 @@ import enableBodyScroll from '../functions/chaynsCalls/enableBodyScroll';
 /**
  * Reducer to update the windowData state
  */
-const windowDataReducer = (
-    state: {
-        frameY: number,
-        windowHeight: number,
-        pageYOffset: number
-    },
+const windowDataReducer: Reducer<WindowMetrics, { data: WindowMetrics, type: 'compare' | 'force' }> = (
+    state: WindowMetrics,
     action: {
-        data: {
-            frameY: number,
-            windowHeight: number,
-            pageYOffset: number
-        },
+        data: WindowMetrics,
         type: 'compare' | 'force'
     }
-): any => {
+): WindowMetrics => {
     if (!action) return state;
     const { data } = action;
     if (action.type === 'compare') {
@@ -45,8 +42,8 @@ const windowDataReducer = (
  * Correct window data for edge cases like location apps and chayns runtime
  */
 const correctWindowData = (
-    data: Record<string, number>
-): { pageYOffset: number, windowHeight: number, frameY: number | any } | any => {
+    data: WindowMetricsRaw
+): WindowMetricsRaw | { pageYOffset: number, windowHeight: number, frameY?: number } | unknown => {
     if (!data) return data;
     return {
         ...data,
@@ -59,9 +56,18 @@ const correctWindowData = (
 const setStyles = (element: HTMLElement, style: Partial<CSSStyleDeclaration> & Record<string, string>) => {
     const keys = Object.keys(style);
     for (let i = 0; i < keys.length; ++i) {
-        // @ts-expect-error
-        element.style[keys[i]] = style[keys[i]];
+        // eslint-disable-next-line no-param-reassign
+        (element.style as unknown as Record<string, string>)[keys[i]] = style[keys[i]];
     }
+};
+
+export interface WindowMetricsRaw {
+    pageYOffset?: number,
+    windowHeight: number,
+    frameX?: number,
+    frameY?: number,
+    scrollTop: number,
+    height: number
 }
 
 export interface WindowMetrics {
@@ -86,7 +92,7 @@ export interface FullscreenTappConfig {
  * @returns [windowData, isFullscreenActive, setIsFullscreenActive]
  */
 const useFullscreenTapp = (
-    initialValue: boolean = true,
+    initialValue = true,
     config?: FullscreenTappConfig & {
         rootElement?: string | '.tapp';
         active?: FullscreenTappConfig,
@@ -98,32 +104,35 @@ const useFullscreenTapp = (
         inactive,
         style,
         rootElement = '.tapp'
-    } = config || {}
+    } = config || {};
     const [isFullscreenActive, setIsFullscreenActive] = useState(initialValue ?? true);
-    let {
+    const {
         viewMode = ViewMode.Exclusive,
         disableBodyScrolling: disableScrolling,
     } = { ...(config || {}), ...((isFullscreenActive ? active : inactive) || {}) };
-    const [windowData, setWindowData] = useReducer(windowDataReducer, undefined);
+    const [windowData, setWindowData] = useReducer(windowDataReducer, undefined as unknown as WindowMetrics);
     const [resizeInterval, setResizeInterval] = useState(0);
     const [, setWindowWidth] = useState(0);
     const [, setWindowHeight] = useState(0);
 
-    const getInactiveStyle = (activeStyle: Partial<CSSStyleDeclaration> & Record<string, string> = {}) => {
-        return inactive?.style
-               || (activeStyle
-                ? Object.keys(activeStyle || {}).reduce((total, current) => ({ ...total, [current]: '' }), {})
-                : {})
-    }
+    const getInactiveStyle = (
+        activeStyle: Partial<CSSStyleDeclaration> & Record<string, string> = {}
+    ) => inactive?.style
+        || (activeStyle
+            ? Object.keys(activeStyle || {}).reduce((total, current) => ({
+                ...total,
+                [current]: ''
+            }), {})
+            : {});
 
-    const getWindowData = (_height: any, force = true) => {
+    const getWindowData = (_height: number | undefined, force = true) => {
         if (force) chayns.scrollToY(-1000);
         Promise.all([
             chayns.getWindowMetrics(),
             getHookState(setWindowWidth),
             getHookState(setWindowHeight)
         ]).then(([winData, winWidth, winHeight]) => {
-            const data = correctWindowData(winData);
+            const data = correctWindowData(winData) as WindowMetricsRaw;
             const height = data.windowHeight - (
                 typeof (data.frameY) === 'number' && typeof (data.pageYOffset) === 'number'
                     ? (data.frameY + data.pageYOffset)
@@ -133,7 +142,7 @@ const useFullscreenTapp = (
             setWindowHeight(height);
             setWindowWidth(window.innerWidth);
             setWindowData({
-                data,
+                data: data as WindowMetrics,
                 type: force ? 'force' : 'compare',
             });
             setTimeout(() => {
@@ -147,11 +156,12 @@ const useFullscreenTapp = (
 
     useEffect(() => {
         if (isPagemakerIFrame()) {
+            // eslint-disable-next-line no-console
             console.warn(...colorLog.gray('[useFullscreenTapp]'), 'Pagemaker iFrames cannot be fullscreen tapps');
         }
         chayns.hideTitleImage();
-        hideCwFooter()
-    }, [])
+        hideCwFooter();
+    }, []);
 
     // viewMode settings
     useEffect(() => {
@@ -161,48 +171,47 @@ const useFullscreenTapp = (
 
     // style settings
     useEffect(() => {
-        if (isPagemakerIFrame()) return;
-        const tapp = <HTMLDivElement>(document.querySelector(rootElement || '.tapp') ||
-                                      document.querySelector('body')?.firstChild)
+        if (isPagemakerIFrame()) return () => null;
+        const tapp = <HTMLDivElement>(document.querySelector(rootElement || '.tapp')
+            || document.querySelector('body')?.firstChild);
         if (!tapp) {
-            console.error(...colorLog.gray('[useFullscreenTapp]'), `Cannot find element for selector '${rootElement}'`)
-            return;
+            console.error(...colorLog.gray('[useFullscreenTapp]'), `Cannot find element for selector '${rootElement}'`);
+            return () => null;
         }
         if (isFullscreenActive) {
             tapp.style.width = '100vw';
             tapp.style.height = '100vh';
-            setStyles(tapp, { ...(style || {}), ...(active?.style || {}) })
+            setStyles(tapp, { ...(style || {}), ...(active?.style || {}) });
         } else {
-            tapp.style.width = "";
-            tapp.style.height = "";
-            setStyles(tapp, getInactiveStyle(active?.style))
+            tapp.style.width = '';
+            tapp.style.height = '';
+            setStyles(tapp, getInactiveStyle(active?.style));
         }
         return () => {
-            tapp.style.width = "";
-            tapp.style.height = "";
-            setStyles(tapp, getInactiveStyle({ ...(active?.style || {}), ...(style || {}) }))
-        }
-    }, [style, inactive, active, isFullscreenActive])
+            tapp.style.width = '';
+            tapp.style.height = '';
+            setStyles(tapp, getInactiveStyle({ ...(active?.style || {}), ...(style || {}) }));
+        };
+    }, [style, inactive, active, isFullscreenActive]);
 
     // disable body scroll
     useEffect(() => {
-        if (isPagemakerIFrame()) return;
+        if (isPagemakerIFrame()) return () => null;
         if (disableScrolling) {
             if (isFullscreenActive) {
                 enableBodyScroll(false);
-            } else {
-                if (disableScrolling) enableBodyScroll(true);
-            }
-            return () => { enableBodyScroll(true); }
-        } else if (disableScrolling as boolean | undefined === false) {
+            } else if (disableScrolling) enableBodyScroll(true);
+            return () => { enableBodyScroll(true); };
+        }
+        if (disableScrolling as boolean | undefined === false) {
             enableBodyScroll(true);
         }
-        return;
-    }, [isFullscreenActive, disableScrolling])
+        return () => null;
+    }, [isFullscreenActive, disableScrolling]);
 
     // core workflow
     useEffect(() => {
-        if (isPagemakerIFrame()) return;
+        if (isPagemakerIFrame()) return () => null;
         let interval: number = <number><unknown>setTimeout(() => null, 0);
         clearInterval(resizeInterval);
         if (isFullscreenActive) {

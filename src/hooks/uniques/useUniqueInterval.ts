@@ -6,7 +6,11 @@ import { useState } from 'react';
  */
 const useUniqueInterval = (
     initialValue: number = <number><unknown>setTimeout(() => null, 0)
-): [(fn: () => any, interval: number) => number, (interval: number) => number] => {
+): [
+    (fn: () => unknown, interval: number) => number,
+    // eslint-disable-next-line function-paren-newline
+    (interval: number) => number
+] => {
     const [customInterval, setCustomInterval] = useState<number>(initialValue);
 
     const setter = (interval: number): number => {
@@ -15,9 +19,7 @@ const useUniqueInterval = (
         return interval;
     };
 
-    const wrappedSetter = (fn: () => any, interval: number) => {
-        return setter(<number><unknown>setInterval(fn, interval));
-    }
+    const wrappedSetter = (fn: () => unknown, interval: number) => setter(<number><unknown>setInterval(fn, interval));
 
     return [wrappedSetter, setter];
 };

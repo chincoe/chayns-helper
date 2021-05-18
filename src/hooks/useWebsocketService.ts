@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { deepEqual } from '../functions/shallowEqual';
 import WebSocketClient, { WebsocketConditions } from '../other/WebSocketClient';
+import { WebsocketClient } from '../index';
 
 const websocketClients: { [serviceName: string]: WebSocketClient } = {};
 
@@ -22,7 +23,7 @@ const websocketClients: { [serviceName: string]: WebSocketClient } = {};
 export interface WebsocketServiceConfig {
     serviceName: string;
     conditions: WebsocketConditions;
-    events: { [topic: string]: (data: { [key: string]: string } | any, wsEvent?: MessageEvent) => void | any };
+    events: Record<string, (data: Record<string, unknown> | unknown, wsEvent?: MessageEvent) => void>;
     clientGroup?: string;
     waitForDefinedConditions?: boolean;
     forceDisconnectOnUnmount?: boolean;
@@ -36,7 +37,7 @@ export interface WebsocketServiceConfig {
  */
 const useWebsocketService = (
     config: WebsocketServiceConfig,
-    deps?: any[]
+    deps?: unknown[]
 ): WebSocketClient | undefined => {
     const {
         serviceName,
@@ -46,7 +47,7 @@ const useWebsocketService = (
         waitForDefinedConditions = true,
         forceDisconnectOnUnmount = false
     } = config || {};
-    const forceOwnConnection = config?.forceOwnConnection ?? chayns.env.site.tapp.id === 250357
+    const forceOwnConnection = config?.forceOwnConnection ?? chayns.env.site.tapp.id === 250357;
     // events pattern: { [eventName1]: eventListener1, [eventName2]: eventListener2 }
     const [ownClient, setOwnClient] = useState<WebSocketClient>();
     const ownConnection = useMemo(() => forceOwnConnection, []);
@@ -78,7 +79,10 @@ const useWebsocketService = (
                     websocketClients[`${serviceName}_${group}`] = webSocketClient;
                 }
             } else {
-                webSocketClient = <WebSocketClient>(ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`]);
+                webSocketClient = (ownConnection
+                        ? ownClient
+                        : websocketClients[`${serviceName}_${group}`]
+                ) as WebsocketClient;
             }
 
             if (!deepEqual(webSocketClient.conditions, { ...webSocketClient.conditions, ...conditions })) {
@@ -121,8 +125,7 @@ const useWebsocketService = (
                 }
             };
         }
-        return () => {
-        };
+        return () => null;
     }, [...(deps || []), ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`]]);
 
     return ownConnection ? ownClient : websocketClients[`${serviceName}_${group}`];

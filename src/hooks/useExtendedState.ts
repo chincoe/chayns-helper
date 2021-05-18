@@ -1,4 +1,6 @@
-import React, { SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+    SetStateAction, useCallback, useEffect, useMemo, useRef, useState
+} from 'react';
 
 /**
  * useState hook that includes an async getter to get the current state in e.g. eventListeners or other functions
@@ -8,7 +10,7 @@ import React, { SetStateAction, useCallback, useEffect, useMemo, useRef, useStat
  */
 export default function useExtendedState<T>(
     initialState: T | (() => T),
-    deps?: Array<any>
+    deps?: Array<unknown>
 ): [T, React.Dispatch<SetStateAction<T>>, () => Promise<T>, T | undefined] {
     const [state, setState] = useState<T>(initialState);
 

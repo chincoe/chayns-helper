@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef } from 'react';
  * @param value
  * @param deps
  */
-export default function usePrevious<T>(value: T, deps?: any[]): T {
+export default function usePrevious<T>(value: T, deps?: unknown[]): T {
     const ref = useRef(value);
     useEffect(() => {
         ref.current = value;

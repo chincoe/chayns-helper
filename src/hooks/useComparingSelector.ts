@@ -6,8 +6,9 @@ import useSelector from '../utils/requireUseSelector';
  * @param func
  * @param deep
  */
-const useComparingSelector = <T>(func: (state: any) => T, deep: boolean = false) =>
-    // @ts-expect-error
-    useSelector(func, deep ? deepEqual : shallowEqual);
+const useComparingSelector = <T>(func: (state: unknown) => T, deep = false): T => useSelector(
+    // @ts-expect-error typings are wrong due to optional react-redux import
+    func, deep ? deepEqual : shallowEqual
+);
 
 export default useComparingSelector;
