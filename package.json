@@ -28,7 +28,7 @@
     "pub:minor": "npm version minor --no-git-tag-version && node scripts.js -publish -release",
     "pub:major": "npm version major --no-git-tag-version && node scripts.js -publish -release",
     "lint": "eslint src/** --ext ts,tsx",
-    "size": "npm run build && size-limit",
+    "size": "size-limit",
     "size:analyze": "size-limit --why",
     "prepare": "npm run build",
     "preversion": "node scripts.js -preversion && npm run build && npm run test:coverage && npm run lint && npm run size"
