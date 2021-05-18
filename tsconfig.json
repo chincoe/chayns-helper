@@ -5,7 +5,10 @@
   ],
   "compilerOptions": {
     "module": "esnext",
-    "lib": ["dom", "esnext"],
+    "lib": [
+      "dom",
+      "esnext"
+    ],
     "importHelpers": true,
     "declaration": true,
     "sourceMap": true,
@@ -18,10 +21,10 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     // Ensure that .d.ts files are created by tsc, but not .js files
-//    "emitDeclarationOnly": true,
+    //    "emitDeclarationOnly": true,
     // Ensure that Babel can safely transpile files in the TypeScript project
-    "isolatedModules": true,
-//    "outDir": "dist/types"
-//    "outFile": "types.d.ts"
+    "isolatedModules": true
+    //    "outDir": "dist/types"
+    //    "outFile": "types.d.ts"
   }
 }
