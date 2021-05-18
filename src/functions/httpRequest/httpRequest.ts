@@ -275,8 +275,7 @@ export function httpRequest(
             // create json body
             const jsonSettings = typeof stringifyBody !== 'boolean' && typeof stringifyBody === 'object'
                 ? getJsonSettings(stringifyBody)
-                : null;
-            // @ts-expect-error JSON.stringify type definition is not correct
+                : undefined;
             const jsonBody: string | null = body && stringifyBody ? JSON.stringify(body, jsonSettings) : null;
 
             // create request headers

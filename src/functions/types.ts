@@ -1,21 +1,23 @@
-const isArray = (arr: any): boolean => (Array.isArray(arr));
-const isObject = (obj: any) => (Object.prototype.toString.call(obj) === '[object Object]');
-const isPlainObject = (obj: any) => (Object.prototype.toString.call(obj) === '[object Object]' &&
-                                     Object.prototype.isPrototypeOf(obj));
-const isBasedOnObject = (obj: any) => (obj !== null && typeof (obj) === 'object');
-const isFunction = (func: any): boolean => (typeof (func) === 'function');
-const isBoolean = (func: any): boolean => (typeof (func) === 'boolean');
-const isString = (string: any): boolean => (typeof (string) === 'string');
-const isDate = (date: any): boolean => (Object.prototype.toString.call(date) === '[object Date]');
+const isArray = (arr: unknown): boolean => (Array.isArray(arr));
+const isObject = (obj: unknown): boolean => (Object.prototype.toString.call(obj) === '[object Object]');
+const isPlainObject = (obj: unknown): boolean => (
+    Object.prototype.toString.call(obj) === '[object Object]'
+    //  eslint-disable-next-line no-prototype-builtins,@typescript-eslint/ban-types
+    && Object.prototype.isPrototypeOf(obj as Object));
+const isBasedOnObject = (obj: unknown): boolean => (obj !== null && typeof (obj) === 'object');
+const isFunction = (func: unknown): boolean => (typeof (func) === 'function');
+const isBoolean = (func: unknown): boolean => (typeof (func) === 'boolean');
+const isString = (string: unknown): boolean => (typeof (string) === 'string');
+const isDate = (date: unknown): boolean => (Object.prototype.toString.call(date) === '[object Date]');
 // eslint-disable-next-line no-restricted-globals
-const isNumber = (num: any): boolean => (typeof (num) === 'number' && !isNaN(num));
+const isNumber = (num: unknown): boolean => (typeof (num) === 'number' && !isNaN(num));
 // eslint-disable-next-line no-restricted-globals
-const isFiniteNumber = (num: any): boolean => (typeof (num) === 'number' && num !== Infinity && !(isNaN(num)));
+const isFiniteNumber = (num: unknown): boolean => (typeof (num) === 'number' && num !== Infinity && !(isNaN(num)));
 // eslint-disable-next-line no-restricted-globals
-const isInteger = (int: any): boolean => (typeof (int) === 'number' && int !== Infinity && !(isNaN(int)) && int % 1 ===
-                                          0);
-// eslint-disable-next-line no-prototype-builtins
-const isPromise = (prom: any): boolean => Promise.prototype.isPrototypeOf(prom);
+const isInteger = (int: unknown): boolean => (typeof (int) === 'number' && int !== Infinity && !(isNaN(int)) && int % 1
+                                              === 0);
+// eslint-disable-next-line no-prototype-builtins,@typescript-eslint/ban-types
+const isPromise = (prom: unknown): boolean => Promise.prototype.isPrototypeOf(prom as Object);
 
 /**
  * @type {{date: string, number: string, string: string, null: string, array: string, function: string, object: string,
@@ -47,23 +49,24 @@ const safeFirst = <T>(arr: Array<T>, callback?: (value: T, index: number, array:
 /**
  * distinct(array, selector)
  */
-const distinct = (arr: any[], selector: (value: any) => any): any[] | null => {
+const distinct = <T>(arr: Array<T>, selector: (value: T) => unknown): T[] | null => {
     if (!isArray(arr) || !isFunction(selector)) return null;
-    return arr.reduce((total, current) => {
-        const idx = total.findIndex((t: any) => selector(t) === selector(current));
+    const distinctArr = arr.reduce((total, current) => {
+        const idx = total.findIndex((t: T) => selector(t) === selector(current));
         if (idx >= 0) {
             const result = [...total];
             result[idx] = current;
             return result;
         }
         return [...total, current];
-    }, []);
+    }, [] as T[]);
+    return distinctArr as T[];
 };
 
 /**
  * get Type string. More different types than typeof
  */
-const getType = (val: any): string => ({}.toString.call(val))
+const getType = (val: unknown): string => ({}.toString.call(val))
     .replace('[object ', '')
     .replace(']', '')
     .toLowerCase();
@@ -71,7 +74,7 @@ const getType = (val: any): string => ({}.toString.call(val))
 /**
  * length of array or string, count of number digits or count of object keys
  */
-const length = (val: any[] | object | string | number): number => {
+const length = (val: unknown[] | Record<string, unknown> | string | number): number => {
     if (!isArray(val) && !isString(val) && !isObject(val) && !isNumber(val)) return 0;
     const type = getType(val);
     switch (type) {
@@ -80,7 +83,7 @@ const length = (val: any[] | object | string | number): number => {
         case 'string':
             return (<string>(val || '')).length;
         case 'array':
-            return (<Array<any>>(val || [])).length;
+            return (<Array<unknown>>(val || [])).length;
         case 'number':
             return (`${val}` || '').length;
         default:
@@ -92,18 +95,18 @@ const length = (val: any[] | object | string | number): number => {
  * check if value is null or empty
  * @param value
  */
-const isNullOrEmpty = (value: any): boolean => {
+const isNullOrEmpty = (value: unknown): boolean => {
     const type = getType(value);
     switch (type) {
         case 'undefined':
         case 'null':
             return true;
         case 'string':
-            return /^ *$/i.test(value);
+            return /^ *$/i.test(value as string);
         case 'object':
-            return length(Object.keys(value)) === 0;
+            return length(Object.keys(value as Record<string, unknown>)) === 0;
         case 'array':
-            return length(value) === 0;
+            return length(value as unknown[]) === 0;
         case 'number':
         case 'boolean':
         case 'function':
@@ -121,7 +124,7 @@ const isNullOrEmpty = (value: any): boolean => {
 const forEachKey = <T>(
     obj: { [key: string]: T },
     callback: (key: string, value: T, index: number, source: { [key: string]: T }) => void
-) => {
+): void => {
     if (!isObject(obj) || !isFunction(callback)) return;
     const keys = Object.keys(obj);
     for (let i = 0; i < length(keys); i += 1) {
@@ -149,10 +152,10 @@ const mapObject = <T, TResult>(
  * like Array.reduce but for objects
  */
 const reduceObject = (
-    obj: { [key: string]: any },
-    callback: (total: any, key: string, value: any, index: number, source: { [key: string]: any }) => any,
-    initialValue: any = {}
-): any => {
+    obj: Record<string, unknown>,
+    callback: (total: unknown, key: string, value: unknown, index: number, source: Record<string, unknown>) => unknown,
+    initialValue: unknown = {}
+): unknown => {
     if (!isObject(obj) || !isFunction(callback)) return {};
     const keys = Object.keys(obj);
     let newObj = initialValue;
@@ -172,9 +175,9 @@ const reduceObject = (
 const replaceAll = (
     string: string,
     search: string | RegExp,
-    replacement: string | ((substring: string, ...args: any[]) => string),
+    replacement: string | ((substring: string, ...args: unknown[]) => string),
     maxReplacements = 200
-) => {
+): string => {
     let i = 0;
     let newString = string;
     while (i < maxReplacements) {
@@ -192,7 +195,7 @@ const regex = {
     number: /^[\d]*$/,
     integer: /^[0-9]*$/,
     // eslint-disable-next-line max-len
-    httpsUrl: /(?:(?:(?:https):)\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)+(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?/i,
+    httpsUrl: /https:\/\/(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4])|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)+[a-z\u00a1-\uffff]{2,}\.?)(?::\d{2,5})?(?:[/?#]\S*)?/i,
     whitespace: /^ +$/
 };
 

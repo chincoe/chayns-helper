@@ -3,7 +3,7 @@
  */
 export function isPagemakerIFrame(): boolean {
     const pagemakerIframeRegex = /^CustomPluginIframe([a-z0-9]+)$/;
-    return !!(window.name && window.name.match(pagemakerIframeRegex))
+    return !!(window.name && window.name.match(pagemakerIframeRegex));
 }
 
 /**
@@ -11,5 +11,5 @@ export function isPagemakerIFrame(): boolean {
  */
 export function isCustomTappIFrame(): boolean {
     const tappIframeRegex = /^CustomTappIframe__([0-9]+)$/;
-    return !!(window.name && window.name.match(tappIframeRegex))
+    return !!(window.name && window.name.match(tappIframeRegex));
 }

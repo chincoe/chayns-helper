@@ -1,5 +1,4 @@
 import { format } from 'date-fns/esm';
-// @ts-expect-error
 import { TextString } from 'chayns-components';
 import de from 'date-fns/esm/locale/de';
 import enUS from 'date-fns/esm/locale/en-US';
@@ -84,7 +83,7 @@ const languages: Record<string, LangOptions> = {
         tomorrow: 'Jutro',
         at: 'o'
     }
-}
+};
 
 /**
  * date-fns format() function extended with the feature to work with date strings and timestamps, the feature to use
@@ -106,7 +105,7 @@ const fnsFormat = (date: Date | string | number, formatString: string, options?:
 
     const language = options?.language || TextString.language || 'de';
     const langOptions = languages[language] || languages.de;
-    const locale = options?.locale || langOptions.locale
+    const locale = options?.locale || langOptions.locale;
 
     let formatStr = formatString
         .replace(/(?:^| )#at# /g, ` '${langOptions.at}' `);
@@ -120,7 +119,7 @@ const fnsFormat = (date: Date | string | number, formatString: string, options?:
         }
     }
     if (language === 'de') {
-        formatStr = formatStr.replace(/^([^']*(?:[^']*'[^']*'[^']*)*)p/g, '$1HH:mm \'Uhr\'')
+        formatStr = formatStr.replace(/^([^']*(?:[^']*'[^']*'[^']*)*)p/g, '$1HH:mm \'Uhr\'');
     }
 
     let dateString = format(d, formatStr, { locale });
@@ -145,8 +144,8 @@ const fnsFormat = (date: Date | string | number, formatString: string, options?:
         .replace(format(new Date(), tFormatString, { locale }), langOptions.today)
         .replace(format(new Date(Date.now() + time.day), tFormatString, { locale }), langOptions.tomorrow)
         .replace(format(new Date(Date.now() - time.day), tFormatString, { locale }), langOptions.yesterday);
-    if (appendYear &&
-        !new RegExp(`/(${langOptions.today})|(${langOptions.tomorrow})|(${langOptions.yesterday})/`).test(dateString)
+    if (appendYear
+        && !new RegExp(`/(${langOptions.today})|(${langOptions.tomorrow})|(${langOptions.yesterday})/`).test(dateString)
         && d.getFullYear() !== new Date().getFullYear()
     ) {
         dateString += ` ${format(new Date(date), 'yyyy', { locale })}`;

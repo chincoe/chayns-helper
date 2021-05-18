@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise */
 /**
  * Decodes a utf 8 text
  *
@@ -5,8 +6,11 @@
  * @returns Decoded Text
  */
 function decodeUtf8(utfText: string) {
-    let result = '',
-        i = 0, c = 0, c1 = 0, c2 = 0;
+    let result = '';
+    let i = 0;
+    let c = 0;
+    let c1 = 0;
+    let c2 = 0;
 
     while (i < utfText.length) {
         c = utfText.charCodeAt(i);
@@ -34,7 +38,7 @@ function decodeUtf8(utfText: string) {
  * @param tobitAccessToken Tobit Access Token.
  * @returns {{} | *} Json object
  */
-export default function getJwtPayload(tobitAccessToken: string): { [key: string]: any } | null {
+export default function getJwtPayload(tobitAccessToken: string | unknown): Record<string, unknown> | null {
     if (tobitAccessToken && typeof tobitAccessToken === 'string' && tobitAccessToken.length > 0) {
         const spl = tobitAccessToken.split('.');
         if (spl && spl.length === 3) {

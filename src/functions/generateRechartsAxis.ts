@@ -45,7 +45,7 @@ export function generateRechartsAxis<T>({
     // eslint-disable-next-line no-param-reassign
     if (!tickFormatter) tickFormatter = (base, intervalLength, i) => (<number>base + intervalLength * i);
 
-    let relevantDivisor: number | undefined = undefined;
+    let relevantDivisor: number | undefined;
     if (Array.isArray(divisor)) {
         const divisorList = divisor.sort((a: number, b: number) => a - b);
         for (let i = 0; i < divisorList.length; i++) {
@@ -113,7 +113,7 @@ const useRechartsAxis = <T>(
         maxTicks: number,
         minTicks: number,
         tickFormatter?: (start: number | T, intervalLength: number, i: number) => (number | T)
-    }, deps: Array<any>
+    }, deps: Array<unknown>
 ): RechartsAxis<T> => useMemo(() => generateRechartsAxis({
     start, end, divisor, maxTicks, minTicks, tickFormatter
 }), deps);

@@ -45,7 +45,7 @@ const windowDataReducer = (
  * Correct window data for edge cases like location apps and chayns runtime
  */
 const correctWindowData = (
-    data: { [key: string]: number }
+    data: Record<string, number>
 ): { pageYOffset: number, windowHeight: number, frameY: number | any } | any => {
     if (!data) return data;
     return {
