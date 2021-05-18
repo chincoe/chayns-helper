@@ -1,7 +1,7 @@
 /**
  * An enum for request.fetch logLevels
  */
-declare enum LogLevel {
+enum LogLevel {
     info = 'info',
     warning = 'warning',
     error = 'error',

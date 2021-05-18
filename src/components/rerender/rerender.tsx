@@ -1,5 +1,5 @@
 import React, {
-    JSXElementConstructor, ReactNode, useCallback, useState
+    JSXElementConstructor, useCallback, useState
 } from 'react';
 import generateUUID from '../../functions/generateGuid';
 
@@ -8,8 +8,10 @@ import generateUUID from '../../functions/generateGuid';
  * Example: export default rerender(MyComponent);
  * @param WrappedComponent
  */
-export default function rerender(WrappedComponent: JSXElementConstructor<Record<string, unknown>>) {
-    return (props: Record<string, unknown>): ReactNode => {
+export default function rerender(
+    WrappedComponent: JSXElementConstructor<Record<string, unknown>>
+): JSXElementConstructor<unknown> {
+    return (props) => {
         const [rerenderId, setRerenderId] = useState(generateUUID);
         const rerenderComponent = useCallback(() => {
             setRerenderId(generateUUID());

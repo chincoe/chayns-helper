@@ -1,7 +1,7 @@
 /**
  * An enum for HTTP methods
  */
-declare enum HttpMethod {
+enum HttpMethod {
     Get = 'GET',
     Post = 'POST',
     Put = 'PUT',

@@ -6,5 +6,5 @@ describe('functions/colors/toHslColor', () => {
     });
     it('calculates the right values', () => {
         expect(toHslColor('this is a test string').toString()).toMatch('hsl(-268,70%,40%)');
-    })
-})
+    });
+});

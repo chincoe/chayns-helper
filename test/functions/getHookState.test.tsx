@@ -1,35 +1,34 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import getHookState from '../../src/functions/getHookState';
 import { act } from 'react-dom/test-utils';
 import { useEffect } from 'react';
-import { debuglog } from 'util';
+import getHookState from '../../src/functions/getHookState';
 
 const App = () => {
     const [state, setState] = React.useState(0);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            getHookState(setState).then(v => setState(v + 1));
-        }, 100)
+            getHookState(setState).then((v) => setState(v + 1));
+        }, 100);
         return () => clearInterval(interval);
-    }, [])
+    }, []);
 
-    const increment = React.useCallback(() => {
+    // const increment = React.useCallback(() => null, []);
 
-    }, [])
-
-    return <React.Fragment>
-        <p id="test-state">{state}</p>
-    </React.Fragment>
-}
+    return (
+        <>
+            <p id="test-state">{state}</p>
+        </>
+    );
+};
 
 describe('components/getHookState', () => {
     let container: Element | HTMLDivElement | null = null;
 
     beforeEach(() => {
         // set up a DOM element as a render target
-        container = document.createElement("div");
+        container = document.createElement('div');
         document.body.appendChild(container);
     });
 
@@ -42,9 +41,9 @@ describe('components/getHookState', () => {
     it('renders without crashing and gets the hook state correctly', async () => {
         act(() => {
             ReactDOM.render(<App/>, container);
-        })
-        expect(container?.textContent).toBe("0");
-        await new Promise(res => setTimeout(res, 350));
+        });
+        expect(container?.textContent).toBe('0');
+        await new Promise((res) => setTimeout(res, 350));
         expect(container?.textContent).toMatch(/[2-9]/);
     });
 });

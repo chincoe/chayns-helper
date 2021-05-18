@@ -117,7 +117,8 @@ export type httpRequestResult =
     | string
     | RequestError
     | ChaynsError
-    | unknown;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    | any;
 
 /**
  * Extensive and highly customizable fetch helper. Consult httpRequest.md for usage.
@@ -209,7 +210,7 @@ export function httpRequest(
             const logConfig = mergeOptions((options?.logConfig || {}), (defaultConfig?.options?.logConfig || {}));
             // merge json settings if applicable
             const stringifyBody = typeof defaultConfig.options.stringifyBody === 'object'
-                                  && typeof options.stringifyBody === 'object'
+            && typeof options.stringifyBody === 'object'
                 ? { ...defaultConfig.options.stringifyBody, ...options.stringifyBody }
                 : defaultStringify;
             // merge url replacements
@@ -346,9 +347,9 @@ export function httpRequest(
                     const sideEffectList = Object.keys(
                         sideEffects as Record<string, (chaynsErrorObject?: ChaynsErrorObject) => void>
                     ).filter((k) => k === `${status}`
-                                    || (chaynsErrorObject && k === chaynsErrorObject.errorCode)
-                                    || stringToRegexStrict(k).test(`${status}`)
-                                    || (chaynsErrorObject && stringToRegexStrict(k).test(chaynsErrorObject.errorCode)));
+                        || (chaynsErrorObject && k === chaynsErrorObject.errorCode)
+                        || stringToRegexStrict(k).test(`${status}`)
+                        || (chaynsErrorObject && stringToRegexStrict(k).test(chaynsErrorObject.errorCode)));
                     for (let i = 0; i < sideEffectList.length; ++i) {
                         sideEffect[sideEffectList[i]](chaynsErrorObject);
                     }
@@ -360,8 +361,8 @@ export function httpRequest(
                 const handlerKeys = getMapKeys(statusHandlers);
                 const statusHandlerKey = handlerKeys.find(
                     (k) => (k === `${status}` || stringToRegexStrict(k).test(`${status}`))
-                           && (typeof (statusHandlers.get(k)) === 'function'
-                               || ResponseTypeList.includes(statusHandlers.get(k) as ResponseType))
+                        && (typeof (statusHandlers.get(k)) === 'function'
+                            || ResponseTypeList.includes(statusHandlers.get(k) as ResponseType))
                 );
 
                 // get errorHandler if exists
@@ -370,8 +371,8 @@ export function httpRequest(
                 const chaynsErrorCode: string | null = isChayns ? (<ChaynsError>err).errorCode : null;
                 const errorHandlerKey = errorKeys.find(
                     (k) => (chaynsErrorCode && (k === chaynsErrorCode || stringToRegexStrict(k).test(chaynsErrorCode)))
-                           && (typeof (errorHandlers.get(k)) === 'function'
-                               || ResponseTypeList.includes(errorHandlers.get(k) as ResponseType))
+                        && (typeof (errorHandlers.get(k)) === 'function'
+                            || ResponseTypeList.includes(errorHandlers.get(k) as ResponseType))
                 );
                 return {
                     statusHandler: statusHandlers.get(statusHandlerKey as string),
@@ -571,7 +572,7 @@ export function httpRequest(
                         headers: {
                             ...requestHeaders,
                             Authorization: (requestHeaders as { Authorization: string })?.Authorization
-                                           && !!getJwtPayload((requestHeaders as { Authorization: string })
+                            && !!getJwtPayload((requestHeaders as { Authorization: string })
                                 ?.Authorization)
                                 ? `Payload: ${(requestHeaders as { Authorization: string }).Authorization.split(
                                     '.'
@@ -613,12 +614,12 @@ export function httpRequest(
             const chaynsErrorObject = await ChaynsError.getChaynsErrorObject(responseBody);
             if (chaynsErrorObject) {
                 chaynsErrorObject.showDialog = !!errorDialogs.find((e) => (e === chaynsErrorObject.errorCode)
-                                                                          || (Object.prototype.toString.call(e)
-                                                                              === '[object RegExp]'
-                                                                              && (<RegExp>e).test(
+                    || (Object.prototype.toString.call(e)
+                        === '[object RegExp]'
+                        && (<RegExp>e).test(
                             chaynsErrorObject.errorCode
                         )
-                                                                          ));
+                    ));
             }
             if (chaynsErrorObject && chaynsErrorObject?.showDialog) {
                 chayns.dialog.alert('', chaynsErrorObject.displayMessage);
