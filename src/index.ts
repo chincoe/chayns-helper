@@ -1,3 +1,4 @@
+// noinspection JSUnusedGlobalSymbols
 // config
 export { setCustomLogger } from './utils/requireChaynsLogger';
 // components

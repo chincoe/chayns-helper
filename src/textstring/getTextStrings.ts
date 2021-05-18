@@ -1,4 +1,3 @@
-// @ts-expect-error
 import { TextString } from 'chayns-components';
 import isNullOrWhiteSpace from '../utils/isNullOrWhiteSpace';
 import TEXTSTRING_CONFIG from './textstringConfig';
@@ -47,20 +46,26 @@ function getTextStrings(
     language?: string
 ): string | Array<string> & Record<string, string> {
     const returnList = [];
-    const isObject = Object.prototype.toString.call(textStrings) === "[object Object]";
-    const isArray = Object.prototype.toString.call(textStrings) === "[object Array]";
-    const strings: string[] = <string[]>(isArray
-        ? textStrings
-        : isObject
+    const isObject = Object.prototype.toString.call(textStrings) === '[object Object]';
+    const isArray = Object.prototype.toString.call(textStrings) === '[object Array]';
+    let strings: string[];
+    if (isArray) {
+        strings = textStrings as string [];
+    } else {
+        strings = isObject
             ? Object.keys(textStrings)
-            : [textStrings]);
+            : [textStrings] as string[];
+    }
     for (let i = 0; i < strings.length; i += 1) {
         const current = strings[i];
-        const fallback = (!isObject
-            ? isArray
+        let fallback;
+        if (!isObject) {
+            fallback = isArray
                 ? undefined
-                : fallbackOrLanguage
-            : (<Record<string, string>>textStrings)[strings[i]]);
+                : fallbackOrLanguage;
+        } else {
+            fallback = (textStrings as Record<string, string>)[strings[i]];
+        }
         const text: string = TextString.getTextString(
             `${TEXTSTRING_CONFIG.prefix}${current}`,
             !isObject && !isArray
@@ -69,8 +74,8 @@ function getTextStrings(
             fallback
         );
         returnList.push(isNullOrWhiteSpace(text) ? fallback : text);
-        // @ts-expect-error
-        returnList[current] = isNullOrWhiteSpace(text) ? fallback : text
+        // @ts-expect-error setting named properties on array
+        returnList[current] = isNullOrWhiteSpace(text) ? fallback : text;
     }
     return !isArray && !isObject ? <string>returnList[0] : <Array<string> & Record<string, string>>returnList;
 }

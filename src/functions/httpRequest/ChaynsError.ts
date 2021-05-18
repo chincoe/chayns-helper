@@ -42,7 +42,7 @@ export default class ChaynsError extends RequestError {
             const result = await Promise.resolve(value);
             return ChaynsError.getChaynsErrorObject(result as Promise<unknown>);
         }
-        if (isChaynsErrorObject(value)) {
+        if (isChaynsErrorObject(value as Record<string, unknown>)) {
             return value as unknown as ChaynsErrorObject;
         }
         return null;

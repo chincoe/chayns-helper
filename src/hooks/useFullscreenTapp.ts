@@ -1,8 +1,5 @@
 import React, {
-    Reducer,
-    ReducerStateWithoutAction,
-    ReducerWithoutAction,
-    SetStateAction, useEffect, useReducer, useState
+    Reducer, SetStateAction, useEffect, useReducer, useState
 } from 'react';
 import hideCwFooter from '../functions/chaynsCalls/hideCwFooter';
 import setViewMode, { ViewMode } from '../functions/chaynsCalls/setViewMode';

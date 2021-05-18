@@ -1,5 +1,6 @@
 import logger from '../../utils/requireChaynsLogger';
 import jsonLog from '../../utils/jsonLog';
+import { ChaynsErrorObject } from './ChaynsError';
 
 export const chaynsErrorCodeRegex = /^[a-zA-Z0-9_]+\/[a-zA-Z0-9/_]+$/;
 
@@ -7,13 +8,13 @@ export const chaynsErrorCodeRegex = /^[a-zA-Z0-9_]+\/[a-zA-Z0-9/_]+$/;
  * Check if object is a chayns error object
  * @param obj
  */
-export function isChaynsErrorObject(obj: Record<string, unknown>): boolean {
+export function isChaynsErrorObject(obj: Record<string, unknown> | ChaynsErrorObject): boolean {
     return !!obj
-           && Object.prototype.toString.call(obj) === '[object Object]'
-           && Object.hasOwnProperty.call(obj, 'errorCode')
-           && Object.hasOwnProperty.call(obj, 'requestId')
-           && typeof (obj?.errorCode) === 'string'
-           && chaynsErrorCodeRegex.test(obj.errorCode);
+        && Object.prototype.toString.call(obj) === '[object Object]'
+        && Object.hasOwnProperty.call(obj, 'errorCode')
+        && Object.hasOwnProperty.call(obj, 'requestId')
+        && typeof (obj?.errorCode) === 'string'
+        && chaynsErrorCodeRegex.test(obj.errorCode);
 }
 
 /**

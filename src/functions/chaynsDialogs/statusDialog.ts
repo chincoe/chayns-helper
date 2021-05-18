@@ -21,7 +21,7 @@ const statusDialog = (
         dialog?: 'alert' | 'confirm',
         buttons?: Array<DialogButton>
     } = {}
-) => new DialogPromise<undefined>((resolve) => {
+): DialogPromise<undefined> => new DialogPromise<undefined>((resolve) => {
     let { dialog = dialogType.ALERT } = options;
     const {
         message = '',

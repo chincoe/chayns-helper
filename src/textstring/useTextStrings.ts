@@ -28,12 +28,10 @@ function useTextStrings<T extends Record<string, string>>(
  * @param language
  */
 function useTextStrings(
-    stringObject: any,
+    stringObject: unknown,
     language?: string,
-): any {
-    return useMemo(() => {
-        return getTextStrings(stringObject, language);
-    }, [stringObject, language]);
+): unknown {
+    return useMemo(() => getTextStrings(stringObject as never, language), [stringObject, language]);
 }
 
 export default useTextStrings;

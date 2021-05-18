@@ -60,7 +60,7 @@ export async function getLogFunctionByStatus(
     if (levelKey && logConfig.get(levelKey)) {
         switch (logConfig.get(levelKey)) {
             case LogLevel.info:
-                return (logger.info as (data: Record<string, any>, error?: Error) => any);
+                return (logger.info as (data: Record<string, unknown>, error?: Error) => void);
             case LogLevel.warning:
                 return logger.warning;
             case LogLevel.error:

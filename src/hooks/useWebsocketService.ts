@@ -23,7 +23,7 @@ const websocketClients: { [serviceName: string]: WebSocketClient } = {};
 export interface WebsocketServiceConfig {
     serviceName: string;
     conditions: WebsocketConditions;
-    events: Record<string, (data: Record<string, unknown> | unknown, wsEvent?: MessageEvent) => void>;
+    events: Record<string, (data: Record<string, unknown> | unknown, wsEvent?: MessageEvent | Event | null) => void>;
     clientGroup?: string;
     waitForDefinedConditions?: boolean;
     forceDisconnectOnUnmount?: boolean;

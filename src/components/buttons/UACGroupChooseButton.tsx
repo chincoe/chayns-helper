@@ -44,7 +44,7 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButtonProps> = ({
                 }
             }
         )
-            .then((res) => setUacGroups(res))
+            .then((res) => setUacGroups(res as { id: number, showName: string }[]))
             .catch((ex) => {
                 console.error(...colorLog.gray('[UACGroupChooseButton]'), 'Failed to fetch UAC Groups.', ex);
             });
