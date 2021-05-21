@@ -1,6 +1,8 @@
-export interface ObjectResponse {
-    status: number,
-    data: Record<string, unknown>
+import HttpStatusCode from './HttpStatusCodes';
+
+export interface StatusResponse<T> {
+    status: -1 | HttpStatusCode[keyof HttpStatusCode] | number,
+    data?: T
 }
 
 /**

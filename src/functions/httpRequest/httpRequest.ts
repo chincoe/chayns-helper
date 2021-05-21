@@ -15,7 +15,7 @@ import {
     resolveWithHandler,
 } from './httpRequestUtils';
 import RequestError from './RequestError';
-import { ObjectResponse, ResponseType, ResponseTypeList } from './ResponseType';
+import { StatusResponse, ResponseType, ResponseTypeList } from './ResponseType';
 import LogLevel from './LogLevel';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
 import HttpStatusCode from './HttpStatusCodes';
@@ -111,17 +111,25 @@ export interface HttpRequestOptions {
 
 export type httpRequestResult =
     Response
-    | ObjectResponse
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    | Record<string, any>
     | Blob
-    | Record<string, unknown>
+    | ArrayBuffer
     | string
+    | undefined
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    | StatusResponse<Record<string, any>>
+    | StatusResponse<Blob>
+    | StatusResponse<ArrayBuffer>
+    | StatusResponse<string>
+    | StatusResponse<undefined>
     | RequestError
     | ChaynsError
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     | any;
 
 /**
- * Extensive and highly customizable fetch helper. Consult httpRequest.md for usage.
+ * Extensive and highly customizable fetch helper. Consult documentation for usage.
  * @param address
  * @param config
  * @param processName
