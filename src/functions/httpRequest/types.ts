@@ -1,7 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { ResponseType, StatusResponse } from './ResponseType';
-import { ChaynsError, RequestError } from '../../index';
 import { HttpRequestOptions } from './httpRequest';
+import RequestError from './RequestError';
+import ChaynsError from './ChaynsError';
 
 export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
 
