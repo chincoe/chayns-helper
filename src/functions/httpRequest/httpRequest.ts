@@ -97,10 +97,8 @@ export interface HttpRequestOptions {
     waitCursor?: boolean
         | { text?: string, textTimeout?: number, timeout?: number, }
         | { timeout?: number, steps?: { [timeout: number]: string }; };
-    statusHandlers?: Record<string, ResponseType | ((response: Response) => unknown)>
-        | Map<string, ResponseType | ((response: Response) => unknown)>;
-    errorHandlers?: Record<string, ResponseType | ((response: Response) => unknown)>
-        | Map<string, ResponseType | ((response: Response) => unknown)>;
+    statusHandlers?: Record<string, ResponseType | ((response: Response) => unknown)>;
+    errorHandlers?: Record<string, ResponseType | ((response: Response) => unknown)>;
     errorDialogs?: Array<string | RegExp>;
     replacements?: { [key: string]: string | ((substring: string, ...args: unknown[]) => string) };
     sideEffects?: ((status: number, chaynsErrorObject?: ChaynsErrorObject) => void)
@@ -109,7 +107,7 @@ export interface HttpRequestOptions {
     internalRequestGuid?: string;
 }
 
-export type httpRequestResult =
+export type HttpRequestResult =
     Response
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     | Record<string, any>
@@ -144,7 +142,7 @@ export function httpRequest(
     processName = 'httpRequest',
     // options for this helper
     options: HttpRequestOptions = {},
-): Promise<httpRequestResult> {
+): Promise<HttpRequestResult> {
     let { responseType = null } = {
         responseType: ResponseType.Json,
         ...(defaultConfig.options || {}),
@@ -660,15 +658,8 @@ export function httpRequest(
                         if (jRes.message === 'token_expired') {
                             callSideEffects(<number>status, chaynsErrorObject || undefined);
                             resolve(httpRequest(address, config, processName, {
-                                responseType,
-                                logConfig,
-                                throwErrors,
-                                stringifyBody,
-                                additionalLogData,
-                                autoRefreshToken: false,
-                                statusHandlers,
-                                errorHandlers,
-                                internalRequestGuid
+                                ...options,
+                                autoRefreshToken: false
                             }));
                         } else if (tryReject(error, status)) return;
                     } catch (err) {
