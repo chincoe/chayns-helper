@@ -12,8 +12,7 @@ import useRefresh from '../../utils/useRefresh';
 const refresh = (
     WrappedComponent: JSXElementConstructor<Record<string, unknown>>,
     interval = 10000
-// eslint-disable-next-line @typescript-eslint/ban-types
-): NamedExoticComponent<object> => memo(
+): NamedExoticComponent<Record<string, unknown>> => memo(
     (props) => {
         const [refreshId, refreshFn] = useRefresh(interval);
         return (<WrappedComponent {...props} __refreshId={refreshId} refreshFunction={refreshFn}/>);

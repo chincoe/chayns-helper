@@ -3,6 +3,13 @@ import clsx from 'clsx';
 import { SmallWaitCursor } from 'chayns-components';
 import './centered-wait-cursor.scss';
 
+export interface CenteredWaitCursorProps {
+    className?: string;
+    style?: Partial<CSSStyleDeclaration> | Record<string, string | number>;
+    elementType?: string | JSXElementConstructor<Record<string, unknown>>;
+    delay?: number;
+}
+
 /**
  * chayns-components SmallWaitCursor that centers itself, adds a margin and is only displayed after a delay
  * @param className
@@ -13,12 +20,7 @@ import './centered-wait-cursor.scss';
  * @param props
  * @constructor
  */
-const CenteredWaitCursor: FunctionComponent<{
-    className?: string;
-    style?: Partial<CSSStyleDeclaration> | Record<string, string | number>;
-    elementType?: string | JSXElementConstructor<Record<string, unknown>>;
-    delay?: number;
-}> = (
+const CenteredWaitCursor: FunctionComponent<CenteredWaitCursorProps> = (
     {
         className = '',
         style = {},

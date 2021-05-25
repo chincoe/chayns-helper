@@ -23,7 +23,6 @@ export type ErrorBoundaryState = { error?: Error | null; hasError: boolean }
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
     /* #__PURE__ */
     static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-        // eslint-disable-next-line no-console
         console.error(error);
         // Update state so the next render will show the fallback UI.
         return {
@@ -52,7 +51,6 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     }
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-        // You can also log the error to an error reporting service
         logger.error({
             message: '[ErrorBoundary] Unexpected react error',
             data: { errorInfo }
@@ -71,7 +69,6 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
         // noinspection UnnecessaryLocalVariableJS
         const FallbackComponent = fallback;
         if (state.hasError) {
-            // You can render any custom fallback UI
             return FallbackComponent
                 ? (
                     <FallbackComponent

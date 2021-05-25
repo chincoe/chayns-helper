@@ -8,6 +8,15 @@ export interface RechartsAxis<T> {
     ticks: Array<number | T>;
 }
 
+export type RechartsAxisParameters<T> = {
+    start: number | T;
+    end: number | T;
+    divisor: number | number[];
+    maxTicks: number;
+    minTicks: number;
+    tickFormatter?: (start: number | T, intervalLength: number, i: number) => (number | T);
+}
+
 /**
  * Generate data for a good recharts axis that will use customizable intervals
  * Usage:
@@ -34,14 +43,7 @@ export function generateRechartsAxis<T>({
     minTicks,
     maxTicks,
     tickFormatter
-}: {
-    start: number | T;
-    end: number | T;
-    divisor: number | number[];
-    maxTicks: number;
-    minTicks: number;
-    tickFormatter?: (start: number | T, intervalLength: number, i: number) => (number | T);
-}): RechartsAxis<T> {
+}: RechartsAxisParameters<T>): RechartsAxis<T> {
     // eslint-disable-next-line no-param-reassign
     if (!tickFormatter) tickFormatter = (base, intervalLength, i) => (<number>base + intervalLength * i);
 
@@ -106,14 +108,7 @@ const useRechartsAxis = <T>(
         maxTicks,
         minTicks = 0,
         tickFormatter
-    }: {
-        start: number | T,
-        end: number | T,
-        divisor: number | number[],
-        maxTicks: number,
-        minTicks: number,
-        tickFormatter?: (start: number | T, intervalLength: number, i: number) => (number | T)
-    }, deps: Array<unknown>
+    }: RechartsAxisParameters<T>, deps: Array<unknown>
 ): RechartsAxis<T> => useMemo(() => generateRechartsAxis({
     start, end, divisor, maxTicks, minTicks, tickFormatter
 }), deps);

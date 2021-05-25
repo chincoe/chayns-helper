@@ -14,6 +14,11 @@ declare interface UACGroupChooseButtonProps {
     disabled?: boolean;
 }
 
+declare interface UACGroupSimplified {
+    id: number;
+    showName: string;
+}
+
 /**
  * A Button that opens a select dialog to choose one or more UAC groups from the current site
  * @param value - currently selected uacGroupId
@@ -30,7 +35,7 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButtonProps> = ({
     disabled = false,
     ...props
 }) => {
-    const [uacGroups, setUacGroups] = useState<{ id: number, showName: string }[]>();
+    const [uacGroups, setUacGroups] = useState<Array<UACGroupSimplified>>();
     useEffect(() => {
         request.fetch(
             `https://sub50.tobit.com/backend/${chayns.env.site.locationId}/UserGroup`,
@@ -44,7 +49,7 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButtonProps> = ({
                 }
             }
         )
-            .then((res) => setUacGroups(res as { id: number, showName: string }[]))
+            .then((res) => setUacGroups(res as Array<UACGroupSimplified>))
             .catch((ex) => {
                 console.error(...colorLog.gray('[UACGroupChooseButton]'), 'Failed to fetch UAC Groups.', ex);
             });

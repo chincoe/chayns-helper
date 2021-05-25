@@ -31,7 +31,7 @@ export default async function isChaynsError(value: unknown): Promise<boolean> {
             } catch (e) { /* ignored */ }
             return isChaynsErrorObject(obj);
         }
-        if (value && typeof (<Promise<unknown>>value)?.then === 'function') {
+        if (value && typeof (value as Promise<unknown>)?.then === 'function') {
             const result = await Promise.resolve(value);
             return isChaynsError(result);
         }

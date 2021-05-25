@@ -4,7 +4,7 @@ import React, {
 import useRefresh from '../../utils/useRefresh';
 
 /**
- * Container that rerenders its children in the specified interval
+ * Container that re-renders its children in the specified interval
  * @param interval - interval in ms to rerender, default: 10000
  * @param children
  * @param elementType - react element type of the container, default: 'div'

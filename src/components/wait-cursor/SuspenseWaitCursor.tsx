@@ -4,17 +4,16 @@ import React, {
 import showWaitCursor from '../../functions/waitCursor';
 import CenteredWaitCursor from './CenteredWaitCursor';
 
-const SuspenseWaitCursorFallback: FunctionComponent<{
-    inline?: boolean;
-}> = ({ inline = false }) => {
+const SuspenseWaitCursorFallback: FunctionComponent<{ inline?: boolean; }> = ({ inline = false }) => {
     useEffect(() => {
         if (!inline) {
             return showWaitCursor({ action: 'Suspense for React.lazy' });
         }
         return () => null;
     }, []);
-    return inline ? (<CenteredWaitCursor className="Suspense_placeholder"/>) : (
-        <div className="Suspense_placeholder"/>);
+    return inline
+        ? (<CenteredWaitCursor className="Suspense_placeholder"/>)
+        : (<div className="Suspense_placeholder"/>);
 };
 
 /**

@@ -1,4 +1,11 @@
+// noinspection JSPrimitiveTypeWrapperUsage
+
 import hexToRgb, { RGBAObject } from './hexToRgb';
+
+export type StringToColorResult =
+    RGBAObject
+    | string
+    | (string & { readonly toRgb: (a?: number) => (RGBAObject | string) });
 
 /**
  * Hash a string and turn it into an RGB color to get predictable colors out of strings.
@@ -7,8 +14,7 @@ const stringToColor = (
     str: string,
     rgb?: boolean
 // eslint-disable-next-line @typescript-eslint/ban-types
-): (RGBAObject | { toRgb: (a?: number) => (RGBAObject | string) } | String
-    ) => {
+): StringToColorResult => {
     /* eslint-disable no-bitwise */
     let hash = 0;
     for (let i = 0; i < str.length; i += 1) {
@@ -29,7 +35,7 @@ const stringToColor = (
         if (a) (<RGBAObject>rgbValue).a = a;
         return rgbValue;
     };
-    return result;
+    return result as StringToColorResult;
 };
 
 export default stringToColor;

@@ -83,8 +83,8 @@ export async function getLogFunctionByStatus(
 
 export function getStatusHandlerByStatusRegex(
     status: number,
-    statusHandlers: Map<string, ((response: Response) => unknown) | ResponseType>
-): ((response: Response) => unknown) | ResponseType | null | undefined {
+    statusHandlers: Map<string, ((response: Response & ChaynsErrorObject) => unknown) | ResponseType>
+): ((response: Response & ChaynsErrorObject) => unknown) | ResponseType | null | undefined {
     const keys = getMapKeys(statusHandlers);
     for (let i = 0; i < keys.length; i += 1) {
         const regExp = stringToRegexStrict(keys[i]);
@@ -212,7 +212,7 @@ export const textResolve = async (
 };
 
 export async function resolveWithHandler(
-    handler: ResponseType | ((response: Response) => unknown),
+    handler: ResponseType | ((response: Response & ChaynsErrorObject) => unknown),
     response: Response,
     status: number,
     processName: string,
@@ -228,8 +228,29 @@ export async function resolveWithHandler(
         chaynsErrorObject
     });
     if (typeof (handler) === 'function') {
-        // eslint-disable-next-line no-await-in-loop
-        resolve(await handler(<Response><unknown>chaynsErrorObject ?? response));
+        if (chaynsErrorObject && Object.prototype.toString.call(chaynsErrorObject) === '[object Object]') {
+            resolve(await handler({
+                status: response.status,
+                headers: response.headers,
+                json: response.json,
+                ok: response.ok,
+                redirected: response.redirected,
+                blob: response.blob,
+                arrayBuffer: response.arrayBuffer,
+                url: response.url,
+                bodyUsed: response.bodyUsed,
+                body: response.body,
+                statusText: response.statusText,
+                trailer: response.trailer,
+                type: response.type,
+                clone: response.clone,
+                text: response.text,
+                formData: response.formData,
+                ...chaynsErrorObject
+            } as Response & ChaynsErrorObject));
+        } else {
+            resolve(await handler(response as Response & ChaynsErrorObject));
+        }
         return true;
     }
     if (ResponseTypeList.includes(handler)) {
