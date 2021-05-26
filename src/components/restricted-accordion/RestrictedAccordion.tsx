@@ -3,17 +3,19 @@ import { Accordion, Icon } from 'chayns-components';
 import clsx from 'clsx';
 import './restricted-accordion.scss';
 
-/**
- * An Accordion styled for exclusive access by e.g. managers
- */
-const RestrictedAccordion: FunctionComponent<{
+export interface RestrictedAccordionProps {
     className?: string;
     head: ReactNode | string;
     children: ReactNode;
     onSearch?: (value: string) => unknown;
     onSearchEnter?: (value: string) => unknown;
     useAdminStyle?: boolean;
-}> = (
+}
+
+/**
+ * An Accordion styled for exclusive access by e.g. managers
+ */
+const RestrictedAccordion: FunctionComponent<RestrictedAccordionProps> = (
     {
         className,
         children,

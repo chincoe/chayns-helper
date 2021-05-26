@@ -19,7 +19,10 @@ export type WaitCursorSteps = { [timeout: number]: string | null }
  */
 export default function showWaitCursor(config?: WaitCursorConfig, additionalSteps?: WaitCursorSteps): () => void {
     const {
-        text = undefined, textTimeout = 5000, timeout: initialTimeout = 300, action = 'showWaitCursor'
+        text = undefined,
+        textTimeout = 5000,
+        timeout: initialTimeout = 300,
+        action = 'showWaitCursor'
     } = config || {};
     const timeoutSteps = additionalSteps
         ? Object.keys(additionalSteps)

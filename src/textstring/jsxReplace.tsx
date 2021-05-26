@@ -7,7 +7,7 @@ import colorLog from '../utils/colorLog';
 export type JsxReplacementFunction = ((params: {
     match: string, regexMatch?: RegExpMatchArray, variable: string | RegExp
 }) => string | ReactElement);
-export type JsxReplacements = { [stringOrRegex: string]: ReactElement | string | JsxReplacementFunction };
+export type JsxReplacements = Record<string, ReactElement | string | JsxReplacementFunction>;
 
 export interface JsxReplaceConfig {
     text: string;

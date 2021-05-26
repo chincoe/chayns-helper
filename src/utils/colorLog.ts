@@ -4,7 +4,7 @@ const isChromeBased = !!window.chrome;
 const isFirefox = typeof InstallTrigger !== 'undefined';
 
 // eslint-disable-next-line no-console
-export function createColorLog(elements: { [message: string]: string }): string[] {
+export function createColorLog(elements: Record<string, string>): string[] {
     if (!isChromeBased && !isFirefox) return [Object.keys(elements).join(' ')];
     const logs = [];
     const styles = [];
@@ -18,7 +18,7 @@ export function createColorLog(elements: { [message: string]: string }): string[
 }
 
 export interface ColorLog {
-    create: (elements: { [message: string]: string }) => string[];
+    create: (elements: Record<string, string>) => string[];
     gray: (v: string) => string[];
     color: (color: string, v: string) => string[];
 }

@@ -122,8 +122,8 @@ const isNullOrEmpty = (value: unknown): boolean => {
  * @param callback
  */
 const forEachKey = <T>(
-    obj: { [key: string]: T },
-    callback: (key: string, value: T, index: number, source: { [key: string]: T }) => void
+    obj: Record<string, T>,
+    callback: (key: string, value: T, index: number, source: Record<string, T>) => void
 ): void => {
     if (!isObject(obj) || !isFunction(callback)) return;
     const keys = Object.keys(obj);
@@ -136,16 +136,16 @@ const forEachKey = <T>(
  * Map object to another object
  */
 const mapObject = <T, TResult>(
-    obj: { [key: string]: T },
-    callback: (key: string, value: T, index: number, source: { [key: string]: T }) => TResult
-): { [key: string]: TResult } => {
+    obj: Record<string, T>,
+    callback: (key: string, value: T, index: number, source: Record<string, T>) => TResult
+): Record<string, TResult> => {
     if (!isObject(obj) || !isFunction(callback)) return {};
     const keys = Object.keys(obj);
-    const newObj: { [key: string]: TResult | T } = { ...obj };
+    const newObj: Record<string, TResult | T> = { ...obj };
     for (let i = 0; i < length(keys); i += 1) {
         newObj[keys[i]] = callback(keys[i], obj[keys[i]], i, obj);
     }
-    return <{ [key: string]: TResult }>newObj;
+    return <Record<string, TResult>>newObj;
 };
 
 /**

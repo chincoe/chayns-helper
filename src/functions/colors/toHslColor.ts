@@ -1,5 +1,4 @@
 /* eslint-disable no-bitwise */
-
 const getHashCode = (string: string): number => {
     let hash = 0;
     if (string.length === 0) return hash;
@@ -8,6 +7,13 @@ const getHashCode = (string: string): number => {
         hash &= hash; // Convert to 32bit integer
     }
     return hash;
+};
+
+export type toHslColorResult = {
+    h: number;
+    s: number;
+    l: number;
+    readonly toString: () => string
 };
 
 /**
@@ -21,10 +27,7 @@ const toHslColor = (
     stringOrInt: string | number,
     s?: number,
     l?: number
-): {
-    // eslint-disable-next-line function-paren-newline
-    h: number, s: number, l: number, readonly toString: () => string
-} => {
+): toHslColorResult => {
     const number: number = typeof (stringOrInt) === 'number' ? stringOrInt : getHashCode(stringOrInt);
     const shortened: number = number % 360;
     // const result = `hsl(${shortened},${s ?? 70}%,${l ?? 40}%)`;

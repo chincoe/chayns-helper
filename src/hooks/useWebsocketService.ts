@@ -3,7 +3,7 @@ import { deepEqual } from '../functions/shallowEqual';
 import WebSocketClient, { WebsocketConditions } from '../other/WebSocketClient';
 import { WebsocketClient } from '../index';
 
-const websocketClients: { [serviceName: string]: WebSocketClient } = {};
+const websocketClients: Record<string, WebSocketClient> = {};
 
 /**
  * A config for the websocket service

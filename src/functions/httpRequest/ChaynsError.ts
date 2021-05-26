@@ -35,10 +35,10 @@ export default class ChaynsError extends RequestError {
                 obj = await response.json();
             } catch (e) { /* ignored */ }
             if (isChaynsErrorObject(obj)) {
-                return <ChaynsErrorObject>obj;
+                return obj as ChaynsErrorObject;
             }
         }
-        if (value && typeof (<Promise<unknown>>value)?.then === 'function') {
+        if (value && typeof (value as Promise<unknown>)?.then === 'function') {
             const result = await Promise.resolve(value);
             return ChaynsError.getChaynsErrorObject(result as Promise<unknown>);
         }

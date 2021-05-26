@@ -1,4 +1,8 @@
-const loginListeners: { listeners: Array<() => void>; globalReloadOnLogin: boolean; noReloadOnLogin: number } = {
+const loginListeners: {
+    listeners: Array<() => void>;
+    globalReloadOnLogin: boolean;
+    noReloadOnLogin: number
+} = {
     listeners: [],
     globalReloadOnLogin: true,
     noReloadOnLogin: 0

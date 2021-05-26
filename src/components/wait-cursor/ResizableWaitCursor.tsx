@@ -3,6 +3,12 @@ import './resizable-wait-cursor.scss';
 import { SmallWaitCursor } from 'chayns-components';
 import clsx from 'clsx';
 
+export interface ResizableWaitCursorProps {
+    size?: number;
+    className?: string;
+    style?: Partial<CSSStyleDeclaration> | Record<string, string | number>;
+}
+
 /**
  *
  * Resizable version of the chayns-components SmallWaitCursor
@@ -12,11 +18,7 @@ import clsx from 'clsx';
  * @param props
  * @constructor
  */
-const ResizableWaitCursor: FunctionComponent<{
-    size?: number;
-    className?: string;
-    style?: Partial<CSSStyleDeclaration> | Record<string, string | number>;
-}> = ({
+const ResizableWaitCursor: FunctionComponent<ResizableWaitCursorProps> = ({
     size = 32,
     className = '',
     style = {},

@@ -1,16 +1,17 @@
 import { useState } from 'react';
 
+export type UseUniqueIntervalResult = [
+    (fn: () => unknown, interval: number) => number,
+    (interval: number) => number
+];
+
 /**
  * Unique interval: Setting a new interval will clear the previous one
  * @param initialValue
  */
 const useUniqueInterval = (
     initialValue: number = <number><unknown>setTimeout(() => null, 0)
-): [
-    (fn: () => unknown, interval: number) => number,
-    // eslint-disable-next-line function-paren-newline
-    (interval: number) => number
-] => {
+): UseUniqueIntervalResult => {
     const [customInterval, setCustomInterval] = useState<number>(initialValue);
 
     const setter = (interval: number): number => {

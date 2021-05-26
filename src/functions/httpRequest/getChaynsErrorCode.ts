@@ -25,9 +25,9 @@ export default async function getChaynsErrorCode(value: unknown): Promise<string
             try {
                 obj = await response.json();
             } catch (e) { /* ignored */ }
-            return getChaynsErrorCodeFromObject(<ChaynsErrorObject>obj);
+            return getChaynsErrorCodeFromObject(obj as ChaynsErrorObject);
         }
-        if (value && typeof (<Promise<unknown>>value)?.then === 'function') {
+        if (value && typeof (value as Promise<unknown>)?.then === 'function') {
             const result = await Promise.resolve(value);
             return getChaynsErrorCode(result);
         }

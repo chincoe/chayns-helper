@@ -1,16 +1,17 @@
 import { useState } from 'react';
 
+export type UseUniqueTimeoutResult = [
+    (fn: () => unknown, timeout: number) => number,
+    (timeout: number) => number
+];
+
 /**
  * Unique timeout: Setting a new timeout will clear the previous one
  * @param initialValue
  */
 const useUniqueTimeout = (
     initialValue = 0
-): [
-    (fn: () => unknown, timeout: number) => number,
-    // eslint-disable-next-line function-paren-newline
-    (timeout: number) => number
-] => {
+): UseUniqueTimeoutResult => {
     const [customTimeout, setCustomTimeout] = useState<number>(initialValue);
 
     const setter = (timeout: number): number => {

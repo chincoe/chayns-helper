@@ -15,7 +15,7 @@ import {
     resolveWithHandler,
 } from './httpRequestUtils';
 import RequestError from './RequestError';
-import { ObjectResponse, ResponseType, ResponseTypeList } from './ResponseType';
+import { StatusResponse, ResponseType, ResponseTypeList } from './ResponseType';
 import LogLevel from './LogLevel';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
 import HttpStatusCode from './HttpStatusCodes';
@@ -26,11 +26,20 @@ import jsonLog from '../../utils/jsonLog';
 
 /**
  * The fetch config. Contains all parameters viable for the window.fetch init object including the following:
- * @param useChaynsAuth - default: chayns.env.user.isAuthenticated - Add use token as auth header
- * @param method - default: 'GET' - HttpMethod
- * @param headers - plain JS object with headers
- * @param body - the request body
- * @param signal - an AbortSignal
+ * @property useChaynsAuth - default: chayns.env.user.isAuthenticated - Add use token as auth header
+ * @property method - default: 'GET' - HttpMethod
+ * @property headers - plain JS object with headers
+ * @property body - the request body
+ * @property signal - an AbortSignal
+ * @property cache - the cache behavior
+ * @property referrer
+ * @property referrerPolicy
+ * @property mode - the fetch mode
+ * @property credentials - the credentials behavior
+ * @property redirect - the redirect behavior
+ * @property integrity
+ * @property keepalive
+ * @property window
  */
 export interface HttpRequestConfig {
     method?: HttpMethod | string;
@@ -71,57 +80,63 @@ export interface HttpRequestConfig {
 
 /**
  * Additional request options. Consult documentation for details
- * @param responseType - default: 'json' - the data format this helper should return
- * @param throwErrors - default: false - throw errors on error status codes
- * @param logConfig - configure which status code should be logged with which level
- * @param stringifyBody - default: true - call JSON.stringify on the body. Accepts an object to configure serializer
+ * @property responseType - default: 'json' - the data format this helper should return
+ * @property throwErrors - default: false - throw errors on error status codes
+ * @property logConfig - configure which status code should be logged with which level
+ * @property stringifyBody - default: true - call JSON.stringify on the body. Accepts an object to configure serializer
  *     settings
- * @param additionalLogData - additional data to to be passed to the request logs
- * @param autoRefreshToken - default: true - automatically refresh an expired chayns token and repeat the request
- * @param waitCursor - default: false - show a chayns waitCursor, pass an object to configure text, delay, and multiple
- *     steps
- * @param statusHandlers - modify the return value for specific status codes
- * @param errorHandlers - modify the return value for specific chayns errors
- * @param errorDialogs - list of chayns errors to display a dialog for
- * @param replacements - object with url string replacements
- * @param sideEffects - additional effects to be executed on certain status codes
- * @param internalRequestGuid - internal guid to group logs for the same request together
+ * @property additionalLogData - additional data to to be passed to the request logs
+ * @property autoRefreshToken - default: true - automatically refresh an expired chayns token and repeat the request
+ * @property waitCursor - default: false - show a chayns waitCursor, pass an object to configure text, delay, and
+ *     multiple steps
+ * @property statusHandlers - modify the return value for specific status codes
+ * @property errorHandlers - modify the return value for specific chayns errors
+ * @property errorDialogs - list of chayns errors to display a dialog for
+ * @property replacements - object with url string replacements
+ * @property sideEffects - additional effects to be executed on certain status codes
+ * @property internalRequestGuid - internal guid to group logs for the same request together
  */
 export interface HttpRequestOptions {
     responseType?: ResponseType | null;
     throwErrors?: boolean | Array<HttpStatusCode | number>;
-    logConfig?: { [key: string]: LogLevel } | Map<string, LogLevel>;
+    logConfig?: Record<string, LogLevel> | Map<string, LogLevel>;
     stringifyBody?: boolean | JsonSettings;
     additionalLogData?: Record<string, unknown>;
     autoRefreshToken?: boolean;
     waitCursor?: boolean
         | { text?: string, textTimeout?: number, timeout?: number, }
         | { timeout?: number, steps?: { [timeout: number]: string }; };
-    statusHandlers?: Record<string, ResponseType | ((response: Response) => unknown)>
-        | Map<string, ResponseType | ((response: Response) => unknown)>;
-    errorHandlers?: Record<string, ResponseType | ((response: Response) => unknown)>
-        | Map<string, ResponseType | ((response: Response) => unknown)>;
+    statusHandlers?: Record<string, ResponseType | ((response: Response & ChaynsErrorObject) => unknown)>;
+    errorHandlers?: Record<string, ResponseType | ((response: Response & ChaynsErrorObject) => unknown)>;
     errorDialogs?: Array<string | RegExp>;
-    replacements?: { [key: string]: string | ((substring: string, ...args: unknown[]) => string) };
+    replacements?: Record<string, string | ((substring: string, ...args: unknown[]) => string)>;
     sideEffects?: ((status: number, chaynsErrorObject?: ChaynsErrorObject) => void)
         | Record<string, (chaynsErrorObject?: ChaynsErrorObject) => void>
         | Record<string, never>;
     internalRequestGuid?: string;
 }
 
-export type httpRequestResult =
+export type HttpRequestResult =
     Response
-    | ObjectResponse
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    | Record<string, any>
     | Blob
-    | Record<string, unknown>
+    | ArrayBuffer
     | string
+    | undefined
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    | StatusResponse<Record<string, any>>
+    | StatusResponse<Blob>
+    | StatusResponse<ArrayBuffer>
+    | StatusResponse<string>
+    | StatusResponse<undefined>
     | RequestError
     | ChaynsError
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     | any;
 
 /**
- * Extensive and highly customizable fetch helper. Consult httpRequest.md for usage.
+ * Extensive and highly customizable fetch helper. Consult documentation for usage.
  * @param address
  * @param config
  * @param processName
@@ -136,7 +151,7 @@ export function httpRequest(
     processName = 'httpRequest',
     // options for this helper
     options: HttpRequestOptions = {},
-): Promise<httpRequestResult> {
+): Promise<HttpRequestResult> {
     let { responseType = null } = {
         responseType: ResponseType.Json,
         ...(defaultConfig.options || {}),
@@ -652,15 +667,8 @@ export function httpRequest(
                         if (jRes.message === 'token_expired') {
                             callSideEffects(<number>status, chaynsErrorObject || undefined);
                             resolve(httpRequest(address, config, processName, {
-                                responseType,
-                                logConfig,
-                                throwErrors,
-                                stringifyBody,
-                                additionalLogData,
-                                autoRefreshToken: false,
-                                statusHandlers,
-                                errorHandlers,
-                                internalRequestGuid
+                                ...options,
+                                autoRefreshToken: false
                             }));
                         } else if (tryReject(error, status)) return;
                     } catch (err) {
