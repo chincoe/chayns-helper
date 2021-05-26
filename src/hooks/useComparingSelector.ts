@@ -6,9 +6,27 @@ import useSelector from '../utils/requireUseSelector';
  * @param func
  * @param deep
  */
-const useComparingSelector = <T>(func: (state: unknown) => T, deep = false): T => useSelector(
-    // @ts-expect-error typings are wrong due to optional react-redux import
-    func, deep ? deepEqual : shallowEqual
-);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function useComparingSelector<TResult>(func: (state: any) => TResult, deep?: boolean): TResult
+
+/**
+ * react-redux useSelector with shallowEqual
+ * @param func
+ * @param deep
+ */
+function useComparingSelector<TState, TResult>(func: (state: TState) => TResult, deep?: boolean): TResult
+
+/**
+ * react-redux useSelector with shallowEqual
+ * @param func
+ * @param deep
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function useComparingSelector(func: (state: any) => any, deep = false): any {
+    return useSelector(
+        // @ts-expect-error typings are wrong due to optional react-redux import
+        func, deep ? deepEqual : shallowEqual
+    );
+}
 
 export default useComparingSelector;
