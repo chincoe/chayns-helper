@@ -1,86 +1,23 @@
-# [Request](src/functions/httpRequest/httpRequest.ts)
+# [HttpClient](src/functions/httpRequest/HttpClient.ts)
 
-> **NOTICE: As of version 2.19.x, Request has been deprecated and is replaced by [HttpClient](./HttpClient.md). This function will be removed in a future release.**
-> 
-> HttpClient features the exact same functionality but offers a better typings for typescript as well as a better way to initialize the default settings.
-> 
-> This Readme will no longer be updated. Consult CHANGELOG for recent changes and the Readme of HttpClient for the latest features.
-
-## Migrating to HttpClient
-
-To migrate to HttpClient, only the initialization of the defaults and the imports for the respective requests have to be changed:
-
-OLD:
-```javascript
-// initialization
-function init() {
-    // ...
-    request.defaults(baseUrl, config, options);
-}
-
-// usage
-import { request } from 'chayns-helper';
-
-async function getData() {
-    return request.fetch(address, config, processName, options);
-}
-
-```
-NEW: 
-```javascript
-// initialization - create client and export it instead of setting defaults with a function
-const request = new HttpClient({
-    address: baseUrl,
-    config: config,
-    options: options
-});
-
-export default request;
-
-// usage - only change the import, everything else remains untouched
-import request from '../../utils/request';
-
-async function getData() {
-    return request.fetch(address, config, processName, options);
-}
-```
-
-If you need to access any chayns environment information in your default setup you will now have to override the exported variable after your chayns init:
-```javascript
-let request = new HttpClient({
-    address: baseUrl,
-    config: config,
-    options: options
-});
-
-export function initRequestClient() {
-    request = new HttpClient({
-        address: baseUrl,
-        config: config,
-        options: options
-    });
-}
-
-export default request;
-```
-
+A request helper with customizable defaults that can be used to configure any behavior. Includes the request helper as
+well as enums for http methods, http status codes and more.
 
 ## Table of Contents
-
 - [Suggested setup and quick documentation](#suggested-setup-and-quick-documentation)
-- [request.fetch(address, config, processName, options)](#requestfetchaddress-config-processname-options)
-    * [Response handling priority](#response-handling-priority)
-        + [ThrowError behavior](#throwerror-behavior)
-        + [Handling errors with throwErrors = true](#handling-errors-with-throwerrors--true)
-    * [Examples](#examples)
-    * [Customizing Logging](#customizing-logging)
-- [request.defaults(address, config, options)](#requestdefaultsaddress-config-options)
-    * [Example](#example)
+- [HttpClient.fetch(address, config, processName, options)](#httpclientfetchaddress-config-processname-options)
+   * [Response handling priority](#response-handling-priority)
+      + [ThrowError behavior](#throwerror-behavior)
+      + [Handling errors with throwErrors = true](#handling-errors-with-throwerrors--true)
+   * [Examples](#examples)
+   * [Customizing Logging](#customizing-logging)
+- [new HttpClient(defaults)](#new-httpclientdefaults)
+   * [Example](#example)
 - Other Exports
-    * [ResponseType | request.responseType](#responsetype--requestresponsetype)
-    * [LogLevel | request.logLevel](#loglevel--requestloglevel)
-    * [HttpMethod | request.method](#httpmethod--requestmethod)
-    * [RequestError | request.error extends Error](#requesterror--requesterror-extends-error)
+    * [ResponseType | request.responseType](#responsetype)
+    * [LogLevel | request.logLevel](#loglevel)
+    * [HttpMethod | request.method](#httpmethod)
+    * [RequestError | request.error extends Error](#requesterror-extends-error)
     * [ChaynsError extends RequestError](#chaynserror-extends-requesterror)
     * [isChaynsError(value)](#ischaynserrorvalue)
     * [getChaynsErrorCode(value)](#getchaynserrorcodevalue)
@@ -92,18 +29,18 @@ export default request;
 If you've never used this helper before and just want a basic fetch helper, I suggest the following setup:
 
 ```javascript
-// index.js
-async function init() {
-    // chayns ready, logger init goes here
-    request.defaults("BASE_URL",
-        {
-            // your default fetch config, e.g. header
-        }, {
-            responseType: ResponseType.JsonWithStatus // configures reques.fetch to return an object with the status and json body
-        }
-    )
-    // render goes here
-}
+// initialization
+const request = new HttpClient({
+    address: "BASE_URL",
+    config: {
+        // your default fetch config, e.g. header
+    },
+    options: {
+        responseType: ResponseType.JsonWithStatus // configures request.fetch to return an object with the status and json body
+    }
+});
+
+export default request;
 
 // postData.js
 export default async function postData(body) {
@@ -132,7 +69,7 @@ export default async function postData(body) {
 }
 ```
 
-## request.fetch(address, config, processName, options)
+## HttpClient.fetch(address, config, processName, options)
 
 A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js`).
 
@@ -156,8 +93,7 @@ A fetch helper function, meant to be called in an api js file (e.g. `getBoard.js
 |options.waitCursor | Show a wait cursor during the request. Can be configured like [showWaitCursor()](docs/functions/waitCursor.md) | boolean / [{text,timeout,textTimeout} / {timeout,steps}](docs/functions/waitCursor.md) | `false` |
 |options.replacements | Replacements for the request url | Object<string/regex, string/function> | Object with replacements for `##locationId##`, `##siteId##`, `##tappId##`, `##userId##` and `##personId##`  |
 |options.sideEffects | Side effects for certain status codes or chayns error codes, like chayns.login() on status 401. Pass a function to handle all status at once or an object with an effect for each status  | function(status, chaynsErrorObject?) / Object\<number/string, function(chaynsErrorObject?)> | `undefined` |
-| **
-@returns** | Promise of: Response specified via response type or throws an error | Promise\<Json/String/Object/Blob/Response/null> | |
+| **@returns** | Promise of: Response specified via response type or throws an error | Promise\<Json/String/Object/Blob/Response/null> | |
 
 > **Note**: A "Failed to fetch" Error will be treated as a status code `1` regarding options.statusHandlers, options.logConfig as well as the return values if options.throwErrors is false
 
@@ -212,6 +148,7 @@ To handle side effects of failed requests when throwErrors is enabled, consider 
 functions `.then(successFn, errorFn)`, `.catch(errorFn)` and `.finally(alwaysFn)`.
 
 ### Examples
+Note: These examples assume that an instance of `HttpClient` called `request` has already been created.
 
 * Set logLevel for 3xx response status codes to warning, 4xx to error and for 500 to critical
 
@@ -285,9 +222,7 @@ const result = await (postExample(data).catch((ex) => {
     throw ex;
 }));
 ```
-
-* Using statusHandlers, errorHandlers, errorDialogs and sideEffects
-
+ * Using statusHandlers, errorHandlers, errorDialogs and sideEffects
 ```javascript
 request.fetch(
     'https://www.example.com',
@@ -320,11 +255,11 @@ request.fetch(
             // simple, using exact status
             401: () => { chayns.login(); },
             // simple, using exact error code
-            'global/unknown_error': (chaynsErrorObject) => {
-                chayns.dialog.alert("Oh no!", chaynsErrorObject.displayMessage);
+            'global/unknown_error': (chaynsErrorObject) => { 
+                chayns.dialog.alert("Oh no!", chaynsErrorObject.displayMessage) ;
             },
             // complex, using regex to match status and/or error code
-            [/^(5[0-9]{2}|global\/.*)$/]: (chaynsErrorObject) => {
+            [/^(5[0-9]{2}|global\/.*)$/]: (chaynsErrorObject) => { 
                 if (chaynsErrorObject) {
                     console.error('Global chayns error occurred');
                 } else {
@@ -366,7 +301,6 @@ function middleware(payload) {
 Not all logs are request logs, but only really request logs contain information that could be considered sensitive (call
 parameters, headers, request and response bodies, authorization header). To enable you to target specific fields to
 remove from your log, the structure of a request log payload always looks like this:
-
 ```javascript
 const payload = {
     data: {
@@ -402,15 +336,15 @@ const payload = {
 
 Not all fields will always be available depending on the request data.
 
-## request.defaults(address, config, options)
+## new HttpClient(defaults)
 
-Set a base url as well as defaults for fetch config and request.fetch()-options.
+Pass a defaults object to the constructor to set a base url as well as defaults for fetch config and HttpClient.fetch()-options.
 
 | Parameter              | Description                 | Type | Default / required |
 |------------------------|-----------------------------|------|-----------|
-| address | A base url. Will be used as prefix to the address in request.fetch() if:<br> - This default address starts with a protocol (e.g. `https://`)<br> - The request address doesn't start with a protocol | string | `''` |
-| config | A fetch config object. See request.fetch() for all properties. Properties that are not specified will keep their default value | Object | `{}` |
-| options | A request.fetch() options object. See request.fetch() for all properties. Properties that are not specified will keep their default value | Object | `{}` |
+| defaults.address | A base url. Will be used as prefix to the address in request.fetch() if:<br> - This default address starts with a protocol (e.g. `https://`)<br> - The request address doesn't start with a protocol | string | `''` |
+| defaults.config | A fetch config object. See request.fetch() for all properties. Properties that are not specified will keep their default value | Object | `{}` |
+| defaults.options | A request.fetch() options object. See request.fetch() for all properties. Properties that are not specified will keep their default value | Object | `{}` |
 
 By default, if a field in options or config is set on a specific request it will overwrite the default set with this
 function entirely. There are some important exceptions where defaults and specific options are merged, with the specific
@@ -427,16 +361,14 @@ taking priority over the default:
 ### Example
 
 ```javascript
-// index.jsx
-
 // set base url and some default config and options
-request.defaults(
-    'https://example.server.com/MyApp/v1.0',
-    {
+const request = new HttpClient({
+    address: 'https://example.server.com/MyApp/v1.0',
+    config: {
         useChaynsAuth: false,
         cache: 'no-cache'
     },
-    {
+    options: {
         // always get Object with json body and status unless otherwise specified
         responseType: ResponseType.JsonWithStatus,
         // log 2xx as info, 3xx as warning, 401 as warning and anything else as error
@@ -451,7 +383,9 @@ request.defaults(
             204: ResponseType.Response
         }
     }
-);
+});
+
+export default request;
 
 /* ... */
 
@@ -461,7 +395,7 @@ request.defaults(
 request.fetch('/controller/endpoint/boardId', {}, 'myRequest');
 ```
 
-## ResponseType | request.responseType
+## ResponseType
 
 > Exported as `ResponseType` and `request.responseType`
 
@@ -483,7 +417,7 @@ request.fetch('/controller/endpoint/boardId', {}, 'myRequest');
 
 > ResponseType.Object is deprecated and will be removed in a future release.
 
-## LogLevel | request.logLevel
+## LogLevel
 
 > Exported as `LogLevel` and `request.logLevel`
 
@@ -495,7 +429,7 @@ request.fetch('/controller/endpoint/boardId', {}, 'myRequest');
 |critical| `'critical'`|
 |none |`'none'`|
 
-## HttpMethod | request.method
+## HttpMethod
 
 > Exported as `HttpMethod` and `request.method`
 
@@ -509,7 +443,7 @@ const HttpMethod = {
 };
 ```
 
-## RequestError | request.error extends Error
+## RequestError extends Error
 
 > Exported as `RequestError` and `request.error`
 
@@ -536,11 +470,9 @@ const HttpMethod = {
 |requestId | `requestId` |
 
 ## isChaynsError(value)
-
 Check whether the value (e.g. an object or a Response) is a ChaynsError object
 
 ## getChaynsErrorCode(value)
-
 Try to get the ChaynsError error code from a value like an object or a Response
 
 ## HttpStatusCode
@@ -548,7 +480,6 @@ Try to get the ChaynsError error code from a value like an object or a Response
 An enum of HTTP Status Codes
 
 ## RequestRegex
-
 A constant containing several predefined regexes to use as keys for statusHandler, errorHandler und logConfig.
 
 | Name | Matches |

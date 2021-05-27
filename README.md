@@ -46,7 +46,7 @@ another module.
 | Name | Description | Type |
 |--------|-------------|------|
 | [ErrorBoundary](https://github.com/chincoe/chayns-helper/blob/master/docs/components/ErrorBoundary.md)| Customizable ErrorBoundary to catch errors during render | Component |
-| [request](https://github.com/chincoe/chayns-helper/blob/master/docs/functions/httpRequest.md)| HttpRequest Helper, highly customizable | Function, Constants |
+| [HttpClient](https://github.com/chincoe/chayns-helper/blob/master/docs/functions/HttpClient.md)| HttpRequest Helper, highly customizable | Function, Constants |
 
 ### Chayns Services and Utilities
 
