@@ -1,9 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { ChooseButton } from 'chayns-components';
 import { SelectDialogItem } from 'chayns-doc';
-import request from '../../functions/httpRequest/httpRequest';
-import LogLevel from '../../functions/httpRequest/LogLevel';
-import { ResponseType } from '../../functions/httpRequest/ResponseType';
 import ResizableWaitCursor from '../wait-cursor/ResizableWaitCursor';
 import colorLog from '../../utils/colorLog';
 
@@ -37,18 +34,11 @@ const UACGroupChooseButton: FunctionComponent<UACGroupChooseButtonProps> = ({
 }) => {
     const [uacGroups, setUacGroups] = useState<Array<UACGroupSimplified>>();
     useEffect(() => {
-        request.fetch(
+        fetch(
             `https://sub50.tobit.com/backend/${chayns.env.site.locationId}/UserGroup`,
-            {},
-            'getUacGroups',
-            {
-                throwErrors: false,
-                responseType: ResponseType.Json,
-                logConfig: {
-                    [/.*/.toString()]: LogLevel.info
-                }
-            }
+            {}
         )
+            .then((res) => res.json())
             .then((res) => setUacGroups(res as Array<UACGroupSimplified>))
             .catch((ex) => {
                 console.error(...colorLog.gray('[UACGroupChooseButton]'), 'Failed to fetch UAC Groups.', ex);

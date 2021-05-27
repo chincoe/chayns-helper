@@ -1,16 +1,20 @@
 // noinspection ES6PreferShortImport
 
 import fetchMock from 'jest-fetch-mock';
-import request, { httpRequest } from '../../../src/functions/httpRequest/httpRequest';
+import HttpClient from '../../../src/functions/httpRequest/HttpClient';
 import { ResponseType } from '../../../src/functions/httpRequest/ResponseType';
 import generateUUID from '../../../src/functions/generateGuid';
+import { ChaynsError } from '../../../src';
 
 describe('functions/httpRequest/httpRequest', () => {
-    beforeAll(() => {
-        request.defaults('https://httpRequestTest.com/', {}, {
+    const request = new HttpClient({
+        address: 'https://httpRequestTest.com/',
+        options: {
             responseType: ResponseType.JsonWithStatus
-        });
+        }
+    });
 
+    beforeAll(() => {
         fetchMock.mockIf(/^https?:\/\/httpRequestTest\.com.*$/i, (req) => new Promise((resolve, reject) => {
             if (req.url.endsWith('/defaultGet')) {
                 resolve({
@@ -42,7 +46,7 @@ describe('functions/httpRequest/httpRequest', () => {
         }));
     });
     it('runs without crashing', async () => {
-        const response = await httpRequest(
+        const response = await request.fetch(
             'defaultGet',
             {},
             '',
@@ -51,19 +55,19 @@ describe('functions/httpRequest/httpRequest', () => {
         expect(response.status).toBe(200);
     });
     it('handles failed to fetch', async () => {
-        const { status } = await httpRequest('failedToFetch', {}, '', {});
+        const { status } = await request.fetch('failedToFetch', {}, '', {});
         expect(status).toBe(1);
     });
     it('handles failed to fetch with throwErrors', async () => {
         try {
-            await httpRequest('failedToFetch', {}, '', {});
+            await request.fetch('failedToFetch', {}, '', {});
         } catch (ex) {
             expect(ex.statusCode).toBe(1);
         }
     });
     it('handles ChaynsErrors correctly', async () => {
         const [result1, result2] = await Promise.all([
-            httpRequest('chaynsError1', {}, '', {
+            request.fetch('chaynsError1', {}, '', {
                 responseType: ResponseType.Object,
                 throwErrors: false,
                 errorHandlers: {
@@ -71,7 +75,7 @@ describe('functions/httpRequest/httpRequest', () => {
                     'test_api/p_code': ResponseType.Json
                 }
             }),
-            httpRequest('chaynsError2', {}, '', {
+            request.fetch('chaynsError2', {}, '', {
                 responseType: ResponseType.Object,
                 throwErrors: false,
                 errorHandlers: {
@@ -81,7 +85,7 @@ describe('functions/httpRequest/httpRequest', () => {
             })
         ]);
         expect(result1).toBe('code not found');
-        expect(result2.errorCode).toBe('test_api/p_code');
+        expect((result2 as ChaynsError).errorCode).toBe('test_api/p_code');
     });
     afterAll(() => {
         fetchMock.resetMocks();

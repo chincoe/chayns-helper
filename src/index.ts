@@ -54,7 +54,7 @@ export { isPagemakerIFrame, isCustomTappIFrame } from './functions/isPagemakerIF
 export { default as useComparingSelector } from './hooks/useComparingSelector';
 export { default as useRechartsAxis, generateRechartsAxis } from './functions/generateRechartsAxis';
 // httpRequest
-export { default as request } from './functions/httpRequest/httpRequest';
+export { default as HttpClient } from './functions/httpRequest/HttpClient';
 export { default as RequestRegex } from './functions/httpRequest/RequestRegex';
 export { default as HttpStatusCode } from './functions/httpRequest/HttpStatusCodes';
 export { default as HttpMethod } from './functions/httpRequest/HttpMethod';

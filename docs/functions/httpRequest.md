@@ -1,4 +1,4 @@
-# [Request](src/functions/httpRequest/httpRequest.ts)
+# [Request](src/functions/httpRequest/HttpClient.ts)
 
 A request helper with customizable defaults that can be used to configure any behavior. Includes the request helper as
 well as enums for http methods, http status codes and more.

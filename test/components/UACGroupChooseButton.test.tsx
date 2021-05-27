@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import * as request from '../../src/functions/httpRequest/httpRequest';
+import fetchMock from 'jest-fetch-mock';
 import UACGroupChooseButton from '../../src/components/buttons/UACGroupChooseButton';
 
 describe('components/UACGroupChooseButton', () => {
@@ -10,18 +10,21 @@ describe('components/UACGroupChooseButton', () => {
         div = document.createElement('div');
     });
     it('renders without crashing', () => {
-        request.default.fetch = () => new Promise<Array<{ id: number, showName: string }>>((res) => {
-            res([{ id: 1, showName: 'Manager' }]);
-        });
+        fetchMock.mockOnce(() => new Promise((resolve) => {
+            resolve({
+                status: 200,
+                body: JSON.stringify([{ id: 1, showName: 'Manager' }])
+            });
+        }));
         act(() => {
             // eslint-disable-next-line no-console
             ReactDOM.render(<UACGroupChooseButton value={1} onChange={console.log}/>, div);
         });
     });
     it('can deal with a failed UAC Group fetch', () => {
-        request.default.fetch = () => new Promise<Array<{ id: number, showName: string }>>((res, rej) => {
-            rej(new TypeError('Failed to fetch'));
-        });
+        fetchMock.mockOnce(() => new Promise((resolve, reject) => {
+            reject(new TypeError('Failed to fetch'));
+        }));
         act(() => {
             // eslint-disable-next-line no-console
             ReactDOM.render(<UACGroupChooseButton value={1} onChange={console.log}/>, div);
@@ -30,6 +33,6 @@ describe('components/UACGroupChooseButton', () => {
     afterEach(async () => {
         await new Promise((res) => setTimeout(res, 100));
         ReactDOM.unmountComponentAtNode(div);
-        request.default.fetch = request.httpRequest;
+        fetchMock.resetMocks();
     });
 });

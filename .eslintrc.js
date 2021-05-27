@@ -50,6 +50,7 @@ module.exports = {
         indent: 0,
         strict: 0,
         'comma-dangle': 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
         'import/no-extraneous-dependencies': 'off',
         'react/jsx-tag-spacing': 0,
         'react/jsx-indent': 0,
