@@ -1,7 +1,9 @@
 /* eslint-disable no-console */
 import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
 import { ResponseType, ResponseTypeList } from './ResponseType';
-import { RequestResult } from './types';
+import {
+    DefaultType, ExcludeEmptyOptions, RequestResult, RequestResultWrapper
+} from './types';
 import generateUUID from '../generateGuid';
 import colorLog from '../../utils/colorLog';
 import showWaitCursor from '../waitCursor';
@@ -122,11 +124,9 @@ export type DefaultConfig<TConfig extends Partial<HttpRequestConfig>, TOptions e
     options: TOptions
 }
 
-type DefaultType<T extends Record<string, unknown>, TDefault> = T extends never ? TDefault : T;
-
 export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
     TDOptions extends Partial<HttpRequestOptions>> {
-    private defaultConfig: DefaultConfig<TDConfig, TDOptions>;
+    public defaultConfig: DefaultConfig<TDConfig, TDOptions>;
 
     constructor(defaults: Partial<DefaultConfig<TDConfig, TDOptions>> = {}) {
         this.defaultConfig = {
@@ -141,7 +141,8 @@ export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
         config: HttpRequestConfig = {},
         processName = 'httpRequest',
         options: TOptions = {} as TOptions
-    ): Promise<RequestResult<TOptions> | RequestResult<TDOptions>> {
+    ): Promise<RequestResultWrapper<ExcludeEmptyOptions<TOptions,
+        RequestResult<TOptions>> | ExcludeEmptyOptions<TDOptions, RequestResult<TDOptions>>>> {
         const { defaultConfig } = this;
         let { responseType = null } = {
             responseType: ResponseType.Json,
@@ -840,7 +841,8 @@ export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
         config?: HttpRequestConfig,
         processName?: string,
         options?: TOptions
-    ) => Promise<RequestResult<TOptions, TJson> | RequestResult<TDOptions, TJson>>;
+    ) => Promise<RequestResultWrapper<ExcludeEmptyOptions<TOptions,
+        RequestResult<TOptions, TJson>> | ExcludeEmptyOptions<TDOptions, RequestResult<TDOptions, TJson>>, TJson>>;
 
     /**
      * A fetch that uses currying to add more specific types for the expected json result
@@ -850,13 +852,23 @@ export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
         config?: HttpRequestConfig,
         processName?: string,
         options?: TOptions
-    ) => Promise<RequestResult<TOptions, TJson> | RequestResult<TDOptions, TJson>> {
+    ) => Promise<RequestResultWrapper<ExcludeEmptyOptions<TOptions,
+        RequestResult<TOptions, TJson>> | ExcludeEmptyOptions<TDOptions, RequestResult<TDOptions, TJson>>, TJson>>;
+
+    typedFetch<TJson extends Record<string, any> = Record<string, any>>(): <TOptions extends HttpRequestOptions>(
+        address: string,
+        config?: HttpRequestConfig,
+        processName?: string,
+        options?: TOptions
+    ) => Promise<RequestResultWrapper<ExcludeEmptyOptions<TOptions,
+        RequestResult<TOptions, TJson>> | ExcludeEmptyOptions<TDOptions, RequestResult<TDOptions, TJson>>, TJson>> {
         return this.fetch as (<TOptions extends HttpRequestOptions>(
             address: string,
             config?: HttpRequestConfig,
             processName?: string,
             options?: TOptions
-        ) => Promise<RequestResult<TOptions, TJson> | RequestResult<TDOptions, TJson>>);
+        ) => Promise<RequestResultWrapper<ExcludeEmptyOptions<TOptions,
+            RequestResult<TOptions, TJson>> | ExcludeEmptyOptions<TDOptions, RequestResult<TDOptions, TJson>>, TJson>>);
     }
 
     /**
@@ -874,14 +886,17 @@ export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
         options: TOptions = {} as TOptions,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         jsonDummy: TJson = {} as never
-    ): Promise<RequestResult<TOptions, DefaultType<TJson, Record<string, any>>>
-        | RequestResult<TDOptions, DefaultType<TJson, Record<string, any>>>> {
+    ): Promise<RequestResultWrapper<ExcludeEmptyOptions<TOptions,
+            RequestResult<TOptions, DefaultType<TJson, Record<string, any>>>>
+        | ExcludeEmptyOptions<TDOptions, RequestResult<TDOptions, DefaultType<TJson, Record<string, any>>>>, TJson>> {
         return this.fetch(
             address,
             config,
             processName,
             options
-        ) as Promise<RequestResult<TOptions, DefaultType<TJson, Record<string, any>>>
-            | RequestResult<TDOptions, DefaultType<TJson, Record<string, any>>>>;
+        ) as Promise<RequestResultWrapper<ExcludeEmptyOptions<TOptions,
+                RequestResult<TOptions, DefaultType<TJson, Record<string, any>>>>
+            | ExcludeEmptyOptions<TDOptions,
+            RequestResult<TDOptions, DefaultType<TJson, Record<string, any>>>>, TJson>>;
     }
 }
