@@ -4,15 +4,17 @@ A request helper with customizable defaults that can be used to configure any be
 well as enums for http methods, http status codes and more.
 
 ## Table of Contents
+
 - [Suggested setup and quick documentation](#suggested-setup-and-quick-documentation)
 - [HttpClient.fetch(address, config, processName, options)](#httpclientfetchaddress-config-processname-options)
-   * [Response handling priority](#response-handling-priority)
-      + [ThrowError behavior](#throwerror-behavior)
-      + [Handling errors with throwErrors = true](#handling-errors-with-throwerrors--true)
-   * [Examples](#examples)
-   * [Customizing Logging](#customizing-logging)
+    * [Response handling priority](#response-handling-priority)
+        + [ThrowError behavior](#throwerror-behavior)
+        + [Handling errors with throwErrors = true](#handling-errors-with-throwerrors--true)
+    * [Examples](#examples)
+    * [Customizing Logging](#customizing-logging)
 - [new HttpClient(defaults)](#new-httpclientdefaults)
-   * [Example](#example)
+    * [Example](#example)
+- [Usage with TypeScript](#usage-with-typescript)
 - Other Exports
     * [ResponseType | request.responseType](#responsetype)
     * [LogLevel | request.logLevel](#loglevel)
@@ -148,6 +150,7 @@ To handle side effects of failed requests when throwErrors is enabled, consider 
 functions `.then(successFn, errorFn)`, `.catch(errorFn)` and `.finally(alwaysFn)`.
 
 ### Examples
+
 Note: These examples assume that an instance of `HttpClient` called `request` has already been created.
 
 * Set logLevel for 3xx response status codes to warning, 4xx to error and for 500 to critical
@@ -222,7 +225,9 @@ const result = await (postExample(data).catch((ex) => {
     throw ex;
 }));
 ```
- * Using statusHandlers, errorHandlers, errorDialogs and sideEffects
+
+* Using statusHandlers, errorHandlers, errorDialogs and sideEffects
+
 ```javascript
 request.fetch(
     'https://www.example.com',
@@ -255,11 +260,11 @@ request.fetch(
             // simple, using exact status
             401: () => { chayns.login(); },
             // simple, using exact error code
-            'global/unknown_error': (chaynsErrorObject) => { 
-                chayns.dialog.alert("Oh no!", chaynsErrorObject.displayMessage) ;
+            'global/unknown_error': (chaynsErrorObject) => {
+                chayns.dialog.alert("Oh no!", chaynsErrorObject.displayMessage);
             },
             // complex, using regex to match status and/or error code
-            [/^(5[0-9]{2}|global\/.*)$/]: (chaynsErrorObject) => { 
+            [/^(5[0-9]{2}|global\/.*)$/]: (chaynsErrorObject) => {
                 if (chaynsErrorObject) {
                     console.error('Global chayns error occurred');
                 } else {
@@ -301,6 +306,7 @@ function middleware(payload) {
 Not all logs are request logs, but only really request logs contain information that could be considered sensitive (call
 parameters, headers, request and response bodies, authorization header). To enable you to target specific fields to
 remove from your log, the structure of a request log payload always looks like this:
+
 ```javascript
 const payload = {
     data: {
@@ -395,9 +401,91 @@ export default request;
 request.fetch('/controller/endpoint/boardId', {}, 'myRequest');
 ```
 
-## ResponseType
+## Usage with TypeScript
 
-> Exported as `ResponseType` and `request.responseType`
+Both the constructor and the HttpClient.fetch() method will infer their types. Though they technically are generics,
+specifying their type parameters manually should be avoided.
+
+However, to allow the HttpClient to calculate a fitting return type, default options including a responseType should
+always be passed to the HttpClient constructor:
+
+```typescript
+// minimum setup for usage with TS
+const client = new HttpClient({ options: { responseType: ResponseType.JsonWithStatus } });
+```
+
+Currently, specifying a responseType that might result in a JSON response will always type that JSON object
+as `Record<string, any>`. To pass more specific type specifications for that JSON object, additional functions have been
+added to the HttpClient. They are identical to request.fetch() in function, but they are called differently and provide
+more detailed types. Workarounds using currying or dummying were necessary for the implementation to be able to specify
+the JSON type and infer the `options` parameter at the same time.
+
+HttpClient currently supports 3 ways to specify the JSON type:
+
+| Method name | Description | Method call |
+|-------------|-------------|-------------|
+| typedFetch | typedFetch using currying | `client.typedFetch<JSONType>()(...params);` |
+| typedFetch | typedFetch using dummying | `client.typedFetch(JSONTemplate)(...params);` or `client.typedFetch(null! as JSONType)(...params);`  |
+| dummyTypedFetch | dummyTypedFetch using dummying | `client.dummyTypedFetch(...params, JSONTemplate);` or `client.dummyTypedFetch(...params, null! as JSONType);` |
+
+HttpClient.typedFetch() using currying is the preferred usage, however functions using dummying have been added to
+allow (albeit limited) JSON type specification using regular JavaScript.
+
+* HttpClient.typedFetch() using currying
+
+```typescript
+/* 
+ * Note that typedFetch returns the client.fetch() function with different types.
+ * This results in a call that required an extra pair of parentheses:
+ *      client.typedFetch<JSONType>()(params);
+ */
+const result1 = await client.typedFetch<{ foo: string }>()(
+    address,
+    config,
+    processName,
+    options
+);
+```
+
+* HttpClient.typedFetch() using dummying
+
+```typescript
+/* 
+ * Note that typedFetch returns the client.fetch() function with different types.
+ * This results in a call that required an extra pair of parentheses:
+ *      client.typedFetch(JSONTemplate)(params);
+ */
+const result2 = await client.typedFetch({ foo: "" })(
+    address,
+    config,
+    processName,
+    options
+);
+// or
+const result3 = await client.typedFetch(null! as { foo: string })(
+    address, config, processName, options
+);
+```
+* HttpClient.dummyTypedFetch() using dummying
+```typescript
+const result4 = await client.dummyTypedFetch(
+    address,
+    config,
+    processName,
+    options,
+    { foo: "" }
+);
+// or 
+const result5 = await client.dummyTypedFetch(
+    address,
+    config,
+    processName,
+    options,
+    null! as { foo: string }
+);
+```
+
+## ResponseType
 
 | Property | Value | Response |
 |----------|-------| ------|
@@ -419,8 +507,6 @@ request.fetch('/controller/endpoint/boardId', {}, 'myRequest');
 
 ## LogLevel
 
-> Exported as `LogLevel` and `request.logLevel`
-
 | Property | Value |
 |----------|-------|
 | info | `'info'`|
@@ -430,8 +516,6 @@ request.fetch('/controller/endpoint/boardId', {}, 'myRequest');
 |none |`'none'`|
 
 ## HttpMethod
-
-> Exported as `HttpMethod` and `request.method`
 
 ```javascript
 const HttpMethod = {
@@ -444,8 +528,6 @@ const HttpMethod = {
 ```
 
 ## RequestError extends Error
-
-> Exported as `RequestError` and `request.error`
 
 `constructor(message, statusCode)`
 
@@ -470,9 +552,11 @@ const HttpMethod = {
 |requestId | `requestId` |
 
 ## isChaynsError(value)
+
 Check whether the value (e.g. an object or a Response) is a ChaynsError object
 
 ## getChaynsErrorCode(value)
+
 Try to get the ChaynsError error code from a value like an object or a Response
 
 ## HttpStatusCode
@@ -480,6 +564,7 @@ Try to get the ChaynsError error code from a value like an object or a Response
 An enum of HTTP Status Codes
 
 ## RequestRegex
+
 A constant containing several predefined regexes to use as keys for statusHandler, errorHandler und logConfig.
 
 | Name | Matches |

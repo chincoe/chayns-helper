@@ -24,8 +24,6 @@ import getJwtPayload from '../getJwtPayload';
 import HttpStatusCode from './HttpStatusCodes';
 import LogLevel from './LogLevel';
 
-// TODO: Documentation for TypeScript usage
-
 /**
  * The fetch config. Contains all parameters viable for the window.fetch init object including the following:
  * @property useChaynsAuth - default: chayns.env.user.isAuthenticated - Add use token as auth header
