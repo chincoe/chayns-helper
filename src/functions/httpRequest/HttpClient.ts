@@ -835,9 +835,9 @@ export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
     }
 
     /**
-     * A fetch that uses dummy values to add more specific types for the expected json result
+     * A fetch that uses dummy values as template to add more specific types for the expected json result
      */
-    public typedFetch<TJson extends Record<string, any>>(dummyValue: TJson): <TOptions extends HttpRequestOptions>(
+    public typedFetch<TJson extends Record<string, any>>(jsonTemplate: TJson): <TOptions extends HttpRequestOptions>(
         address: string,
         config?: HttpRequestConfig,
         processName?: string,
@@ -873,12 +873,12 @@ export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
     }
 
     /**
-     * A fetch that uses dummy values to add more specific types for the expected json result
+     * A fetch that uses dummy values as template to add more specific types for the expected json result
      * @param address
      * @param config
      * @param processName
      * @param options
-     * @param jsonDummy
+     * @param jsonTemplate
      */
     public dummyTypedFetch<TOptions extends HttpRequestOptions, TJson extends Record<string, any>>(
         address: string,
@@ -886,7 +886,7 @@ export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
         processName = 'httpRequest',
         options: TOptions = {} as TOptions,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        jsonDummy: TJson = {} as never
+        jsonTemplate: TJson = {} as never
     ): Promise<RequestResultWrapper<ExcludeEmptyOptions<TOptions,
             RequestResult<TOptions, DefaultType<TJson, Record<string, any>>>>
         | ExcludeEmptyOptions<TDOptions, RequestResult<TDOptions, DefaultType<TJson, Record<string, any>>>>, TJson>> {
