@@ -124,9 +124,10 @@ export type DefaultConfig<TConfig extends Partial<HttpRequestConfig>, TOptions e
     options: TOptions
 }
 
+// noinspection JSUnusedGlobalSymbols
 export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
     TDOptions extends Partial<HttpRequestOptions>> {
-    public defaultConfig: DefaultConfig<TDConfig, TDOptions>;
+    private defaultConfig: DefaultConfig<TDConfig, TDOptions>;
 
     constructor(defaults: Partial<DefaultConfig<TDConfig, TDOptions>> = {}) {
         this.defaultConfig = {
@@ -136,7 +137,7 @@ export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
         };
     }
 
-    fetch<TOptions extends HttpRequestOptions>(
+    public fetch<TOptions extends HttpRequestOptions>(
         address: string,
         config: HttpRequestConfig = {},
         processName = 'httpRequest',
@@ -836,7 +837,7 @@ export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
     /**
      * A fetch that uses dummy values to add more specific types for the expected json result
      */
-    typedFetch<TJson extends Record<string, any>>(dummyValue: TJson): <TOptions extends HttpRequestOptions>(
+    public typedFetch<TJson extends Record<string, any>>(dummyValue: TJson): <TOptions extends HttpRequestOptions>(
         address: string,
         config?: HttpRequestConfig,
         processName?: string,
@@ -847,7 +848,7 @@ export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
     /**
      * A fetch that uses currying to add more specific types for the expected json result
      */
-    typedFetch<TJson extends Record<string, any> = Record<string, any>>(): <TOptions extends HttpRequestOptions>(
+    public typedFetch<TJson extends Record<string, any> = Record<string, any>>(): <TOptions extends HttpRequestOptions>(
         address: string,
         config?: HttpRequestConfig,
         processName?: string,
@@ -855,7 +856,7 @@ export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
     ) => Promise<RequestResultWrapper<ExcludeEmptyOptions<TOptions,
         RequestResult<TOptions, TJson>> | ExcludeEmptyOptions<TDOptions, RequestResult<TDOptions, TJson>>, TJson>>;
 
-    typedFetch<TJson extends Record<string, any> = Record<string, any>>(): <TOptions extends HttpRequestOptions>(
+    public typedFetch<TJson extends Record<string, any> = Record<string, any>>(): <TOptions extends HttpRequestOptions>(
         address: string,
         config?: HttpRequestConfig,
         processName?: string,
@@ -879,7 +880,7 @@ export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
      * @param options
      * @param jsonDummy
      */
-    dummyTypedFetch<TOptions extends HttpRequestOptions, TJson extends Record<string, any>>(
+    public dummyTypedFetch<TOptions extends HttpRequestOptions, TJson extends Record<string, any>>(
         address: string,
         config: HttpRequestConfig = {},
         processName = 'httpRequest',
