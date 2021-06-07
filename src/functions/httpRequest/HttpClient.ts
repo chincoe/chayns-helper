@@ -24,6 +24,8 @@ import getJwtPayload from '../getJwtPayload';
 import HttpStatusCode from './HttpStatusCodes';
 import LogLevel from './LogLevel';
 
+// TODO: Documentation for TypeScript usage
+
 /**
  * The fetch config. Contains all parameters viable for the window.fetch init object including the following:
  * @property useChaynsAuth - default: chayns.env.user.isAuthenticated - Add use token as auth header
@@ -121,6 +123,8 @@ export type DefaultConfig<TConfig extends Partial<HttpRequestConfig>, TOptions e
     config: TConfig,
     options: TOptions
 }
+
+type DefaultType<T extends Record<string, unknown>, TDefault> = T extends never ? TDefault : T;
 
 export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
     TDOptions extends Partial<HttpRequestOptions>> {
@@ -709,7 +713,7 @@ export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
                                 errorCode,
                                 handler
                             }
-);
+                        );
                         const result = await resolveWithHandler(
                             handler as ResponseType | ((response: Response) => unknown),
                             response,
@@ -830,6 +834,19 @@ export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
         return requestPromise;
     }
 
+    /**
+     * A fetch that uses dummy values to add more specific types for the expected json result
+     */
+    typedFetch<TJson extends Record<string, any>>(dummyValue: TJson): <TOptions extends HttpRequestOptions>(
+        address: string,
+        config?: HttpRequestConfig,
+        processName?: string,
+        options?: TOptions
+    ) => Promise<RequestResult<TOptions, TJson> | RequestResult<TDOptions, TJson>>;
+
+    /**
+     * A fetch that uses currying to add more specific types for the expected json result
+     */
     typedFetch<TJson extends Record<string, any> = Record<string, any>>(): <TOptions extends HttpRequestOptions>(
         address: string,
         config?: HttpRequestConfig,
@@ -842,5 +859,31 @@ export default class HttpClient<TDConfig extends Partial<HttpRequestConfig>,
             processName?: string,
             options?: TOptions
         ) => Promise<RequestResult<TOptions, TJson> | RequestResult<TDOptions, TJson>>);
+    }
+
+    /**
+     * A fetch that uses dummy values to add more specific types for the expected json result
+     * @param address
+     * @param config
+     * @param processName
+     * @param options
+     * @param jsonDummy
+     */
+    dummyTypedFetch<TOptions extends HttpRequestOptions, TJson extends Record<string, any>>(
+        address: string,
+        config: HttpRequestConfig = {},
+        processName = 'httpRequest',
+        options: TOptions = {} as TOptions,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        jsonDummy: TJson = {} as never
+    ): Promise<RequestResult<TOptions, DefaultType<TJson, Record<string, any>>>
+        | RequestResult<TDOptions, DefaultType<TJson, Record<string, any>>>> {
+        return this.fetch(
+            address,
+            config,
+            processName,
+            options
+        ) as Promise<RequestResult<TOptions, DefaultType<TJson, Record<string, any>>>
+            | RequestResult<TDOptions, DefaultType<TJson, Record<string, any>>>>;
     }
 }
