@@ -68,7 +68,7 @@
     {
       "path": "dist/chayns-helper.esm.js",
       "import": "{ statusAnimations }",
-      "limit": "28.05KB"
+      "limit": "28.07KB"
     }
   ],
   "prettier": {

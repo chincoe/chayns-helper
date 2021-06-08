@@ -1,9 +1,10 @@
-import HttpClient, { HttpRequestConfig, HttpRequestOptions } from './HttpClient';
+import HttpClient from './HttpClient';
 import RequestError from './RequestError';
 import { ResponseType } from './ResponseType';
 import LogLevel from './LogLevel';
 import HttpMethod from './HttpMethod';
 import setRequestDefaults, { defaultConfig } from './setRequestDefaults';
+import { HttpRequestConfig, HttpRequestOptions } from './types';
 
 /**
  * Extensive and highly customizable fetch helper. Consult documentation for usage.
