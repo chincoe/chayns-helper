@@ -145,7 +145,7 @@ export type HandlerUnion<T extends Record<string, ResponseType
         : any
 }[keyof T]
 
-export type DefaultType<T extends Record<string, unknown>, TDefault> = T extends never ? TDefault : T;
+export type DefaultType<T extends Record<string, unknown>, TDefault> = [T] extends [never] ? TDefault : T;
 export type ExcludeEmptyOptions<T, TNotEmpty> = T extends Record<string, never>
     ? never
     : undefined extends T
@@ -153,13 +153,13 @@ export type ExcludeEmptyOptions<T, TNotEmpty> = T extends Record<string, never>
         : Partial<HttpRequestOptions> extends T
             ? never
             : TNotEmpty;
-export type RequestResultWrapper<T, TJson = Record<string, any>> = T extends never
+export type RequestResultWrapper<T, TJson = Record<string, any>> = [T] extends [never]
     ? ResponseTypeResult<ResponseType.Json, TJson>
     : T;
 
-export type RequestResult<T extends HttpRequestOptions,
-    TJson extends Record<string, any> = Record<string, any>> = T['responseType'] extends ResponseType
-    ? T['statusHandlers'] extends Required<HttpRequestOptions>['statusHandlers']
+export type RequestResult<T extends HttpRequestOptions, TJson extends Record<string, any> = Record<string, any>> =
+    T['responseType'] extends ResponseType
+        ? T['statusHandlers'] extends Required<HttpRequestOptions>['statusHandlers']
         ? T['errorHandlers'] extends Required<HttpRequestOptions>['errorHandlers']
             ? (HandlerUnion<T['statusHandlers'], TJson>
                 | HandlerUnion<T['errorHandlers'], TJson>
@@ -168,14 +168,14 @@ export type RequestResult<T extends HttpRequestOptions,
         : T['errorHandlers'] extends Required<HttpRequestOptions>['errorHandlers']
             ? HandlerUnion<T['errorHandlers'], TJson> | ResponseTypeResult<T['responseType'], TJson>
             : ResponseTypeResult<T['responseType'], TJson>
-    : T['statusHandlers'] extends Required<HttpRequestOptions>['statusHandlers']
+        : T['statusHandlers'] extends Required<HttpRequestOptions>['statusHandlers']
         ? T['errorHandlers'] extends Required<HttpRequestOptions>['errorHandlers']
-            ? HandlerUnion<T['statusHandlers'], TJson> & HandlerUnion<T['errorHandlers'], TJson>
+            ? HandlerUnion<T['statusHandlers'], TJson> | HandlerUnion<T['errorHandlers'], TJson>
             : HandlerUnion<T['statusHandlers'], TJson>
         : T['errorHandlers'] extends Required<HttpRequestOptions>['errorHandlers']
             ? HandlerUnion<T['errorHandlers'], TJson>
             : any;
 
 export type CombinedRequestResult<TOptions, TDOptions, TJson = Record<string, any>> =
-    RequestResultWrapper<ExcludeEmptyOptions<TOptions,
-        RequestResult<TOptions, TJson>> | ExcludeEmptyOptions<TDOptions, RequestResult<TDOptions, TJson>>, TJson>
+    RequestResultWrapper<ExcludeEmptyOptions<TOptions, RequestResult<TOptions, TJson>>
+        | ExcludeEmptyOptions<TDOptions, RequestResult<TDOptions, TJson>>, TJson>
