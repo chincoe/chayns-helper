@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 import { Input, TextString } from 'chayns-components';
 import useUniqueTimeout from '../../hooks/uniques/useUniqueTimeout';
+import useUpdateEffect from '../../hooks/useUpdateEffect';
 
 export interface MoneyInputOptions {
     showInvalid: boolean;
@@ -50,7 +51,6 @@ export interface InputProps {
     emptyValue: string | number;
 }
 
-// TODO: Separators for thousands
 const validRegexDe = /^[0-9]+,?[0-9]{0,2}$/;
 const validRegexEn = /^[0-9]+\.?[0-9]{0,2}$/;
 
@@ -73,11 +73,16 @@ const convertToString = (value: number | null): string => {
     const floatValue = value / 100;
     let result = `${Math.floor(floatValue)}`;
     result += separator(SeparatorType.Decimal);
-    result += `00${Math.floor((floatValue % 1) * 100)}`.slice(-2);
+    result += `00${Math.floor((floatValue * 100) % 100)}`.slice(-2);
     return result;
 };
 
-const convertToNumber = (value: string): number => (!Number.isNaN(+value) ? Math.floor(+value * 100) : 0);
+const convertToNumber = (input: string): number => {
+    let value = input;
+    value = value.replace(/,/g, '.');
+    if (Number.isNaN(+value)) return 0;
+    return Math.floor(+value * 100);
+};
 
 const isMoneyEqual = (current: string, prev: string): boolean => convertToNumber(current) === convertToNumber(prev);
 
@@ -90,19 +95,26 @@ const MoneyInput: FunctionComponent<MoneyInputProps & Partial<InputProps>> = ({
     ...props
 }) => {
     const {
-        timeout = 0, showInvalid = false, minValue = 0, maxValue = undefined
+        timeout = 0,
+        showInvalid = false,
+        minValue = 0,
+        maxValue = undefined
     } = options;
     const initialValue = useMemo(
         () => convertToString(value ?? props.defaultValue ?? null), []
     );
     const isValid = (v: string | number): boolean => getValidRegex().test(`${v}`)
-        && !Number.isNaN(+v)
-        && +v >= minValue
-        && (!maxValue || +v <= maxValue);
+        && !Number.isNaN(+(`${v}`.replace(/,/g, '.')))
+        && convertToNumber(`${v}`) >= minValue
+        && (!maxValue || convertToNumber(`${v}`) <= maxValue);
 
     const [state, setState] = useState<string>(initialValue);
     const [previousState, setPreviousState] = useState<string>(initialValue);
     const [setStateTimeout] = useUniqueTimeout();
+
+    useUpdateEffect(() => {
+        if (convertToNumber(state) !== value) { setState(convertToString(value)); }
+    }, [value]);
 
     useEffect(() => {
         if (isValid(state) && !isMoneyEqual(state, previousState)) {
@@ -124,14 +136,14 @@ const MoneyInput: FunctionComponent<MoneyInputProps & Partial<InputProps>> = ({
             {...props}
             onBlur={(...v: unknown[]) => {
                 if (props.onBlur) props.onBlur(...v);
-                setState(formatMoney(state));
+                if (isValid(state)) setState(formatMoney(state));
             }}
             className={`money-input ${props.className || ''}`}
-            value={convertToString(value)}
+            value={state}
             onChange={(v: string) => {
                 setState(v);
             }}
-            invalid={showInvalid ? !isValid(value) : false}
+            invalid={showInvalid ? state !== '' && !isValid(state) : false}
         />
     );
 };
