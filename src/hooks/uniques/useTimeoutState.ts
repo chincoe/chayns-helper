@@ -7,21 +7,26 @@ import useUniqueTimeout from './useUniqueTimeout';
  * @param initialValue - initial value of the useState()
  * @param onChange - function to be called when the timeout has passed. Received the current value as parameter
  * @param timeout - time in ms that has to pass without a new setter to call onChange
+ * @param equalityFn - write a custom override to check equality of old and new value to prevent updates
  */
 const useTimeoutState = <T>(
-    initialValue: T | unknown,
+    initialValue: T | undefined,
     onChange: (value: T) => unknown,
-    timeout = 500
+    timeout = 500,
+    equalityFn?: (newValue: T, oldValue: T|undefined) => boolean
 ): [T, React.Dispatch<React.SetStateAction<T>>] => {
     const [state, setState] = useState<T>(initialValue as T);
-    const [previousState, setPreviousState] = useState(initialValue);
+    const [previousState, setPreviousState] = useState<T | undefined>(initialValue);
     const [setStateTimeout] = useUniqueTimeout();
 
+    const equalFn = typeof equalityFn === 'function' ? equalityFn : (val: T, prevVal: T|undefined) => (
+        typeof val === 'string' || typeof prevVal === 'string'
+            ? `${val}` === `${prevVal}`
+            : shallowEqual(val, prevVal)
+    );
+
     useEffect(() => {
-        if (typeof state === 'string' || typeof previousState === 'string'
-            ? `${state}` !== `${previousState}`
-            : !shallowEqual(state, previousState)
-        ) {
+        if (!equalFn(state, previousState)) {
             const t = setStateTimeout(() => {
                 setPreviousState(state);
                 onChange(state);

@@ -7,6 +7,7 @@ Executes an onChange method when the state has not been modified for a short tim
 |initialValue| useState initial value | T | `undefined` |
 |onChange| function to be called when the state has not changed for a timeout | (currentValue: T) => void | required |
 |timeout| timeout in ms after which onChange will be called | number | `500` |
+|equalityFn | Override the default function to check equality. If the new value equals the previous value, onChange will not be triggered | (newValue, oldValue) => boolean | `undefined` |
 | **@returns** | `[state, setState]` | [T, function(T)] | |
 
 ### Examples
