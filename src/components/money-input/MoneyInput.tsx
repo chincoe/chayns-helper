@@ -5,17 +5,13 @@ import { Input, TextString } from 'chayns-components';
 import useUniqueTimeout from '../../hooks/uniques/useUniqueTimeout';
 import useUpdateEffect from '../../hooks/useUpdateEffect';
 
-export interface MoneyInputOptions {
+export interface MoneyInputProps {
+    value: number;
+    onChange: (value: number) => void;
     showInvalid: boolean;
     timeout: number;
     minValue: number;
     maxValue: number;
-}
-
-export interface MoneyInputProps {
-    value: number;
-    onChange: (value: number) => void;
-    options?: Partial<MoneyInputOptions>;
 }
 
 export interface InputProps {
@@ -91,17 +87,15 @@ const formatMoney = (input: string): string => convertToString(convertToNumber(i
 const MoneyInput: FunctionComponent<MoneyInputProps & Partial<InputProps>> = ({
     value, // integer cent value
     onChange,
-    options = {},
+    timeout = 0,
+    showInvalid = false,
+    minValue = 0,
+    maxValue = undefined,
     ...props
 }) => {
-    const {
-        timeout = 0,
-        showInvalid = false,
-        minValue = 0,
-        maxValue = undefined
-    } = options;
+    const [isFocused, setIsFocused] = useState(false);
     const initialValue = useMemo(
-        () => convertToString(value ?? props.defaultValue ?? null), []
+        () => convertToString(value ?? props.defaultValue ?? null), [value]
     );
     const isValid = (v: string | number): boolean => getValidRegex().test(`${v}`)
         && !Number.isNaN(+(`${v}`.replace(/,/g, '.')))
@@ -134,16 +128,23 @@ const MoneyInput: FunctionComponent<MoneyInputProps & Partial<InputProps>> = ({
             placeholder="Euro"
             dynamic
             {...props}
+            onFocus={(...v: unknown[]) => {
+                setIsFocused(true);
+                if (props.onFocus) props.onFocus(...v);
+            }}
             onBlur={(...v: unknown[]) => {
+                setIsFocused(false);
                 if (props.onBlur) props.onBlur(...v);
-                if (isValid(state)) setState(formatMoney(state));
+                if (isValid(state)) {
+                    setState(formatMoney(state));
+                } // else if (!showInvalid) setState(initialValue);
             }}
             className={`money-input ${props.className || ''}`}
             value={state}
             onChange={(v: string) => {
                 setState(v);
             }}
-            invalid={showInvalid ? state !== '' && !isValid(state) : false}
+            invalid={(showInvalid || !isFocused) ? state !== '' && !isValid(state) : false}
         />
     );
 };
